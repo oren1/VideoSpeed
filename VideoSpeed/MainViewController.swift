@@ -1,0 +1,167 @@
+//
+//  MainViewController.swift
+//  VideoSpeed
+//
+//  Created by oren shalev on 14/07/2023.
+//
+
+import UIKit
+import Photos
+
+class MainViewController: UIViewController {
+
+    // MARK: - Properties
+    private let reuseIdentifier = "PhotoCell"
+    private let sectionInsets = UIEdgeInsets(top: 20, left: 10, bottom: 20, right: 10)
+    var videos: PHFetchResult<PHAsset>?
+    private let itemsPerRow: CGFloat = 3
+    
+    @IBOutlet weak var collectionView: UICollectionView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        PHPhotoLibrary.shared().register(self)
+
+        getPermissionIfNecessary { granted in
+          guard granted else { return }
+          self.fetchAssets()
+          DispatchQueue.main.async { [weak self] in
+            guard let self = self else {return}
+            self.collectionView.reloadData()
+              self.collectionView.scrollToItem(at: IndexPath(row: self.videos!.count - 1, section: 0), at: .top, animated: false)
+          }
+        }
+        
+        navigationItem.title = "Spid"
+    }
+    
+    deinit {
+      PHPhotoLibrary.shared().unregisterChangeObserver(self)
+    }
+    
+    func getPermissionIfNecessary(completionHandler: @escaping (Bool) -> Void) {
+      // 1
+      guard PHPhotoLibrary.authorizationStatus() != .authorized else {
+        completionHandler(true)
+        return
+      }
+      // 2
+      PHPhotoLibrary.requestAuthorization { status in
+        completionHandler(status == .authorized)
+      }
+    }
+    
+    func fetchAssets() {
+      // 1
+      let allPhotosOptions = PHFetchOptions()
+      allPhotosOptions.sortDescriptors = [
+        NSSortDescriptor(
+          key: "creationDate",
+          ascending: true)
+      ]
+     allPhotosOptions.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.video.rawValue)
+
+      videos = PHAsset.fetchAssets(with: allPhotosOptions)
+    
+    }
+}
+
+
+// MARK: - UICollectionViewDataSource
+extension MainViewController: UICollectionViewDataSource {
+  // 1
+   func numberOfSections(in collectionView: UICollectionView) -> Int {
+    return 1
+  }
+
+  // 2
+   func collectionView(
+    _ collectionView: UICollectionView,
+    numberOfItemsInSection section: Int
+  ) -> Int {
+      return videos?.count ?? 0
+  }
+
+  // 3
+   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    // 1
+    let cell = collectionView.dequeueReusableCell(
+      withReuseIdentifier: reuseIdentifier,
+      for: indexPath
+    ) as! PhotoCell
+
+    // 2
+    // grab the photo
+//    cell.backgroundColor = .green
+//       cell.imageView.backgroundColor = .red
+    let asset = videos![indexPath.row]
+       cell.imageView.fetchImageAsset(asset, targetSize: cell.imageView.bounds.size, completionHandler: nil)
+       cell.timeLabel.text = String(format: "%02d:%02d",Int((asset.duration / 60)),Int(asset.duration) % 60)
+       cell.layer.cornerRadius = 8
+
+    return cell
+  }
+}
+
+extension MainViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
+        let video = videos![indexPath.row]
+        video.getAVAssetUrl { responseURL in
+            vc.assetUrl = responseURL
+            DispatchQueue.main.async { [weak self] in
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+    }
+}
+// MARK: - Collection View Flow Layout Delegate
+extension MainViewController: UICollectionViewDelegateFlowLayout {
+  // 1
+  func collectionView(
+    _ collectionView: UICollectionView,
+    layout collectionViewLayout: UICollectionViewLayout,
+    sizeForItemAt indexPath: IndexPath
+  ) -> CGSize {
+    // 2
+    let paddingSpace = sectionInsets.left * (itemsPerRow + 1)
+    let availableWidth = view.frame.width - paddingSpace
+    let widthPerItem = availableWidth / itemsPerRow
+    print("widthPerItem \(widthPerItem)")
+    return CGSize(width: widthPerItem, height: widthPerItem)
+  }
+
+  // 3
+  func collectionView(
+    _ collectionView: UICollectionView,
+    layout collectionViewLayout: UICollectionViewLayout,
+    insetForSectionAt section: Int
+  ) -> UIEdgeInsets {
+    return sectionInsets
+  }
+
+  // 4
+  func collectionView(
+    _ collectionView: UICollectionView,
+    layout collectionViewLayout: UICollectionViewLayout,
+    minimumLineSpacingForSectionAt section: Int
+  ) -> CGFloat {
+    return sectionInsets.left
+  }
+}
+
+extension MainViewController: PHPhotoLibraryChangeObserver {
+  func photoLibraryDidChange(_ changeInstance: PHChange) {
+      
+    guard let videos = videos,
+          let change = changeInstance.changeDetails(for: videos) else {return}
+      
+    DispatchQueue.main.sync { [weak self] in
+        self?.videos = change.fetchResultAfterChanges
+        self?.collectionView.reloadData()
+    }
+  }
+}
