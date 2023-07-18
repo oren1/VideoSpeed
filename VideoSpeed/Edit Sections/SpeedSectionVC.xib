@@ -4,6 +4,7 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -38,40 +39,55 @@
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7UB-iq-26H">
                             <rect key="frame" x="0.0" y="0.0" width="62.666666666666664" height="44"/>
+                            <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="filled" title="0.25"/>
+                            <buttonConfiguration key="configuration" style="filled" title="0.25">
+                                <fontDescription key="titleFontDescription" type="boldSystem" pointSize="15"/>
+                            </buttonConfiguration>
                             <connections>
                                 <action selector="point25ButtonTapped:" destination="-1" eventType="touchUpInside" id="hc6-dX-4mj"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fJl-NA-8mv">
                             <rect key="frame" x="75.666666666666671" y="0.0" width="63.000000000000014" height="44"/>
+                            <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="filled" title="0.5"/>
+                            <buttonConfiguration key="configuration" style="filled" title="0.5">
+                                <fontDescription key="titleFontDescription" type="boldSystem" pointSize="15"/>
+                            </buttonConfiguration>
                             <connections>
                                 <action selector="point5ButtonTapped:" destination="-1" eventType="touchUpInside" id="t8T-s7-CPk"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m32-Ab-gP1">
                             <rect key="frame" x="151.66666666666666" y="0.0" width="62.666666666666657" height="44"/>
+                            <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="filled" title="1"/>
+                            <buttonConfiguration key="configuration" style="filled" title="1">
+                                <fontDescription key="titleFontDescription" type="boldSystem" pointSize="15"/>
+                            </buttonConfiguration>
                             <connections>
                                 <action selector="oneButtonTapped:" destination="-1" eventType="touchUpInside" id="IEq-lR-tgv"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UHh-at-f4C">
                             <rect key="frame" x="227.33333333333337" y="0.0" width="63" height="44"/>
+                            <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="filled" title="1.5"/>
+                            <buttonConfiguration key="configuration" style="filled" title="1.5">
+                                <fontDescription key="titleFontDescription" type="boldSystem" pointSize="15"/>
+                            </buttonConfiguration>
                             <connections>
                                 <action selector="onePoint5ButtonTapped:" destination="-1" eventType="touchUpInside" id="R9O-h7-dCc"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x6S-fX-xJd">
                             <rect key="frame" x="303.33333333333331" y="0.0" width="62.666666666666686" height="44"/>
+                            <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="filled" title="2"/>
+                            <buttonConfiguration key="configuration" style="filled" title="2">
+                                <fontDescription key="titleFontDescription" type="boldSystem" pointSize="15"/>
+                            </buttonConfiguration>
                             <connections>
                                 <action selector="twoButtonTapped:" destination="-1" eventType="touchUpInside" id="5yY-M0-vrR"/>
                             </connections>
@@ -83,6 +99,7 @@
                 </stackView>
                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="19.5" minValue="1" maxValue="37" translatesAutoresizingMaskIntoConstraints="NO" id="NMb-se-PAW">
                     <rect key="frame" x="10" y="179" width="370" height="31"/>
+                    <color key="tintColor" systemColor="linkColor"/>
                     <connections>
                         <action selector="onSliderChange:" destination="-1" eventType="valueChanged" id="7Ms-xV-UnK"/>
                     </connections>
@@ -117,9 +134,14 @@
             <point key="canvasLocation" x="96.92307692307692" y="-187.32227488151659"/>
         </view>
         <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" id="wt7-5G-yvr">
-            <rect key="frame" x="0.0" y="0.0" width="118" height="30"/>
+            <rect key="frame" x="0.0" y="-1" width="118" height="30"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <point key="canvasLocation" x="72" y="-333"/>
         </slider>
     </objects>
+    <resources>
+        <systemColor name="linkColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
 </document>

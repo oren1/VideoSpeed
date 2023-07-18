@@ -31,14 +31,23 @@ class SpeedSectionVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        oneButton.layer.borderColor = UIColor.white.cgColor
-//        oneButton.layer.borderWidth = 1
-//        oneButton.layer.cornerRadius = 8
-//        oneButton.tintColor = .clear
-        
-//        setSelectedButton(button: oneButton)
+
+        setBorderAndRadius(button: point25Button)
+        setBorderAndRadius(button: point5Button)
+        setBorderAndRadius(button: oneButton)
+        setBorderAndRadius(button: onePoint5Button)
+        setBorderAndRadius(button: twoButton)
+
+        setSelectedButton(button: oneButton)
     }
 
+    func setBorderAndRadius(button: UIButton) {
+        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderWidth = 1
+        button.layer.cornerRadius = 8
+        button.tintColor = .clear
+    }
+    
     @IBAction func point25ButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 0.25
@@ -61,8 +70,9 @@ class SpeedSectionVC: UIViewController {
     }
 
     func setSelectedButton(button: UIButton) {
-        currentSelectedButton?.tintColor = UIColor.link
-        button.tintColor = .white
+        currentSelectedButton?.tintColor = UIColor.black
+//        button.tintColor = UIColor(red: 0.133, green: 0.325, blue: 0.557, alpha: 1)
+        button.tintColor = .link
         currentSelectedButton = button
     }
     
