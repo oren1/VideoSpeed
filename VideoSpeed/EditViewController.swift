@@ -19,9 +19,18 @@ class EditViewController: UIViewController {
     var fileType: String = "mov"
     var assetUrl: URL!
     
+    
+    @IBOutlet weak var speedButton: UIButton!
+    @IBOutlet weak var fpsButton: UIButton!
+    @IBOutlet weak var fileTypeButton: UIButton!
+    
     var speedLabel: UILabel!
     var fpsLabel: UILabel!
     var fileTypeLabel: UILabel!
+    
+    var speedSectionVC: SpeedSectionVC!
+    var fpsSectionVC: FPSSectionVC!
+    var fileTypeSectionVC: FileTypeSectionVC!
     
     @IBOutlet weak var dashboardContainerView: UIView!
     
@@ -29,26 +38,12 @@ class EditViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let exportButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(exportVideo))
+        setNavigationItems()
         
-
-        speedLabel = createRightItemLabel()
-        speedLabel.text = "\(speed)x"
-
-        fpsLabel = createRightItemLabel()
-        fpsLabel.text = "\(fps):FPS"
-
-        fileTypeLabel = createRightItemLabel()
-        fileTypeLabel.text = fileType
+        addSpeedSection()
+        addFPSSection()
+        addFiletypeSection()
         
-        let speedItem = UIBarButtonItem(customView: speedLabel)
-        let fpsItem = UIBarButtonItem(customView: fpsLabel)
-        let fileTypeItem = UIBarButtonItem(customView: fileTypeLabel)
-
-        
-        navigationItem.rightBarButtonItems = [exportButton, fileTypeItem, fpsItem, speedItem]
-        
-        showSpeedSection()
         asset = AVAsset(url: assetUrl)
 
         composition = AVMutableComposition(urlAssetInitializationOptions: nil)
@@ -127,31 +122,37 @@ class EditViewController: UIViewController {
             
         }
         
-
-        
-        
+       
+                
     }
 
+    func setNavigationItems() {
+        let exportButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(exportVideo))
+        
+        speedLabel = createRightItemLabel()
+        speedLabel.text = "\(speed)x"
+
+        fpsLabel = createRightItemLabel()
+        fpsLabel.text = "\(fps):FPS"
+
+        fileTypeLabel = createRightItemLabel()
+        fileTypeLabel.text = fileType
+        
+        let speedItem = UIBarButtonItem(customView: speedLabel)
+        let fpsItem = UIBarButtonItem(customView: fpsLabel)
+        let fileTypeItem = UIBarButtonItem(customView: fileTypeLabel)
+
+        
+        navigationItem.rightBarButtonItems = [exportButton, fileTypeItem, fpsItem, speedItem]
+    }
+    
     func createRightItemLabel() -> UILabel {
-        var label = UILabel()
+        let label = UILabel()
         label.backgroundColor = .clear
         label.textColor = .white
         label.font = UIFont.boldSystemFont(ofSize: 16.0)
         label.layer.cornerRadius = 8
         label.layer.masksToBounds = false
-        
-        let labelContainer =  UIView()
-        labelContainer.addSubview(label)
-        labelContainer.backgroundColor = .green
-        
-        label.translatesAutoresizingMaskIntoConstraints = false
-        let constraints = [
-            label.topAnchor.constraint(equalTo: labelContainer.topAnchor),
-            label.leftAnchor.constraint(equalTo: labelContainer.leftAnchor),
-            label.rightAnchor.constraint(equalTo: labelContainer.rightAnchor),
-            label.bottomAnchor.constraint(equalTo: labelContainer.topAnchor),
-        ]
-        NSLayoutConstraint.activate(constraints)
         
         return label
     }
@@ -210,25 +211,77 @@ class EditViewController: UIViewController {
       return (assetOrientation, isPortrait)
     }
     
+    // MARK: - Actions
+
+    @IBAction func speedButtonTapped(_ sender: Any) {
+        showSpeedSection()
+    }
     
-    func showSpeedSection() {
-        let speedSectionVC = SpeedSectionVC()
+    @IBAction func fpsButtonTapped(_ sender: Any) {
+        showFPSSection()
+    }
+    
+    @IBAction func fileTypeButtonTapped(_ sender: Any) {
+        showFileTypeSection()
+    }
+    
+    // MARK: - Sections Logic
+    func addSpeedSection() {
+        speedSectionVC = SpeedSectionVC()
         speedSectionVC.speedDidChange = { [weak self] (speed: Float) -> () in
             self?.speedLabel.text = "\(speed)x"
         }
-        addChild(speedSectionVC)
-        dashboardContainerView.addSubview(speedSectionVC.view)
+        
+        addSection(sectionVC: speedSectionVC)
+    }
+    
+    func addFPSSection() {
+        fpsSectionVC = FPSSectionVC()
+        fpsSectionVC.fpsDidChange = { [weak self] (fps: Int32) in
+            self?.fps = fps
+            self?.fpsLabel.text = "\(fps)-fps"
+        }
+        addSection(sectionVC: fpsSectionVC)
+    }
+    
+    func addFiletypeSection() {
+        fileTypeSectionVC = FileTypeSectionVC()
+        addSection(sectionVC: fileTypeSectionVC)
+    }
+    
+    func addSection(sectionVC: SectionViewController) {
+        addChild(sectionVC)
+        dashboardContainerView.addSubview(sectionVC.view)
         speedSectionVC.view.translatesAutoresizingMaskIntoConstraints = false
 
         let constraints = [
-            speedSectionVC.view.topAnchor.constraint(equalTo: dashboardContainerView.topAnchor),
-            speedSectionVC.view.leftAnchor.constraint(equalTo: dashboardContainerView.leftAnchor),
-            speedSectionVC.view.rightAnchor.constraint(equalTo: dashboardContainerView.rightAnchor),
-            speedSectionVC.view.bottomAnchor.constraint(equalTo: dashboardContainerView.bottomAnchor),
+            sectionVC.view.topAnchor.constraint(equalTo: dashboardContainerView.topAnchor),
+            sectionVC.view.leftAnchor.constraint(equalTo: dashboardContainerView.leftAnchor),
+            sectionVC.view.rightAnchor.constraint(equalTo: dashboardContainerView.rightAnchor),
+            sectionVC.view.bottomAnchor.constraint(equalTo: dashboardContainerView.bottomAnchor),
         ]
         NSLayoutConstraint.activate(constraints)
         
-        speedSectionVC.didMove(toParent: self)
+        sectionVC.didMove(toParent: self)
+    }
+    
+    
+    func showSpeedSection() {
+        speedSectionVC.view.isHidden = false
+        fpsSectionVC.view.isHidden = true
+        fileTypeSectionVC.view.isHidden = true
+    }
+
+    func showFPSSection() {
+        speedSectionVC.view.isHidden = true
+        fpsSectionVC.view.isHidden = false
+        fileTypeSectionVC.view.isHidden = true
+    }
+    
+    func showFileTypeSection() {
+        speedSectionVC.view.isHidden = true
+        fpsSectionVC.view.isHidden = true
+        fileTypeSectionVC.view.isHidden = false
     }
 }
 

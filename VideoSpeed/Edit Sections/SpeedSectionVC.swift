@@ -8,14 +8,13 @@
 import UIKit
 typealias SpeedClosure = (Float) -> Void
 
-class SpeedSectionVC: UIViewController {
+class SpeedSectionVC: SectionViewController {
 
     @IBOutlet weak var point25Button: UIButton!
     @IBOutlet weak var point5Button: UIButton!
     @IBOutlet weak var oneButton: UIButton!
     @IBOutlet weak var onePoint5Button: UIButton!
     @IBOutlet weak var twoButton: UIButton!
-    var currentSelectedButton: UIButton!
 
     
     @IBOutlet weak var slider: UISlider!
@@ -41,12 +40,6 @@ class SpeedSectionVC: UIViewController {
         setSelectedButton(button: oneButton)
     }
 
-    func setBorderAndRadius(button: UIButton) {
-        button.layer.borderColor = UIColor.white.cgColor
-        button.layer.borderWidth = 1
-        button.layer.cornerRadius = 8
-        button.tintColor = .clear
-    }
     
     @IBAction func point25ButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
@@ -69,12 +62,6 @@ class SpeedSectionVC: UIViewController {
         speed = 2
     }
 
-    func setSelectedButton(button: UIButton) {
-        currentSelectedButton?.tintColor = UIColor.black
-//        button.tintColor = UIColor(red: 0.133, green: 0.325, blue: 0.557, alpha: 1)
-        button.tintColor = .link
-        currentSelectedButton = button
-    }
     
     @IBAction func onSliderChange(_ sender: Any) {
         currentSelectedButton?.tintColor = .link

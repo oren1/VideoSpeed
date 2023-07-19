@@ -117,28 +117,68 @@
                                     <constraint firstAttribute="height" constant="236" id="Cck-Pu-VSS"/>
                                 </constraints>
                             </view>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bordered" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Gls-kD-l0A">
-                                <rect key="frame" x="4" y="623" width="367" height="41"/>
-                                <color key="backgroundColor" white="0.75" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8s1-qJ-uhG">
+                                <rect key="frame" x="0.0" y="623" width="375" height="44"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ztz-l5-IZK">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eqI-d8-Jd2">
+                                                <rect key="frame" x="0.0" y="0.0" width="125" height="44"/>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="SPEED">
+                                                    <fontDescription key="titleFontDescription" type="boldSystem" pointSize="17"/>
+                                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </buttonConfiguration>
+                                                <connections>
+                                                    <action selector="speedButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="OSf-lq-syi"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VC7-rZ-XPL">
+                                                <rect key="frame" x="125" y="0.0" width="125" height="44"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="FPS">
+                                                    <fontDescription key="titleFontDescription" type="boldSystem" pointSize="17"/>
+                                                    <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </buttonConfiguration>
+                                                <connections>
+                                                    <action selector="fpsButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="TTY-ud-PIF"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AuA-Ao-ttX">
+                                                <rect key="frame" x="250" y="0.0" width="125" height="44"/>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="FILE TYPE">
+                                                    <fontDescription key="titleFontDescription" type="boldSystem" pointSize="17"/>
+                                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </buttonConfiguration>
+                                                <connections>
+                                                    <action selector="fileTypeButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="hyC-uS-KJA"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </stackView>
+                                </subviews>
+                                <color key="backgroundColor" red="0.12984204290000001" green="0.12984612579999999" blue="0.12984395030000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="K2s-1l-ucG"/>
+                                    <constraint firstAttribute="bottom" secondItem="ztz-l5-IZK" secondAttribute="bottom" id="30x-dP-2Pm"/>
+                                    <constraint firstItem="ztz-l5-IZK" firstAttribute="top" secondItem="8s1-qJ-uhG" secondAttribute="top" id="Abt-zG-Zcl"/>
+                                    <constraint firstAttribute="height" constant="44" id="Bnc-yc-kom"/>
+                                    <constraint firstItem="ztz-l5-IZK" firstAttribute="leading" secondItem="8s1-qJ-uhG" secondAttribute="leading" id="M2D-5g-rNC"/>
+                                    <constraint firstAttribute="trailing" secondItem="ztz-l5-IZK" secondAttribute="trailing" id="f1d-TS-8AT"/>
                                 </constraints>
-                                <segments>
-                                    <segment title="SPEED"/>
-                                    <segment title="FPS"/>
-                                    <segment title="FILE TYPE"/>
-                                </segments>
-                                <color key="selectedSegmentTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </segmentedControl>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Gls-kD-l0A" secondAttribute="bottom" constant="4" id="BMR-Oc-efU"/>
-                            <constraint firstItem="Gls-kD-l0A" firstAttribute="top" secondItem="vbx-Bd-bL2" secondAttribute="bottom" id="Ee6-bH-UWd"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Gls-kD-l0A" secondAttribute="trailing" constant="4" id="IJ8-Kt-VK1"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="8s1-qJ-uhG" secondAttribute="trailing" id="5ce-vV-12x"/>
+                            <constraint firstItem="8s1-qJ-uhG" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Ccu-ts-Wox"/>
+                            <constraint firstItem="8s1-qJ-uhG" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="Fv9-sV-rHq"/>
+                            <constraint firstItem="8s1-qJ-uhG" firstAttribute="top" secondItem="vbx-Bd-bL2" secondAttribute="bottom" id="K2K-KE-1zj"/>
                             <constraint firstItem="vbx-Bd-bL2" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Qam-3V-IsN"/>
-                            <constraint firstItem="Gls-kD-l0A" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="4" id="fhd-8m-9Bi"/>
                             <constraint firstItem="vbx-Bd-bL2" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="mca-1D-Ubj"/>
                         </constraints>
                     </view>
@@ -146,6 +186,9 @@
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
                         <outlet property="dashboardContainerView" destination="vbx-Bd-bL2" id="A1m-Ij-OKL"/>
+                        <outlet property="fileTypeButton" destination="AuA-Ao-ttX" id="kPX-zh-1l8"/>
+                        <outlet property="fpsButton" destination="VC7-rZ-XPL" id="o51-4N-9Ag"/>
+                        <outlet property="speedButton" destination="eqI-d8-Jd2" id="SJt-QS-rMw"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
