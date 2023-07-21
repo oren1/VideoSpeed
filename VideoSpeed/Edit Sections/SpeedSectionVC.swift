@@ -21,10 +21,11 @@ class SpeedSectionVC: SectionViewController {
     @IBOutlet weak var speedLabel: UILabel!
     
     var speedDidChange: SpeedClosure?
+    var sliderValueChange: SpeedClosure?
+    
     var speed: Float = 1 {
         didSet {
             speedLabel?.text = "\(speed)x"
-            speedDidChange?(speed)
         }
     }
     
@@ -44,22 +45,31 @@ class SpeedSectionVC: SectionViewController {
     @IBAction func point25ButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 0.25
+        speedDidChange?(speed)
+
     }
     @IBAction func point5ButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 0.5
+        speedDidChange?(speed)
+
     }
     @IBAction func oneButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 1
+        speedDidChange?(speed)
+
     }
     @IBAction func onePoint5ButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 1.5
+        speedDidChange?(speed)
+
     }
     @IBAction func twoButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 2
+        speedDidChange?(speed)
     }
 
     
@@ -67,8 +77,15 @@ class SpeedSectionVC: SectionViewController {
         currentSelectedButton?.tintColor = .link
         let slider = sender as! UISlider
         speed = convertSliderValue(value: slider.value)
+        sliderValueChange?(speed)
+
     }
 
+    @IBAction func sliderReleased(_ sender: Any) {
+        let slider = sender as! UISlider
+        speed = convertSliderValue(value: slider.value)
+        speedDidChange?(speed)
+    }
     
     func convertSliderValue(value: Float) -> Float {
         

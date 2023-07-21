@@ -102,6 +102,7 @@
                     <color key="tintColor" systemColor="linkColor"/>
                     <connections>
                         <action selector="onSliderChange:" destination="-1" eventType="valueChanged" id="7Ms-xV-UnK"/>
+                        <action selector="sliderReleased:" destination="-1" eventType="touchUpInside" id="Gdr-X3-7aF"/>
                     </connections>
                 </slider>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1x" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CKR-ZF-I01">

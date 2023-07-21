@@ -38,13 +38,13 @@
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="a7b-Oj-lsP">
                                     <size key="itemSize" width="128" height="128"/>
-                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="headerReferenceSize" width="50" height="50"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoCell" id="hmB-Rj-4Fg" customClass="PhotoCell" customModule="VideoSpeed" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                        <rect key="frame" x="0.0" y="50" width="128" height="128"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="rXg-Ac-mO4">
                                             <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
@@ -80,6 +80,34 @@
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
+                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="PhotosHeader" id="4Eg-s7-1Q4" customClass="PhotosHeader" customModule="VideoSpeed" customModuleProvider="target">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="bottom" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="phU-15-usr">
+                                            <rect key="frame" x="18" y="8.5" width="72" height="33.5"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
+                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iZ6-XZ-Nr5">
+                                            <rect key="frame" x="98" y="13.5" width="48" height="24"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="phU-15-usr" firstAttribute="leading" secondItem="4Eg-s7-1Q4" secondAttribute="leadingMargin" constant="10" id="7ui-Je-bPa"/>
+                                        <constraint firstItem="iZ6-XZ-Nr5" firstAttribute="leading" secondItem="phU-15-usr" secondAttribute="trailing" constant="8" id="FPE-ed-L8H"/>
+                                        <constraint firstItem="iZ6-XZ-Nr5" firstAttribute="centerY" secondItem="phU-15-usr" secondAttribute="centerY" id="oNx-SW-kkc"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="phU-15-usr" secondAttribute="bottom" id="wQ5-2f-9qD"/>
+                                    </constraints>
+                                    <connections>
+                                        <outlet property="label" destination="phU-15-usr" id="SjT-it-drg"/>
+                                        <outlet property="triangleLabel" destination="iZ6-XZ-Nr5" id="sCt-XG-itb"/>
+                                    </connections>
+                                </collectionReusableView>
                             </collectionView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="KhC-lI-i5Y"/>
@@ -100,7 +128,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kQd-iq-49N" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-606.15384615384619" y="3.5545023696682461"/>
+            <point key="canvasLocation" x="-607.20000000000005" y="3.1484257871064472"/>
         </scene>
         <!--Edit View Controller-->
         <scene sceneID="tne-QT-ifu">
@@ -111,74 +139,37 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vbx-Bd-bL2">
-                                <rect key="frame" x="0.0" y="387" width="375" height="236"/>
+                                <rect key="frame" x="0.0" y="377" width="375" height="236"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="236" id="Cck-Pu-VSS"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8s1-qJ-uhG">
-                                <rect key="frame" x="0.0" y="623" width="375" height="44"/>
-                                <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ztz-l5-IZK">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
-                                        <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eqI-d8-Jd2">
-                                                <rect key="frame" x="0.0" y="0.0" width="125" height="44"/>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="SPEED">
-                                                    <fontDescription key="titleFontDescription" type="boldSystem" pointSize="17"/>
-                                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                </buttonConfiguration>
-                                                <connections>
-                                                    <action selector="speedButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="OSf-lq-syi"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VC7-rZ-XPL">
-                                                <rect key="frame" x="125" y="0.0" width="125" height="44"/>
-                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="FPS">
-                                                    <fontDescription key="titleFontDescription" type="boldSystem" pointSize="17"/>
-                                                    <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                </buttonConfiguration>
-                                                <connections>
-                                                    <action selector="fpsButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="TTY-ud-PIF"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AuA-Ao-ttX">
-                                                <rect key="frame" x="250" y="0.0" width="125" height="44"/>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="FILE TYPE">
-                                                    <fontDescription key="titleFontDescription" type="boldSystem" pointSize="17"/>
-                                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                </buttonConfiguration>
-                                                <connections>
-                                                    <action selector="fileTypeButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="hyC-uS-KJA"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </stackView>
-                                </subviews>
-                                <color key="backgroundColor" red="0.12984204290000001" green="0.12984612579999999" blue="0.12984395030000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Jtw-yn-DVK">
+                                <rect key="frame" x="0.0" y="613" width="375" height="55"/>
+                                <color key="backgroundColor" red="0.022874161037037041" green="0.023331644257777784" blue="0.023331644257777784" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="ztz-l5-IZK" secondAttribute="bottom" id="30x-dP-2Pm"/>
-                                    <constraint firstItem="ztz-l5-IZK" firstAttribute="top" secondItem="8s1-qJ-uhG" secondAttribute="top" id="Abt-zG-Zcl"/>
-                                    <constraint firstAttribute="height" constant="44" id="Bnc-yc-kom"/>
-                                    <constraint firstItem="ztz-l5-IZK" firstAttribute="leading" secondItem="8s1-qJ-uhG" secondAttribute="leading" id="M2D-5g-rNC"/>
-                                    <constraint firstAttribute="trailing" secondItem="ztz-l5-IZK" secondAttribute="trailing" id="f1d-TS-8AT"/>
+                                    <constraint firstAttribute="height" constant="54" id="g9e-Nm-ZrM"/>
                                 </constraints>
-                            </view>
+                                <segments>
+                                    <segment title="SPEED"/>
+                                    <segment title="FPS"/>
+                                    <segment title="FILE TYPE"/>
+                                </segments>
+                                <color key="selectedSegmentTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <connections>
+                                    <action selector="segmentedValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="yw5-uY-u7y"/>
+                                </connections>
+                            </segmentedControl>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="8s1-qJ-uhG" secondAttribute="trailing" id="5ce-vV-12x"/>
-                            <constraint firstItem="8s1-qJ-uhG" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Ccu-ts-Wox"/>
-                            <constraint firstItem="8s1-qJ-uhG" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="Fv9-sV-rHq"/>
-                            <constraint firstItem="8s1-qJ-uhG" firstAttribute="top" secondItem="vbx-Bd-bL2" secondAttribute="bottom" id="K2K-KE-1zj"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Jtw-yn-DVK" secondAttribute="bottom" id="Hue-kl-D1X"/>
                             <constraint firstItem="vbx-Bd-bL2" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Qam-3V-IsN"/>
+                            <constraint firstItem="Jtw-yn-DVK" firstAttribute="top" secondItem="vbx-Bd-bL2" secondAttribute="bottom" id="Rga-Rp-j40"/>
+                            <constraint firstItem="Jtw-yn-DVK" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="TKF-S9-M6c"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Jtw-yn-DVK" secondAttribute="trailing" id="dx7-FU-WSO"/>
                             <constraint firstItem="vbx-Bd-bL2" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="mca-1D-Ubj"/>
                         </constraints>
                     </view>
@@ -186,9 +177,7 @@
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
                         <outlet property="dashboardContainerView" destination="vbx-Bd-bL2" id="A1m-Ij-OKL"/>
-                        <outlet property="fileTypeButton" destination="AuA-Ao-ttX" id="kPX-zh-1l8"/>
-                        <outlet property="fpsButton" destination="VC7-rZ-XPL" id="o51-4N-9Ag"/>
-                        <outlet property="speedButton" destination="eqI-d8-Jd2" id="SJt-QS-rMw"/>
+                        <outlet property="segmentedControl" destination="Jtw-yn-DVK" id="ogc-x5-GbQ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

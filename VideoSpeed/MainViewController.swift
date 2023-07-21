@@ -12,7 +12,7 @@ class MainViewController: UIViewController {
 
     // MARK: - Properties
     private let reuseIdentifier = "PhotoCell"
-    private let sectionInsets = UIEdgeInsets(top: 20, left: 10, bottom: 20, right: 10)
+    private let sectionInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     var videos: PHFetchResult<PHAsset>?
     private let itemsPerRow: CGFloat = 3
     
@@ -31,7 +31,7 @@ class MainViewController: UIViewController {
           DispatchQueue.main.async { [weak self] in
             guard let self = self else {return}
             self.collectionView.reloadData()
-              self.collectionView.scrollToItem(at: IndexPath(row: self.videos!.count - 1, section: 0), at: .top, animated: false)
+//              self.collectionView.scrollToItem(at: IndexPath(row: self.videos!.count - 1, section: 0), at: .top, animated: false)
           }
         }
         
@@ -60,7 +60,7 @@ class MainViewController: UIViewController {
       allPhotosOptions.sortDescriptors = [
         NSSortDescriptor(
           key: "creationDate",
-          ascending: true)
+          ascending: false)
       ]
      allPhotosOptions.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.video.rawValue)
 
@@ -104,6 +104,37 @@ extension MainViewController: UICollectionViewDataSource {
 
     return cell
   }
+    
+    
+    func collectionView(
+      _ collectionView: UICollectionView,
+      viewForSupplementaryElementOfKind kind: String,
+      at indexPath: IndexPath
+    ) -> UICollectionReusableView {
+      switch kind {
+      // 1
+      case UICollectionView.elementKindSectionHeader:
+        // 2
+        let headerView = collectionView.dequeueReusableSupplementaryView(
+          ofKind: kind,
+          withReuseIdentifier: "\(PhotosHeader.self)",
+          for: indexPath)
+
+        // 3
+        guard let typedHeaderView = headerView as? PhotosHeader
+        else { return headerView }
+
+        // 4
+          let triangle: String = "\u{25BC}"
+        typedHeaderView.label.text = "Recents"
+          typedHeaderView.triangleLabel.text = "\(triangle)"
+        return typedHeaderView
+      default:
+        // 5
+        assert(false, "Invalid element type")
+      }
+    }
+
 }
 
 extension MainViewController: UICollectionViewDelegate {
