@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6B6700942A6A6C13006F2980 /* PhotosHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6700932A6A6C13006F2980 /* PhotosHeader.swift */; };
+		6B6700972A6ABBF6006F2980 /* IAPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6700962A6ABBF6006F2980 /* IAPManager.swift */; };
 		6BAC9BBF2A666EBE0071A41B /* TopIndicatorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */; };
 		6BAC9BC12A666EEA0071A41B /* TopIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAC9BC02A666EEA0071A41B /* TopIndicatorView.swift */; };
 		6BCAF7EC2A63C5100039BE15 /* SpeedSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCAF7EA2A63C5100039BE15 /* SpeedSectionVC.swift */; };
@@ -32,6 +33,7 @@
 
 /* Begin PBXFileReference section */
 		6B6700932A6A6C13006F2980 /* PhotosHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosHeader.swift; sourceTree = "<group>"; };
+		6B6700962A6ABBF6006F2980 /* IAPManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPManager.swift; sourceTree = "<group>"; };
 		6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TopIndicatorView.xib; sourceTree = "<group>"; };
 		6BAC9BC02A666EEA0071A41B /* TopIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopIndicatorView.swift; sourceTree = "<group>"; };
 		6BCAF7EA2A63C5100039BE15 /* SpeedSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedSectionVC.swift; sourceTree = "<group>"; };
@@ -67,6 +69,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6B6700952A6ABBCE006F2980 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				6B6700962A6ABBF6006F2980 /* IAPManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
 		6BAC9BBD2A666E500071A41B /* CustomViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -129,6 +139,7 @@
 				6BE9A2F42A5FC80D00FF8CB0 /* Assets.xcassets */,
 				6BE9A2F62A5FC80D00FF8CB0 /* LaunchScreen.storyboard */,
 				6BE9A2F92A5FC80D00FF8CB0 /* Info.plist */,
+				6B6700952A6ABBCE006F2980 /* Managers */,
 				6BAC9BBD2A666E500071A41B /* CustomViews */,
 				6BCAF7E52A63B6800039BE15 /* Utils */,
 				6BCAF7E42A63B6360039BE15 /* Edit Sections */,
@@ -212,6 +223,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B6700972A6ABBF6006F2980 /* IAPManager.swift in Sources */,
 				6BE9A30A2A618B2500FF8CB0 /* UIImageView+Extension.swift in Sources */,
 				6BE9A2F02A5FC80C00FF8CB0 /* EditViewController.swift in Sources */,
 				6BE9A3062A61811400FF8CB0 /* PhotoCell.swift in Sources */,
