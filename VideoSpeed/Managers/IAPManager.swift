@@ -22,10 +22,9 @@ extension Notification.Name {
 
 class SpidProducts {
     
-    static let everyMonthSubscription = "monthly_subscription"
-    static let everyYearSubscription = "yearly_subscription"
+    static let proVersionPurchase = "com.spid.app.pro"
 
-    private static let productIdentifiers: Set<ProductIdentifier> = [SpidProducts.everyMonthSubscription, SpidProducts.everyYearSubscription]
+    private static let productIdentifiers: Set<ProductIdentifier> = [SpidProducts.proVersionPurchase]
     
     static let store = IAPManager(productIds: productIdentifiers)
 
@@ -85,52 +84,6 @@ class IAPManager: NSObject {
       return SKPaymentQueue.canMakePayments()
     }
     
-    
-    func updateIAPStatusForAppleReceit(json: [String: Any], userDefaults: UserDefaults) {
-        
-        guard let latestReceiptInfo = json["latest_receipt_info"] as? [[String: Any]] else {
-            // If the 'latest_receipt_info' array is missing then there is no subscriptions purchased
-            purchasedProductIdentifiers.removeAll()
-            userDefaults.removeObject(forKey: SpidProducts.everyMonthSubscription)
-            userDefaults.removeObject(forKey: SpidProducts.everyYearSubscription)
-            return print("Error: No 'latest_receipt_info' array, no subscription purchased")
-        }
-        
-        
-        // 1.Loop trough the product identifiers array
-        // 2.From the "latest_receipt_info" array try to find a purchase object with the current 'productId'
-        // that has not expired yet (expiration date is in the future)
-        // 3.If there is at least one valid purchase, then the purchase is valid and we don't need
-        // to change it's status in UserDefaults, the status remains 'true'
-       
-        // 1.
-        for productId in productIdentifiers {
-
-            // 2.
-            let productValidPurchases = latestReceiptInfo.filter({ (purchase) -> Bool in
-                guard let product_id = purchase["product_id"] as? String,
-                      let purchaseExpirationString = purchase["expires_date_ms"] as? String else { return false  }
-
-                let now = Date().timeIntervalSince1970
-                let purchaseExpirationDate = Double(purchaseExpirationString)! / 1000
-                
-                
-                return (productId == product_id) && (purchaseExpirationDate > now)
-            })
-            
-            
-            if productValidPurchases.count > 0 {
-                purchasedProductIdentifiers.insert(productId)
-                userDefaults.set(true, forKey: productId)
-            }
-            else {
-                purchasedProductIdentifiers.remove(productId)
-                userDefaults.set(false, forKey: productId)
-            }
-            
-        }
-    }
-        
     
     enum IAPManagerError: Error {
         case noProductIDsFound

@@ -32,6 +32,8 @@ class MainViewController: UIViewController {
             guard let self = self else {return}
             self.collectionView.reloadData()
 //              self.collectionView.scrollToItem(at: IndexPath(row: self.videos!.count - 1, section: 0), at: .top, animated: false)
+              
+              
           }
         }
         
@@ -67,8 +69,40 @@ class MainViewController: UIViewController {
       videos = PHAsset.fetchAssets(with: allPhotosOptions)
     
     }
+    
+    //MARK: - Actions
+    
+    @IBAction func cameraButtonTapped(_ sender: Any) {
+        VideoHelper.startMediaBrowser(delegate: self, sourceType: .camera)
+    }
 }
 
+// MARK: - UIImagePickerControllerDelegate
+extension MainViewController: UIImagePickerControllerDelegate {
+    func imagePickerController(
+      _ picker: UIImagePickerController,
+      didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
+    ) {
+      dismiss(animated: true, completion: nil)
+      
+      guard
+        let mediaType = info[UIImagePickerController.InfoKey.mediaType] as? String,
+        mediaType == UTType.movie.identifier,
+        let url = info[UIImagePickerController.InfoKey.mediaURL] as? URL,
+        UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(url.path)
+        else { return }
+      
+        let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
+            vc.assetUrl = url
+            self.navigationController?.pushViewController(vc, animated: true)
+                    
+    }
+
+}
+
+// MARK: - UINavigationControllerDelegate
+extension MainViewController: UINavigationControllerDelegate {
+}
 
 // MARK: - UICollectionViewDataSource
 extension MainViewController: UICollectionViewDataSource {
@@ -161,7 +195,6 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
     let paddingSpace = sectionInsets.left * (itemsPerRow + 1)
     let availableWidth = view.frame.width - paddingSpace
     let widthPerItem = availableWidth / itemsPerRow
-    print("widthPerItem \(widthPerItem)")
     return CGSize(width: widthPerItem, height: widthPerItem)
   }
 

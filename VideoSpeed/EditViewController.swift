@@ -20,8 +20,14 @@ class EditViewController: UIViewController {
     var assetUrl: URL!
     var compositionOriginalDuration: CMTime!
     var compositionVideoTrack: AVMutableCompositionTrack!
-    
+    var exportSession: AVAssetExportSession?
+    var timer: Timer?
+
     @IBOutlet weak var segmentedControl: UISegmentedControl!
+    lazy var progressIndicatorView: ProgressIndicatorView = {
+        progressIndicatorView = ProgressIndicatorView()
+        return progressIndicatorView
+    }()
     
     // Bottom tabs
     @IBOutlet weak var speedButton: UIButton!
@@ -42,7 +48,6 @@ class EditViewController: UIViewController {
     
     @IBOutlet weak var dashboardContainerView: UIView!
     
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -76,7 +81,7 @@ class EditViewController: UIViewController {
             playerController = AVPlayerViewController()
             playerController.player = player
             addPlayerToTop()
-
+            
         }
 
        
@@ -116,7 +121,7 @@ class EditViewController: UIViewController {
         let preferredTransform = try! await videoTrack.load(.preferredTransform)
         compositionVideoTrack.preferredTransform = preferredTransform
 
-        let videoInfo = orientation(from: preferredTransform)
+        let videoInfo = VideoHelper.orientation(from: preferredTransform)
 
         let videoSize: CGSize
         if videoInfo.isPortrait {
@@ -211,6 +216,9 @@ class EditViewController: UIViewController {
             return
         }
         
+        self.exportSession = nil
+        self.exportSession = exportSession
+        
         let fileExtension = fileType == .mov ? "mov" : "mp4"
         let videoName = UUID().uuidString
         let exportURL = URL(fileURLWithPath: NSTemporaryDirectory())
@@ -221,8 +229,11 @@ class EditViewController: UIViewController {
         exportSession.outputFileType = fileType
         exportSession.outputURL = exportURL
         
+        showProgreeView()
         exportSession.exportAsynchronously {
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+              guard let self = self else { return  }
+              self.removeProgressView()
               switch exportSession.status {
               case .completed:
                 print("completed export with url: \(exportURL)")
@@ -290,42 +301,8 @@ class EditViewController: UIViewController {
         return instruction
     }
     
-
-    private func orientation(from transform: CGAffineTransform) -> (orientation: UIImage.Orientation, isPortrait: Bool) {
-      var assetOrientation = UIImage.Orientation.up
-      var isPortrait = false
-      if transform.a == 0 && transform.b == 1.0 && transform.c == -1.0 && transform.d == 0 {
-        assetOrientation = .right
-        isPortrait = true
-      } else if transform.a == 0 && transform.b == -1.0 && transform.c == 1.0 && transform.d == 0 {
-        assetOrientation = .left
-        isPortrait = true
-      } else if transform.a == 1.0 && transform.b == 0 && transform.c == 0 && transform.d == 1.0 {
-        assetOrientation = .up
-      } else if transform.a == -1.0 && transform.b == 0 && transform.c == 0 && transform.d == -1.0 {
-        assetOrientation = .down
-      }
-      
-      return (assetOrientation, isPortrait)
-    }
     
     // MARK: - Actions
-
-    @IBAction func speedButtonTapped(_ sender: UIButton) {
-        setBottomButtonSelected(button: sender)
-        showSpeedSection()
-    }
-    
-    @IBAction func fpsButtonTapped(_ sender: UIButton) {
-        setBottomButtonSelected(button: sender)
-        showFPSSection()
-    }
-    
-    @IBAction func fileTypeButtonTapped(_ sender: UIButton) {
-        setBottomButtonSelected(button: sender)
-        showFileTypeSection()
-    }
-    
     @IBAction func segmentedValueChanged(_ segmentedControl: UISegmentedControl) {
         let currentIndex = segmentedControl.selectedSegmentIndex
         switch currentIndex {
@@ -341,10 +318,15 @@ class EditViewController: UIViewController {
     func addSpeedSection() {
         speedSectionVC = SpeedSectionVC()
         speedSectionVC.sliderValueChange = { [weak self] (speed: Float) -> () in
+
             self?.speedLabel.text = "\(speed)x"
         }
         speedSectionVC.speedDidChange = { [weak self] (speed: Float) -> () in
             guard let self = self else {return}
+            let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PurchaseViewController") as! PurchaseViewController
+            
+            self.present(purchaseViewController, animated: true)
+            
             self.speed = speed
             Task {
               await self.reloadComposition()
@@ -408,16 +390,37 @@ class EditViewController: UIViewController {
         fileTypeSectionVC.view.isHidden = false
     }
     
-    // MARK: - Custom Logic
-    func setBottomButtonSelected(button: UIButton) {
-//        selectedBottomButton?.tintColor = UIColor.black
-//        selectedBottomButton?.setTitleColor(.white, for: .normal)
-//        button.backgroundColor = .white
-        button.titleLabel?.textColor = .black
-//        button.titleLabel?.backgroundColor = .clear
-//        button.titleLabel?.backgroundColor = .green
-        button.backgroundColor = .white
-        selectedBottomButton = button
+    func showProgreeView() {
+        view.addSubview(progressIndicatorView)
+        progressIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+
+        let constraints = [
+            progressIndicatorView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            progressIndicatorView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+            progressIndicatorView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
+            progressIndicatorView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+        ]
+        NSLayoutConstraint.activate(constraints)
+        progressIndicatorView.progressView.progress = 0
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
+            guard let progress = self?.exportSession?.progress else { return }
+            self?.progressIndicatorView.progressView.progress = progress
+        }
+
     }
+    
+    func removeProgressView() {
+        timer?.invalidate()
+        timer = nil
+        progressIndicatorView.removeFromSuperview()
+    }
+    
+    
+    // MARK: - Custom Logic
+    @objc func updateExportProgress() {
+        guard let progress = exportSession?.progress else { return }
+        progressIndicatorView.progressView.progress = progress
+    }
+
 }
 
