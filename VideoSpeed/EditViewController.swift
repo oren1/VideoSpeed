@@ -39,12 +39,13 @@ class EditViewController: UIViewController {
     // Navigation right item labels
     var speedLabel: UILabel!
     var fpsLabel: UILabel!
+    var soundOn: Bool! = true
     var fileTypeLabel: UILabel!
     
     // Sections
     var speedSectionVC: SpeedSectionVC!
     var fpsSectionVC: FPSSectionVC!
-    var fileTypeSectionVC: FileTypeSectionVC!
+    var moreSectionVC: MoreSectionVC!
     
     @IBOutlet weak var dashboardContainerView: UIView!
     
@@ -65,7 +66,7 @@ class EditViewController: UIViewController {
         
         asset = AVAsset(url: assetUrl)
         Task {
-            let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps)
+            let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps, soundOn: soundOn)
             self.composition = composition
             self.videoComposition = videoComposition
             
@@ -88,11 +89,20 @@ class EditViewController: UIViewController {
                 
     }
 
-    func createCompositionWith(speed: Float, fps: Int32) async -> (AVMutableComposition, AVMutableVideoComposition) {
+    func createCompositionWith(speed: Float, fps: Int32, soundOn: Bool) async -> (AVMutableComposition, AVMutableVideoComposition) {
         let composition = AVMutableComposition(urlAssetInitializationOptions: nil)
 
         let compositionVideoTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: 1)!
-        let compositionAudioTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: 2)!
+        if soundOn {
+            let compositionAudioTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: 2)!
+            let audioTrack = try! await asset.loadTracks(withMediaType: .audio)[0]
+            let audioDuration = try! await asset.load(.duration)
+            
+            try? compositionAudioTrack.insertTimeRange(CMTimeRange(start: .zero, duration: audioDuration),
+                                                                    of: audioTrack,
+                                                                    at: CMTime.invalid)
+
+        }
         
         
         let videoTrack = try! await asset.loadTracks(withMediaType: .video)[0]
@@ -103,13 +113,7 @@ class EditViewController: UIViewController {
                                                                 at: CMTime.invalid)
         
         
-        let audioTrack = try! await asset.loadTracks(withMediaType: .audio)[0]
-        let audioDuration = try! await asset.load(.duration)
-        
-        try? compositionAudioTrack.insertTimeRange(CMTimeRange(start: .zero, duration: audioDuration),
-                                                                of: audioTrack,
-                                                                at: CMTime.invalid)
-
+       
         
         compositionOriginalDuration = try! await composition.load(.duration)
         let newDuration = Int64(compositionOriginalDuration.seconds / Double(speed))
@@ -157,7 +161,7 @@ class EditViewController: UIViewController {
     
     
     func reloadComposition() async {
-        let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps)
+        let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps, soundOn: soundOn)
         self.composition = composition
         self.videoComposition = videoComposition
         let compositionCopy = self.composition.copy() as! AVComposition
@@ -317,21 +321,21 @@ class EditViewController: UIViewController {
     // MARK: - Sections Logic
     func addSpeedSection() {
         speedSectionVC = SpeedSectionVC()
+        
         speedSectionVC.sliderValueChange = { [weak self] (speed: Float) -> () in
-
             self?.speedLabel.text = "\(speed)x"
         }
+        
         speedSectionVC.speedDidChange = { [weak self] (speed: Float) -> () in
-            guard let self = self else {return}
-            let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PurchaseViewController") as! PurchaseViewController
-            
-            self.present(purchaseViewController, animated: true)
-            
-            self.speed = speed
+            self?.speed = speed
             Task {
-              await self.reloadComposition()
+              await self?.reloadComposition()
             }
-           
+        }
+        
+        speedSectionVC.userNeedsToPurchase = { [weak self] in
+            self?.showPurchaseViewController()
+            self?.speedLabel.text = "1x"
         }
         
         addSection(sectionVC: speedSectionVC)
@@ -339,7 +343,7 @@ class EditViewController: UIViewController {
     
     func addFPSSection() {
         fpsSectionVC = FPSSectionVC()
-        fpsSectionVC.fpsDidChange = { [weak self] (fps: Int32) in
+        fpsSectionVC.fpsDidChange = {[weak self] (fps: Int32) in
             self?.fps = fps
             self?.fpsLabel.text = "\(fps):fps"
         }
@@ -347,12 +351,18 @@ class EditViewController: UIViewController {
     }
     
     func addFiletypeSection() {
-        fileTypeSectionVC = FileTypeSectionVC()
-        fileTypeSectionVC.fileTypeDidChange = { [weak self] (fileType: AVFileType) in
+        moreSectionVC = MoreSectionVC()
+        moreSectionVC.fileTypeDidChange = {[weak self] (fileType: AVFileType) in
             self?.fileType = fileType
             self?.fileTypeLabel.text = fileType == .mov ? "MOV" : "MP4"
         }
-        addSection(sectionVC: fileTypeSectionVC)
+        moreSectionVC.soundStateChanged = {[weak self] (soundOn: Bool) in
+            self?.soundOn = soundOn
+            Task {
+              await self?.reloadComposition()
+            }
+        }
+        addSection(sectionVC: moreSectionVC)
     }
     
     func addSection(sectionVC: SectionViewController) {
@@ -375,19 +385,19 @@ class EditViewController: UIViewController {
     func showSpeedSection() {
         speedSectionVC.view.isHidden = false
         fpsSectionVC.view.isHidden = true
-        fileTypeSectionVC.view.isHidden = true
+        moreSectionVC.view.isHidden = true
     }
 
     func showFPSSection() {
         speedSectionVC.view.isHidden = true
         fpsSectionVC.view.isHidden = false
-        fileTypeSectionVC.view.isHidden = true
+        moreSectionVC.view.isHidden = true
     }
     
     func showFileTypeSection() {
         speedSectionVC.view.isHidden = true
         fpsSectionVC.view.isHidden = true
-        fileTypeSectionVC.view.isHidden = false
+        moreSectionVC.view.isHidden = false
     }
     
     func showProgreeView() {
@@ -422,5 +432,10 @@ class EditViewController: UIViewController {
         progressIndicatorView.progressView.progress = progress
     }
 
+    func showPurchaseViewController() {
+        let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PurchaseViewController") as! PurchaseViewController
+        
+        self.present(purchaseViewController, animated: true)
+    }
 }
 

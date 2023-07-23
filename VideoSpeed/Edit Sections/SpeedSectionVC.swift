@@ -7,6 +7,7 @@
 
 import UIKit
 typealias SpeedClosure = (Float) -> Void
+typealias VoidClousure = () -> ()
 
 class SpeedSectionVC: SectionViewController {
 
@@ -22,6 +23,7 @@ class SpeedSectionVC: SectionViewController {
     
     var speedDidChange: SpeedClosure?
     var sliderValueChange: SpeedClosure?
+    var userNeedsToPurchase: VoidClousure?
     
     var speed: Float = 1 {
         didSet {
@@ -82,6 +84,18 @@ class SpeedSectionVC: SectionViewController {
     }
 
     @IBAction func sliderReleased(_ sender: Any) {
+        guard SpidProducts.store.isProductPurchased(SpidProducts.proVersion) else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                guard let self = self else {return}
+                self.speed = 1
+                self.slider.value = 19
+                self.setButtonUnselected(button: self.currentSelectedButton)
+                self.setSelectedButton(button: self.oneButton)
+                self.userNeedsToPurchase?()
+            }
+            return
+        }
+        
         let slider = sender as! UISlider
         speed = convertSliderValue(value: slider.value)
         speedDidChange?(speed)

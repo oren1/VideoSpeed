@@ -29,4 +29,7 @@ class SectionViewController: UIViewController {
         currentSelectedButton = button
     }
 
+    func setButtonUnselected(button: UIButton) {
+        button.tintColor = .black
+    }
 }
