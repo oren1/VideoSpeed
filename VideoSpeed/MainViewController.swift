@@ -20,9 +20,10 @@ class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        navigationItem.title = "SPID"
         collectionView.delegate = self
         collectionView.dataSource = self
+        
         PHPhotoLibrary.shared().register(self)
 
         getPermissionIfNecessary { granted in
@@ -31,13 +32,12 @@ class MainViewController: UIViewController {
           DispatchQueue.main.async { [weak self] in
             guard let self = self else {return}
             self.collectionView.reloadData()
-//              self.collectionView.scrollToItem(at: IndexPath(row: self.videos!.count - 1, section: 0), at: .top, animated: false)
               
               
           }
         }
         
-        navigationItem.title = "Spid"
+        AppStoreReviewManager.requestReviewIfAppropriate()
     }
     
     deinit {

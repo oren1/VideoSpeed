@@ -7,8 +7,11 @@
 
 import UIKit
 
+typealias VoidClousure = () -> ()
+
 class SectionViewController: UIViewController {
     var currentSelectedButton: UIButton!
+    var userNeedsToPurchase: VoidClousure?
 
     override func viewDidLoad() {
         super.viewDidLoad()

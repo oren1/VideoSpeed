@@ -50,6 +50,13 @@ class MoreSectionVC: SectionViewController {
     }
     
     @IBAction func mp4ButtonTapped(_ sender: UIButton) {
+        guard SpidProducts.store.isProductPurchased(SpidProducts.proVersion) else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                guard let self = self else {return}
+                self.userNeedsToPurchase?()
+            }
+            return
+        }
         fileType = .mp4
         fileTypeDidChange?(fileType)
         setSelectedButton(button: sender)
@@ -62,6 +69,13 @@ class MoreSectionVC: SectionViewController {
     }
     
     @IBAction func offButtonTapped(_ sender: Any) {
+        guard SpidProducts.store.isProductPurchased(SpidProducts.proVersion) else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                guard let self = self else {return}
+                self.userNeedsToPurchase?()
+            }
+            return
+        }
         soundOn = false
         setSoundSelectedButton(button: offButton)
         soundStateChanged?(soundOn)

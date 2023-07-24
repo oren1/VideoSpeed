@@ -7,7 +7,6 @@
 
 import UIKit
 typealias SpeedClosure = (Float) -> Void
-typealias VoidClousure = () -> ()
 
 class SpeedSectionVC: SectionViewController {
 
@@ -23,7 +22,6 @@ class SpeedSectionVC: SectionViewController {
     
     var speedDidChange: SpeedClosure?
     var sliderValueChange: SpeedClosure?
-    var userNeedsToPurchase: VoidClousure?
     
     var speed: Float = 1 {
         didSet {

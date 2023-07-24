@@ -48,7 +48,7 @@ class EditViewController: UIViewController {
     var moreSectionVC: MoreSectionVC!
     
     @IBOutlet weak var dashboardContainerView: UIView!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -85,8 +85,7 @@ class EditViewController: UIViewController {
             
         }
 
-       
-                
+        
     }
 
     func createCompositionWith(speed: Float, fps: Int32, soundOn: Bool) async -> (AVMutableComposition, AVMutableVideoComposition) {
@@ -261,7 +260,7 @@ class EditViewController: UIViewController {
       contextInfo info: AnyObject
     ) {
       let title = (error == nil) ? "Success" : "Error"
-      let message = (error == nil) ? "Video was saved" : "Video failed to save"
+      let message = (error == nil) ? "Saved To Photos" : "Video failed to save"
 
       let alert = UIAlertController(
         title: title,
@@ -328,6 +327,8 @@ class EditViewController: UIViewController {
         
         speedSectionVC.speedDidChange = { [weak self] (speed: Float) -> () in
             self?.speed = speed
+            self?.speedLabel.text = "\(speed)x"
+
             Task {
               await self?.reloadComposition()
             }
@@ -335,7 +336,11 @@ class EditViewController: UIViewController {
         
         speedSectionVC.userNeedsToPurchase = { [weak self] in
             self?.showPurchaseViewController()
+            self?.speed = 1
             self?.speedLabel.text = "1x"
+            Task {
+              await self?.reloadComposition()
+            }
         }
         
         addSection(sectionVC: speedSectionVC)
@@ -346,6 +351,12 @@ class EditViewController: UIViewController {
         fpsSectionVC.fpsDidChange = {[weak self] (fps: Int32) in
             self?.fps = fps
             self?.fpsLabel.text = "\(fps):fps"
+            Task {
+                await self?.reloadComposition()
+            }
+        }
+        fpsSectionVC.userNeedsToPurchase = {[weak self] in
+            self?.showPurchaseViewController()
         }
         addSection(sectionVC: fpsSectionVC)
     }
@@ -361,6 +372,9 @@ class EditViewController: UIViewController {
             Task {
               await self?.reloadComposition()
             }
+        }
+        moreSectionVC.userNeedsToPurchase = {[weak self] in
+            self?.showPurchaseViewController()
         }
         addSection(sectionVC: moreSectionVC)
     }
