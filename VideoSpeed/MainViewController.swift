@@ -165,8 +165,13 @@ extension MainViewController: UICollectionViewDataSource {
           typedHeaderView.triangleLabel.text = "\(triangle)"
         return typedHeaderView
       default:
-        // 5
-        assert(false, "Invalid element type")
+          let headerView = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: "\(PhotosHeader.self)",
+            for: indexPath)
+          headerView.frame.size.height = 0.0
+          return headerView
+//        assert(false, "Invalid element type")
       }
     }
 

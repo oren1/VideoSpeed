@@ -42,7 +42,7 @@ class PurchaseViewController: UIViewController {
             return
         }
         
-        guard let product = UserDataManager.main.productforIdentifier(productIndentifier: SpidProducts.proVersionConsumable) else {
+        guard let product = UserDataManager.main.productforIdentifier(productIndentifier: SpidProducts.proVersion) else {
             return
         }
         

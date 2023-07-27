@@ -206,6 +206,8 @@ extension IAPManager: SKPaymentTransactionObserver {
     if let error = transaction.error as NSError?,
        error.code != StoreError.paymentCancelled.rawValue,
       let localizedDescription = transaction.error?.localizedDescription {
+        print("error.code")
+        print(error.code)
         NotificationCenter.default.post(name: .IAPManagerPurchaseFailedNotification, object: localizedDescription)
       }
       else {
