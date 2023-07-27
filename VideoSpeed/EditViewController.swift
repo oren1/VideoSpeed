@@ -17,6 +17,7 @@ class EditViewController: UIViewController {
     var speed: Float = 1
     var fps: Int32 = 30
     var fileType: AVFileType = .mov
+    var soundOn: Bool! = true
     var assetUrl: URL!
     var compositionOriginalDuration: CMTime!
     var compositionVideoTrack: AVMutableCompositionTrack!
@@ -39,8 +40,9 @@ class EditViewController: UIViewController {
     // Navigation right item labels
     var speedLabel: UILabel!
     var fpsLabel: UILabel!
-    var soundOn: Bool! = true
     var fileTypeLabel: UILabel!
+    var soundImageView: UIImageView!
+    
     
     // Sections
     var speedSectionVC: SpeedSectionVC!
@@ -51,6 +53,8 @@ class EditViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+
         
         segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 17)], for: .selected)
         segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
@@ -187,12 +191,16 @@ class EditViewController: UIViewController {
         fileTypeLabel = createRightItemLabel()
         fileTypeLabel.text = fileType == .mov ? "MOV" : "MP4"
         
+        soundImageView = UIImageView(image: UIImage(systemName: "volume.2.fill"))
+        soundImageView.tintColor = .white
+        
         let speedItem = UIBarButtonItem(customView: speedLabel)
         let fpsItem = UIBarButtonItem(customView: fpsLabel)
         let fileTypeItem = UIBarButtonItem(customView: fileTypeLabel)
+        let soundItem = UIBarButtonItem(customView: soundImageView)
 
         
-        navigationItem.rightBarButtonItems = [exportButton, fileTypeItem, fpsItem, speedItem]
+        navigationItem.rightBarButtonItems = [exportButton, soundItem, fileTypeItem, fpsItem, speedItem]
     }
     
     func createRightItemLabel() -> UILabel {
@@ -369,6 +377,9 @@ class EditViewController: UIViewController {
         }
         moreSectionVC.soundStateChanged = {[weak self] (soundOn: Bool) in
             self?.soundOn = soundOn
+            let imageName = soundOn ? "volume.2.fill" : "volume.slash"
+            self?.soundImageView.image = UIImage(systemName: imageName)
+
             Task {
               await self?.reloadComposition()
             }
@@ -448,7 +459,13 @@ class EditViewController: UIViewController {
 
     func showPurchaseViewController() {
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PurchaseViewController") as! PurchaseViewController
-        
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            purchaseViewController.modalPresentationStyle = .fullScreen
+        }
+        else if UIDevice.current.userInterfaceIdiom == .pad{
+            purchaseViewController.modalPresentationStyle = .formSheet
+        }
+
         self.present(purchaseViewController, animated: true)
     }
 }

@@ -69,13 +69,15 @@ class MoreSectionVC: SectionViewController {
     }
     
     @IBAction func offButtonTapped(_ sender: Any) {
-        guard SpidProducts.store.isProductPurchased(SpidProducts.proVersion) else {
+        guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
                 guard let self = self else {return}
                 self.userNeedsToPurchase?()
             }
             return
         }
+        print("purchasedProduct \(purchasedProduct)")
+
         soundOn = false
         setSoundSelectedButton(button: offButton)
         soundStateChanged?(soundOn)

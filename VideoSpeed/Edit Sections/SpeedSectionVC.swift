@@ -82,7 +82,7 @@ class SpeedSectionVC: SectionViewController {
     }
 
     @IBAction func sliderReleased(_ sender: Any) {
-        guard SpidProducts.store.isProductPurchased(SpidProducts.proVersion) else {
+        guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
                 guard let self = self else {return}
                 self.speed = 1
@@ -94,6 +94,7 @@ class SpeedSectionVC: SectionViewController {
             return
         }
         
+        print("purchasedProduct \(purchasedProduct)")
         let slider = sender as! UISlider
         speed = convertSliderValue(value: slider.value)
         speedDidChange?(speed)

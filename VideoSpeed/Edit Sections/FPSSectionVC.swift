@@ -75,7 +75,7 @@ extension FPSSectionVC: UIPickerViewDelegate, UIPickerViewDataSource {
         return 38
     }
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        guard SpidProducts.store.isProductPurchased(SpidProducts.proVersion) else {
+        guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
             pickerView.selectRow(29, inComponent: 0, animated: true)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
                 guard let self = self else {return}
@@ -83,6 +83,8 @@ extension FPSSectionVC: UIPickerViewDelegate, UIPickerViewDataSource {
             }
             return
         }
+        
+        print("purchasedProduct \(purchasedProduct)")
         fps = Int32(fpsOptions[row])
         print(fps)
     }

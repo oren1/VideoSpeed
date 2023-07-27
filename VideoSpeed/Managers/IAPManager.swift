@@ -10,6 +10,10 @@ import Foundation
 import Foundation
 import StoreKit
 
+enum StoreError: Int {
+    case paymentCancelled = 2
+}
+
 public typealias ProductIdentifier = String
 public typealias ProductsRequestCompletionHandler = (_ success: Bool, _ products: [SKProduct]?) -> Void
 
@@ -23,8 +27,9 @@ extension Notification.Name {
 class SpidProducts {
     
     static let proVersion = "com.spid.app.pro"
+    static let proVersionConsumable = "ProVersion345"
 
-    private static let productIdentifiers: Set<ProductIdentifier> = [SpidProducts.proVersion]
+    private static let productIdentifiers: Set<ProductIdentifier> = [proVersion, proVersionConsumable]
     
     static let store = IAPManager(productIds: productIdentifiers)
 
@@ -56,6 +61,13 @@ class IAPManager: NSObject {
 
         }
 
+    func getProductIdentifiers() -> Set<ProductIdentifier> {
+        return productIdentifiers
+    }
+    
+    func getPurchasedProductIdentifiers() -> Set<ProductIdentifier> {
+        return purchasedProductIdentifiers
+    }
     
     public func requestProducts(completionHandler: @escaping ProductsRequestCompletionHandler) {
       productsRequest?.cancel()
@@ -66,6 +78,16 @@ class IAPManager: NSObject {
       productsRequest!.start()
     }
 
+    func userPurchasedProVersion() -> ProductIdentifier? {
+        if let purchasedProduct = productIdentifiers.first(where: { productIdentifier in
+            return isProductPurchased(productIdentifier)
+        }) {
+            return purchasedProduct
+        }
+        
+        return nil
+    }
+    
     public func isProductPurchased(_ productIdentifier: ProductIdentifier) -> Bool {
       return purchasedProductIdentifiers.contains(productIdentifier)
     }
@@ -181,10 +203,13 @@ extension IAPManager: SKPaymentTransactionObserver {
  
   private func fail(transaction: SKPaymentTransaction) {
     print("fail...")
-    if let _ = transaction.error as NSError?,
+    if let error = transaction.error as NSError?,
+       error.code != StoreError.paymentCancelled.rawValue,
       let localizedDescription = transaction.error?.localizedDescription {
-        print("Transaction Error: \(localizedDescription)")
         NotificationCenter.default.post(name: .IAPManagerPurchaseFailedNotification, object: localizedDescription)
+      }
+      else {
+          NotificationCenter.default.post(name: .IAPManagerPurchaseFailedNotification, object: nil)
       }
 
     SKPaymentQueue.default().finishTransaction(transaction)

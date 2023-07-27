@@ -20,6 +20,7 @@ class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         navigationItem.title = "SPID"
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -36,8 +37,8 @@ class MainViewController: UIViewController {
               
           }
         }
-        
         AppStoreReviewManager.requestReviewIfAppropriate()
+
     }
     
     deinit {
