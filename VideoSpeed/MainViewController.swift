@@ -9,7 +9,7 @@ import UIKit
 import Photos
 
 class MainViewController: UIViewController {
-
+    
     // MARK: - Properties
     private let reuseIdentifier = "PhotoCell"
     private let sectionInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
