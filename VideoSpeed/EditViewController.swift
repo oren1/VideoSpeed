@@ -23,7 +23,7 @@ class EditViewController: UIViewController {
     var compositionVideoTrack: AVMutableCompositionTrack!
     var exportSession: AVAssetExportSession?
     var timer: Timer?
-
+    
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     lazy var progressIndicatorView: ProgressIndicatorView = {
         progressIndicatorView = ProgressIndicatorView()
@@ -131,8 +131,10 @@ class EditViewController: UIViewController {
         compositionVideoTrack.preferredTransform = preferredTransform
 
         let videoInfo = VideoHelper.orientation(from: preferredTransform)
+        print("videoInfo.orientation \(videoInfo.orientation)")
 
         let videoSize: CGSize
+
         if videoInfo.isPortrait {
           videoSize = CGSize(
             width: naturalSize.height,
@@ -151,7 +153,10 @@ class EditViewController: UIViewController {
         
         let layerInstruction = await compositionLayerInstruction(
           for: compositionVideoTrack,
-          assetTrack: videoTrack)
+          assetTrack: videoTrack,
+          videoSize: videoSize,
+          isPortrait: videoInfo.isPortrait)
+        
         instruction.layerInstructions = [layerInstruction]
         
         let videoComposition = AVMutableVideoComposition()
@@ -305,12 +310,19 @@ class EditViewController: UIViewController {
     }
 
     
-    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack) async -> AVMutableVideoCompositionLayerInstruction {
+    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool) async -> AVMutableVideoCompositionLayerInstruction {
         let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
-        let transform = try! await assetTrack.load(.preferredTransform)
-
-        instruction.setTransform(transform, at: .zero)
-
+        var transform = try! await assetTrack.load(.preferredTransform)
+        if isPortrait {
+            var newTransform = CGAffineTransform(translationX: 0, y: 0)
+            newTransform = newTransform.rotated(by: CGFloat(90 * Double.pi / 180))
+            newTransform = newTransform.translatedBy(x: 0, y: -videoSize.width)
+            instruction.setTransform(newTransform, at: .zero)
+        }
+        else {
+            instruction.setTransform(transform, at: .zero)
+        }
+        
         return instruction
     }
     
