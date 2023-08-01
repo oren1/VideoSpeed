@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -366,7 +367,7 @@
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" One-time charge" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QvX-TZ-SUa">
                                 <rect key="frame" x="24" y="477.5" width="327" height="21.5"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="18"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -392,11 +393,37 @@
                                 </constraints>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="multiply.circle" catalog="system" title=""/>
+                                <buttonConfiguration key="configuration" style="plain" image="multiply" catalog="system" title=""/>
                                 <connections>
                                     <action selector="backButtonTapped:" destination="tYv-mC-Z0W" eventType="touchUpInside" id="ekg-n3-mhq"/>
                                 </connections>
                             </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mu8-Fy-yZc">
+                                <rect key="frame" x="16" y="312" width="343" height="34"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="checkmark" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="zjM-hW-p9Q">
+                                        <rect key="frame" x="8" y="6.5" width="25" height="21.5"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="25" id="MH5-Fu-BeS"/>
+                                            <constraint firstAttribute="width" constant="25" id="Wjw-jJ-6CC"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Ads" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cwf-Wf-bBx">
+                                        <rect key="frame" x="48" y="6" width="58.5" height="22"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="zjM-hW-p9Q" firstAttribute="leading" secondItem="mu8-Fy-yZc" secondAttribute="leading" constant="8" id="OYx-Tc-0J7"/>
+                                    <constraint firstItem="zjM-hW-p9Q" firstAttribute="centerY" secondItem="mu8-Fy-yZc" secondAttribute="centerY" id="cQU-l9-Kmv"/>
+                                    <constraint firstItem="cwf-Wf-bBx" firstAttribute="centerY" secondItem="mu8-Fy-yZc" secondAttribute="centerY" id="j0Y-3U-mf8"/>
+                                    <constraint firstAttribute="height" constant="34" id="jtA-OR-5mg"/>
+                                    <constraint firstItem="cwf-Wf-bBx" firstAttribute="leading" secondItem="zjM-hW-p9Q" secondAttribute="trailing" constant="15" id="p36-QP-OqZ"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="yGe-CY-YVG"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -407,9 +434,11 @@
                             <constraint firstItem="6pd-BX-gq2" firstAttribute="centerX" secondItem="zww-Og-tRi" secondAttribute="centerX" id="6nk-Vc-KKe"/>
                             <constraint firstItem="yGe-CY-YVG" firstAttribute="trailing" secondItem="abd-F5-TCm" secondAttribute="trailing" constant="16" id="85W-da-cyf"/>
                             <constraint firstItem="yGe-CY-YVG" firstAttribute="trailing" secondItem="gsO-IE-xjk" secondAttribute="trailing" constant="16" id="Aut-zo-SWn"/>
+                            <constraint firstItem="mu8-Fy-yZc" firstAttribute="top" secondItem="GKd-PZ-x26" secondAttribute="bottom" constant="14.5" id="CIZ-YE-n0I"/>
                             <constraint firstItem="xcR-xP-jJc" firstAttribute="top" secondItem="g8A-qJ-equ" secondAttribute="bottom" constant="9" id="DNZ-ox-jJE"/>
                             <constraint firstItem="yGe-CY-YVG" firstAttribute="trailing" secondItem="aqY-Vg-nO5" secondAttribute="trailing" constant="24" id="FGr-qs-DRZ"/>
                             <constraint firstItem="85N-As-maw" firstAttribute="leading" secondItem="yGe-CY-YVG" secondAttribute="leading" constant="16" id="Fmj-44-7I7"/>
+                            <constraint firstItem="mu8-Fy-yZc" firstAttribute="leading" secondItem="yGe-CY-YVG" secondAttribute="leading" constant="16" id="Gat-e0-Gfn"/>
                             <constraint firstItem="Ryu-G2-7KH" firstAttribute="top" secondItem="bGZ-L7-TOX" secondAttribute="bottom" constant="45" id="H9Q-pG-jIX"/>
                             <constraint firstItem="bGZ-L7-TOX" firstAttribute="centerX" secondItem="zww-Og-tRi" secondAttribute="centerX" id="IeQ-qh-k93"/>
                             <constraint firstItem="Ryu-G2-7KH" firstAttribute="leading" secondItem="yGe-CY-YVG" secondAttribute="leading" constant="16" id="Jvo-bb-0dl"/>
@@ -417,6 +446,7 @@
                             <constraint firstItem="bGZ-L7-TOX" firstAttribute="top" secondItem="6pd-BX-gq2" secondAttribute="bottom" constant="-14" id="Rj3-yx-poH"/>
                             <constraint firstItem="aqY-Vg-nO5" firstAttribute="leading" secondItem="yGe-CY-YVG" secondAttribute="leading" constant="24" id="TzO-h2-8uL"/>
                             <constraint firstItem="QvX-TZ-SUa" firstAttribute="top" secondItem="aqY-Vg-nO5" secondAttribute="bottom" constant="8" symbolic="YES" id="aHF-fv-qDe"/>
+                            <constraint firstItem="yGe-CY-YVG" firstAttribute="trailing" secondItem="mu8-Fy-yZc" secondAttribute="trailing" constant="16" id="cHT-Jp-BZQ"/>
                             <constraint firstItem="6pd-BX-gq2" firstAttribute="top" secondItem="yGe-CY-YVG" secondAttribute="top" constant="54" id="cz1-LZ-BJg"/>
                             <constraint firstItem="yGe-CY-YVG" firstAttribute="trailing" secondItem="Ryu-G2-7KH" secondAttribute="trailing" constant="16" id="d4k-qN-ybj"/>
                             <constraint firstItem="PWR-SQ-Vc5" firstAttribute="top" secondItem="QvX-TZ-SUa" secondAttribute="bottom" constant="12" id="dgA-xh-fRa"/>
@@ -445,9 +475,63 @@
             </objects>
             <point key="canvasLocation" x="1589.5999999999999" y="1.3493253373313345"/>
         </scene>
+        <!--Success Message View Controller-->
+        <scene sceneID="xIp-nR-6YE">
+            <objects>
+                <viewController storyboardIdentifier="SuccessMessageViewController" id="KHq-bx-iCl" customClass="SuccessMessageViewController" customModule="VideoSpeed" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="fYk-ve-nXZ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Saved To Photos" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d5C-Ah-2kp">
+                                <rect key="frame" x="88.5" y="194.5" width="198.5" height="32.5"/>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="27"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Wr7-3k-7bX">
+                                <rect key="frame" x="123.5" y="270" width="128" height="127"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="128" id="Icg-3P-9FU"/>
+                                    <constraint firstAttribute="width" constant="128" id="S7t-Ex-0co"/>
+                                </constraints>
+                                <imageReference key="image" image="checkmark.circle.fill" catalog="system" variableValue="0.80000000000000004"/>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MnJ-bY-mIq">
+                                <rect key="frame" x="16" y="20" width="34" height="34"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="34" id="GM0-a3-UZ1"/>
+                                    <constraint firstAttribute="width" constant="34" id="utF-8x-fQX"/>
+                                </constraints>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="multiply" catalog="system" title=""/>
+                                <connections>
+                                    <action selector="backButtonTapped:" destination="tYv-mC-Z0W" eventType="touchUpInside" id="5XR-9L-A2T"/>
+                                    <action selector="backButtonTapped:" destination="KHq-bx-iCl" eventType="touchUpInside" id="gax-jw-LRp"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Mix-EY-flu"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="MnJ-bY-mIq" firstAttribute="leading" secondItem="Mix-EY-flu" secondAttribute="leading" constant="16" id="1PD-PA-94K"/>
+                            <constraint firstItem="MnJ-bY-mIq" firstAttribute="top" secondItem="Mix-EY-flu" secondAttribute="top" id="BMW-dR-0x5"/>
+                            <constraint firstItem="Wr7-3k-7bX" firstAttribute="centerX" secondItem="fYk-ve-nXZ" secondAttribute="centerX" id="bzT-06-iIA"/>
+                            <constraint firstItem="Wr7-3k-7bX" firstAttribute="centerY" secondItem="fYk-ve-nXZ" secondAttribute="centerY" id="mvt-hF-ZLa"/>
+                            <constraint firstItem="Wr7-3k-7bX" firstAttribute="top" secondItem="d5C-Ah-2kp" secondAttribute="bottom" constant="42.5" id="pZ7-WH-zVe"/>
+                            <constraint firstItem="d5C-Ah-2kp" firstAttribute="centerX" secondItem="fYk-ve-nXZ" secondAttribute="centerX" id="xZc-Go-O7Z"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eit-Rd-UDx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2386" y="10"/>
+        </scene>
     </scenes>
     <resources>
         <image name="checkmark" catalog="system" width="128" height="114"/>
-        <image name="multiply.circle" catalog="system" width="128" height="123"/>
+        <image name="checkmark.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="multiply" catalog="system" width="128" height="111"/>
     </resources>
 </document>

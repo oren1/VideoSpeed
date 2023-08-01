@@ -274,18 +274,25 @@ class EditViewController: UIViewController {
       didFinishSavingWithError error: Error?,
       contextInfo info: AnyObject
     ) {
-      let title = (error == nil) ? "Success" : "Error"
-      let message = (error == nil) ? "Saved To Photos" : "Video failed to save"
+        if error == nil {
+            let successMessageViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SuccessMessageViewController") as! SuccessMessageViewController
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                successMessageViewController.modalPresentationStyle = .fullScreen
+            }
+            self.present(successMessageViewController, animated: true)
+        }
+        else {
+            let alert = UIAlertController(
+              title: "Error",
+              message: "Video failed to save",
+              preferredStyle: .alert)
+            alert.addAction(UIAlertAction(
+              title: "OK",
+              style: UIAlertAction.Style.cancel,
+              handler: nil))
+            present(alert, animated: true, completion: nil)
+        }
 
-      let alert = UIAlertController(
-        title: title,
-        message: message,
-        preferredStyle: .alert)
-      alert.addAction(UIAlertAction(
-        title: "OK",
-        style: UIAlertAction.Style.cancel,
-        handler: nil))
-      present(alert, animated: true, completion: nil)
     }
     
     func addPlayerToTop() {

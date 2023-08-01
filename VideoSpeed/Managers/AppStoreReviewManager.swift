@@ -10,7 +10,7 @@ import StoreKit
 
 enum AppStoreReviewManager {
     
-  static let minimumReviewWorthyActionCount = 4
+  static let minimumReviewWorthyActionCount = 1
 
   static func requestReviewIfAppropriate() {
         let defaults = UserDefaults.standard
@@ -30,8 +30,8 @@ enum AppStoreReviewManager {
         
         let lastVersion = defaults.string(forKey: Consts.lastReviewRequestAppVersion)
         // making sure that the review request wasn't already prompted in the current version
-        guard let currentVersion = UIApplication.appVersion,
-              lastVersion == nil || lastVersion != currentVersion else { return }
+//        guard let currentVersion = UIApplication.appVersion,
+//              lastVersion == nil || lastVersion != currentVersion else { return }
               
 
         // prompt the review request
@@ -46,7 +46,7 @@ enum AppStoreReviewManager {
 
         // reset the worthy count to zero and last app version to the current version
         defaults.set(0, forKey: Consts.reviewWorthyActionCount)
-        defaults.set(currentVersion, forKey: Consts.lastReviewRequestAppVersion)
+//        defaults.set(currentVersion, forKey: Consts.lastReviewRequestAppVersion)
 
      }
   

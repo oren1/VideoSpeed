@@ -40,7 +40,7 @@ class MainViewController: UIViewController {
           }
         }
 //        requestPermissionForIDFA()
-        AppStoreReviewManager.requestReviewIfAppropriate()
+//        AppStoreReviewManager.requestReviewIfAppropriate()
 
     }
     func requestPermissionForIDFA() {
