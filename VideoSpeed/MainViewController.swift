@@ -7,6 +7,8 @@
 
 import UIKit
 import Photos
+import AdSupport
+import AppTrackingTransparency
 
 class MainViewController: UIViewController {
     
@@ -37,10 +39,34 @@ class MainViewController: UIViewController {
               
           }
         }
+//        requestPermissionForIDFA()
         AppStoreReviewManager.requestReviewIfAppropriate()
 
     }
-    
+    func requestPermissionForIDFA() {
+        ATTrackingManager.requestTrackingAuthorization { status in
+            switch status {
+            case .authorized:
+                // Tracking authorization dialog was shown
+                // and we are authorized
+                print("Authorized")
+            
+                // Now that we are authorized we can get the IDFA
+                print(ASIdentifierManager.shared().advertisingIdentifier)
+            case .denied:
+               // Tracking authorization dialog was
+               // shown and permission is denied
+                 print("Denied")
+            case .notDetermined:
+                    // Tracking authorization dialog has not been shown
+                    print("Not Determined")
+            case .restricted:
+                    print("Restricted")
+            @unknown default:
+                    print("Unknown")
+            }
+        }
+    }
     deinit {
       PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }

@@ -16,6 +16,7 @@ class PurchaseViewController: UIViewController {
     @IBOutlet weak var priceLabel: UILabel!
     @IBOutlet weak var backButton: UIButton!
     
+    @IBOutlet weak var oneTimeChargeLabel: UILabel!
     lazy var loadingView: LoadingView = {
         loadingView = LoadingView()
         return loadingView
@@ -26,6 +27,12 @@ class PurchaseViewController: UIViewController {
         let productIdentifier = SpidProducts.proVersion
         product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier}
         priceLabel.text = product.localizedPrice
+        
+        let attributedString = NSMutableAttributedString.init(string: "One-time charge")
+        // Add Underline Style Attribute.
+        attributedString.addAttribute(NSAttributedString.Key.underlineStyle, value: 2, range:
+            NSRange.init(location: 0, length: attributedString.length));
+        oneTimeChargeLabel.attributedText = attributedString
         
         if UIDevice.current.userInterfaceIdiom == .pad {
             backButton.isHidden = true

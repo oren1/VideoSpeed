@@ -96,9 +96,11 @@ class EditViewController: UIViewController {
         let composition = AVMutableComposition(urlAssetInitializationOptions: nil)
 
         let compositionVideoTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: 1)!
-        if soundOn {
+        
+        if let audioTracks = try? await asset.loadTracks(withMediaType: .audio),
+           soundOn && audioTracks.count > 0 {
+            let audioTrack = audioTracks[0]
             let compositionAudioTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: 2)!
-            let audioTrack = try! await asset.loadTracks(withMediaType: .audio)[0]
             let audioDuration = try! await asset.load(.duration)
             
             try? compositionAudioTrack.insertTimeRange(CMTimeRange(start: .zero, duration: audioDuration),
