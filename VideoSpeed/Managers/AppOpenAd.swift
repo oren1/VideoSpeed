@@ -7,10 +7,12 @@
 
 import Foundation
 import GoogleMobileAds
+import FirebaseRemoteConfig
+
 typealias VoidClosure = () -> ()
 class AppOpenAd: NSObject, GADFullScreenContentDelegate {
     
-    let minimumAppOpensRequiredToShowAd = 4
+    let minimumAppOpensRequiredToShowAd = RemoteConfig.remoteConfig().configValue(forKey: "minimumAppOpensToShowAd").numberValue.intValue
 
     static let manager = AppOpenAd()
 

@@ -7,6 +7,8 @@
 
 import UIKit
 import GoogleMobileAds
+import FirebaseCore
+import FirebaseRemoteConfig
 
 class SplashViewController: UIViewController, GADFullScreenContentDelegate {
 
@@ -32,9 +34,15 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
         }
         
         downloadGroup.enter()
+        getRemoteConfig {
+            downloadGroup.leave()
+        }
+        
+        downloadGroup.enter()
         loadAppOpenAdIfAppropriate(viewVontroller: self) {
             downloadGroup.leave()
         }
+        
         
         
         downloadGroup.notify(queue: DispatchQueue.main) { [weak self] in
@@ -90,12 +98,31 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
         navigationController?.pushViewController(mainViewController, animated: false)
     }
     
-    func getRemoteConfig() {
-//        #if DEBUG
-//        let settings = RemoteConfigSettings()
-//        settings.minimumFetchInterval = 0
-//        RemoteConfig.remoteConfig().configSettings = settings
-//        #endif
+    func getRemoteConfig(completion: @escaping VoidClosure) {
+        let remoteConfig = RemoteConfig.remoteConfig()
+
+        #if DEBUG
+        let settings = RemoteConfigSettings()
+        settings.minimumFetchInterval = 0
+        remoteConfig.configSettings = settings
+        #endif
+        
+        remoteConfig.setDefaults(fromPlist: "remote_config_defaults")
+        
+        remoteConfig.fetch { (status, error) -> Void in
+          if status == .success {
+            print("Config fetched!")
+            remoteConfig.activate { changed, error in
+              // ...
+            }
+          } else {
+            print("Config not fetched")
+            print("Error: \(error?.localizedDescription ?? "No error available.")")
+          }
+
+          completion()
+        }
+
     }
     
 }

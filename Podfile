@@ -7,7 +7,7 @@ target 'VideoSpeed' do
     pod 'Google-Mobile-Ads-SDK'
     pod 'FirebaseAnalytics'
     pod 'FirebaseAuth'
-
+    pod 'FirebaseRemoteConfig'
   # Pods for VideoSpeed
 
 end

@@ -7,10 +7,11 @@
 
 import Foundation
 import StoreKit
+import FirebaseRemoteConfig
 
 enum AppStoreReviewManager {
     
-  static let minimumReviewWorthyActionCount = 1
+  static let minimumReviewWorthyActionCount = RemoteConfig.remoteConfig().configValue(forKey: "minimumReviewWorthyActionCount").numberValue.intValue
 
   static func requestReviewIfAppropriate() {
         let defaults = UserDefaults.standard
