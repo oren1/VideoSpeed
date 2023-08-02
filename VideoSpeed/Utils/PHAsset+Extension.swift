@@ -11,7 +11,7 @@ import Photos
 extension PHAsset {
     func getAVAsset(completionHandler : @escaping ((_ responseURL : AVAsset?) -> Void)){
                let options: PHVideoRequestOptions = PHVideoRequestOptions()
-        options.version = .original
+//        options.version = .original
         options.deliveryMode = .highQualityFormat
                PHImageManager.default().requestAVAsset(forVideo: self, options: options, resultHandler: {(asset: AVAsset?, audioMix: AVAudioMix?, info: [AnyHashable : Any]?) -> Void in
                    completionHandler(asset)
@@ -21,7 +21,7 @@ extension PHAsset {
     
     func getAVAssetUrl(completionHandler : @escaping ((_ responseURL : URL?) -> Void)){
                let options: PHVideoRequestOptions = PHVideoRequestOptions()
-        options.version = .original
+//        options.version = .original
         options.deliveryMode = .highQualityFormat
                PHImageManager.default().requestAVAsset(forVideo: self, options: options, resultHandler: {(asset: AVAsset?, audioMix: AVAudioMix?, info: [AnyHashable : Any]?) -> Void in
                    if let urlAsset = asset as? AVURLAsset {

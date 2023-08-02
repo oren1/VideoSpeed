@@ -16,7 +16,7 @@ class MainViewController: UIViewController {
     private let reuseIdentifier = "PhotoCell"
     private let sectionInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     var videos: PHFetchResult<PHAsset>?
-    private let itemsPerRow: CGFloat = 3
+    private let itemsPerRow: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 5 : 3
     
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -91,7 +91,7 @@ class MainViewController: UIViewController {
           key: "creationDate",
           ascending: false)
       ]
-     allPhotosOptions.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.video.rawValue)
+        allPhotosOptions.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.video.rawValue)
 
       videos = PHAsset.fetchAssets(with: allPhotosOptions)
     

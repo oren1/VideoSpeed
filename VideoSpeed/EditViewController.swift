@@ -70,7 +70,9 @@ class EditViewController: UIViewController {
         
         asset = AVAsset(url: assetUrl)
         Task {
-            let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps, soundOn: soundOn)
+            guard let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps, soundOn: soundOn) else {
+                return showNoTracksError()
+            }
             self.composition = composition
             self.videoComposition = videoComposition
             
@@ -80,19 +82,20 @@ class EditViewController: UIViewController {
             let playerItem = AVPlayerItem(asset: compositionCopy)
             playerItem.audioTimePitchAlgorithm = .spectral
             playerItem.videoComposition = videoCompositionCopy
-           
+            
             let player = AVPlayer(playerItem: playerItem)
-           
+        
             playerController = AVPlayerViewController()
             playerController.player = player
             addPlayerToTop()
+            loopVideo()
             
         }
 
         
     }
 
-    func createCompositionWith(speed: Float, fps: Int32, soundOn: Bool) async -> (AVMutableComposition, AVMutableVideoComposition) {
+    func createCompositionWith(speed: Float, fps: Int32, soundOn: Bool) async -> (composition: AVMutableComposition, videoComposition: AVMutableVideoComposition)? {
         let composition = AVMutableComposition(urlAssetInitializationOptions: nil)
 
         let compositionVideoTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: 1)!
@@ -110,7 +113,11 @@ class EditViewController: UIViewController {
         }
         
         
-        let videoTrack = try! await asset.loadTracks(withMediaType: .video)[0]
+        let videoTracks = try! await asset.loadTracks(withMediaType: .video)
+        guard  videoTracks.count > 0 else { return nil }
+        
+        let videoTrack = videoTracks[0]
+        
         let videoDuration = try! await asset.load(.duration)
         
         try? compositionVideoTrack.insertTimeRange(CMTimeRange(start: .zero, duration: videoDuration),
@@ -171,7 +178,9 @@ class EditViewController: UIViewController {
     
     
     func reloadComposition() async {
-        let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps, soundOn: soundOn)
+        guard let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps, soundOn: soundOn) else {
+            return showNoTracksError()
+        }
         self.composition = composition
         self.videoComposition = videoComposition
         let compositionCopy = self.composition.copy() as! AVComposition
@@ -319,7 +328,7 @@ class EditViewController: UIViewController {
     
     private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool) async -> AVMutableVideoCompositionLayerInstruction {
         let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
-        var transform = try! await assetTrack.load(.preferredTransform)
+        let transform = try! await assetTrack.load(.preferredTransform)
         if isPortrait {
             var newTransform = CGAffineTransform(translationX: 0, y: 0)
             newTransform = newTransform.rotated(by: CGFloat(90 * Double.pi / 180))
@@ -483,11 +492,32 @@ class EditViewController: UIViewController {
         if UIDevice.current.userInterfaceIdiom == .phone {
             purchaseViewController.modalPresentationStyle = .fullScreen
         }
-        else if UIDevice.current.userInterfaceIdiom == .pad{
+        else if UIDevice.current.userInterfaceIdiom == .pad {
             purchaseViewController.modalPresentationStyle = .formSheet
         }
 
         self.present(purchaseViewController, animated: true)
+    }
+    
+    func showNoTracksError() {
+        let alert = UIAlertController(
+          title: "Error",
+          message: "Couldn't find video tracks",
+          preferredStyle: .alert)
+        alert.addAction(UIAlertAction(
+          title: "OK",
+          style: UIAlertAction.Style.cancel,
+          handler: { [weak self] _ in
+              self?.navigationController?.popViewController(animated: true)
+          }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func loopVideo() {
+      NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { [weak self] notification in
+          self?.playerController.player?.seek(to: .zero)
+          self?.playerController.player?.play()
+      }
     }
 }
 

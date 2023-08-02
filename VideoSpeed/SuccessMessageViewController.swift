@@ -11,11 +11,17 @@ class SuccessMessageViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            AppStoreReviewManager.requestReviewIfAppropriate()
-        }
+
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        AppStoreReviewManager.requestReviewIfAppropriate()
+    }
     @IBAction func backButtonTapped(_ sender: Any) {
         dismiss(animated: true)
     }
