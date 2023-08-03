@@ -355,6 +355,7 @@ class EditViewController: UIViewController {
             showFileTypeSection()
         }
     }
+    
     // MARK: - Sections Logic
     func addSpeedSection() {
         speedSectionVC = SpeedSectionVC()

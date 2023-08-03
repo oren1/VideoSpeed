@@ -19,6 +19,7 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        RemoteConfig.remoteConfig().setDefaults(fromPlist: "remote_config_defaults")
 
         let downloadGroup = DispatchGroup()
 
@@ -72,10 +73,12 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
             completion()
             return
         }
-            
-        let unitId = "ca-app-pub-5159016515859793/8839080524"
-//        var testUnitId = "ca-app-pub-3940256099942544/5662855259"
         
+        var unitId = "ca-app-pub-5159016515859793/8839080524"
+        #if DEBUG
+        unitId = "ca-app-pub-3940256099942544/5662855259"
+        #endif
+                
         GADAppOpenAd.load(withAdUnitID: unitId, request: GADRequest(),
                           orientation: UIInterfaceOrientation.portrait) { [weak self] ad, error in
             if let error = error {
@@ -106,8 +109,6 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
         settings.minimumFetchInterval = 0
         remoteConfig.configSettings = settings
         #endif
-        
-        remoteConfig.setDefaults(fromPlist: "remote_config_defaults")
         
         remoteConfig.fetch { (status, error) -> Void in
           if status == .success {
