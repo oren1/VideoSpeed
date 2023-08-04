@@ -530,7 +530,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Spid;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allow you to take a video for editing";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow the video to be recorded with sound";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This will allow you to select video for editing";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This will allow you to select videos for editing";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -564,7 +564,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Spid;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allow you to take a video for editing";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow the video to be recorded with sound";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This will allow you to select video for editing";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This will allow you to select videos for editing";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;

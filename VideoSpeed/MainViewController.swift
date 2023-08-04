@@ -35,14 +35,16 @@ class MainViewController: UIViewController {
           DispatchQueue.main.async { [weak self] in
             guard let self = self else {return}
             self.collectionView.reloadData()
-              
-              
-          }
-        }
-//        requestPermissionForIDFA()
-//        AppStoreReviewManager.requestReviewIfAppropriate()
 
+          }
+
+        }
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        requestPermissionForIDFA()
+    }
+    
     func requestPermissionForIDFA() {
         ATTrackingManager.requestTrackingAuthorization { status in
             switch status {
