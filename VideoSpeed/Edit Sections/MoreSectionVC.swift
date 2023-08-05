@@ -37,6 +37,16 @@ class MoreSectionVC: SectionViewController {
 
     }
 
+    func updateSoundSelection(soundOn: Bool) {
+        self.soundOn = soundOn
+        if self.soundOn {
+            setSoundSelectedButton(button: onButton)
+        }
+        else {
+            setSoundSelectedButton(button: offButton)
+        }
+    }
+    
     func setSoundSelectedButton(button: UIButton) {
         currentSoundSelectedButton?.tintColor = UIColor.black
         button.tintColor = .link
@@ -50,7 +60,7 @@ class MoreSectionVC: SectionViewController {
     }
     
     @IBAction func mp4ButtonTapped(_ sender: UIButton) {
-        guard SpidProducts.store.isProductPurchased(SpidProducts.proVersion) else {
+        guard let _ = SpidProducts.store.userPurchasedProVersion() else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
                 guard let self = self else {return}
                 self.userNeedsToPurchase?()

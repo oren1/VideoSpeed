@@ -42,6 +42,7 @@ class EditViewController: UIViewController {
     var fpsLabel: UILabel!
     var fileTypeLabel: UILabel!
     var soundImageView: UIImageView!
+    var soundButton: UIButton!
     
     
     // Sections
@@ -210,13 +211,33 @@ class EditViewController: UIViewController {
         soundImageView = UIImageView(image: UIImage(systemName: "volume.2.fill"))
         soundImageView.tintColor = .white
         
+        soundButton = UIButton(type: .system)
+        soundButton.tintColor = .white
+        soundButton.setImage(UIImage(systemName: "volume.2.fill"), for: .normal)
+        soundButton.addTarget(self, action: #selector(soundButtonTapped), for: .touchUpInside)
+        
         let speedItem = UIBarButtonItem(customView: speedLabel)
         let fpsItem = UIBarButtonItem(customView: fpsLabel)
         let fileTypeItem = UIBarButtonItem(customView: fileTypeLabel)
-        let soundItem = UIBarButtonItem(customView: soundImageView)
+        let soundItem = UIBarButtonItem(customView: soundButton)
 
         
         navigationItem.rightBarButtonItems = [exportButton, soundItem, fileTypeItem, fpsItem, speedItem]
+    }
+    
+    @objc func soundButtonTapped() {
+        guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
+            showPurchaseViewController()
+            return
+        }
+        soundOn = !soundOn
+        let imageName = soundOn ? "volume.2.fill" : "volume.slash"
+        soundButton.setImage(UIImage(systemName: imageName), for: .normal)
+        moreSectionVC.updateSoundSelection(soundOn: soundOn)
+        
+        Task {
+          await self.reloadComposition()
+        }
     }
     
     func createRightItemLabel() -> UILabel {
@@ -409,7 +430,7 @@ class EditViewController: UIViewController {
         moreSectionVC.soundStateChanged = {[weak self] (soundOn: Bool) in
             self?.soundOn = soundOn
             let imageName = soundOn ? "volume.2.fill" : "volume.slash"
-            self?.soundImageView.image = UIImage(systemName: imageName)
+            self?.soundButton.setImage(UIImage(systemName: imageName), for: .normal) 
 
             Task {
               await self?.reloadComposition()

@@ -19,9 +19,19 @@ class MainViewController: UIViewController {
     private let itemsPerRow: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 5 : 3
     
     @IBOutlet weak var collectionView: UICollectionView!
+    lazy var photoLibraryUsageDisabledView: PhotoLibraryUsageDisabledView = {
+        photoLibraryUsageDisabledView = PhotoLibraryUsageDisabledView()
+        return photoLibraryUsageDisabledView
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        #if DEBUG
+         print("purchased")
+        #else
+         print("not purchased")
+        #endif
         
         navigationItem.title = "SPID"
         collectionView.delegate = self
@@ -30,16 +40,24 @@ class MainViewController: UIViewController {
         PHPhotoLibrary.shared().register(self)
 
         getPermissionIfNecessary { granted in
-          guard granted else { return }
-          self.fetchAssets()
-          DispatchQueue.main.async { [weak self] in
-            guard let self = self else {return}
-            self.collectionView.reloadData()
+              guard granted else {
+                  DispatchQueue.main.async { [weak self] in
+                    guard let self = self else {return}
+                      self.addPhotoLibraryUsageDisabledView()
+                  }
+                  return
+              }
 
-          }
+              self.fetchAssets()
 
-        }
+              DispatchQueue.main.async { [weak self] in
+                guard let self = self else {return}
+                self.collectionView.reloadData()
+              }
+            }
     }
+    
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         requestPermissionForIDFA()
@@ -98,6 +116,25 @@ class MainViewController: UIViewController {
       videos = PHAsset.fetchAssets(with: allPhotosOptions)
     
     }
+    
+    func addPhotoLibraryUsageDisabledView() {
+        view.addSubview(photoLibraryUsageDisabledView)
+        photoLibraryUsageDisabledView.translatesAutoresizingMaskIntoConstraints = false
+
+        let constraints = [
+            photoLibraryUsageDisabledView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            photoLibraryUsageDisabledView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+            photoLibraryUsageDisabledView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
+            photoLibraryUsageDisabledView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+        ]
+        NSLayoutConstraint.activate(constraints)
+
+    }
+
+    func removePhotoLibraryUsageDisabledView() {
+        photoLibraryUsageDisabledView.removeFromSuperview()
+    }
+    
     
     //MARK: - Actions
     

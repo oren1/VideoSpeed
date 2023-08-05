@@ -122,7 +122,8 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="TbR-cY-Q5t">
-                        <barButtonItem key="leftBarButtonItem" systemItem="camera" id="NcP-dW-QcS">
+                        <barButtonItem key="leftBarButtonItem" image="camera.fill" catalog="system" id="NcP-dW-QcS">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
                                 <action selector="cameraButtonTapped:" destination="sLw-pi-A3d" id="Dbb-uL-Suh"/>
                             </connections>
@@ -483,8 +484,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Saved To Photos" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d5C-Ah-2kp">
-                                <rect key="frame" x="88.5" y="194.5" width="198.5" height="32.5"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Successfully Saved To Photos" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="d5C-Ah-2kp">
+                                <rect key="frame" x="8" y="194" width="359" height="33"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="27"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -516,20 +517,22 @@
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="MnJ-bY-mIq" firstAttribute="leading" secondItem="Mix-EY-flu" secondAttribute="leading" constant="16" id="1PD-PA-94K"/>
+                            <constraint firstItem="Mix-EY-flu" firstAttribute="trailing" secondItem="d5C-Ah-2kp" secondAttribute="trailing" constant="8" id="Att-UJ-s9v"/>
                             <constraint firstItem="MnJ-bY-mIq" firstAttribute="top" secondItem="Mix-EY-flu" secondAttribute="top" id="BMW-dR-0x5"/>
+                            <constraint firstItem="d5C-Ah-2kp" firstAttribute="leading" secondItem="Mix-EY-flu" secondAttribute="leading" constant="8" id="YlF-S1-kSi"/>
                             <constraint firstItem="Wr7-3k-7bX" firstAttribute="centerX" secondItem="fYk-ve-nXZ" secondAttribute="centerX" id="bzT-06-iIA"/>
                             <constraint firstItem="Wr7-3k-7bX" firstAttribute="centerY" secondItem="fYk-ve-nXZ" secondAttribute="centerY" id="mvt-hF-ZLa"/>
                             <constraint firstItem="Wr7-3k-7bX" firstAttribute="top" secondItem="d5C-Ah-2kp" secondAttribute="bottom" constant="42.5" id="pZ7-WH-zVe"/>
-                            <constraint firstItem="d5C-Ah-2kp" firstAttribute="centerX" secondItem="fYk-ve-nXZ" secondAttribute="centerX" id="xZc-Go-O7Z"/>
                         </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eit-Rd-UDx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2386" y="10"/>
+            <point key="canvasLocation" x="2384.8000000000002" y="9.4452773613193415"/>
         </scene>
     </scenes>
     <resources>
+        <image name="camera.fill" catalog="system" width="128" height="93"/>
         <image name="checkmark" catalog="system" width="128" height="114"/>
         <image name="checkmark.circle.fill" catalog="system" width="128" height="123"/>
         <image name="multiply" catalog="system" width="128" height="111"/>

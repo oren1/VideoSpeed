@@ -79,13 +79,19 @@ class IAPManager: NSObject {
     }
 
     func userPurchasedProVersion() -> ProductIdentifier? {
-        if let purchasedProduct = productIdentifiers.first(where: { productIdentifier in
-            return isProductPurchased(productIdentifier)
-        }) {
-            return purchasedProduct
-        }
-        
-        return nil
+        #if DEBUG
+            // this string doesn't mean anything, i just return it so the return value
+            // won't be null
+            return "test_identifier"
+        #else
+            if let purchasedProduct = productIdentifiers.first(where: { productIdentifier in
+                return isProductPurchased(productIdentifier)
+            }) {
+                return purchasedProduct
+            }
+            
+            return nil
+        #endif
     }
     
     public func isProductPurchased(_ productIdentifier: ProductIdentifier) -> Bool {
