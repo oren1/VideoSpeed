@@ -32,7 +32,8 @@ class MainViewController: UIViewController {
         #else
          print("not purchased")
         #endif
-        
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont(name: "Arial Hebrew Bold", size: 17)!]
+
         navigationItem.title = "SPID"
         collectionView.delegate = self
         collectionView.dataSource = self

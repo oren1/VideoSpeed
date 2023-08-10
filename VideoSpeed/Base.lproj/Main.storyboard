@@ -145,9 +145,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SPID" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rVA-bu-Cu7">
-                                <rect key="frame" x="158" y="318" width="59" height="31.5"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="26"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SPID" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2XE-TQ-8AN">
+                                <rect key="frame" x="145.5" y="314.5" width="84.5" height="38.5"/>
+                                <fontDescription key="fontDescription" name="ArialHebrew-Bold" family="Arial Hebrew" pointSize="36"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -155,15 +155,15 @@
                         <viewLayoutGuide key="safeArea" id="LSx-fl-2tO"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="rVA-bu-Cu7" firstAttribute="centerY" secondItem="ldt-pA-FDp" secondAttribute="centerY" id="0Kf-Mo-6ig"/>
-                            <constraint firstItem="rVA-bu-Cu7" firstAttribute="centerX" secondItem="ldt-pA-FDp" secondAttribute="centerX" id="rLr-d3-iNw"/>
+                            <constraint firstItem="2XE-TQ-8AN" firstAttribute="centerX" secondItem="ldt-pA-FDp" secondAttribute="centerX" id="E9a-aR-c0g"/>
+                            <constraint firstItem="2XE-TQ-8AN" firstAttribute="centerY" secondItem="ldt-pA-FDp" secondAttribute="centerY" id="jmQ-Vv-VN1"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="x3w-QS-lTv"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dfb-az-hiu" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-964" y="1"/>
+            <point key="canvasLocation" x="-964" y="0.44977511244377816"/>
         </scene>
         <!--Edit View Controller-->
         <scene sceneID="tne-QT-ifu">

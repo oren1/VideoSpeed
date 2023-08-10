@@ -16,9 +16,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SPID" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s5M-zO-O85">
-                                <rect key="frame" x="167" y="410.33333333333331" width="59" height="31.333333333333314"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="26"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SPID" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P5f-om-uI7">
+                                <rect key="frame" x="154.33333333333334" y="406.66666666666669" width="84.333333333333343" height="38.666666666666686"/>
+                                <fontDescription key="fontDescription" name="ArialHebrew-Bold" family="Arial Hebrew" pointSize="36"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -26,8 +26,8 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="s5M-zO-O85" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="bYT-3L-d33"/>
-                            <constraint firstItem="s5M-zO-O85" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="s5b-dh-52Y"/>
+                            <constraint firstItem="P5f-om-uI7" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="96l-qc-5uS"/>
+                            <constraint firstItem="P5f-om-uI7" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="wTn-3W-fQE"/>
                         </constraints>
                     </view>
                 </viewController>

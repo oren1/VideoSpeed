@@ -37,9 +37,6 @@ class FPSSectionVC: SectionViewController {
         pickerView.setValue(UIColor.white, forKey: "textColor")
         pickerView.selectRow(29, inComponent: 0, animated: false)
         
-//        setBorderAndRadius(button: thirtyButton)
-//        setBorderAndRadius(button: sixtyButton)
-//        setSelectedButton(button: thirtyButton)
     }
 
     

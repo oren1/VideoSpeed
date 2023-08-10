@@ -73,22 +73,14 @@ class PurchaseViewController: UIViewController {
     // MARK: - NotificationCenter Selectors
     @objc func purchaseCompleted(notification: Notification) {
         hideLoading()
-        let alertController = UIAlertController(title: "Purchase completed successfuly", message: "You can enjoy unlimited access to all features", preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-
-        present(alertController, animated: true, completion: nil)
+        dismiss(animated: true)
     }
 
     
     
     @objc func restoreCompleted(notification: Notification) {
         hideLoading()
-        let alertController = UIAlertController(title: "Restore completed successfuly", message: "You can enjoy unlimited access to all features", preferredStyle: .alert)
-        let action = UIAlertAction(title: "OK", style: .default, handler: nil)
-
-        alertController.addAction(action)
-
-        present(alertController, animated: true, completion: nil)
+        dismiss(animated: true)
     }
     
     @objc func purchaseFailed(notification: Notification) {

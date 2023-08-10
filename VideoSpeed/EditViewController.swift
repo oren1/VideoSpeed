@@ -348,6 +348,7 @@ class EditViewController: UIViewController {
 
     
     private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool) async -> AVMutableVideoCompositionLayerInstruction {
+
         let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
         let transform = try! await assetTrack.load(.preferredTransform)
         if isPortrait {
@@ -359,7 +360,7 @@ class EditViewController: UIViewController {
         else {
             instruction.setTransform(transform, at: .zero)
         }
-        
+
         return instruction
     }
     
@@ -445,7 +446,7 @@ class EditViewController: UIViewController {
     func addSection(sectionVC: SectionViewController) {
         addChild(sectionVC)
         dashboardContainerView.addSubview(sectionVC.view)
-        speedSectionVC.view.translatesAutoresizingMaskIntoConstraints = false
+        sectionVC.view.translatesAutoresizingMaskIntoConstraints = false
 
         let constraints = [
             sectionVC.view.topAnchor.constraint(equalTo: dashboardContainerView.topAnchor),
