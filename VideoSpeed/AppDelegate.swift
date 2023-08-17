@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseCore
 import GoogleMobileAds
+import FirebaseInstallations
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -20,6 +21,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Initialize the Google Mobile Ads SDK.
         GADMobileAds.sharedInstance().start(completionHandler: nil)
+        
+        Installations.installations().authTokenForcingRefresh(true, completion: { (result, error) in
+          if let error = error {
+            print("Error fetching token: \(error)")
+            return
+          }
+          guard let result = result else { return }
+          print("Installation auth token: \(result.authToken)")
+        })
+        
         return true
     }
 

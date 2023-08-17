@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import FirebaseRemoteConfig
+
 typealias SpeedClosure = (Float) -> Void
 
 class SpeedSectionVC: SectionViewController {
@@ -16,6 +18,7 @@ class SpeedSectionVC: SectionViewController {
     @IBOutlet weak var onePoint5Button: UIButton!
     @IBOutlet weak var twoButton: UIButton!
 
+    @IBOutlet weak var crownView: UIView!
     
     @IBOutlet weak var slider: UISlider!
     @IBOutlet weak var speedLabel: UILabel!
@@ -31,6 +34,10 @@ class SpeedSectionVC: SectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
+
+        crownView.layer.cornerRadius = 4
+        self.crownView.layer.opacity = 0
 
         setBorderAndRadius(button: point25Button)
         setBorderAndRadius(button: point5Button)
@@ -41,34 +48,47 @@ class SpeedSectionVC: SectionViewController {
         setSelectedButton(button: oneButton)
     }
 
+    @objc func usingSliderChanged() {
+        if UserDataManager.main.usingSlider {
+            showCrown()
+        }
+        else {
+            hideCrown()
+        }
+    }
     
     @IBAction func point25ButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 0.25
+        UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
 
     }
     @IBAction func point5ButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 0.5
+        UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
 
     }
     @IBAction func oneButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 1
+        UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
 
     }
     @IBAction func onePoint5ButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 1.5
+        UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
 
     }
     @IBAction func twoButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 2
+        UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
     }
 
@@ -77,27 +97,39 @@ class SpeedSectionVC: SectionViewController {
         currentSelectedButton?.tintColor = .link
         let slider = sender as! UISlider
         speed = convertSliderValue(value: slider.value)
+        UserDataManager.main.usingSlider = true
         sliderValueChange?(speed)
-
     }
 
     @IBAction func sliderReleased(_ sender: Any) {
-        guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
-                guard let self = self else {return}
-                self.speed = 1
-                self.slider.value = 19
-                self.setButtonUnselected(button: self.currentSelectedButton)
-                self.setSelectedButton(button: self.oneButton)
-                self.userNeedsToPurchase?()
+
+            guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
+                let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
+
+                if experimentProFeatures {
+                    let slider = sender as! UISlider
+                    speed = convertSliderValue(value: slider.value)
+                    speedDidChange?(speed)
+                }
+                else {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                        guard let self = self else {return}
+                        self.speed = 1
+                        self.slider.value = 19
+                        self.setButtonUnselected(button: self.currentSelectedButton)
+                        self.setSelectedButton(button: self.oneButton)
+                        self.userNeedsToPurchase?()
+                    }
+                }
+
+                return
             }
-            return
-        }
+            
+            print("purchasedProduct \(purchasedProduct)")
+            let slider = sender as! UISlider
+            speed = convertSliderValue(value: slider.value)
+            speedDidChange?(speed)
         
-        print("purchasedProduct \(purchasedProduct)")
-        let slider = sender as! UISlider
-        speed = convertSliderValue(value: slider.value)
-        speedDidChange?(speed)
     }
     
     func convertSliderValue(value: Float) -> Float {
@@ -137,5 +169,19 @@ class SpeedSectionVC: SectionViewController {
         }
     }
     
+   
+    func showCrown() {
+        UIView.animate(withDuration: 0.4) {
+            self.crownView.layer.opacity = 1
+//            self.crownView.isHidden = false
+        }
+    }
+    func hideCrown() {
+        UIView.animate(withDuration: 0.2) {
+            self.crownView.layer.opacity = 0
+//            self.crownView.isHidden = true
+        }
+        
+    }
     
 }

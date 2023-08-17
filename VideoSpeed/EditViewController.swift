@@ -8,6 +8,7 @@
 import UIKit
 import AVFoundation
 import AVKit
+import FirebaseRemoteConfig
 
 class EditViewController: UIViewController {
     var playerController: AVPlayerViewController!
@@ -197,7 +198,7 @@ class EditViewController: UIViewController {
     
     
     func setNavigationItems() {
-        let exportButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(exportVideo))
+        let exportButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(tryToExportVideo))
         
         speedLabel = createRightItemLabel()
         speedLabel.text = "\(speed)x"
@@ -226,18 +227,35 @@ class EditViewController: UIViewController {
     }
     
     @objc func soundButtonTapped() {
-        guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
-            showPurchaseViewController()
-            return
-        }
-        soundOn = !soundOn
-        let imageName = soundOn ? "volume.2.fill" : "volume.slash"
-        soundButton.setImage(UIImage(systemName: imageName), for: .normal)
-        moreSectionVC.updateSoundSelection(soundOn: soundOn)
+       
+            guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
+                let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
+
+                if experimentProFeatures {
+                    soundOn = !soundOn
+                    let imageName = soundOn ? "volume.2.fill" : "volume.slash"
+                    soundButton.setImage(UIImage(systemName: imageName), for: .normal)
+                    moreSectionVC.updateSoundSelection(soundOn: soundOn)
+                    
+                    Task {
+                        await self.reloadComposition()
+                    }
+                }
+                else {
+                    showPurchaseViewController()
+                }
+                return
+            }
         
-        Task {
-          await self.reloadComposition()
-        }
+            soundOn = !soundOn
+            let imageName = soundOn ? "volume.2.fill" : "volume.slash"
+            soundButton.setImage(UIImage(systemName: imageName), for: .normal)
+            moreSectionVC.updateSoundSelection(soundOn: soundOn)
+            
+            Task {
+                await self.reloadComposition()
+            }
+        
     }
     
     func createRightItemLabel() -> UILabel {
@@ -252,7 +270,29 @@ class EditViewController: UIViewController {
         return label
     }
     
+    
+    @objc func tryToExportVideo() {
+        let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
+
+        if experimentProFeatures {
+            guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
+                if UserDataManager.main.isNotUsingProFeatures() {
+                    return exportVideo()
+                }
+                else {
+                    // show alert for purchase
+                    return
+                }
+            }
+            exportVideo()
+        }
+        else {
+            exportVideo()
+        }
+    }
+    
     @objc func exportVideo() {
+        
         let theComposition = composition.copy() as! AVComposition
         let videoComposition = videoComposition.copy() as! AVVideoComposition
         

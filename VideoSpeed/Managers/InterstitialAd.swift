@@ -37,7 +37,7 @@ class InterstitialAd: NSObject {
     
     
     func start() {
-                // Start loading the interstiotial ad only if the user didn't purchase the pro version
+        // Start loading the interstiotial ad only if the user didn't purchase the pro version
         if SpidProducts.store.userPurchasedProVersion() == nil {
             timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(increaseTimeElapsed), userInfo: nil, repeats: true)
 

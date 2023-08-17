@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import FirebaseRemoteConfig
+
 enum FPS: Int {
     case thirty = 30
     case sixty = 60
@@ -72,17 +74,27 @@ extension FPSSectionVC: UIPickerViewDelegate, UIPickerViewDataSource {
         return 38
     }
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
-            pickerView.selectRow(29, inComponent: 0, animated: true)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-                guard let self = self else {return}
-                self.userNeedsToPurchase?()
-            }
-            return
-        }
         
-        print("purchasedProduct \(purchasedProduct)")
-        fps = Int32(fpsOptions[row])
-        print(fps)
+            guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
+                let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
+
+                if experimentProFeatures {
+                    fps = Int32(fpsOptions[row])
+                    print(fps)
+                }else {
+                    pickerView.selectRow(29, inComponent: 0, animated: true)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                        guard let self = self else {return}
+                        self.userNeedsToPurchase?()
+                    }
+                }
+
+                return
+            }
+            
+            print("purchasedProduct \(purchasedProduct)")
+            fps = Int32(fpsOptions[row])
+            print(fps)
+        
     }
 }
