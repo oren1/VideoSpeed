@@ -6,6 +6,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -218,6 +219,43 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="743" y="3"/>
+        </scene>
+        <!--Using Pro Features View Controller-->
+        <scene sceneID="jeV-pU-eer">
+            <objects>
+                <viewController storyboardIdentifier="UsingProFeaturesViewController" id="Zye-en-q7O" customClass="UsingProFeaturesViewController" customModule="VideoSpeed" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="dTP-gv-hKX">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view alpha="0.40000000000000002" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="69h-9K-Wa3">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Pt3-zU-dU7">
+                                <rect key="frame" x="37.5" y="133.5" width="300" height="200"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="200" id="JSA-vA-npP"/>
+                                    <constraint firstAttribute="width" constant="300" id="w8F-5G-7cY"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="lyG-wT-buK"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="69h-9K-Wa3" firstAttribute="top" secondItem="lyG-wT-buK" secondAttribute="top" id="8k3-Uk-6Ru"/>
+                            <constraint firstItem="Pt3-zU-dU7" firstAttribute="centerX" secondItem="dTP-gv-hKX" secondAttribute="centerX" id="DX2-pa-mJc"/>
+                            <constraint firstItem="lyG-wT-buK" firstAttribute="bottom" secondItem="69h-9K-Wa3" secondAttribute="bottom" id="Uwj-Lf-akn"/>
+                            <constraint firstItem="Pt3-zU-dU7" firstAttribute="centerY" secondItem="dTP-gv-hKX" secondAttribute="centerY" constant="-100" id="bnz-0Y-vHv"/>
+                            <constraint firstItem="69h-9K-Wa3" firstAttribute="leading" secondItem="lyG-wT-buK" secondAttribute="leading" id="gse-P6-F9u"/>
+                            <constraint firstItem="lyG-wT-buK" firstAttribute="trailing" secondItem="69h-9K-Wa3" secondAttribute="trailing" id="kLO-KY-9xm"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="y8T-zj-bub" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1580" y="-681.40929535232385"/>
         </scene>
         <!--Purchase View Controller-->
         <scene sceneID="UW9-QO-CG3">
@@ -536,5 +574,8 @@
         <image name="checkmark" catalog="system" width="128" height="114"/>
         <image name="checkmark.circle.fill" catalog="system" width="128" height="123"/>
         <image name="multiply" catalog="system" width="128" height="111"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

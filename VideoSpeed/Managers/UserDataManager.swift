@@ -17,6 +17,7 @@ class UserDataManager {
             NotificationCenter.default.post(name: Notification.Name("usingSliderChanged"), object: nil)
         }
     }
+
     
     
     func productforIdentifier(productIndentifier: ProductIdentifier) -> SKProduct? {

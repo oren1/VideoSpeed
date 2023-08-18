@@ -49,12 +49,12 @@ class SpeedSectionVC: SectionViewController {
     }
 
     @objc func usingSliderChanged() {
-        if UserDataManager.main.usingSlider {
-            showCrown()
-        }
-        else {
-            hideCrown()
-        }
+//        if UserDataManager.main.usingSlider {
+//            showCrown()
+//        }
+//        else {
+//            hideCrown()
+//        }
     }
     
     @IBAction func point25ButtonTapped(_ sender: UIButton) {

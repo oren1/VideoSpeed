@@ -24,11 +24,22 @@ class EditViewController: UIViewController {
     var compositionVideoTrack: AVMutableCompositionTrack!
     var exportSession: AVAssetExportSession?
     var timer: Timer?
+    var proButton: UIButton!
     
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     lazy var progressIndicatorView: ProgressIndicatorView = {
         progressIndicatorView = ProgressIndicatorView()
         return progressIndicatorView
+    }()
+    
+    lazy var blackTransparentOverlay: BlackTransparentOverlay = {
+        blackTransparentOverlay = BlackTransparentOverlay()
+        return blackTransparentOverlay
+    }()
+    
+    lazy var usingProFeaturesAlertView: UsingProFeaturesAlertView = {
+        usingProFeaturesAlertView = UsingProFeaturesAlertView()
+        return usingProFeaturesAlertView
     }()
     
     // Bottom tabs
@@ -56,14 +67,14 @@ class EditViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
+        NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
         
         segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 17)], for: .selected)
         segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
                                                  .font: UIFont.boldSystemFont(ofSize: 17)], for: .normal)
         
         setNavigationItems()
-        
+        proButton = createProButton()
         addSpeedSection()
         addFPSSection()
         addFiletypeSection()
@@ -97,6 +108,19 @@ class EditViewController: UIViewController {
         
     }
 
+    func createProButton() -> UIButton {
+        let proButton = UIButton(type: .roundedRect)
+        proButton.tintColor = .systemBlue
+        proButton.backgroundColor = .white
+        proButton.setTitle("Pro Version", for: .normal)
+        proButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        proButton.addTarget(self, action: #selector(proButtonTapped), for: .touchUpInside)
+        proButton.layer.cornerRadius = 8
+        proButton.layer.borderWidth = 1
+        proButton.layer.borderColor = UIColor.lightGray.cgColor
+        return proButton
+    }
+    
     func createCompositionWith(speed: Float, fps: Int32, soundOn: Bool) async -> (composition: AVMutableComposition, videoComposition: AVMutableVideoComposition)? {
         let composition = AVMutableComposition(urlAssetInitializationOptions: nil)
 
@@ -236,7 +260,7 @@ class EditViewController: UIViewController {
                     let imageName = soundOn ? "volume.2.fill" : "volume.slash"
                     soundButton.setImage(UIImage(systemName: imageName), for: .normal)
                     moreSectionVC.updateSoundSelection(soundOn: soundOn)
-                    
+                    showProButtonIfNeeded()
                     Task {
                         await self.reloadComposition()
                     }
@@ -276,11 +300,12 @@ class EditViewController: UIViewController {
 
         if experimentProFeatures {
             guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
-                if UserDataManager.main.isNotUsingProFeatures() {
+                if !usingProFeatures() {
                     return exportVideo()
                 }
                 else {
                     // show alert for purchase
+                    showProFeatureAlert()
                     return
                 }
             }
@@ -292,7 +317,6 @@ class EditViewController: UIViewController {
     }
     
     @objc func exportVideo() {
-        
         let theComposition = composition.copy() as! AVComposition
         let videoComposition = videoComposition.copy() as! AVVideoComposition
         
@@ -419,6 +443,22 @@ class EditViewController: UIViewController {
     }
     
     // MARK: - Sections Logic
+    func showProButton() {
+        self.view.addSubview(proButton)
+        proButton.translatesAutoresizingMaskIntoConstraints = false
+
+        let constraints = [
+            proButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            proButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -18),
+            proButton.widthAnchor.constraint(equalToConstant: 100),
+            proButton.heightAnchor.constraint(equalToConstant: 34)
+        ]
+        NSLayoutConstraint.activate(constraints)
+    }
+    func hideProButton() {
+        proButton.removeFromSuperview()
+    }
+    
     func addSpeedSection() {
         speedSectionVC = SpeedSectionVC()
         
@@ -450,10 +490,12 @@ class EditViewController: UIViewController {
     func addFPSSection() {
         fpsSectionVC = FPSSectionVC()
         fpsSectionVC.fpsDidChange = {[weak self] (fps: Int32) in
-            self?.fps = fps
-            self?.fpsLabel.text = "\(fps):fps"
+            guard let self = self else {return}
+            self.fps = fps
+            self.fpsLabel.text = "\(fps):fps"
+            showProButtonIfNeeded()
             Task {
-                await self?.reloadComposition()
+                await self.reloadComposition()
             }
         }
         fpsSectionVC.userNeedsToPurchase = {[weak self] in
@@ -467,12 +509,13 @@ class EditViewController: UIViewController {
         moreSectionVC.fileTypeDidChange = {[weak self] (fileType: AVFileType) in
             self?.fileType = fileType
             self?.fileTypeLabel.text = fileType == .mov ? "MOV" : "MP4"
+            self?.showProButtonIfNeeded()
         }
         moreSectionVC.soundStateChanged = {[weak self] (soundOn: Bool) in
             self?.soundOn = soundOn
             let imageName = soundOn ? "volume.2.fill" : "volume.slash"
             self?.soundButton.setImage(UIImage(systemName: imageName), for: .normal) 
-
+            self?.showProButtonIfNeeded()
             Task {
               await self?.reloadComposition()
             }
@@ -544,6 +587,56 @@ class EditViewController: UIViewController {
     }
     
     
+    // MARK: - UI Logic
+    func showBlackTransparentOverlay() {
+        self.navigationController!.view.addSubview(blackTransparentOverlay)
+        blackTransparentOverlay.translatesAutoresizingMaskIntoConstraints = false
+
+        let constraints = [
+            blackTransparentOverlay.topAnchor.constraint(equalTo: navigationController!.view.topAnchor),
+            blackTransparentOverlay.leftAnchor.constraint(equalTo: navigationController!.view.leftAnchor),
+            blackTransparentOverlay.rightAnchor.constraint(equalTo: navigationController!.view.rightAnchor),
+            blackTransparentOverlay.bottomAnchor.constraint(equalTo: navigationController!.view.bottomAnchor),
+        ]
+        NSLayoutConstraint.activate(constraints)
+    }
+    
+    func hideBlackTransparentOverlay() {
+        blackTransparentOverlay.removeFromSuperview()
+    }
+    
+    func showUsingProFeaturesAlertView() {
+        self.navigationController!.view.addSubview(usingProFeaturesAlertView)
+        usingProFeaturesAlertView.translatesAutoresizingMaskIntoConstraints = false
+        usingProFeaturesAlertView.onCancel = { [weak self] in
+            self?.hideProFeatureAlert()
+        }
+        usingProFeaturesAlertView.onContinue = { [weak self] in
+            self?.showPurchaseViewController()
+            self?.hideProFeatureAlert()
+        }
+        let constraints = [
+            usingProFeaturesAlertView.heightAnchor.constraint(equalToConstant: 300),
+            usingProFeaturesAlertView.widthAnchor.constraint(equalToConstant: 340),
+            usingProFeaturesAlertView.centerXAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerXAnchor),
+            usingProFeaturesAlertView.centerYAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerYAnchor)
+        ]
+        NSLayoutConstraint.activate(constraints)
+    }
+    func hideUsingProFeaturesAlertView() {
+        usingProFeaturesAlertView.removeFromSuperview()
+    }
+    
+    func showProFeatureAlert() {
+        showBlackTransparentOverlay()
+        showUsingProFeaturesAlertView()
+    }
+    
+    func hideProFeatureAlert() {
+        self.hideBlackTransparentOverlay()
+        self.hideUsingProFeaturesAlertView()
+    }
+    
     // MARK: - Custom Logic
     @objc func updateExportProgress() {
         guard let progress = exportSession?.progress else { return }
@@ -576,6 +669,18 @@ class EditViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    func showProButtonIfNeeded() {
+        let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
+        guard experimentProFeatures == true else {return}
+        
+        if self.usingProFeatures() {
+            self.showProButton()
+        }
+        else {
+            self.hideProButton()
+        }
+    }
+    
     func loopVideo() {
       NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { [weak self] notification in
           self?.playerController.player?.seek(to: .zero)
@@ -584,3 +689,26 @@ class EditViewController: UIViewController {
     }
 }
 
+fileprivate typealias NotificationObservers = EditViewController
+extension NotificationObservers {
+    @objc func usingSliderChanged() {
+        let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
+        guard experimentProFeatures == true else {return}
+        showProButtonIfNeeded()
+    }
+    
+    func usingProFeatures() -> Bool {
+        if UserDataManager.main.usingSlider ||
+            fps != 30 ||
+            !soundOn ||
+            fileType == .mp4 {
+            
+            return true
+        }
+        return false
+    }
+    
+   @objc func proButtonTapped() {
+        showPurchaseViewController()
+    }
+}
