@@ -11,7 +11,6 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SpeedSectionVC" customModule="VideoSpeed" customModuleProvider="target">
             <connections>
-                <outlet property="crownView" destination="pbm-Lx-5zh" id="Ycy-b8-I6E"/>
                 <outlet property="oneButton" destination="m32-Ab-gP1" id="29O-zN-hP0"/>
                 <outlet property="onePoint5Button" destination="UHh-at-f4C" id="JPv-WZ-09P"/>
                 <outlet property="point25Button" destination="7UB-iq-26H" id="78B-hB-mM9"/>
@@ -146,14 +145,6 @@
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pbm-Lx-5zh" customClass="CrownView" customModule="VideoSpeed" customModuleProvider="target">
-                    <rect key="frame" x="215" y="115" width="22" height="22"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="22" id="Ja9-EY-an5"/>
-                        <constraint firstAttribute="width" constant="22" id="Zh5-cT-PYW"/>
-                    </constraints>
-                </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -165,7 +156,6 @@
                 <constraint firstItem="LdQ-lL-JQT" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="12" id="ALo-D2-kDz"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="gf1-VW-0UC" secondAttribute="trailing" constant="12" id="BPP-AG-yGj"/>
                 <constraint firstItem="NMb-se-PAW" firstAttribute="top" secondItem="CKR-ZF-I01" secondAttribute="bottom" constant="8" symbolic="YES" id="DzF-mI-NUY"/>
-                <constraint firstItem="pbm-Lx-5zh" firstAttribute="centerY" secondItem="CKR-ZF-I01" secondAttribute="centerY" id="EfY-0o-9Rb"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="NMb-se-PAW" secondAttribute="bottom" constant="42" id="FvP-9M-Y1p"/>
                 <constraint firstItem="aSK-V4-h1j" firstAttribute="top" secondItem="W4u-uI-LKU" secondAttribute="bottom" constant="13" id="MpU-V2-fzI"/>
                 <constraint firstItem="NMb-se-PAW" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="12" id="OrN-Ii-k99"/>
@@ -174,7 +164,6 @@
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="Vdp-L7-bDI" secondAttribute="trailing" constant="12" id="VyR-Cd-9V5"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="NMb-se-PAW" secondAttribute="trailing" constant="12" id="W62-dE-I9h"/>
                 <constraint firstItem="W4u-uI-LKU" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="12" id="ake-Et-bAC"/>
-                <constraint firstItem="pbm-Lx-5zh" firstAttribute="leading" secondItem="CKR-ZF-I01" secondAttribute="trailing" constant="12" id="cqf-2I-3FX"/>
                 <constraint firstItem="xhg-pU-4f9" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="12" id="dJc-n2-Ssb"/>
                 <constraint firstItem="Vdp-L7-bDI" firstAttribute="centerY" secondItem="CKR-ZF-I01" secondAttribute="centerY" id="in3-8M-s5e"/>
                 <constraint firstAttribute="trailing" secondItem="W4u-uI-LKU" secondAttribute="trailing" constant="12" id="nWM-wE-HbW"/>

@@ -190,6 +190,7 @@
                                 <segments>
                                     <segment title="SPEED"/>
                                     <segment title="FPS"/>
+                                    <segment title="SOUND"/>
                                     <segment title="MORE"/>
                                 </segments>
                                 <color key="selectedSegmentTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

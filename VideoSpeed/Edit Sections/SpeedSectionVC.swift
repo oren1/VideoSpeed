@@ -18,7 +18,6 @@ class SpeedSectionVC: SectionViewController {
     @IBOutlet weak var onePoint5Button: UIButton!
     @IBOutlet weak var twoButton: UIButton!
 
-    @IBOutlet weak var crownView: UIView!
     
     @IBOutlet weak var slider: UISlider!
     @IBOutlet weak var speedLabel: UILabel!
@@ -36,8 +35,6 @@ class SpeedSectionVC: SectionViewController {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
 
-        crownView.layer.cornerRadius = 4
-        self.crownView.layer.opacity = 0
 
         setBorderAndRadius(button: point25Button)
         setBorderAndRadius(button: point5Button)
@@ -48,14 +45,7 @@ class SpeedSectionVC: SectionViewController {
         setSelectedButton(button: oneButton)
     }
 
-    @objc func usingSliderChanged() {
-//        if UserDataManager.main.usingSlider {
-//            showCrown()
-//        }
-//        else {
-//            hideCrown()
-//        }
-    }
+    @objc func usingSliderChanged() {}
     
     @IBAction func point25ButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
@@ -170,18 +160,6 @@ class SpeedSectionVC: SectionViewController {
     }
     
    
-    func showCrown() {
-        UIView.animate(withDuration: 0.4) {
-            self.crownView.layer.opacity = 1
-//            self.crownView.isHidden = false
-        }
-    }
-    func hideCrown() {
-        UIView.animate(withDuration: 0.2) {
-            self.crownView.layer.opacity = 0
-//            self.crownView.isHidden = true
-        }
-        
-    }
+  
     
 }

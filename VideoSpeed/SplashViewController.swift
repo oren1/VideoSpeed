@@ -36,6 +36,8 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
         
         downloadGroup.enter()
         getRemoteConfig {
+            let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
+            print("experimentProFeatures \(experimentProFeatures)")
             downloadGroup.leave()
         }
         

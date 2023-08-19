@@ -60,6 +60,7 @@ class EditViewController: UIViewController {
     // Sections
     var speedSectionVC: SpeedSectionVC!
     var fpsSectionVC: FPSSectionVC!
+    var soundSectionVC: SoundSectionVC!
     var moreSectionVC: MoreSectionVC!
     
     @IBOutlet weak var dashboardContainerView: UIView!
@@ -77,8 +78,9 @@ class EditViewController: UIViewController {
         proButton = createProButton()
         addSpeedSection()
         addFPSSection()
+        addSoundSection()
         addFiletypeSection()
-        
+
         showSpeedSection()
         
         asset = AVAsset(url: assetUrl)
@@ -139,13 +141,12 @@ class EditViewController: UIViewController {
         }
         
         
-        let videoTracks = try! await asset.loadTracks(withMediaType: .video)
-        guard  videoTracks.count > 0 else { return nil }
-        
-        let videoTrack = videoTracks[0]
-        
-        let videoDuration = try! await asset.load(.duration)
-        
+        guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+              let videoDuration = try? await asset.load(.duration),
+              let naturalSize = try? await videoTrack.load(.naturalSize),
+              let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return nil}
+
+                
         try? compositionVideoTrack.insertTimeRange(CMTimeRange(start: .zero, duration: videoDuration),
                                                                 of: videoTrack,
                                                                 at: CMTime.invalid)
@@ -153,14 +154,12 @@ class EditViewController: UIViewController {
         
        
         
-        compositionOriginalDuration = try! await composition.load(.duration)
+        guard let compositionOriginalDuration = try? await composition.load(.duration) else {return nil}
+        self.compositionOriginalDuration = compositionOriginalDuration
         let newDuration = Int64(compositionOriginalDuration.seconds / Double(speed))
         composition.scaleTimeRange(CMTimeRange(start: .zero, duration: compositionOriginalDuration), toDuration: CMTime(value: newDuration, timescale: 1))
         
         
-
-        let naturalSize = try! await videoTrack.load(.naturalSize)
-        let preferredTransform = try! await videoTrack.load(.preferredTransform)
         compositionVideoTrack.preferredTransform = preferredTransform
 
         let videoInfo = VideoHelper.orientation(from: preferredTransform)
@@ -437,6 +436,8 @@ class EditViewController: UIViewController {
             showSpeedSection()
         case 1:
             showFPSSection()
+        case 2:
+            showSoundSection()
         default:
             showFileTypeSection()
         }
@@ -504,6 +505,23 @@ class EditViewController: UIViewController {
         addSection(sectionVC: fpsSectionVC)
     }
     
+    func addSoundSection()  {
+        soundSectionVC = SoundSectionVC()
+        soundSectionVC.soundStateChanged = {[weak self] (soundOn: Bool) in
+            self?.soundOn = soundOn
+            let imageName = soundOn ? "volume.2.fill" : "volume.slash"
+            self?.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
+            self?.showProButtonIfNeeded()
+            Task {
+              await self?.reloadComposition()
+            }
+        }
+        soundSectionVC.userNeedsToPurchase = {[weak self] in
+            self?.showPurchaseViewController()
+        }
+        addSection(sectionVC: soundSectionVC)
+    }
+    
     func addFiletypeSection() {
         moreSectionVC = MoreSectionVC()
         moreSectionVC.fileTypeDidChange = {[weak self] (fileType: AVFileType) in
@@ -546,18 +564,28 @@ class EditViewController: UIViewController {
     func showSpeedSection() {
         speedSectionVC.view.isHidden = false
         fpsSectionVC.view.isHidden = true
+        soundSectionVC.view.isHidden = true
         moreSectionVC.view.isHidden = true
     }
 
     func showFPSSection() {
         speedSectionVC.view.isHidden = true
         fpsSectionVC.view.isHidden = false
+        soundSectionVC.view.isHidden = true
+        moreSectionVC.view.isHidden = true
+    }
+    
+    func showSoundSection() {
+        speedSectionVC.view.isHidden = true
+        fpsSectionVC.view.isHidden = true
+        soundSectionVC.view.isHidden = false
         moreSectionVC.view.isHidden = true
     }
     
     func showFileTypeSection() {
         speedSectionVC.view.isHidden = true
         fpsSectionVC.view.isHidden = true
+        soundSectionVC.view.isHidden = true
         moreSectionVC.view.isHidden = false
     }
     
@@ -606,6 +634,11 @@ class EditViewController: UIViewController {
     }
     
     func showUsingProFeaturesAlertView() {
+        usingProFeaturesAlertView.updateStatus(usingSlider: UserDataManager.main.usingSlider,
+                                               soundOn: soundOn,
+                                               fps: fps,
+                                               fileType: fileType)
+        usingProFeaturesAlertView.layer.opacity = 0
         self.navigationController!.view.addSubview(usingProFeaturesAlertView)
         usingProFeaturesAlertView.translatesAutoresizingMaskIntoConstraints = false
         usingProFeaturesAlertView.onCancel = { [weak self] in
@@ -622,6 +655,10 @@ class EditViewController: UIViewController {
             usingProFeaturesAlertView.centerYAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerYAnchor)
         ]
         NSLayoutConstraint.activate(constraints)
+        UIView.animate(withDuration: 0.2) { [weak self] in
+            self?.usingProFeaturesAlertView.layer.opacity = 1
+        }
+        
     }
     func hideUsingProFeaturesAlertView() {
         usingProFeaturesAlertView.removeFromSuperview()
