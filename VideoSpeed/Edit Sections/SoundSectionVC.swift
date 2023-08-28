@@ -24,6 +24,16 @@ class SoundSectionVC: SectionViewController {
 
     }
 
+    func updateSoundSelection(soundOn: Bool) {
+        self.soundOn = soundOn
+        if self.soundOn {
+            setSelectedButton(button: onButton)
+        }
+        else {
+            setSelectedButton(button: offButton)
+        }
+    }
+    
     @IBAction func onButtonTapped(_ sender: Any) {
         soundOn = true
         setSelectedButton(button: onButton)

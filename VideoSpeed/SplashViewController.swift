@@ -19,7 +19,11 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        RemoteConfig.remoteConfig().setDefaults(fromPlist: "remote_config_defaults")
+        let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
+        let minimumAppOpensToShowAd = RemoteConfig.remoteConfig().configValue(forKey: "minimumAppOpensToShowAd").numberValue.intValue
+
+        print("experimentProFeatures \(experimentProFeatures)")
+        print("minimumAppOpensToShowAd \(minimumAppOpensToShowAd)")
 
         let downloadGroup = DispatchGroup()
 

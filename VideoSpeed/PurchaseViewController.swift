@@ -15,8 +15,8 @@ class PurchaseViewController: UIViewController {
     
     @IBOutlet weak var priceLabel: UILabel!
     @IBOutlet weak var backButton: UIButton!
-    
     @IBOutlet weak var oneTimeChargeLabel: UILabel!
+    var onDismiss: VoidClosure?
     lazy var loadingView: LoadingView = {
         loadingView = LoadingView()
         return loadingView
@@ -58,6 +58,7 @@ class PurchaseViewController: UIViewController {
     }
     
     @IBAction func backButtonTapped(_ sender: Any) {
+        onDismiss?()
         dismiss(animated: true)
     }
     
@@ -72,6 +73,7 @@ class PurchaseViewController: UIViewController {
     
     // MARK: - NotificationCenter Selectors
     @objc func purchaseCompleted(notification: Notification) {
+        onDismiss?()
         hideLoading()
         dismiss(animated: true)
     }
@@ -79,6 +81,7 @@ class PurchaseViewController: UIViewController {
     
     
     @objc func restoreCompleted(notification: Notification) {
+        onDismiss?()
         hideLoading()
         dismiss(animated: true)
     }

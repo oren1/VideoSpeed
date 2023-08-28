@@ -12,10 +12,14 @@ import FirebaseRemoteConfig
 typealias VoidClosure = () -> ()
 class AppOpenAd: NSObject, GADFullScreenContentDelegate {
     
-    let minimumAppOpensRequiredToShowAd = RemoteConfig.remoteConfig().configValue(forKey: "minimumAppOpensToShowAd").numberValue.intValue
+    var minimumAppOpensRequiredToShowAd: Int
 
     static let manager = AppOpenAd()
 
+    override init() {
+        minimumAppOpensRequiredToShowAd = RemoteConfig.remoteConfig().configValue(forKey: "minimumAppOpensToShowAd").numberValue.intValue
+    }
+    
     var amountOfAppOpens: Int {
         set {
             UserDefaults.standard.set(newValue, forKey: "amountOfAppOpens")

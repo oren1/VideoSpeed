@@ -8,6 +8,7 @@ target 'VideoSpeed' do
     pod 'FirebaseAnalytics'
     pod 'FirebaseAuth'
     pod 'FirebaseRemoteConfig'
+    pod 'FirebaseCrashlytics'
   # Pods for VideoSpeed
 
 end

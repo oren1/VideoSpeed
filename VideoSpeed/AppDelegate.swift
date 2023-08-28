@@ -9,6 +9,7 @@ import UIKit
 import FirebaseCore
 import GoogleMobileAds
 import FirebaseInstallations
+import FirebaseRemoteConfig
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -31,6 +32,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
           print("Installation auth token: \(result.authToken)")
         })
         
+        RemoteConfig.remoteConfig().setDefaults(fromPlist: "remote_config_defaults")
+
         return true
     }
 

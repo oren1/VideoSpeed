@@ -67,7 +67,6 @@ class EditViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
         
         segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 17)], for: .selected)
@@ -110,6 +109,7 @@ class EditViewController: UIViewController {
         
     }
 
+    
     func createProButton() -> UIButton {
         let proButton = UIButton(type: .roundedRect)
         proButton.tintColor = .systemBlue
@@ -258,7 +258,7 @@ class EditViewController: UIViewController {
                     soundOn = !soundOn
                     let imageName = soundOn ? "volume.2.fill" : "volume.slash"
                     soundButton.setImage(UIImage(systemName: imageName), for: .normal)
-                    moreSectionVC.updateSoundSelection(soundOn: soundOn)
+                    soundSectionVC.updateSoundSelection(soundOn: soundOn)
                     showProButtonIfNeeded()
                     Task {
                         await self.reloadComposition()
@@ -273,7 +273,7 @@ class EditViewController: UIViewController {
             soundOn = !soundOn
             let imageName = soundOn ? "volume.2.fill" : "volume.slash"
             soundButton.setImage(UIImage(systemName: imageName), for: .normal)
-            moreSectionVC.updateSoundSelection(soundOn: soundOn)
+            soundSectionVC.updateSoundSelection(soundOn: soundOn)
             
             Task {
                 await self.reloadComposition()
@@ -682,13 +682,20 @@ class EditViewController: UIViewController {
 
     func showPurchaseViewController() {
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PurchaseViewController") as! PurchaseViewController
+        
+        purchaseViewController.onDismiss = { [weak self] in
+            if let _ = SpidProducts.store.userPurchasedProVersion() {
+                self?.hideProButton()
+            }
+        }
+        
         if UIDevice.current.userInterfaceIdiom == .phone {
             purchaseViewController.modalPresentationStyle = .fullScreen
         }
         else if UIDevice.current.userInterfaceIdiom == .pad {
             purchaseViewController.modalPresentationStyle = .formSheet
         }
-
+        
         self.present(purchaseViewController, animated: true)
     }
     
@@ -707,6 +714,7 @@ class EditViewController: UIViewController {
     }
     
     func showProButtonIfNeeded() {
+        guard SpidProducts.store.userPurchasedProVersion() == nil else {return}
         let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
         guard experimentProFeatures == true else {return}
         
