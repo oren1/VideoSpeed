@@ -96,32 +96,32 @@ class PurchaseViewController: UIViewController {
         }
     }
  
-    func showLoading() {
-        disablePresentaionDismiss()
-        loadingView.activityIndicator.startAnimating()
-        view.addSubview(loadingView)
-        loadingView.translatesAutoresizingMaskIntoConstraints = false
-
-        let constraints = [
-            loadingView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            loadingView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
-            loadingView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
-            loadingView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-        ]
-        NSLayoutConstraint.activate(constraints)
-    }
-    
-    func hideLoading() {
-        enablePresentationDismiss()
-        loadingView.activityIndicator.stopAnimating()
-        loadingView.removeFromSuperview()
-    }
-    
-    func disablePresentaionDismiss() {
-        isModalInPresentation = true
-    }
-   
-    func enablePresentationDismiss() {
-        isModalInPresentation = false
-    }
+//    func showLoading() {
+//        disablePresentaionDismiss()
+//        loadingView.activityIndicator.startAnimating()
+//        view.addSubview(loadingView)
+//        loadingView.translatesAutoresizingMaskIntoConstraints = false
+//
+//        let constraints = [
+//            loadingView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+//            loadingView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+//            loadingView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
+//            loadingView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+//        ]
+//        NSLayoutConstraint.activate(constraints)
+//    }
+//
+//    func hideLoading() {
+//        enablePresentationDismiss()
+//        loadingView.activityIndicator.stopAnimating()
+//        loadingView.removeFromSuperview()
+//    }
+//
+//    func disablePresentaionDismiss() {
+//        isModalInPresentation = true
+//    }
+//
+//    func enablePresentationDismiss() {
+//        isModalInPresentation = false
+//    }
 }

@@ -26,7 +26,7 @@ class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         #if DEBUG
          print("purchased")
         #else
@@ -247,14 +247,26 @@ extension MainViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
         let video = videos![indexPath.row]
-        video.getAVAssetUrl { responseURL in
-            vc.assetUrl = responseURL
+        
+        video.getAVAssetUrl { [weak self] progress, error, stop, info in
+            DispatchQueue.main.async {
+                let loadingView = self?.view.viewWithTag(loadinViewTag)
+                if loadingView == nil && progress != 1 {
+                    self?.showLoading()
+                }
+                print("progress \(progress)")
+            }
+        } completionHandler: { responseURL in
             DispatchQueue.main.async { [weak self] in
+                self?.hideLoading()
+                vc.assetUrl = responseURL
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         }
     }
 }
+
+
 // MARK: - Collection View Flow Layout Delegate
 extension MainViewController: UICollectionViewDelegateFlowLayout {
   // 1

@@ -34,7 +34,8 @@ class SpeedSectionVC: SectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
-
+        
+       
 
         setBorderAndRadius(button: point25Button)
         setBorderAndRadius(button: point5Button)
@@ -50,6 +51,7 @@ class SpeedSectionVC: SectionViewController {
     @IBAction func point25ButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 0.25
+        slider.value = 5
         UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
 
@@ -57,6 +59,7 @@ class SpeedSectionVC: SectionViewController {
     @IBAction func point5ButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 0.5
+        slider.value = 10
         UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
 
@@ -64,6 +67,7 @@ class SpeedSectionVC: SectionViewController {
     @IBAction func oneButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 1
+        slider.value = 19
         UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
 
@@ -71,6 +75,7 @@ class SpeedSectionVC: SectionViewController {
     @IBAction func onePoint5ButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 1.5
+        slider.value = 20.5
         UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
 
@@ -78,13 +83,15 @@ class SpeedSectionVC: SectionViewController {
     @IBAction func twoButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 2
+        slider.value = 21
         UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
     }
 
     
     @IBAction func onSliderChange(_ sender: Any) {
-        currentSelectedButton?.tintColor = .link
+        setButtonUnselected(button: currentSelectedButton)
+//        currentSelectedButton?.tintColor = .link
         let slider = sender as! UISlider
         speed = convertSliderValue(value: slider.value)
         UserDataManager.main.usingSlider = true

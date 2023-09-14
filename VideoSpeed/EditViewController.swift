@@ -109,6 +109,9 @@ class EditViewController: UIViewController {
         
     }
 
+    deinit {
+        UserDataManager.main.usingSlider = false
+    }
     
     func createProButton() -> UIButton {
         let proButton = UIButton(type: .roundedRect)
@@ -360,7 +363,9 @@ class EditViewController: UIViewController {
               }
             }
 
-        }    }
+        }
+        
+    }
     
     @objc func video(
       _ videoPath: String,

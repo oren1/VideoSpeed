@@ -44,6 +44,7 @@
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="filled" title="0.25">
                                 <fontDescription key="titleFontDescription" type="boldSystem" pointSize="15"/>
+                                <directionalEdgeInsets key="contentInsets" top="0.0" leading="0.0" bottom="0.0" trailing="0.0"/>
                             </buttonConfiguration>
                             <connections>
                                 <action selector="point25ButtonTapped:" destination="-1" eventType="touchUpInside" id="hc6-dX-4mj"/>
@@ -55,6 +56,7 @@
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="filled" title="0.5">
                                 <fontDescription key="titleFontDescription" type="boldSystem" pointSize="15"/>
+                                <directionalEdgeInsets key="contentInsets" top="0.0" leading="0.0" bottom="0.0" trailing="0.0"/>
                             </buttonConfiguration>
                             <connections>
                                 <action selector="point5ButtonTapped:" destination="-1" eventType="touchUpInside" id="t8T-s7-CPk"/>
@@ -66,6 +68,7 @@
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="filled" title="1">
                                 <fontDescription key="titleFontDescription" type="boldSystem" pointSize="15"/>
+                                <directionalEdgeInsets key="contentInsets" top="0.0" leading="0.0" bottom="0.0" trailing="0.0"/>
                             </buttonConfiguration>
                             <connections>
                                 <action selector="oneButtonTapped:" destination="-1" eventType="touchUpInside" id="IEq-lR-tgv"/>
@@ -77,6 +80,7 @@
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="filled" title="1.5">
                                 <fontDescription key="titleFontDescription" type="boldSystem" pointSize="15"/>
+                                <directionalEdgeInsets key="contentInsets" top="0.0" leading="0.0" bottom="0.0" trailing="0.0"/>
                             </buttonConfiguration>
                             <connections>
                                 <action selector="onePoint5ButtonTapped:" destination="-1" eventType="touchUpInside" id="R9O-h7-dCc"/>
@@ -88,6 +92,7 @@
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="filled" title="2">
                                 <fontDescription key="titleFontDescription" type="boldSystem" pointSize="15"/>
+                                <directionalEdgeInsets key="contentInsets" top="0.0" leading="0.0" bottom="0.0" trailing="0.0"/>
                             </buttonConfiguration>
                             <connections>
                                 <action selector="twoButtonTapped:" destination="-1" eventType="touchUpInside" id="5yY-M0-vrR"/>
