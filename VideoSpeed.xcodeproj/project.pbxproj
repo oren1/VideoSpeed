@@ -25,7 +25,8 @@
 		6B71AAC42A9098A000C06619 /* SoundSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */; };
 		6B71AAC52A9098A000C06619 /* SoundSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B71AAC32A9098A000C06619 /* SoundSectionVC.xib */; };
 		6B71AAEB2AAA321300C06619 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B71AAEA2AAA321300C06619 /* UIViewController+Extension.swift */; };
-		6B92E3572A7788B9008CB22A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6B92E3562A7788B9008CB22A /* GoogleService-Info.plist */; };
+		6B71AAF32AC431A000C06619 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6B71AAF22AC431A000C06619 /* GoogleService-Info.plist */; };
+		6B71AAF52AC431DC00C06619 /* remote_config_defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6B71AAF42AC431DC00C06619 /* remote_config_defaults.plist */; };
 		6B92E3592A77A192008CB22A /* AppOpenAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B92E3582A77A192008CB22A /* AppOpenAd.swift */; };
 		6B92E35B2A77C72C008CB22A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A2ED2A5FC80C00FF8CB0 /* SceneDelegate.swift */; };
 		6B92E35D2A7933C3008CB22A /* SuccessMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B92E35C2A7933C3008CB22A /* SuccessMessageViewController.swift */; };
@@ -34,7 +35,6 @@
 		6B92E3692A7E2F5E008CB22A /* PhotoLibraryUsageDisabledView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B92E3682A7E2F5E008CB22A /* PhotoLibraryUsageDisabledView.xib */; };
 		6BAC9BBF2A666EBE0071A41B /* TopIndicatorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */; };
 		6BAC9BC12A666EEA0071A41B /* TopIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAC9BC02A666EEA0071A41B /* TopIndicatorView.swift */; };
-		6BB4EE7C2A8DD7C6006CF87C /* remote_config_defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6BB4EE7B2A8DD7C6006CF87C /* remote_config_defaults.plist */; };
 		6BB4EE7E2A8E1109006CF87C /* CrownView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BB4EE7D2A8E1109006CF87C /* CrownView.xib */; };
 		6BB4EE802A8E11CA006CF87C /* CrownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB4EE7F2A8E11CA006CF87C /* CrownView.swift */; };
 		6BB4EE822A8F31EA006CF87C /* UsingProFeaturesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB4EE812A8F31EA006CF87C /* UsingProFeaturesViewController.swift */; };
@@ -81,7 +81,8 @@
 		6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSectionVC.swift; sourceTree = "<group>"; };
 		6B71AAC32A9098A000C06619 /* SoundSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SoundSectionVC.xib; sourceTree = "<group>"; };
 		6B71AAEA2AAA321300C06619 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
-		6B92E3562A7788B9008CB22A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		6B71AAF22AC431A000C06619 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		6B71AAF42AC431DC00C06619 /* remote_config_defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = remote_config_defaults.plist; sourceTree = "<group>"; };
 		6B92E3582A77A192008CB22A /* AppOpenAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOpenAd.swift; sourceTree = "<group>"; };
 		6B92E35C2A7933C3008CB22A /* SuccessMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessMessageViewController.swift; sourceTree = "<group>"; };
 		6B92E3622A7B60AE008CB22A /* InterstitialAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterstitialAd.swift; sourceTree = "<group>"; };
@@ -89,7 +90,6 @@
 		6B92E3682A7E2F5E008CB22A /* PhotoLibraryUsageDisabledView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhotoLibraryUsageDisabledView.xib; sourceTree = "<group>"; };
 		6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TopIndicatorView.xib; sourceTree = "<group>"; };
 		6BAC9BC02A666EEA0071A41B /* TopIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopIndicatorView.swift; sourceTree = "<group>"; };
-		6BB4EE7B2A8DD7C6006CF87C /* remote_config_defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = remote_config_defaults.plist; sourceTree = "<group>"; };
 		6BB4EE7D2A8E1109006CF87C /* CrownView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CrownView.xib; sourceTree = "<group>"; };
 		6BB4EE7F2A8E11CA006CF87C /* CrownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrownView.swift; sourceTree = "<group>"; };
 		6BB4EE812A8F31EA006CF87C /* UsingProFeaturesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsingProFeaturesViewController.swift; sourceTree = "<group>"; };
@@ -252,8 +252,8 @@
 				6BE9A2F42A5FC80D00FF8CB0 /* Assets.xcassets */,
 				6BE9A2F62A5FC80D00FF8CB0 /* LaunchScreen.storyboard */,
 				6BE9A2F92A5FC80D00FF8CB0 /* Info.plist */,
-				6B92E3562A7788B9008CB22A /* GoogleService-Info.plist */,
-				6BB4EE7B2A8DD7C6006CF87C /* remote_config_defaults.plist */,
+				6B71AAF22AC431A000C06619 /* GoogleService-Info.plist */,
+				6B71AAF42AC431DC00C06619 /* remote_config_defaults.plist */,
 				6B6700952A6ABBCE006F2980 /* Managers */,
 				6BAC9BBD2A666E500071A41B /* CustomViews */,
 				6BCAF7E52A63B6800039BE15 /* Utils */,
@@ -326,14 +326,14 @@
 				6BE9A2F82A5FC80D00FF8CB0 /* LaunchScreen.storyboard in Resources */,
 				6BE9A3022A5FD5A000FF8CB0 /* climbing.mov in Resources */,
 				6BCDCF4E2A67E5FA00D8B656 /* FPSSectionVC.xib in Resources */,
-				6BB4EE7C2A8DD7C6006CF87C /* remote_config_defaults.plist in Resources */,
 				6BCAF7ED2A63C5100039BE15 /* SpeedSectionVC.xib in Resources */,
+				6B71AAF52AC431DC00C06619 /* remote_config_defaults.plist in Resources */,
 				6B67009D2A6BCAD2006F2980 /* ProgressIndicatorView.xib in Resources */,
 				6BB4EE882A8F48D1006CF87C /* UsingProFeaturesAlertView.xib in Resources */,
-				6B92E3572A7788B9008CB22A /* GoogleService-Info.plist in Resources */,
 				6BB4EE842A8F3881006CF87C /* BlackTransparentOverlay.xib in Resources */,
 				6BE9A2F52A5FC80D00FF8CB0 /* Assets.xcassets in Resources */,
 				6BAC9BBF2A666EBE0071A41B /* TopIndicatorView.xib in Resources */,
+				6B71AAF32AC431A000C06619 /* GoogleService-Info.plist in Resources */,
 				6BCDCF522A67FAC800D8B656 /* MoreSectionVC.xib in Resources */,
 				6BE9A2F32A5FC80C00FF8CB0 /* Main.storyboard in Resources */,
 				6BB4EE7E2A8E1109006CF87C /* CrownView.xib in Resources */,
@@ -590,7 +590,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.5;
+				MARKETING_VERSION = 1.4.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -625,7 +625,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.5;
+				MARKETING_VERSION = 1.4.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
