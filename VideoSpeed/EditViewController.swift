@@ -255,9 +255,7 @@ class EditViewController: UIViewController {
     @objc func soundButtonTapped() {
        
             guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
-                let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
-
-                if experimentProFeatures {
+                
                     soundOn = !soundOn
                     let imageName = soundOn ? "volume.2.fill" : "volume.slash"
                     soundButton.setImage(UIImage(systemName: imageName), for: .normal)
@@ -266,11 +264,8 @@ class EditViewController: UIViewController {
                     Task {
                         await self.reloadComposition()
                     }
-                }
-                else {
-                    showPurchaseViewController()
-                }
-                return
+                
+                    return
             }
         
             soundOn = !soundOn
@@ -298,9 +293,6 @@ class EditViewController: UIViewController {
     
     
     @objc func tryToExportVideo() {
-        let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
-
-        if experimentProFeatures {
             guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
                 if !usingProFeatures() {
                     return exportVideo()
@@ -311,11 +303,8 @@ class EditViewController: UIViewController {
                     return
                 }
             }
+        
             exportVideo()
-        }
-        else {
-            exportVideo()
-        }
     }
     
     @objc func exportVideo() {
@@ -720,8 +709,6 @@ class EditViewController: UIViewController {
     
     func showProButtonIfNeeded() {
         guard SpidProducts.store.userPurchasedProVersion() == nil else {return}
-        let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
-        guard experimentProFeatures == true else {return}
         
         if self.usingProFeatures() {
             self.showProButton()
@@ -742,8 +729,6 @@ class EditViewController: UIViewController {
 fileprivate typealias NotificationObservers = EditViewController
 extension NotificationObservers {
     @objc func usingSliderChanged() {
-        let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
-        guard experimentProFeatures == true else {return}
         showProButtonIfNeeded()
     }
     

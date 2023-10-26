@@ -99,34 +99,9 @@ class SpeedSectionVC: SectionViewController {
     }
 
     @IBAction func sliderReleased(_ sender: Any) {
-
-            guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
-                let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
-
-                if experimentProFeatures {
-                    let slider = sender as! UISlider
-                    speed = convertSliderValue(value: slider.value)
-                    speedDidChange?(speed)
-                }
-                else {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
-                        guard let self = self else {return}
-                        self.speed = 1
-                        self.slider.value = 19
-                        self.setButtonUnselected(button: self.currentSelectedButton)
-                        self.setSelectedButton(button: self.oneButton)
-                        self.userNeedsToPurchase?()
-                    }
-                }
-
-                return
-            }
-            
-            print("purchasedProduct \(purchasedProduct)")
             let slider = sender as! UISlider
             speed = convertSliderValue(value: slider.value)
             speedDidChange?(speed)
-        
     }
     
     func convertSliderValue(value: Float) -> Float {

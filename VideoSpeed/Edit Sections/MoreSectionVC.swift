@@ -62,27 +62,9 @@ class MoreSectionVC: SectionViewController {
     
     @IBAction func mp4ButtonTapped(_ sender: UIButton) {
 
-            guard let _ = SpidProducts.store.userPurchasedProVersion() else {
-                let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
-
-                if experimentProFeatures {
-                    fileType = .mp4
-                    fileTypeDidChange?(fileType)
-                    setSelectedButton(button: sender)
-                }
-                else {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                        guard let self = self else {return}
-                        self.userNeedsToPurchase?()
-                    }
-                }
-                
-                return
-            }
             fileType = .mp4
             fileTypeDidChange?(fileType)
             setSelectedButton(button: sender)
-        
     }
     
     @IBAction func onButtonTapped(_ sender: Any) {
@@ -92,30 +74,10 @@ class MoreSectionVC: SectionViewController {
     }
     
     @IBAction func offButtonTapped(_ sender: Any) {
-       
-            guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
-                let experimentProFeatures = RemoteConfig.remoteConfig().configValue(forKey: "experimentProFeatures").boolValue
-
-                if experimentProFeatures {
-                    soundOn = false
-                    setSoundSelectedButton(button: offButton)
-                    soundStateChanged?(soundOn)
-                }
-                else {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                        guard let self = self else {return}
-                        self.userNeedsToPurchase?()
-                    }
-                }
-                
-                return
-            }
-            print("purchasedProduct \(purchasedProduct)")
             
             soundOn = false
             setSoundSelectedButton(button: offButton)
             soundStateChanged?(soundOn)
-        
     }
     
 }
