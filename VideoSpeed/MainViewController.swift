@@ -34,9 +34,16 @@ class MainViewController: UIViewController {
         #endif
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont(name: "Arial Hebrew Bold", size: 17)!]
 
+        
+        
         navigationItem.title = "SPID"
+        
         collectionView.delegate = self
         collectionView.dataSource = self
+        
+        let proButton = createProButton()
+        let proBarButtonItem = UIBarButtonItem(customView: proButton)
+        navigationItem.rightBarButtonItems = [proBarButtonItem]
         
         PHPhotoLibrary.shared().register(self)
 
@@ -58,6 +65,32 @@ class MainViewController: UIViewController {
             }
     }
     
+    func createProButton() -> UIButton {
+        let proButton = UIButton(type: .roundedRect)
+        proButton.tintColor = .white
+        proButton.backgroundColor = .systemBlue
+        proButton.setTitle("  Get Pro  ", for: .normal)
+        proButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        proButton.addTarget(self, action: #selector(showPurchaseViewController), for: .touchUpInside)
+        proButton.layer.cornerRadius = 10
+        proButton.layer.borderWidth = 0
+        proButton.layer.borderColor = UIColor.lightGray.cgColor
+        return proButton
+    }
+    
+    
+    @objc func showPurchaseViewController() {
+        let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PurchaseViewController") as! PurchaseViewController
+        
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            purchaseViewController.modalPresentationStyle = .fullScreen
+        }
+        else if UIDevice.current.userInterfaceIdiom == .pad {
+            purchaseViewController.modalPresentationStyle = .formSheet
+        }
+        
+        self.present(purchaseViewController, animated: true)
+    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)

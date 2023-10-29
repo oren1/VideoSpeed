@@ -293,9 +293,14 @@ class EditViewController: UIViewController {
     
     
     @objc func tryToExportVideo() {
-            guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
+            guard let _ = SpidProducts.store.userPurchasedProVersion() else {
                 if !usingProFeatures() {
-                    return exportVideo()
+                    self.playerController.player?.pause()
+                  return InterstitialAd.manager.showAd(controller: self) { [weak self] in
+                        self?.playerController.player?.play()
+                        self?.exportVideo()
+                    }
+                    
                 }
                 else {
                     // show alert for purchase
@@ -669,11 +674,6 @@ class EditViewController: UIViewController {
     }
     
     // MARK: - Custom Logic
-    @objc func updateExportProgress() {
-        guard let progress = exportSession?.progress else { return }
-        progressIndicatorView.progressView.progress = progress
-    }
-
     func showPurchaseViewController() {
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PurchaseViewController") as! PurchaseViewController
         
@@ -693,6 +693,11 @@ class EditViewController: UIViewController {
         self.present(purchaseViewController, animated: true)
     }
     
+    @objc func updateExportProgress() {
+        guard let progress = exportSession?.progress else { return }
+        progressIndicatorView.progressView.progress = progress
+    }
+        
     func showNoTracksError() {
         let alert = UIAlertController(
           title: "Error",
