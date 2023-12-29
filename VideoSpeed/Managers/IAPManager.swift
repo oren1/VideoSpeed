@@ -27,9 +27,10 @@ extension Notification.Name {
 class SpidProducts {
     
     static let proVersion = "com.spid.app.pro"
+    static let proVersionTenDollars = "ProVersion.9"
     static let proVersionConsumable = "ProVersion345"
 
-    private static let productIdentifiers: Set<ProductIdentifier> = [proVersion, proVersionConsumable]
+    private static let productIdentifiers: Set<ProductIdentifier> = [proVersion, proVersionTenDollars, proVersionConsumable]
     
     static let store = IAPManager(productIds: productIdentifiers)
 

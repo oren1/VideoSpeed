@@ -7,11 +7,17 @@
 
 import UIKit
 import StoreKit
+import FirebaseRemoteConfig
+
+enum PriceVariantType: Int {
+    case baseLine = 1, tenDollars
+}
 
 class PurchaseViewController: UIViewController {
 
     var product: SKProduct!
-
+    var productIdentifier: ProductIdentifier!
+    
     
     @IBOutlet weak var priceLabel: UILabel!
     @IBOutlet weak var backButton: UIButton!
@@ -24,7 +30,16 @@ class PurchaseViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let productIdentifier = SpidProducts.proVersion
+       
+        let priceVariantRawValue = RemoteConfig.remoteConfig().configValue(forKey: "priceVariant").numberValue.intValue
+        let priceVariant = PriceVariantType(rawValue: priceVariantRawValue)
+       
+        switch priceVariant {
+        case .baseLine:
+            productIdentifier = SpidProducts.proVersion
+        default:
+            productIdentifier = SpidProducts.proVersionTenDollars
+        }
         product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier}
         priceLabel.text = product.localizedPrice
         
@@ -41,10 +56,6 @@ class PurchaseViewController: UIViewController {
     @IBAction func purchaseButtonTapped(_ sender: Any) {
         guard SpidProducts.store.canMakePayments() else {
             showCantMakePaymentAlert()
-            return
-        }
-        
-        guard let product = UserDataManager.main.productforIdentifier(productIndentifier: SpidProducts.proVersion) else {
             return
         }
         

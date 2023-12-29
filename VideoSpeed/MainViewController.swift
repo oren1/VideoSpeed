@@ -41,9 +41,7 @@ class MainViewController: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         
-        let proButton = createProButton()
-        let proBarButtonItem = UIBarButtonItem(customView: proButton)
-        navigationItem.rightBarButtonItems = [proBarButtonItem]
+        addProButton()
         
         PHPhotoLibrary.shared().register(self)
 
@@ -92,10 +90,20 @@ class MainViewController: UIViewController {
         self.present(purchaseViewController, animated: true)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        if SpidProducts.store.userPurchasedProVersion() == nil {
+            addProButton()
+        }
+        else {
+            removeProButton()
+        }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         requestPermissionForIDFA()
     }
+    
     
     func requestPermissionForIDFA() {
         ATTrackingManager.requestTrackingAuthorization { status in
@@ -169,6 +177,15 @@ class MainViewController: UIViewController {
         photoLibraryUsageDisabledView.removeFromSuperview()
     }
     
+    // MARK: - UI
+    func removeProButton() {
+        self.navigationItem.rightBarButtonItems = nil
+    }
+    func addProButton() {
+        let proButton = createProButton()
+        let proBarButtonItem = UIBarButtonItem(customView: proButton)
+        navigationItem.rightBarButtonItems = [proBarButtonItem]
+    }
     
     //MARK: - Actions
     
