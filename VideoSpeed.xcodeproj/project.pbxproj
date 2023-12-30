@@ -59,10 +59,11 @@
 		6BE9A3062A61811400FF8CB0 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A3052A61811400FF8CB0 /* PhotoCell.swift */; };
 		6BE9A30A2A618B2500FF8CB0 /* UIImageView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A3092A618B2500FF8CB0 /* UIImageView+Extension.swift */; };
 		6BE9A30C2A62809D00FF8CB0 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A30B2A62809D00FF8CB0 /* PHAsset+Extension.swift */; };
-		8EEC537E872E45CC5A841D90 /* Pods_VideoSpeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B400D5CEAE83BCFAFFC1CE90 /* Pods_VideoSpeed.framework */; };
+		7B8D6E1CF3DAD2ABE2C49453 /* Pods_VideoSpeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C1BF4A6D3C0414DDD7F7D0AC /* Pods_VideoSpeed.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		009A04DC9A70BB33CFB88381 /* Pods-VideoSpeed.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoSpeed.release.xcconfig"; path = "Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed.release.xcconfig"; sourceTree = "<group>"; };
 		6B51C1F92A7233A50013ABAD /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		6B51C1FB2A7233B80013ABAD /* LoadingView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoadingView.xib; sourceTree = "<group>"; };
 		6B6700932A6A6C13006F2980 /* PhotosHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosHeader.swift; sourceTree = "<group>"; };
@@ -117,9 +118,8 @@
 		6BE9A3052A61811400FF8CB0 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		6BE9A3092A618B2500FF8CB0 /* UIImageView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+Extension.swift"; sourceTree = "<group>"; };
 		6BE9A30B2A62809D00FF8CB0 /* PHAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
-		8561DB804D3736880959713F /* Pods-VideoSpeed.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoSpeed.debug.xcconfig"; path = "Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed.debug.xcconfig"; sourceTree = "<group>"; };
-		B400D5CEAE83BCFAFFC1CE90 /* Pods_VideoSpeed.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VideoSpeed.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C9F77CA99A96A33ADB9B2301 /* Pods-VideoSpeed.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoSpeed.release.xcconfig"; path = "Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed.release.xcconfig"; sourceTree = "<group>"; };
+		C1BF4A6D3C0414DDD7F7D0AC /* Pods_VideoSpeed.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VideoSpeed.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C54ED06B1F2B3CCA89C4DB86 /* Pods-VideoSpeed.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoSpeed.debug.xcconfig"; path = "Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,7 +128,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6B6700A02A6C1D9A006F2980 /* StoreKit.framework in Frameworks */,
-				8EEC537E872E45CC5A841D90 /* Pods_VideoSpeed.framework in Frameworks */,
+				7B8D6E1CF3DAD2ABE2C49453 /* Pods_VideoSpeed.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,8 +138,8 @@
 		1023E4CDF9BE781F3276CF92 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				8561DB804D3736880959713F /* Pods-VideoSpeed.debug.xcconfig */,
-				C9F77CA99A96A33ADB9B2301 /* Pods-VideoSpeed.release.xcconfig */,
+				C54ED06B1F2B3CCA89C4DB86 /* Pods-VideoSpeed.debug.xcconfig */,
+				009A04DC9A70BB33CFB88381 /* Pods-VideoSpeed.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -160,7 +160,7 @@
 			isa = PBXGroup;
 			children = (
 				6B67009F2A6C1D9A006F2980 /* StoreKit.framework */,
-				B400D5CEAE83BCFAFFC1CE90 /* Pods_VideoSpeed.framework */,
+				C1BF4A6D3C0414DDD7F7D0AC /* Pods_VideoSpeed.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -269,11 +269,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6BE9A2FC2A5FC80D00FF8CB0 /* Build configuration list for PBXNativeTarget "VideoSpeed" */;
 			buildPhases = (
-				4E9F13581C391B5DCE8620BB /* [CP] Check Pods Manifest.lock */,
+				955EAAEBA2DC8A106111C82E /* [CP] Check Pods Manifest.lock */,
 				6BE9A2E42A5FC80C00FF8CB0 /* Sources */,
 				6BE9A2E52A5FC80C00FF8CB0 /* Frameworks */,
 				6BE9A2E62A5FC80C00FF8CB0 /* Resources */,
-				46E97EAB1131812B7A490C08 /* [CP] Embed Pods Frameworks */,
+				8FEBC0C1C1224F369CC6CAC4 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -345,7 +345,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		46E97EAB1131812B7A490C08 /* [CP] Embed Pods Frameworks */ = {
+		8FEBC0C1C1224F369CC6CAC4 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -362,7 +362,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		4E9F13581C391B5DCE8620BB /* [CP] Check Pods Manifest.lock */ = {
+		955EAAEBA2DC8A106111C82E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -566,7 +566,7 @@
 		};
 		6BE9A2FD2A5FC80D00FF8CB0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8561DB804D3736880959713F /* Pods-VideoSpeed.debug.xcconfig */;
+			baseConfigurationReference = C54ED06B1F2B3CCA89C4DB86 /* Pods-VideoSpeed.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -602,7 +602,7 @@
 		};
 		6BE9A2FE2A5FC80D00FF8CB0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C9F77CA99A96A33ADB9B2301 /* Pods-VideoSpeed.release.xcconfig */;
+			baseConfigurationReference = 009A04DC9A70BB33CFB88381 /* Pods-VideoSpeed.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
