@@ -28,9 +28,10 @@ class SpidProducts {
     
     static let proVersion = "com.spid.app.pro"
     static let proVersionTenDollars = "ProVersion.9"
+    static let proVersionVersionSubscription = "Pro.Version.Subscription"
     static let proVersionConsumable = "ProVersion345"
 
-    private static let productIdentifiers: Set<ProductIdentifier> = [proVersion, proVersionTenDollars, proVersionConsumable]
+    private static let productIdentifiers: Set<ProductIdentifier> = [proVersion, proVersionTenDollars,proVersionVersionSubscription, proVersionConsumable]
     
     static let store = IAPManager(productIds: productIdentifiers)
 
