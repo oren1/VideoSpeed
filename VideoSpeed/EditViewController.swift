@@ -675,7 +675,17 @@ class EditViewController: UIViewController {
     
     // MARK: - Custom Logic
     func showPurchaseViewController() {
-        let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PurchaseViewController") as! PurchaseViewController
+        let businessModelRawValue = RemoteConfig.remoteConfig().configValue(forKey: "business_model").stringValue!
+        let businessModel = BusinessModel(rawValue: businessModelRawValue)
+        
+        let purchaseViewController: PurchaseViewController
+        
+        switch businessModel {
+        case .yearlySubscription:
+            purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SubscriptionPurchaseVC") as! SubscriptionPurchaseVC
+        default:
+            purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PurchaseViewController") as! PurchaseViewController
+        }
         
         purchaseViewController.onDismiss = { [weak self] in
             if let _ = SpidProducts.store.userPurchasedProVersion() {

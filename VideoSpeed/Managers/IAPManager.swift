@@ -29,9 +29,12 @@ class SpidProducts {
     static let proVersion = "com.spid.app.pro"
     static let proVersionTenDollars = "ProVersion.9"
     static let proVersionVersionSubscription = "Pro.Version.Subscription"
+    static let proVersionVersionSubscriptionTest = "Subscription.Test"
+    static let monthlySubscription = "Monthly.Subscription"
+    static let halfYearlySubscription = "HalfYearly.Subscription"
     static let proVersionConsumable = "ProVersion345"
 
-    private static let productIdentifiers: Set<ProductIdentifier> = [proVersion, proVersionTenDollars,proVersionVersionSubscription, proVersionConsumable]
+    private static let productIdentifiers: Set<ProductIdentifier> = [proVersion, proVersionTenDollars,proVersionVersionSubscription, proVersionConsumable,proVersionVersionSubscriptionTest,monthlySubscription,halfYearlySubscription]
     
     static let store = IAPManager(productIds: productIdentifiers)
 
@@ -127,6 +130,11 @@ class IAPManager: NSObject {
         formatter.numberStyle = .currency
         formatter.locale = product.priceLocale
         return formatter.string(from: product.price)
+    }
+    
+    func removeProductEntitlement(productIdentifier: ProductIdentifier) {
+        purchasedProductIdentifiers.remove(productIdentifier)
+        UserDefaults.standard.removeObject(forKey: productIdentifier)
     }
     
 }

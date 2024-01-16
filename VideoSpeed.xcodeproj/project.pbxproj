@@ -60,6 +60,8 @@
 		6BE9A3062A61811400FF8CB0 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A3052A61811400FF8CB0 /* PhotoCell.swift */; };
 		6BE9A30A2A618B2500FF8CB0 /* UIImageView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A3092A618B2500FF8CB0 /* UIImageView+Extension.swift */; };
 		6BE9A30C2A62809D00FF8CB0 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A30B2A62809D00FF8CB0 /* PHAsset+Extension.swift */; };
+		6BF0194F2B565CAC00953AB6 /* SubscriptionOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF0194E2B565CAC00953AB6 /* SubscriptionOptionView.swift */; };
+		6BF019512B565CB800953AB6 /* SubscriptionOptionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BF019502B565CB800953AB6 /* SubscriptionOptionView.xib */; };
 		7B8D6E1CF3DAD2ABE2C49453 /* Pods_VideoSpeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C1BF4A6D3C0414DDD7F7D0AC /* Pods_VideoSpeed.framework */; };
 /* End PBXBuildFile section */
 
@@ -120,6 +122,8 @@
 		6BE9A3052A61811400FF8CB0 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		6BE9A3092A618B2500FF8CB0 /* UIImageView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+Extension.swift"; sourceTree = "<group>"; };
 		6BE9A30B2A62809D00FF8CB0 /* PHAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
+		6BF0194E2B565CAC00953AB6 /* SubscriptionOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionOptionView.swift; sourceTree = "<group>"; };
+		6BF019502B565CB800953AB6 /* SubscriptionOptionView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SubscriptionOptionView.xib; sourceTree = "<group>"; };
 		C1BF4A6D3C0414DDD7F7D0AC /* Pods_VideoSpeed.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VideoSpeed.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C54ED06B1F2B3CCA89C4DB86 /* Pods-VideoSpeed.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoSpeed.debug.xcconfig"; path = "Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -185,6 +189,8 @@
 				6BB4EE852A8F38B4006CF87C /* BlackTransparentOverlay.swift */,
 				6BB4EE872A8F48D1006CF87C /* UsingProFeaturesAlertView.xib */,
 				6BB4EE892A8F48E2006CF87C /* UsingProFeaturesAlertView.swift */,
+				6BF0194E2B565CAC00953AB6 /* SubscriptionOptionView.swift */,
+				6BF019502B565CB800953AB6 /* SubscriptionOptionView.xib */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -299,6 +305,7 @@
 				TargetAttributes = {
 					6BE9A2E72A5FC80C00FF8CB0 = {
 						CreatedOnToolsVersion = 14.0;
+						LastSwiftMigration = 1510;
 					};
 				};
 			};
@@ -331,6 +338,7 @@
 				6BCDCF4E2A67E5FA00D8B656 /* FPSSectionVC.xib in Resources */,
 				6BCAF7ED2A63C5100039BE15 /* SpeedSectionVC.xib in Resources */,
 				6B71AAF52AC431DC00C06619 /* remote_config_defaults.plist in Resources */,
+				6BF019512B565CB800953AB6 /* SubscriptionOptionView.xib in Resources */,
 				6B67009D2A6BCAD2006F2980 /* ProgressIndicatorView.xib in Resources */,
 				6BB4EE882A8F48D1006CF87C /* UsingProFeaturesAlertView.xib in Resources */,
 				6BB4EE842A8F3881006CF87C /* BlackTransparentOverlay.xib in Resources */,
@@ -394,6 +402,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6BF0194F2B565CAC00953AB6 /* SubscriptionOptionView.swift in Sources */,
 				6B6700972A6ABBF6006F2980 /* IAPManager.swift in Sources */,
 				6BE9A30A2A618B2500FF8CB0 /* UIImageView+Extension.swift in Sources */,
 				6B6700A42A6CDCB8006F2980 /* UserDataManager.swift in Sources */,
@@ -574,6 +583,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -594,11 +604,17 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/OpenSSL/lib",
+				);
 				MARKETING_VERSION = 1.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -610,6 +626,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = K969727JC6;
@@ -629,10 +646,15 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/OpenSSL/lib",
+				);
 				MARKETING_VERSION = 1.7.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

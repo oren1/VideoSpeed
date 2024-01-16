@@ -9,6 +9,7 @@ import UIKit
 import GoogleMobileAds
 import FirebaseCore
 import FirebaseRemoteConfig
+import StoreKit
 
 class SplashViewController: UIViewController, GADFullScreenContentDelegate {
 
@@ -19,12 +20,21 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         let minimumAppOpensToShowAd = RemoteConfig.remoteConfig().configValue(forKey: "minimumAppOpensToShowAd").numberValue.intValue
 
         print("minimumAppOpensToShowAd \(minimumAppOpensToShowAd)")
-
+        
+        Task {
+            let businessModelRawValue = RemoteConfig.remoteConfig().configValue(forKey: "business_model").stringValue!
+            let businessModel = BusinessModel(rawValue: businessModelRawValue)
+            if businessModel == .yearlySubscription {
+               try? await refreshPurchasedProducts()
+            }
+        }
+        
         let downloadGroup = DispatchGroup()
-
+        
         downloadGroup.enter()
         SpidProducts.store.requestProducts { success, products in
             if let products = products, success {
@@ -35,6 +45,7 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
                let it be stuck and the user to reload the app
              */
         }
+        
         
         downloadGroup.enter()
         getRemoteConfig {
@@ -60,7 +71,28 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
         }
     }
     
+    func refreshPurchasedProducts() async throws {
+        // Iterate through the user's purchased products.
+        let products = try await Product.products(for: [SpidProducts.proVersionVersionSubscriptionTest,
+                                                        SpidProducts.proVersionVersionSubscription])
+        for product in products {
+            guard let verificationResult = await product.currentEntitlement else {
+                // The user isn’t currently entitled to this product.
+                SpidProducts.store.removeProductEntitlement(productIdentifier: product.id)
+                continue
+            }
 
+            switch verificationResult {
+            case .verified(let transaction):
+                // Check the transaction and give the user access to purchased
+                // content as appropriate.
+                print("transaction \(transaction)")
+            case .unverified(_, _):
+                break
+            }
+        }
+    
+    }
     
     func loadAppOpenAdIfAppropriate(viewVontroller: UIViewController, completion: @escaping VoidClosure) {
         

@@ -31,17 +31,17 @@ class PurchaseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
        
-        let priceVariantRawValue = RemoteConfig.remoteConfig().configValue(forKey: "priceVariant").numberValue.intValue
-        let priceVariant = PriceVariantType(rawValue: priceVariantRawValue)
+        let businessModelRawValue = RemoteConfig.remoteConfig().configValue(forKey: "business_model").stringValue!
+        let businessModel = BusinessModel(rawValue: businessModelRawValue)
        
-        switch priceVariant {
-        case .baseLine:
-            productIdentifier = SpidProducts.proVersion
+        switch businessModel {
+        case .yearlySubscription:
+            productIdentifier = SpidProducts.proVersionVersionSubscriptionTest
         default:
-            productIdentifier = SpidProducts.proVersionTenDollars
+            productIdentifier = SpidProducts.proVersion
         }
         product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier}
-        priceLabel.text = product.localizedPrice
+        priceLabel?.text = product.localizedPrice
         
         
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -107,6 +107,11 @@ class PurchaseViewController: UIViewController {
         }
     }
  
+    func subscriptionPurchaseCompleted() {
+        onDismiss?()
+        hideLoading()
+        dismiss(animated: true)
+    }
 //    func showLoading() {
 //        disablePresentaionDismiss()
 //        loadingView.activityIndicator.startAnimating()
