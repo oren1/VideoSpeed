@@ -681,7 +681,7 @@ class EditViewController: UIViewController {
         let purchaseViewController: PurchaseViewController
         
         switch businessModel {
-        case .yearlySubscription:
+        case .subscription:
             purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SubscriptionPurchaseVC") as! SubscriptionPurchaseVC
         default:
             purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PurchaseViewController") as! PurchaseViewController

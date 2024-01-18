@@ -31,16 +31,7 @@ class PurchaseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
        
-        let businessModelRawValue = RemoteConfig.remoteConfig().configValue(forKey: "business_model").stringValue!
-        let businessModel = BusinessModel(rawValue: businessModelRawValue)
-       
-        switch businessModel {
-        case .yearlySubscription:
-            productIdentifier = SpidProducts.proVersionVersionSubscriptionTest
-        default:
-            productIdentifier = SpidProducts.proVersion
-        }
-        product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier}
+        product = UserDataManager.main.products.first {$0.productIdentifier == SpidProducts.proVersion}
         priceLabel?.text = product.localizedPrice
         
         
@@ -84,6 +75,7 @@ class PurchaseViewController: UIViewController {
     
     // MARK: - NotificationCenter Selectors
     @objc func purchaseCompleted(notification: Notification) {
+        AnalyticsManager.purchaseEvent()
         onDismiss?()
         hideLoading()
         dismiss(animated: true)
@@ -112,32 +104,4 @@ class PurchaseViewController: UIViewController {
         hideLoading()
         dismiss(animated: true)
     }
-//    func showLoading() {
-//        disablePresentaionDismiss()
-//        loadingView.activityIndicator.startAnimating()
-//        view.addSubview(loadingView)
-//        loadingView.translatesAutoresizingMaskIntoConstraints = false
-//
-//        let constraints = [
-//            loadingView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-//            loadingView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
-//            loadingView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
-//            loadingView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-//        ]
-//        NSLayoutConstraint.activate(constraints)
-//    }
-//
-//    func hideLoading() {
-//        enablePresentationDismiss()
-//        loadingView.activityIndicator.stopAnimating()
-//        loadingView.removeFromSuperview()
-//    }
-//
-//    func disablePresentaionDismiss() {
-//        isModalInPresentation = true
-//    }
-//
-//    func enablePresentationDismiss() {
-//        isModalInPresentation = false
-//    }
 }

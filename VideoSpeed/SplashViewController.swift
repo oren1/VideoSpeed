@@ -28,7 +28,7 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
         Task {
             let businessModelRawValue = RemoteConfig.remoteConfig().configValue(forKey: "business_model").stringValue!
             let businessModel = BusinessModel(rawValue: businessModelRawValue)
-            if businessModel == .yearlySubscription {
+            if businessModel == .subscription {
                try? await refreshPurchasedProducts()
             }
         }
@@ -73,8 +73,12 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
     
     func refreshPurchasedProducts() async throws {
         // Iterate through the user's purchased products.
-        let products = try await Product.products(for: [SpidProducts.proVersionVersionSubscriptionTest,
-                                                        SpidProducts.proVersionVersionSubscription])
+        let products = try await Product.products(for: [
+            SpidProducts.monthlySubscription,
+            SpidProducts.halfYearlySubscription,
+            SpidProducts.yearlySubscription
+        ])
+
         for product in products {
             guard let verificationResult = await product.currentEntitlement else {
                 // The user isn’t currently entitled to this product.
@@ -82,13 +86,15 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
                 continue
             }
 
+
             switch verificationResult {
             case .verified(let transaction):
                 // Check the transaction and give the user access to purchased
                 // content as appropriate.
                 print("transaction \(transaction)")
-            case .unverified(_, _):
-                break
+            case .unverified(let transaction, let verificationError):
+                print("verificationError", verificationError)
+                print("verificationError transaction", verificationError)
             }
         }
     
@@ -110,7 +116,7 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
         
         var unitId = "ca-app-pub-5159016515859793/8839080524"
         #if DEBUG
-        unitId = "ca-app-pub-3940256099942544/5662855259"
+        unitId = "ca-app-pub-3940256099942544/5575463023"
         #endif
                 
         GADAppOpenAd.load(withAdUnitID: unitId, request: GADRequest(),
