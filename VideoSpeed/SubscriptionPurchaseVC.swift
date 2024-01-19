@@ -14,9 +14,7 @@ enum BusinessModel: String {
 }
 
 class SubscriptionPurchaseVC: PurchaseViewController {
-    
-    var subscriptionProduct: Product!
-    
+        
     @IBOutlet weak var discountView: UIView!
     @IBOutlet weak var discountLabel: UILabel!
 
@@ -35,53 +33,7 @@ class SubscriptionPurchaseVC: PurchaseViewController {
         productIdentifier = SpidProducts.yearlySubscription
     }
     
-    @IBAction override func purchaseButtonTapped(_ sender: Any) {
-                Task {
-                    do {
-                        showLoading()
-                        let products = try await Product.products(for: [productIdentifier])
-                        subscriptionProduct =  products.first
-                        let purchaseResult = try await subscriptionProduct?.purchase()
-                        switch purchaseResult {
-                        case .success(let verificationResult):
-                            switch verificationResult {
-                            case .verified(let transaction):
-                                print("transaction.productID \(transaction.productID)")
-                                // Give the user access to purchased content.
-                                SpidProducts.store.updateIdentifier(identifier: transaction.productID)
-                                AnalyticsManager.purchaseEvent()
-                                subscriptionPurchaseCompleted()
-                                // Complete the transaction after providing
-                                // the user access to the content.
-                                await transaction.finish()
-                            case .unverified(let transaction, let verificationError):
-                                // Handle unverified transactions based
-                                // on your business model.
-                                showVerificationError(error: verificationError)
-                                
-                            }
-                        case .pending:
-                            // The purchase requires action from the customer.
-                            // If the transaction completes,
-                            // it's available through Transaction.updates.
-                            self.hideLoading()
-
-                            break
-                        case .userCancelled:
-                            // The user canceled the purchase.
-                            self.hideLoading()
-                            break
-                        @unknown default:
-                            self.hideLoading()
-                            break
-                        }
-                    }
-                    catch {
-                        print("fatal error: couldn't get subscription products from Product struct")
-                    }
-        
-                }
-    }
+  
     
     
     // MARK: - Actions
@@ -132,20 +84,4 @@ class SubscriptionPurchaseVC: PurchaseViewController {
         secondOptionView.descriptionLabel.text = "\(monthlySubscriptionProduct!.localizedPrice)/month"
     }
     
-    
-    
-    func showVerificationError(error: VerificationResult<Transaction>.VerificationError) {
-        let alert = UIAlertController(
-          title: "Could't Complete Purchase",
-          message: error.localizedDescription,
-          preferredStyle: .alert)
-        alert.addAction(UIAlertAction(
-          title: "OK",
-          style: UIAlertAction.Style.cancel,
-          handler: { [weak self] _ in
-              self?.hideLoading()
-          }))
-        present(alert, animated: true, completion: nil)
-    }
-
 }

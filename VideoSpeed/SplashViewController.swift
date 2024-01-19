@@ -25,15 +25,14 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
 
         print("minimumAppOpensToShowAd \(minimumAppOpensToShowAd)")
         
+        let downloadGroup = DispatchGroup()
+
         Task {
-            let businessModelRawValue = RemoteConfig.remoteConfig().configValue(forKey: "business_model").stringValue!
-            let businessModel = BusinessModel(rawValue: businessModelRawValue)
-            if businessModel == .subscription {
-               try? await refreshPurchasedProducts()
-            }
+            downloadGroup.enter()
+            try? await refreshPurchasedProducts()
+            downloadGroup.leave()
         }
         
-        let downloadGroup = DispatchGroup()
         
         downloadGroup.enter()
         SpidProducts.store.requestProducts { success, products in
@@ -73,11 +72,7 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
     
     func refreshPurchasedProducts() async throws {
         // Iterate through the user's purchased products.
-        let products = try await Product.products(for: [
-            SpidProducts.monthlySubscription,
-            SpidProducts.halfYearlySubscription,
-            SpidProducts.yearlySubscription
-        ])
+        let products = try await Product.products(for: SpidProducts.store.getProductIdentifiers())
 
         for product in products {
             guard let verificationResult = await product.currentEntitlement else {
@@ -92,9 +87,10 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
                 // Check the transaction and give the user access to purchased
                 // content as appropriate.
                 print("transaction \(transaction)")
+                SpidProducts.store.updateIdentifier(identifier: transaction.productID)
             case .unverified(let transaction, let verificationError):
                 print("verificationError", verificationError)
-                print("verificationError transaction", verificationError)
+                print("verificationError transaction", transaction)
             }
         }
     

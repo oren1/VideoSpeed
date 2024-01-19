@@ -30,8 +30,8 @@ class PurchaseViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       
-        product = UserDataManager.main.products.first {$0.productIdentifier == SpidProducts.proVersion}
+        productIdentifier = SpidProducts.proVersion
+        product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier}
         priceLabel?.text = product.localizedPrice
         
         
@@ -39,20 +39,56 @@ class PurchaseViewController: UIViewController {
             backButton.isHidden = true
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(purchaseCompleted), name: .IAPManagerPurchaseNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(restoreCompleted), name: .IAPManagerRestoreNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(purchaseFailed), name: .IAPManagerPurchaseFailedNotification, object: nil)
     }
     
+    
     @IBAction func purchaseButtonTapped(_ sender: Any) {
-        guard SpidProducts.store.canMakePayments() else {
-            showCantMakePaymentAlert()
-            return
-        }
+                Task {
+                    do {
+                        showLoading()
+                        let products = try await Product.products(for: [productIdentifier])
+                        let product =  products.first
+                        let purchaseResult = try await product?.purchase()
+                        switch purchaseResult {
+                        case .success(let verificationResult):
+                            switch verificationResult {
+                            case .verified(let transaction):
+                                // Give the user access to purchased content.
+                                SpidProducts.store.updateIdentifier(identifier: transaction.productID)
+                                AnalyticsManager.purchaseEvent()
+                                purchaseCompleted()
+                                // Complete the transaction after providing
+                                // the user access to the content.
+                                await transaction.finish()
+                            case .unverified(_, let verificationError):
+                                // Handle unverified transactions based
+                                // on your business model.
+                                showVerificationError(error: verificationError)
+                                
+                            }
+                        case .pending:
+                            // The purchase requires action from the customer.
+                            // If the transaction completes,
+                            // it's available through Transaction.updates.
+                            self.hideLoading()
+
+                            break
+                        case .userCancelled:
+                            // The user canceled the purchase.
+                            self.hideLoading()
+                            break
+                        @unknown default:
+                            self.hideLoading()
+                            break
+                        }
+                    }
+                    catch {
+                        print("fatal error: couldn't get subscription products from Product struct")
+                    }
         
-        showLoading()
-        SpidProducts.store.buyProduct(product)
+                }
     }
+    
     
     @IBAction func restoreButtonTapped(_ sender: Any) {
         showLoading()
@@ -65,41 +101,23 @@ class PurchaseViewController: UIViewController {
     }
     
     
-    func showCantMakePaymentAlert() {
-        let alertController = UIAlertController(title: "Error", message: "Payment Not Available", preferredStyle: .alert)
-        let action = UIAlertAction(title: "OK", style: .default, handler: nil)
-        alertController.addAction(action)
-        
-        present(alertController, animated: true, completion: nil)
-    }
-    
-    // MARK: - NotificationCenter Selectors
-    @objc func purchaseCompleted(notification: Notification) {
-        AnalyticsManager.purchaseEvent()
-        onDismiss?()
-        hideLoading()
-        dismiss(animated: true)
-    }
-
-    
-    
-    @objc func restoreCompleted(notification: Notification) {
-        onDismiss?()
-        hideLoading()
-        dismiss(animated: true)
-    }
-    
-    @objc func purchaseFailed(notification: Notification) {
-        hideLoading()
-        if let text = notification.object as? String {
-            let alertController = UIAlertController(title: text, message: nil, preferredStyle: .alert)
-            let action = UIAlertAction(title: "OK", style: .default, handler: nil)
-            alertController.addAction(action)
-            present(alertController, animated: true, completion: nil)
-        }
-    }
  
-    func subscriptionPurchaseCompleted() {
+    func showVerificationError(error: VerificationResult<Transaction>.VerificationError) {
+        let alert = UIAlertController(
+          title: "Could't Complete Purchase",
+          message: error.localizedDescription,
+          preferredStyle: .alert)
+        alert.addAction(UIAlertAction(
+          title: "OK",
+          style: UIAlertAction.Style.cancel,
+          handler: { [weak self] _ in
+              self?.hideLoading()
+          }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    
+    func purchaseCompleted() {
         onDismiss?()
         hideLoading()
         dismiss(animated: true)

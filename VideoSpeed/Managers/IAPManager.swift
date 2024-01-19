@@ -29,11 +29,10 @@ class SpidProducts {
     static let proVersion = "com.spid.app.pro"
     static let proVersionTenDollars = "ProVersion.9"
     static let monthlySubscription = "Monthly.Subscription"
-    static let halfYearlySubscription = "HalfYearly.Subscription"
     static let yearlySubscription = "Yearly.Subscription"
     static let proVersionConsumable = "ProVersion345"
 
-    private static let productIdentifiers: Set<ProductIdentifier> = [proVersion, proVersionTenDollars, proVersionConsumable,monthlySubscription,halfYearlySubscription,yearlySubscription]
+    private static let productIdentifiers: Set<ProductIdentifier> = [proVersion, proVersionTenDollars, proVersionConsumable,monthlySubscription,yearlySubscription]
     
     static let store = IAPManager(productIds: productIdentifiers)
 
@@ -61,7 +60,7 @@ class IAPManager: NSObject {
           }
             
           super.init()
-          SKPaymentQueue.default().add(self)
+//          SKPaymentQueue.default().add(self)
 
         }
 
@@ -136,6 +135,10 @@ class IAPManager: NSObject {
         UserDefaults.standard.removeObject(forKey: productIdentifier)
     }
     
+    func updateIdentifier(identifier: String) {
+        purchasedProductIdentifiers.insert(identifier)
+        UserDefaults.standard.set(true, forKey: identifier)
+    }
 }
 
 
@@ -177,77 +180,4 @@ extension IAPManager: SKProductsRequestDelegate {
   }
 }
 
-// MARK: - SKPaymentTransactionObserver
-extension IAPManager: SKPaymentTransactionObserver {
- 
-  public func paymentQueue(_ queue: SKPaymentQueue,
-                           updatedTransactions transactions: [SKPaymentTransaction]) {
-    for transaction in transactions {
-      switch transaction.transactionState {
-      case .purchased:
-        complete(transaction: transaction)
-        break
-      case .failed:
-        fail(transaction: transaction)
-        break
-      case .restored:
-        restore(transaction: transaction)
-        break
-      case .deferred:
-        break
-      case .purchasing:
-        break
-      @unknown default:
-          fatalError()
-      }
-    }
-  }
- 
-  private func complete(transaction: SKPaymentTransaction) {
-    print("complete...")
-    deliverPurchaseNotificationFor(identifier: transaction.payment.productIdentifier)
-    SKPaymentQueue.default().finishTransaction(transaction)
-  }
- 
-  private func restore(transaction: SKPaymentTransaction) {
-    guard let productIdentifier = transaction.original?.payment.productIdentifier else { return }
-    print("restore... \(productIdentifier)")
-    deliverRestoreNotificationFor(identifier: productIdentifier)
-    SKPaymentQueue.default().finishTransaction(transaction)
-  }
- 
-  private func fail(transaction: SKPaymentTransaction) {
-    print("fail...")
-    if let error = transaction.error as NSError?,
-       error.code != StoreError.paymentCancelled.rawValue,
-      let localizedDescription = transaction.error?.localizedDescription {
-        print("error.code")
-        print(error.code)
-        NotificationCenter.default.post(name: .IAPManagerPurchaseFailedNotification, object: localizedDescription)
-      }
-      else {
-          NotificationCenter.default.post(name: .IAPManagerPurchaseFailedNotification, object: nil)
-      }
-
-    SKPaymentQueue.default().finishTransaction(transaction)
-  }
- 
-  private func deliverPurchaseNotificationFor(identifier: String?) {
-    guard let identifier = identifier else { return }
-    updateIdentifier(identifier: identifier)
-    NotificationCenter.default.post(name: .IAPManagerPurchaseNotification, object: identifier)
-  }
-    
-  private func deliverRestoreNotificationFor(identifier: String?) {
-    guard let identifier = identifier else { return }
-    updateIdentifier(identifier: identifier)
-    NotificationCenter.default.post(name: .IAPManagerRestoreNotification, object: identifier)
-  }
-    
-    
-    func updateIdentifier(identifier: String) {
-        purchasedProductIdentifiers.insert(identifier)
-        UserDefaults.standard.set(true, forKey: identifier)
-    }
-}
 
