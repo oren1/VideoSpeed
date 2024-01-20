@@ -29,7 +29,7 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
 
         Task {
             downloadGroup.enter()
-            try? await refreshPurchasedProducts()
+            let _ = try? await SpidProducts.store.refreshPurchasedProducts()
             downloadGroup.leave()
         }
         
@@ -70,31 +70,7 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
         }
     }
     
-    func refreshPurchasedProducts() async throws {
-        // Iterate through the user's purchased products.
-        let products = try await Product.products(for: SpidProducts.store.getProductIdentifiers())
-
-        for product in products {
-            guard let verificationResult = await product.currentEntitlement else {
-                // The user isn’t currently entitled to this product.
-                SpidProducts.store.removeProductEntitlement(productIdentifier: product.id)
-                continue
-            }
-
-
-            switch verificationResult {
-            case .verified(let transaction):
-                // Check the transaction and give the user access to purchased
-                // content as appropriate.
-                print("transaction \(transaction)")
-                SpidProducts.store.updateIdentifier(identifier: transaction.productID)
-            case .unverified(let transaction, let verificationError):
-                print("verificationError", verificationError)
-                print("verificationError transaction", transaction)
-            }
-        }
     
-    }
     
     func loadAppOpenAdIfAppropriate(viewVontroller: UIViewController, completion: @escaping VoidClosure) {
         

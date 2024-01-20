@@ -394,8 +394,8 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="19.99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aqY-Vg-nO5">
-                                <rect key="frame" x="24" y="436" width="327" height="33.5"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="28"/>
+                                <rect key="frame" x="24" y="438" width="327" height="31.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="26"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -789,11 +789,11 @@
                                 </constraints>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vvZ-9O-XBB">
-                                <rect key="frame" x="272" y="409" width="75" height="24"/>
+                                <rect key="frame" x="272" y="407" width="75" height="28"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="42% OFF" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gcS-3Y-Jio">
-                                        <rect key="frame" x="11.5" y="4.5" width="52.5" height="14.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                        <rect key="frame" x="11" y="6.5" width="53.5" height="14.5"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -802,7 +802,7 @@
                                 <constraints>
                                     <constraint firstItem="gcS-3Y-Jio" firstAttribute="centerX" secondItem="vvZ-9O-XBB" secondAttribute="centerX" id="0uf-G8-Lcv"/>
                                     <constraint firstItem="gcS-3Y-Jio" firstAttribute="centerX" secondItem="vvZ-9O-XBB" secondAttribute="centerX" id="8yD-EB-PHc"/>
-                                    <constraint firstAttribute="height" constant="24" id="NdH-58-LcT"/>
+                                    <constraint firstAttribute="height" constant="28" id="NdH-58-LcT"/>
                                     <constraint firstItem="gcS-3Y-Jio" firstAttribute="centerY" secondItem="vvZ-9O-XBB" secondAttribute="centerY" id="SXG-b1-dFy"/>
                                     <constraint firstAttribute="width" constant="75" id="W57-S9-3Vw"/>
                                 </constraints>
@@ -864,7 +864,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1952.8" y="740.7796101949026"/>
+            <point key="canvasLocation" x="1590" y="720"/>
         </scene>
     </scenes>
     <resources>

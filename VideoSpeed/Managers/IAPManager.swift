@@ -14,6 +14,10 @@ enum StoreError: Int {
     case paymentCancelled = 2
 }
 
+enum RefreshPurchasesStatus {
+    case noPurchasesFound, foundActivePurchase
+}
+
 public typealias ProductIdentifier = String
 public typealias ProductsRequestCompletionHandler = (_ success: Bool, _ products: [SKProduct]?) -> Void
 
@@ -107,9 +111,42 @@ class IAPManager: NSObject {
       SKPaymentQueue.default().add(payment)
     }
     
-    public func restorePurchases() {
-      SKPaymentQueue.default().restoreCompletedTransactions()
+    
+    func refreshPurchasedProducts() async throws -> RefreshPurchasesStatus {
+        // Iterate through the user's purchased products.
+        let products = try await Product.products(for: SpidProducts.store.getProductIdentifiers())
+        var verifiedActiveTransactions: [Transaction] = []
+        
+        for product in products {
+            guard let verificationResult = await product.currentEntitlement else {
+                // The user isn’t currently entitled to this product.
+                SpidProducts.store.removeProductEntitlement(productIdentifier: product.id)
+                continue
+            }
+
+
+            switch verificationResult {
+            case .verified(let transaction):
+                // Check the transaction and give the user access to purchased
+                // content as appropriate.
+                print("transaction \(transaction)")
+                SpidProducts.store.updateIdentifier(identifier: transaction.productID)
+                verifiedActiveTransactions.append(transaction)
+            case .unverified(let transaction, let verificationError):
+                print("verificationError", verificationError)
+                print("verificationError transaction", transaction)
+            }
+        }
+    
+        if verifiedActiveTransactions.count > 0 {return RefreshPurchasesStatus.foundActivePurchase}
+        return RefreshPurchasesStatus.noPurchasesFound
     }
+    
+//    public func restorePurchases() async throws ->  {
+//        try await AppStore.sync() // syncs all transactions from the appstore
+//        let refreshStatus =  try await SpidProducts.store.refreshPurchasedProducts()
+//        return refreshStatus
+//    }
 
     public func canMakePayments() -> Bool {
       return SKPaymentQueue.canMakePayments()

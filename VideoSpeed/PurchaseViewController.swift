@@ -54,6 +54,7 @@ class PurchaseViewController: UIViewController {
                             switch verificationResult {
                             case .verified(let transaction):
                                 // Give the user access to purchased content.
+                                print("verified transaction \(transaction)")
                                 SpidProducts.store.updateIdentifier(identifier: transaction.productID)
                                 AnalyticsManager.purchaseEvent()
                                 purchaseCompleted()
@@ -91,8 +92,23 @@ class PurchaseViewController: UIViewController {
     
     
     @IBAction func restoreButtonTapped(_ sender: Any) {
-        showLoading()
-        SpidProducts.store.restorePurchases()
+        Task {
+            do {
+                showLoading()
+                try await AppStore.sync() // syncs all transactions from the appstore
+                let refreshStatus =  try await SpidProducts.store.refreshPurchasedProducts()
+                switch refreshStatus {
+                case .foundActivePurchase:
+                    showRefreshAlert(title: "You're All Set")
+                case .noPurchasesFound:
+                    showRefreshAlert(title: "No Active Subscriptions Found")
+                }
+            }
+            catch {
+                print(error)
+            }
+            
+        }
     }
     
     @IBAction func backButtonTapped(_ sender: Any) {
@@ -116,8 +132,27 @@ class PurchaseViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    func showRefreshAlert(title: String)  {
+        let alert = UIAlertController(
+          title: title,
+          message: nil,
+          preferredStyle: .alert)
+        alert.addAction(UIAlertAction(
+          title: "OK",
+          style: UIAlertAction.Style.cancel,
+          handler: { [weak self] _ in
+              self?.restoreCompleted()
+          }))
+        present(alert, animated: true, completion: nil)
+    }
     
     func purchaseCompleted() {
+        onDismiss?()
+        hideLoading()
+        dismiss(animated: true)
+    }
+    
+    func restoreCompleted() {
         onDismiss?()
         hideLoading()
         dismiss(animated: true)
