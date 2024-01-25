@@ -7,6 +7,7 @@
 
 import UIKit
 import StoreKit
+import SafariServices
 
 enum BusinessModel: String {
     case oneTimeCharge = "one_time_charge"
@@ -49,6 +50,14 @@ class SubscriptionPurchaseVC: PurchaseViewController {
         bestOptionView.unSelect()
     }
     
+    @IBAction func termsOfUse(_ sender: Any) {
+        showLink("https://spid-app-info.onrender.com/terms-of-use.html")
+    }
+    
+    @IBAction func privacyPolicyButtonTapped(_ sender: Any) {
+        showLink("https://spid-app-info.onrender.com/privacy-policy.html")
+    }
+    
     // MARK: Custom Logic
     func percentageOff(fullPrice: NSDecimalNumber, discountPrice: NSDecimalNumber) -> String {
         let percentage =  (1 - (discountPrice.dividing(by: fullPrice).floatValue)) * 100
@@ -62,6 +71,16 @@ class SubscriptionPurchaseVC: PurchaseViewController {
         formatter.locale = product.priceLocale
         let segmentPriceString = formatter.string(from: priceForSegment)!
         return segmentPriceString
+    }
+    
+    func showLink(_ link: String) {
+        if let url = URL(string: link) {
+            let config = SFSafariViewController.Configuration()
+            config.entersReaderIfAvailable = true
+
+            let vc = SFSafariViewController(url: url, configuration: config)
+            present(vc, animated: true)
+        }
     }
     
     // MARK: - UI

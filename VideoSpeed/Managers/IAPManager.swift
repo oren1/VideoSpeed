@@ -118,8 +118,24 @@ class IAPManager: NSObject {
         var verifiedActiveTransactions: [Transaction] = []
         
         for product in products {
+//            if let status = try await product.subscription?.status {
+//                for stat in status {
+//                    print("state \(stat.state)")
+//
+//                    if stat.state == .inBillingRetryPeriod {
+//                        print ("inBillingRetryPeriod")
+//                    }
+//                    else if stat.state == .inGracePeriod {
+//                        print ("inGracePeriod")
+//                    }
+//                    else if stat.state == .expired {
+//                        print("expired")
+//                    }
+//                }
+//            }
+            
             guard let verificationResult = await product.currentEntitlement else {
-                // The user isn’t currently entitled to this product.
+                
                 SpidProducts.store.removeProductEntitlement(productIdentifier: product.id)
                 continue
             }
