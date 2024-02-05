@@ -8,6 +8,7 @@
 import UIKit
 import StoreKit
 import FirebaseRemoteConfig
+import FirebaseAnalytics
 
 enum PriceVariantType: Int {
     case baseLine = 1, tenDollars
@@ -55,6 +56,7 @@ class PurchaseViewController: UIViewController {
                             case .verified(let transaction):
                                 // Give the user access to purchased content.
                                 print("verified transaction \(transaction)")
+                                Analytics.logTransaction(transaction)
                                 SpidProducts.store.updateIdentifier(identifier: transaction.productID)
                                 AnalyticsManager.purchaseEvent()
                                 purchaseCompleted()
