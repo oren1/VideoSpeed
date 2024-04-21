@@ -675,14 +675,14 @@ class EditViewController: UIViewController {
     
     // MARK: - Custom Logic
     func showPurchaseViewController() {
-        let businessModelRawValue = RemoteConfig.remoteConfig().configValue(forKey: "business_model").stringValue!
-        let businessModel = BusinessModel(rawValue: businessModelRawValue)
+        let businessModelRawValue = RemoteConfig.remoteConfig().configValue(forKey: "pricing_model").stringValue!
+        let businessModel = PricingModel(rawValue: businessModelRawValue)
         
         let purchaseViewController: PurchaseViewController
         
         switch businessModel {
-        case .subscription:
-            purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SubscriptionPurchaseVC") as! SubscriptionPurchaseVC
+        case .yearly:
+            purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
         default:
             purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PurchaseViewController") as! PurchaseViewController
         }

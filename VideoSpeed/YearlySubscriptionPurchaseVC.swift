@@ -7,12 +7,19 @@
 
 import UIKit
 
+enum PricingModel: String {
+    case lifetime = "lifetime"
+    case yearly = "yearly"
+}
+
 class YearlySubscriptionPurchaseVC: PurchaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        productIdentifier = SpidProducts.yearlySubscription
+        product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier}
+        priceLabel?.text = "\(product.localizedPrice) / year"
     }
     
 
