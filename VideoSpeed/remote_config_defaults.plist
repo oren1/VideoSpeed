@@ -2,19 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>pricing_model</key>
-  <string>lifetime</string>
-  <key>experimentProFeatures</key>
-  <string></string>
-  <key>minimumReviewWorthyActionCount</key>
-  <string>1</string>
-  <key>minimumAppOpensToShowAd</key>
-  <string>2</string>
-  <key>adsInterval</key>
-  <string>180</string>
-  <key>priceVariant</key>
-  <string>1</string>
-  <key>business_model</key>
-  <string>one_time_charge</string>
+	<key>subscription_model</key>
+	<string>normal</string>
+	<key>pricing_model</key>
+	<string>lifetime</string>
+	<key>experimentProFeatures</key>
+	<string></string>
+	<key>minimumReviewWorthyActionCount</key>
+	<string>1</string>
+	<key>minimumAppOpensToShowAd</key>
+	<string>2</string>
+	<key>adsInterval</key>
+	<string>180</string>
+	<key>priceVariant</key>
+	<string>1</string>
+	<key>business_model</key>
+	<string>one_time_charge</string>
 </dict>
 </plist>

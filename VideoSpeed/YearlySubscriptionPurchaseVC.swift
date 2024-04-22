@@ -16,8 +16,6 @@ class YearlySubscriptionPurchaseVC: PurchaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        productIdentifier = SpidProducts.yearlySubscription
         product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier}
         priceLabel?.text = "\(product.localizedPrice) / year"
     }

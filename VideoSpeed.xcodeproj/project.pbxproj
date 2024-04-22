@@ -65,6 +65,7 @@
 		6BF0194F2B565CAC00953AB6 /* SubscriptionOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF0194E2B565CAC00953AB6 /* SubscriptionOptionView.swift */; };
 		6BF019512B565CB800953AB6 /* SubscriptionOptionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BF019502B565CB800953AB6 /* SubscriptionOptionView.xib */; };
 		6BF019532B57DB7400953AB6 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF019522B57DB7400953AB6 /* AnalyticsManager.swift */; };
+		D292176C54B84883ECC263F5 /* Pods_VideoSpeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75A20CDA63C3E3402AA1C3A7 /* Pods_VideoSpeed.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -128,6 +129,9 @@
 		6BF0194E2B565CAC00953AB6 /* SubscriptionOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionOptionView.swift; sourceTree = "<group>"; };
 		6BF019502B565CB800953AB6 /* SubscriptionOptionView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SubscriptionOptionView.xib; sourceTree = "<group>"; };
 		6BF019522B57DB7400953AB6 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
+		75A20CDA63C3E3402AA1C3A7 /* Pods_VideoSpeed.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VideoSpeed.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7C463F93D79EA3829FE3E5E7 /* Pods-VideoSpeed.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoSpeed.release.xcconfig"; path = "Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed.release.xcconfig"; sourceTree = "<group>"; };
+		B7546F80563B75126C59BD36 /* Pods-VideoSpeed.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoSpeed.debug.xcconfig"; path = "Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +140,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6B6700A02A6C1D9A006F2980 /* StoreKit.framework in Frameworks */,
+				D292176C54B84883ECC263F5 /* Pods_VideoSpeed.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,6 +150,8 @@
 		1023E4CDF9BE781F3276CF92 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
+				B7546F80563B75126C59BD36 /* Pods-VideoSpeed.debug.xcconfig */,
+				7C463F93D79EA3829FE3E5E7 /* Pods-VideoSpeed.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -166,6 +173,7 @@
 			isa = PBXGroup;
 			children = (
 				6B67009F2A6C1D9A006F2980 /* StoreKit.framework */,
+				75A20CDA63C3E3402AA1C3A7 /* Pods_VideoSpeed.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -279,9 +287,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6BE9A2FC2A5FC80D00FF8CB0 /* Build configuration list for PBXNativeTarget "VideoSpeed" */;
 			buildPhases = (
+				CB1949CAD148465AA1886FB8 /* [CP] Check Pods Manifest.lock */,
 				6BE9A2E42A5FC80C00FF8CB0 /* Sources */,
 				6BE9A2E52A5FC80C00FF8CB0 /* Frameworks */,
 				6BE9A2E62A5FC80C00FF8CB0 /* Resources */,
+				D52300C6D83080611C6D156A /* [CP] Embed Pods Frameworks */,
+				190F2533A7BEA5C4ECB9FBAB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -353,6 +364,65 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		190F2533A7BEA5C4ECB9FBAB /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CB1949CAD148465AA1886FB8 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-VideoSpeed-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D52300C6D83080611C6D156A /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		6BE9A2E42A5FC80C00FF8CB0 /* Sources */ = {
@@ -539,12 +609,13 @@
 		};
 		6BE9A2FD2A5FC80D00FF8CB0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B7546F80563B75126C59BD36 /* Pods-VideoSpeed.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = K969727JC6;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -569,7 +640,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenSSL/lib",
 				);
-				MARKETING_VERSION = 3.0.0;
+				MARKETING_VERSION = 3.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -583,12 +654,13 @@
 		};
 		6BE9A2FE2A5FC80D00FF8CB0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7C463F93D79EA3829FE3E5E7 /* Pods-VideoSpeed.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = K969727JC6;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VideoSpeed/Info.plist;
@@ -612,7 +684,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenSSL/lib",
 				);
-				MARKETING_VERSION = 3.0.0;
+				MARKETING_VERSION = 3.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

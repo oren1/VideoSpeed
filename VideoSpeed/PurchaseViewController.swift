@@ -9,9 +9,15 @@ import UIKit
 import StoreKit
 import FirebaseRemoteConfig
 import FirebaseAnalytics
+import SafariServices
 
 enum PriceVariantType: Int {
     case baseLine = 1, tenDollars
+}
+
+enum SubscriptionModel: String {
+    case normal = "normal"
+    case high = "high"
 }
 
 class PurchaseViewController: UIViewController {
@@ -31,7 +37,7 @@ class PurchaseViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        productIdentifier = SpidProducts.proVersion
+//        productIdentifier = SpidProducts.yearlySubscription
         product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier}
         priceLabel?.text = product.localizedPrice
         
@@ -158,5 +164,24 @@ class PurchaseViewController: UIViewController {
         onDismiss?()
         hideLoading()
         dismiss(animated: true)
+    }
+    
+    
+    func showLink(_ link: String) {
+        if let url = URL(string: link) {
+            let config = SFSafariViewController.Configuration()
+            config.entersReaderIfAvailable = true
+
+            let vc = SFSafariViewController(url: url, configuration: config)
+            present(vc, animated: true)
+        }
+    }
+    
+    @IBAction func termsOfUse(_ sender: Any) {
+        showLink("https://spid-app-info.onrender.com/terms-of-use.html")
+    }
+    
+    @IBAction func privacyPolicyButtonTapped(_ sender: Any) {
+        showLink("https://spid-app-info.onrender.com/privacy-policy.html")
     }
 }
