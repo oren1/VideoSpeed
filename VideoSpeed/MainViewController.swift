@@ -80,20 +80,9 @@ class MainViewController: UIViewController {
     
     @objc func showPurchaseViewController() {
        
-        let subscriptionModelRawValue = RemoteConfig.remoteConfig().configValue(forKey: "subscription_model").stringValue!
-        let subscriptionModel = SubscriptionModel(rawValue: subscriptionModelRawValue)
-        
-        let purchaseViewController: PurchaseViewController
-        
-        switch subscriptionModel {
-        case .high:
-            purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
-            purchaseViewController.productIdentifier = SpidProducts.yearlySubscriptionTakeTwo
-        default:
-            purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
-            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
-        }
-        
+        let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
+        purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+       
         if UIDevice.current.userInterfaceIdiom == .phone {
             purchaseViewController.modalPresentationStyle = .fullScreen
         }

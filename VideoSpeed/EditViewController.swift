@@ -675,20 +675,10 @@ class EditViewController: UIViewController {
     
     // MARK: - Custom Logic
     func showPurchaseViewController() {
-        let subscriptionModelRawValue = RemoteConfig.remoteConfig().configValue(forKey: "subscription_model").stringValue!
-        let subscriptionModel = SubscriptionModel(rawValue: subscriptionModelRawValue)
         
-        let purchaseViewController: PurchaseViewController
-        
-        switch subscriptionModel {
-        case .high:
-            purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
-            purchaseViewController.productIdentifier = SpidProducts.yearlySubscriptionTakeTwo
-        default:
-            purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
-            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
-        }
-        
+        let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
+        purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+    
         purchaseViewController.onDismiss = { [weak self] in
             if let _ = SpidProducts.store.userPurchasedProVersion() {
                 self?.hideProButton()
