@@ -675,8 +675,10 @@ class EditViewController: UIViewController {
     
     // MARK: - Custom Logic
     func showPurchaseViewController() {
-        let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PurchaseViewController") as! PurchaseViewController
         
+        let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
+        purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+    
         purchaseViewController.onDismiss = { [weak self] in
             if let _ = SpidProducts.store.userPurchasedProVersion() {
                 self?.hideProButton()

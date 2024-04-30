@@ -12,6 +12,7 @@ class UserDataManager {
     
     static let main: UserDataManager = UserDataManager()
     var products: [SKProduct]!
+    var subscriptionProducts: [Product]!
     var usingSlider: Bool = false {
         didSet {
             NotificationCenter.default.post(name: Notification.Name("usingSliderChanged"), object: nil)

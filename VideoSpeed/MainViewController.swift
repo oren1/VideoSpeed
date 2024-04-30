@@ -9,6 +9,7 @@ import UIKit
 import Photos
 import AdSupport
 import AppTrackingTransparency
+import FirebaseRemoteConfig
 
 class MainViewController: UIViewController {
     
@@ -78,8 +79,10 @@ class MainViewController: UIViewController {
     
     
     @objc func showPurchaseViewController() {
-        let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PurchaseViewController") as! PurchaseViewController
-        
+       
+        let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
+        purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+       
         if UIDevice.current.userInterfaceIdiom == .phone {
             purchaseViewController.modalPresentationStyle = .fullScreen
         }

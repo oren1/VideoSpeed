@@ -8,9 +8,16 @@
 import UIKit
 import StoreKit
 import FirebaseRemoteConfig
+import FirebaseAnalytics
+import SafariServices
 
 enum PriceVariantType: Int {
     case baseLine = 1, tenDollars
+}
+
+enum SubscriptionModel: String {
+    case normal = "normal"
+    case high = "high"
 }
 
 class PurchaseViewController: UIViewController {
@@ -30,42 +37,86 @@ class PurchaseViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       
-        let priceVariantRawValue = RemoteConfig.remoteConfig().configValue(forKey: "priceVariant").numberValue.intValue
-        let priceVariant = PriceVariantType(rawValue: priceVariantRawValue)
-       
-        switch priceVariant {
-        case .baseLine:
-            productIdentifier = SpidProducts.proVersion
-        default:
-            productIdentifier = SpidProducts.proVersionTenDollars
-        }
+//        productIdentifier = SpidProducts.yearlySubscription
         product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier}
-        priceLabel.text = product.localizedPrice
+        priceLabel?.text = product.localizedPrice
         
         
         if UIDevice.current.userInterfaceIdiom == .pad {
             backButton.isHidden = true
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(purchaseCompleted), name: .IAPManagerPurchaseNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(restoreCompleted), name: .IAPManagerRestoreNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(purchaseFailed), name: .IAPManagerPurchaseFailedNotification, object: nil)
     }
+    
     
     @IBAction func purchaseButtonTapped(_ sender: Any) {
-        guard SpidProducts.store.canMakePayments() else {
-            showCantMakePaymentAlert()
-            return
-        }
+                Task {
+                    do {
+                        showLoading()
+                        let products = try await Product.products(for: [productIdentifier])
+                        let product =  products.first
+                        let purchaseResult = try await product?.purchase()
+                        switch purchaseResult {
+                        case .success(let verificationResult):
+                            switch verificationResult {
+                            case .verified(let transaction):
+                                // Give the user access to purchased content.
+                                print("verified transaction \(transaction)")
+                                Analytics.logTransaction(transaction)
+                                SpidProducts.store.updateIdentifier(identifier: transaction.productID)
+                                AnalyticsManager.purchaseEvent()
+                                purchaseCompleted()
+                                // Complete the transaction after providing
+                                // the user access to the content.
+                                await transaction.finish()
+                            case .unverified(_, let verificationError):
+                                // Handle unverified transactions based
+                                // on your business model.
+                                showVerificationError(error: verificationError)
+                                
+                            }
+                        case .pending:
+                            // The purchase requires action from the customer.
+                            // If the transaction completes,
+                            // it's available through Transaction.updates.
+                            self.hideLoading()
+
+                            break
+                        case .userCancelled:
+                            // The user canceled the purchase.
+                            self.hideLoading()
+                            break
+                        @unknown default:
+                            self.hideLoading()
+                            break
+                        }
+                    }
+                    catch {
+                        print("fatal error: couldn't get subscription products from Product struct")
+                    }
         
-        showLoading()
-        SpidProducts.store.buyProduct(product)
+                }
     }
     
+    
     @IBAction func restoreButtonTapped(_ sender: Any) {
-        showLoading()
-        SpidProducts.store.restorePurchases()
+        Task {
+            do {
+                showLoading()
+                try await AppStore.sync() // syncs all transactions from the appstore
+                let refreshStatus =  try await SpidProducts.store.refreshPurchasedProducts()
+                switch refreshStatus {
+                case .foundActivePurchase:
+                    showRefreshAlert(title: "You're All Set")
+                case .noPurchasesFound:
+                    showRefreshAlert(title: "No Active Subscriptions Found")
+                }
+            }
+            catch {
+                print(error)
+            }
+            
+        }
     }
     
     @IBAction func backButtonTapped(_ sender: Any) {
@@ -74,65 +125,63 @@ class PurchaseViewController: UIViewController {
     }
     
     
-    func showCantMakePaymentAlert() {
-        let alertController = UIAlertController(title: "Error", message: "Payment Not Available", preferredStyle: .alert)
-        let action = UIAlertAction(title: "OK", style: .default, handler: nil)
-        alertController.addAction(action)
-        
-        present(alertController, animated: true, completion: nil)
+ 
+    func showVerificationError(error: VerificationResult<Transaction>.VerificationError) {
+        let alert = UIAlertController(
+          title: "Could't Complete Purchase",
+          message: error.localizedDescription,
+          preferredStyle: .alert)
+        alert.addAction(UIAlertAction(
+          title: "OK",
+          style: UIAlertAction.Style.cancel,
+          handler: { [weak self] _ in
+              self?.hideLoading()
+          }))
+        present(alert, animated: true, completion: nil)
     }
     
-    // MARK: - NotificationCenter Selectors
-    @objc func purchaseCompleted(notification: Notification) {
+    func showRefreshAlert(title: String)  {
+        let alert = UIAlertController(
+          title: title,
+          message: nil,
+          preferredStyle: .alert)
+        alert.addAction(UIAlertAction(
+          title: "OK",
+          style: UIAlertAction.Style.cancel,
+          handler: { [weak self] _ in
+              self?.restoreCompleted()
+          }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func purchaseCompleted() {
         onDismiss?()
         hideLoading()
         dismiss(animated: true)
     }
+    
+    func restoreCompleted() {
+        onDismiss?()
+        hideLoading()
+        dismiss(animated: true)
+    }
+    
+    
+    func showLink(_ link: String) {
+        if let url = URL(string: link) {
+            let config = SFSafariViewController.Configuration()
+            config.entersReaderIfAvailable = true
 
-    
-    
-    @objc func restoreCompleted(notification: Notification) {
-        onDismiss?()
-        hideLoading()
-        dismiss(animated: true)
-    }
-    
-    @objc func purchaseFailed(notification: Notification) {
-        hideLoading()
-        if let text = notification.object as? String {
-            let alertController = UIAlertController(title: text, message: nil, preferredStyle: .alert)
-            let action = UIAlertAction(title: "OK", style: .default, handler: nil)
-            alertController.addAction(action)
-            present(alertController, animated: true, completion: nil)
+            let vc = SFSafariViewController(url: url, configuration: config)
+            present(vc, animated: true)
         }
     }
- 
-//    func showLoading() {
-//        disablePresentaionDismiss()
-//        loadingView.activityIndicator.startAnimating()
-//        view.addSubview(loadingView)
-//        loadingView.translatesAutoresizingMaskIntoConstraints = false
-//
-//        let constraints = [
-//            loadingView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-//            loadingView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
-//            loadingView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
-//            loadingView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-//        ]
-//        NSLayoutConstraint.activate(constraints)
-//    }
-//
-//    func hideLoading() {
-//        enablePresentationDismiss()
-//        loadingView.activityIndicator.stopAnimating()
-//        loadingView.removeFromSuperview()
-//    }
-//
-//    func disablePresentaionDismiss() {
-//        isModalInPresentation = true
-//    }
-//
-//    func enablePresentationDismiss() {
-//        isModalInPresentation = false
-//    }
+    
+    @IBAction func termsOfUse(_ sender: Any) {
+        showLink("https://spid-app-info.onrender.com/terms-of-use.html")
+    }
+    
+    @IBAction func privacyPolicyButtonTapped(_ sender: Any) {
+        showLink("https://spid-app-info.onrender.com/privacy-policy.html")
+    }
 }
