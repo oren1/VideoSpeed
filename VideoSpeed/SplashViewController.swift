@@ -9,6 +9,7 @@ import UIKit
 import GoogleMobileAds
 import FirebaseCore
 import FirebaseRemoteConfig
+import StoreKit
 
 class SplashViewController: UIViewController, GADFullScreenContentDelegate {
 
@@ -19,12 +20,20 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         let minimumAppOpensToShowAd = RemoteConfig.remoteConfig().configValue(forKey: "minimumAppOpensToShowAd").numberValue.intValue
 
         print("minimumAppOpensToShowAd \(minimumAppOpensToShowAd)")
-
+        
         let downloadGroup = DispatchGroup()
 
+        Task {
+            downloadGroup.enter()
+            let _ = try? await SpidProducts.store.refreshPurchasedProducts()
+            downloadGroup.leave()
+        }
+        
+        
         downloadGroup.enter()
         SpidProducts.store.requestProducts { success, products in
             if let products = products, success {
@@ -35,6 +44,7 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
                let it be stuck and the user to reload the app
              */
         }
+        
         
         downloadGroup.enter()
         getRemoteConfig {
@@ -60,7 +70,7 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
         }
     }
     
-
+    
     
     func loadAppOpenAdIfAppropriate(viewVontroller: UIViewController, completion: @escaping VoidClosure) {
         
@@ -78,23 +88,20 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
         
         var unitId = "ca-app-pub-5159016515859793/8839080524"
         #if DEBUG
-        unitId = "ca-app-pub-3940256099942544/5662855259"
+        unitId = "ca-app-pub-3940256099942544/5575463023"
         #endif
-                
-        GADAppOpenAd.load(withAdUnitID: unitId, request: GADRequest(),
-                          orientation: UIInterfaceOrientation.portrait) { [weak self] ad, error in
-            if let error = error {
-                self?.error = error
+           
+        Task {
+            do {
+                self.appOpenAd = try await GADAppOpenAd.load(withAdUnitID: unitId, request: GADRequest())
+                self.appOpenAd?.fullScreenContentDelegate = self
+                AppOpenAd.manager.amountOfAppOpens = 0
                 completion()
-                return
-            }
-            
-            AppOpenAd.manager.amountOfAppOpens = 0
-            self?.appOpenAd = ad
-            self?.appOpenAd?.fullScreenContentDelegate = self
-            
-            completion()
-            
+
+             } catch {
+                 self.error = error
+                 completion()
+             }
         }
     }
 
