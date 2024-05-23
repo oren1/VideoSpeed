@@ -10,6 +10,7 @@ import Photos
 import AdSupport
 import AppTrackingTransparency
 import FirebaseRemoteConfig
+import SwiftUI
 
 class MainViewController: UIViewController {
     
@@ -19,7 +20,11 @@ class MainViewController: UIViewController {
     var videos: PHFetchResult<PHAsset>?
     private let itemsPerRow: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 5 : 3
     
+    private var giftBarButtonItem: UIBarButtonItem!
+    
+    @IBOutlet weak var giftButton: UIBarButtonItem!
     @IBOutlet weak var collectionView: UICollectionView!
+    
     lazy var photoLibraryUsageDisabledView: PhotoLibraryUsageDisabledView = {
         photoLibraryUsageDisabledView = PhotoLibraryUsageDisabledView()
         return photoLibraryUsageDisabledView
@@ -35,8 +40,6 @@ class MainViewController: UIViewController {
         #endif
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont(name: "Arial Hebrew Bold", size: 17)!]
 
-        
-        
         navigationItem.title = "SPID"
         
         collectionView.delegate = self
@@ -62,6 +65,24 @@ class MainViewController: UIViewController {
                 self.collectionView.reloadData()
               }
             }
+        
+        
+        createGiftBarButtonItem()
+        
+        if needsToShowGiftButton() {
+            navigationItem.leftBarButtonItems?.append(giftBarButtonItem)
+        }
+    }
+    
+    func needsToShowGiftButton() -> Bool {
+        if let _ = SpidProducts.store.userPurchasedProVersion() {
+            return false
+        }
+        else if UserDataManager.main.userBenefitStatus == .expired {
+            return false
+        }
+        
+        return true
     }
     
     func createProButton() -> UIButton {
@@ -189,8 +210,22 @@ class MainViewController: UIViewController {
         let proBarButtonItem = UIBarButtonItem(customView: proButton)
         navigationItem.rightBarButtonItems = [proBarButtonItem]
     }
-    
+    func createGiftBarButtonItem() {
+        giftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gift.fill"), style: .plain, target: self, action: #selector(giftButtonTapped))
+    }
     //MARK: - Actions
+    
+    @IBAction func giftButtonTapped(_ sender: Any) {
+        let benefitViewController = UIHostingController(rootView: BenefitView())
+      
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            benefitViewController.modalPresentationStyle = .fullScreen
+        }
+        else if UIDevice.current.userInterfaceIdiom == .pad {
+            benefitViewController.modalPresentationStyle = .formSheet
+        }
+        self.present(benefitViewController, animated: true)
+    }
     
     @IBAction func cameraButtonTapped(_ sender: Any) {
         VideoHelper.startMediaBrowser(delegate: self, sourceType: .camera)
