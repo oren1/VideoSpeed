@@ -19,6 +19,7 @@ class UserDataManager {
         }
     }
 
+    var userBenefitStatus: BenefitStatus = .notInvoked
     
     
     func productforIdentifier(productIndentifier: ProductIdentifier) -> SKProduct? {
@@ -36,4 +37,5 @@ class UserDataManager {
         return false
     }
     
+
 }

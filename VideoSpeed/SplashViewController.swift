@@ -33,6 +33,13 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
             downloadGroup.leave()
         }
         
+        Task {
+            downloadGroup.enter()
+            if let benefitStatus = try? await NetworkManager.shared.getUserBenefitStatus() {
+                UserDataManager.main.userBenefitStatus = benefitStatus
+                downloadGroup.leave()
+            }
+        }
         
         downloadGroup.enter()
         SpidProducts.store.requestProducts { success, products in
