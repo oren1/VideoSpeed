@@ -13,6 +13,7 @@ struct ActivityViewController: UIViewControllerRepresentable {
 
     @Binding var showAlert: Bool
     @Binding var alertMessage: String
+    @Binding var isLoading: Bool
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -22,28 +23,58 @@ struct ActivityViewController: UIViewControllerRepresentable {
         let items = ["https://apps.apple.com/il/app/speed-up-video-slow-mo-spid/id6452276248",  UIImage(named: "AppIcon")!] as [Any]
         let ac = UIActivityViewController(activityItems: items, applicationActivities: nil)
         ac.modalPresentationStyle = .formSheet
+        ac.excludedActivityTypes = [
+            .print,
+            .copyToPasteboard,
+            .saveToCameraRoll,
+            .addToReadingList,
+            .postToVimeo,
+            .openInIBooks,
+            .markupAsPDF,
+        ]
+        if #available(iOS 15.4, *) {
+            ac.excludedActivityTypes?.append(contentsOf: [.sharePlay])
+        }
+        if #available(iOS 16, *) {
+            ac.excludedActivityTypes?.append(contentsOf: [
+                .collaborationInviteWithLink,
+                .collaborationCopyLink
+            ])
+        }
+        if #available(iOS 16.4, *) {
+            ac.excludedActivityTypes?.append(contentsOf: [.addToHomeScreen])
+        }
+        
         ac.completionWithItemsHandler = { activity, success, items, error in
-            if success {
+            if success && validActivity(activity: activity) {
+                print("Success completionWithItemsHandler")
+
                 print("Successfully shared!")
+                ac.dismiss(animated: true) {
                     Task {
                         do {
+                            isLoading = true
                             try await NetworkManager.shared.createUser()
-                            ac.dismiss(animated: true) {
-                                alertMessage = "Your all set.\nyou have one month free pro version."
-                                showAlert = true
-                            }
+                            alertMessage = "Your all set.\nyou have one month free pro version."
+                            showAlert = true
+                            isLoading = false
                             
+                        } catch ServiceError.errorWithMessage(let message) {
+                            alertMessage = message
+                            showAlert = true
+                            isLoading = false
                         } catch {
-                            ac.dismiss(animated: true) {
-                                alertMessage = error.localizedDescription
-                                showAlert = true
-                            }
+                            alertMessage = "unexpected error occur"
+                            showAlert = true
+                            isLoading = false
+                            
                         }
                     }
-                
-                
-            } else {
-                print("Failed to share.")
+
+                }
+            } 
+            else {
+                ac.dismiss(animated: true) {}
             }
         }
         return ac
@@ -60,4 +91,20 @@ struct ActivityViewController: UIViewControllerRepresentable {
         }
 
     }
+    
+    func validActivity(activity: UIActivity.ActivityType?) -> Bool {
+        guard let activity = activity else { return false }
+        let activities = [
+            "com.apple.DocumentManagerUICore.SaveToFiles",
+            "com.apple.sharing.quick-note",
+            "com.buffer.buffer.BufferIdeaComposerExtension"
+        ]
+        
+        if activities.contains(activity.rawValue) {
+            return false
+        }
+        
+        return true
+    }
+    
 }

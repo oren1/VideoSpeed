@@ -15,9 +15,8 @@ enum BenefitStatus: String {
     case expired = "expired"
 }
 
-enum BenefitServiceError: Error {
-    case benefitStatusNotDetermined
-    case generalError(message: String)
+enum ServiceError: Error {
+    case errorWithMessage(message: String)
 }
 
 class NetworkManager {
@@ -50,13 +49,13 @@ class NetworkManager {
         let decoder = JSONDecoder()
         let response = try decoder.decode(Response<User>.self, from: data)
         if response.success {
-            if let benefitStatus = BenefitStatus(rawValue: response.data.benefitStatus) {
+            if let benefitStatus = BenefitStatus(rawValue: response.data!.benefitStatus) {
                 return benefitStatus
             }
-            throw BenefitServiceError.benefitStatusNotDetermined
+            throw ServiceError.errorWithMessage(message: response.message)
         }
         else {
-            throw BenefitServiceError.generalError(message: response.message)
+            throw ServiceError.errorWithMessage(message: response.message)
 
         }
     }
@@ -80,15 +79,14 @@ class NetworkManager {
         let decoder = JSONDecoder()
         let response = try decoder.decode(Response<User>.self, from: data)
         if response.success {
-            if let benefitStatus = BenefitStatus(rawValue: response.data.benefitStatus) {
+            if let benefitStatus = BenefitStatus(rawValue: response.data!.benefitStatus) {
                 UserDataManager.main.userBenefitStatus = benefitStatus
                 return
             }
-            throw BenefitServiceError.benefitStatusNotDetermined
+            throw ServiceError.errorWithMessage(message: response.message)
         }
         else {
-            throw BenefitServiceError.generalError(message: response.message)
-
+            throw ServiceError.errorWithMessage(message: response.message)
         }
     }
 }
