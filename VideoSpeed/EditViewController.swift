@@ -64,7 +64,9 @@ class EditViewController: UIViewController {
     var moreSectionVC: MoreSectionVC!
     
     @IBOutlet weak var dashboardContainerView: UIView!
-
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
@@ -293,7 +295,9 @@ class EditViewController: UIViewController {
     
     
     @objc func tryToExportVideo() {
-            guard let _ = SpidProducts.store.userPurchasedProVersion() else {
+            guard  SpidProducts.store.userPurchasedProVersion() != nil ||
+                  UserDataManager.main.userBenefitStatus == .entitled else {
+
                 if !usingProFeatures() {
                     self.playerController.player?.pause()
                   return InterstitialAd.manager.showAd(controller: self) { [weak self] in
@@ -715,7 +719,8 @@ class EditViewController: UIViewController {
     }
     
     func showProButtonIfNeeded() {
-        guard SpidProducts.store.userPurchasedProVersion() == nil else {return}
+        guard SpidProducts.store.userPurchasedProVersion() == nil &&
+        UserDataManager.main.userBenefitStatus != .entitled else {return}
         
         if self.usingProFeatures() {
             self.showProButton()

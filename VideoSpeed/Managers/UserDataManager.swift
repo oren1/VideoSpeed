@@ -8,6 +8,8 @@
 import Foundation
 import StoreKit
 
+let twentyFourHoursInSeconds = 24.0 * 60 * 60
+
 class UserDataManager {
     
     static let main: UserDataManager = UserDataManager()
@@ -37,5 +39,31 @@ class UserDataManager {
         return false
     }
     
-
+    var installationTime: Double? {
+        set {
+            UserDefaults.standard.set(newValue, forKey: "installationTime")
+        }
+        get {
+            guard UserDefaults.standard.double(forKey: "installationTime") != 0 else {
+                return nil
+            }
+            return UserDefaults.standard.double(forKey: "installationTime")
+        }
+    }
+    
+    var userAlreadySeenBenefitView: Bool {
+        set {
+            UserDefaults.standard.set(newValue, forKey: "userAlreadySeenBenefitView")
+        }
+        get {
+            UserDefaults.standard.bool(forKey: "userAlreadySeenBenefitView")
+        }
+    }
+    
+    func twentyFourHoursPassedSinceInstallation() -> Bool {
+        if (installationTime! + twentyFourHoursInSeconds) < Date().timeIntervalSince1970 {
+            return true
+        }
+        return false
+    }
 }

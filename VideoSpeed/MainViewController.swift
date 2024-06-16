@@ -12,6 +12,7 @@ import AppTrackingTransparency
 import FirebaseRemoteConfig
 import SwiftUI
 
+
 class MainViewController: UIViewController {
     
     // MARK: - Properties
@@ -69,20 +70,16 @@ class MainViewController: UIViewController {
         
         createGiftBarButtonItem()
         
-        if needsToShowGiftButton() {
-            navigationItem.leftBarButtonItems?.append(giftBarButtonItem)
-        }
+        
     }
     
     func needsToShowGiftButton() -> Bool {
-        if let _ = SpidProducts.store.userPurchasedProVersion() {
-            return false
-        }
-        else if UserDataManager.main.userBenefitStatus == .expired {
-            return false
+        if  SpidProducts.store.userPurchasedProVersion() == nil &&
+            UserDataManager.main.userBenefitStatus == .notInvoked {
+            return true
         }
         
-        return true
+        return false
     }
     
     func createProButton() -> UIButton {
@@ -114,12 +111,52 @@ class MainViewController: UIViewController {
         self.present(purchaseViewController, animated: true)
     }
     
+    func showBenefitView() {
+        let benefitViewController = UIHostingController(rootView: BenefitView())
+      
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            benefitViewController.modalPresentationStyle = .fullScreen
+        }
+        else if UIDevice.current.userInterfaceIdiom == .pad {
+            benefitViewController.modalPresentationStyle = .formSheet
+        }
+        self.present(benefitViewController, animated: true)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
-        if SpidProducts.store.userPurchasedProVersion() == nil {
+       
+        // Add or Remove "Get Pro" button
+        if SpidProducts.store.userPurchasedProVersion() == nil &&
+            UserDataManager.main.userBenefitStatus != .entitled {
             addProButton()
         }
         else {
             removeProButton()
+        }
+        
+        // Add or Remove the Gift BarButtonItem
+        if needsToShowGiftButton() {
+            if let _ = navigationItem.leftBarButtonItems?.firstIndex(of: giftBarButtonItem) {
+                navigationItem.leftBarButtonItems?.replaceSubrange(1...1, with: [giftBarButtonItem])
+            }
+            else {
+                navigationItem.leftBarButtonItems?.append(giftBarButtonItem)
+            }
+        }
+        else {
+            navigationItem.leftBarButtonItems?.removeAll(where: {$0 == giftBarButtonItem})
+        }
+        
+        
+        if UserDataManager.main.twentyFourHoursPassedSinceInstallation() &&
+            SpidProducts.store.userPurchasedProVersion() == nil &&
+            UserDataManager.main.userBenefitStatus == .notInvoked &&
+            !UserDataManager.main.userAlreadySeenBenefitView
+        {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+                self?.showBenefitView()
+                UserDataManager.main.userAlreadySeenBenefitView = true
+            }
         }
     }
     
@@ -216,15 +253,8 @@ class MainViewController: UIViewController {
     //MARK: - Actions
     
     @IBAction func giftButtonTapped(_ sender: Any) {
-        let benefitViewController = UIHostingController(rootView: BenefitView())
-      
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            benefitViewController.modalPresentationStyle = .fullScreen
-        }
-        else if UIDevice.current.userInterfaceIdiom == .pad {
-            benefitViewController.modalPresentationStyle = .formSheet
-        }
-        self.present(benefitViewController, animated: true)
+        AnalyticsManager.giftButtonTappedEvent()
+        showBenefitView()
     }
     
     @IBAction func cameraButtonTapped(_ sender: Any) {

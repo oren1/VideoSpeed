@@ -35,6 +35,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         RemoteConfig.remoteConfig().setDefaults(fromPlist: "remote_config_defaults")
         InterstitialAd.manager.loadInterstitialAd()
 
+        if UserDataManager.main.installationTime == nil {
+            UserDataManager.main.installationTime = Date().timeIntervalSince1970
+        }
+        
         return true
     }
 
