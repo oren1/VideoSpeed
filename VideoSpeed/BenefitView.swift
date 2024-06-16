@@ -31,7 +31,7 @@ struct BenefitView: View {
                         .foregroundStyle(.white)
                         .font(.system(size: 34, weight: .bold))
 
-                    Text("Invite Your Friends\n And Get All Features\n Free For 1 Month")
+                    Text("Share With Your Friends\n And Get All Features\n Free For 1 Month")
                         .lineSpacing(10)
                         .padding([.horizontal])
                         .multilineTextAlignment(.center)
@@ -45,9 +45,10 @@ struct BenefitView: View {
                     VStack {
                         Button(action: {
                             isPresented.toggle()
+                            AnalyticsManager.shareButtonTappedEvent()
                         }, label: {
                             Spacer()
-                            Text("Invite")
+                            Text("Share")
                                 .font(.system(size: 22, weight: .semibold))
                             Spacer()
                         })
@@ -58,6 +59,7 @@ struct BenefitView: View {
                         .clipShape(Capsule())
                         
                         Button(action: {
+                            AnalyticsManager.laterButtonTappedEvent()
                             dismiss()
                         }, label: {
                             Spacer()
@@ -92,6 +94,9 @@ struct BenefitView: View {
                     .scaleEffect(2.0, anchor: .center) // Makes the spinner larger
             }
         }
+        .onAppear(perform: {
+            AnalyticsManager.benefitViewApearEvent()
+        })
         .alert(isPresented: $showAlert, content: {
             Alert(title: Text(alertMessage), dismissButton: .default(Text("OK"), action: {
                 dismiss()

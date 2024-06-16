@@ -20,7 +20,7 @@ struct ActivityViewController: UIViewControllerRepresentable {
     }
 
     func makeUIViewController(context: Context) -> UIActivityViewController {
-        let items = ["https://apps.apple.com/il/app/speed-up-video-slow-mo-spid/id6452276248",  UIImage(named: "AppIcon")!] as [Any]
+        let items = ["Video Speed Editor","https://apps.apple.com/il/app/speed-up-video-slow-mo-spid/id6452276248",  UIImage(named: "AppIcon")!] as [Any]
         let ac = UIActivityViewController(activityItems: items, applicationActivities: nil)
         ac.modalPresentationStyle = .formSheet
         ac.excludedActivityTypes = [
@@ -48,22 +48,24 @@ struct ActivityViewController: UIViewControllerRepresentable {
         ac.completionWithItemsHandler = { activity, success, items, error in
             if success && validActivity(activity: activity) {
                 print("Success completionWithItemsHandler")
-
                 print("Successfully shared!")
+                isLoading = true
                 ac.dismiss(animated: true) {
                     Task {
                         do {
-                            isLoading = true
                             try await NetworkManager.shared.createUser()
+                            AnalyticsManager.successfullInviteEvent()
                             alertMessage = "Your all set.\nyou have one month free pro version."
                             showAlert = true
                             isLoading = false
                             
                         } catch ServiceError.errorWithMessage(let message) {
+                            AnalyticsManager.failedInviteEvent()
                             alertMessage = message
                             showAlert = true
                             isLoading = false
                         } catch {
+                            AnalyticsManager.failedInviteEvent()
                             alertMessage = "unexpected error occur"
                             showAlert = true
                             isLoading = false
@@ -74,6 +76,7 @@ struct ActivityViewController: UIViewControllerRepresentable {
                 }
             } 
             else {
+                AnalyticsManager.failedInviteEvent()
                 ac.dismiss(animated: true) {}
             }
         }
