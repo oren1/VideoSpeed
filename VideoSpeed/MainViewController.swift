@@ -11,6 +11,7 @@ import AdSupport
 import AppTrackingTransparency
 import FirebaseRemoteConfig
 import SwiftUI
+import RevenueCat
 
 
 class MainViewController: UIViewController {
@@ -188,6 +189,8 @@ class MainViewController: UIViewController {
             @unknown default:
                     print("Unknown")
             }
+            
+            Purchases.shared.attribution.enableAdServicesAttributionTokenCollection()
         }
     }
     deinit {

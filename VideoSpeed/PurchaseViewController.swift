@@ -15,10 +15,6 @@ enum PriceVariantType: Int {
     case baseLine = 1, tenDollars
 }
 
-enum SubscriptionModel: String {
-    case normal = "normal"
-    case high = "high"
-}
 
 class PurchaseViewController: UIViewController {
 

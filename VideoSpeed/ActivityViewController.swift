@@ -24,6 +24,7 @@ struct ActivityViewController: UIViewControllerRepresentable {
         let ac = UIActivityViewController(activityItems: items, applicationActivities: nil)
         ac.modalPresentationStyle = .formSheet
         ac.excludedActivityTypes = [
+            .mail,
             .print,
             .copyToPasteboard,
             .saveToCameraRoll,
