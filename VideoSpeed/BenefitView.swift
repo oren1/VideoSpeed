@@ -27,11 +27,11 @@ struct BenefitView: View {
                         .padding(.top, 50)
                         .padding(.bottom, 20)
                     
-                    Text("1 Month Free")
+                    Text("3 Months Free")
                         .foregroundStyle(.white)
                         .font(.system(size: 34, weight: .bold))
 
-                    Text("Share With Your Friends\n And Get All Features\n Free For 1 Month")
+                    Text("Share With Your Friends\n And Get All Features\n Free For 3 Months")
                         .lineSpacing(10)
                         .padding([.horizontal])
                         .multilineTextAlignment(.center)
