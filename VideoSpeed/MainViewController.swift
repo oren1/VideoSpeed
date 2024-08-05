@@ -10,6 +10,9 @@ import Photos
 import AdSupport
 import AppTrackingTransparency
 import FirebaseRemoteConfig
+import SwiftUI
+import RevenueCat
+
 
 class MainViewController: UIViewController {
     
@@ -19,7 +22,11 @@ class MainViewController: UIViewController {
     var videos: PHFetchResult<PHAsset>?
     private let itemsPerRow: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 5 : 3
     
+    private var giftBarButtonItem: UIBarButtonItem!
+    
+    @IBOutlet weak var giftButton: UIBarButtonItem!
     @IBOutlet weak var collectionView: UICollectionView!
+    
     lazy var photoLibraryUsageDisabledView: PhotoLibraryUsageDisabledView = {
         photoLibraryUsageDisabledView = PhotoLibraryUsageDisabledView()
         return photoLibraryUsageDisabledView
@@ -35,8 +42,6 @@ class MainViewController: UIViewController {
         #endif
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont(name: "Arial Hebrew Bold", size: 17)!]
 
-        
-        
         navigationItem.title = "SPID"
         
         collectionView.delegate = self
@@ -62,6 +67,20 @@ class MainViewController: UIViewController {
                 self.collectionView.reloadData()
               }
             }
+        
+        
+        createGiftBarButtonItem()
+        
+        
+    }
+    
+    func needsToShowGiftButton() -> Bool {
+        if  SpidProducts.store.userPurchasedProVersion() == nil &&
+            UserDataManager.main.userBenefitStatus == .notInvoked {
+            return true
+        }
+        
+        return false
     }
     
     func createProButton() -> UIButton {
@@ -93,12 +112,52 @@ class MainViewController: UIViewController {
         self.present(purchaseViewController, animated: true)
     }
     
+    func showBenefitView() {
+        let benefitViewController = UIHostingController(rootView: BenefitView())
+      
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            benefitViewController.modalPresentationStyle = .fullScreen
+        }
+        else if UIDevice.current.userInterfaceIdiom == .pad {
+            benefitViewController.modalPresentationStyle = .formSheet
+        }
+        self.present(benefitViewController, animated: true)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
-        if SpidProducts.store.userPurchasedProVersion() == nil {
+       
+        // Add or Remove "Get Pro" button
+        if SpidProducts.store.userPurchasedProVersion() == nil &&
+            UserDataManager.main.userBenefitStatus != .entitled {
             addProButton()
         }
         else {
             removeProButton()
+        }
+        
+        // Add or Remove the Gift BarButtonItem
+        if needsToShowGiftButton() {
+            if let _ = navigationItem.leftBarButtonItems?.firstIndex(of: giftBarButtonItem) {
+                navigationItem.leftBarButtonItems?.replaceSubrange(1...1, with: [giftBarButtonItem])
+            }
+            else {
+                navigationItem.leftBarButtonItems?.append(giftBarButtonItem)
+            }
+        }
+        else {
+            navigationItem.leftBarButtonItems?.removeAll(where: {$0 == giftBarButtonItem})
+        }
+        
+        
+        if UserDataManager.main.twentyFourHoursPassedSinceInstallation() &&
+            SpidProducts.store.userPurchasedProVersion() == nil &&
+            UserDataManager.main.userBenefitStatus == .notInvoked &&
+            !UserDataManager.main.userAlreadySeenBenefitView
+        {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+                self?.showBenefitView()
+                UserDataManager.main.userAlreadySeenBenefitView = true
+            }
         }
     }
     
@@ -130,6 +189,8 @@ class MainViewController: UIViewController {
             @unknown default:
                     print("Unknown")
             }
+            
+            Purchases.shared.attribution.enableAdServicesAttributionTokenCollection()
         }
     }
     deinit {
@@ -189,8 +250,15 @@ class MainViewController: UIViewController {
         let proBarButtonItem = UIBarButtonItem(customView: proButton)
         navigationItem.rightBarButtonItems = [proBarButtonItem]
     }
-    
+    func createGiftBarButtonItem() {
+        giftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gift.fill"), style: .plain, target: self, action: #selector(giftButtonTapped))
+    }
     //MARK: - Actions
+    
+    @IBAction func giftButtonTapped(_ sender: Any) {
+        AnalyticsManager.giftButtonTappedEvent()
+        showBenefitView()
+    }
     
     @IBAction func cameraButtonTapped(_ sender: Any) {
         VideoHelper.startMediaBrowser(delegate: self, sourceType: .camera)

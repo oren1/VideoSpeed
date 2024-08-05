@@ -7,10 +7,27 @@
 
 import Foundation
 import UIKit
+import FirebaseRemoteConfig
 
 let loadinViewTag = 12
 
 extension UIViewController {
+    
+    func getPurchaseViewController() -> PurchaseViewController {
+        let rawValue = RemoteConfig.remoteConfig().configValue(forKey: "subscription_model").stringValue!
+        let subscriptionModel = SubscriptionModel(rawValue: rawValue)
+        
+        let purchaseViewController: PurchaseViewController
+        
+        switch subscriptionModel {
+        case .weekly:
+            purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "WeeklySubscriptionVC") as! WeeklySubscriptionVC
+        default:
+            purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MonthlySubscriptionVC") as! MonthlySubscriptionVC
+        }
+    
+        return purchaseViewController
+    }
     
     func showLoading() {
         let loadingView = LoadingView()
