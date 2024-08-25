@@ -24,7 +24,7 @@ class SpeedSectionVC: SectionViewController {
     
     var speedDidChange: SpeedClosure?
     var sliderValueChange: SpeedClosure?
-    
+    var freeVersionAllowedSpeeds = [0.25, 0.5, 1, 1.5, 2]
     var speed: Float = 1 {
         didSet {
             speedLabel?.text = "\(speed)x"
@@ -94,7 +94,17 @@ class SpeedSectionVC: SectionViewController {
 //        currentSelectedButton?.tintColor = .link
         let slider = sender as! UISlider
         speed = convertSliderValue(value: slider.value)
-        UserDataManager.main.usingSlider = true
+        
+        if [0.5, 1, 1.5, 2].contains(speed) { /* If the slider value has changed to one of
+            the allowed values of the free version then consider it as not using the slider.
+            this will let the "EditViewController" know that it shouldn't show the "proVersion" button.
+        */
+            UserDataManager.main.usingSlider = false
+        }
+        else {
+            UserDataManager.main.usingSlider = true
+
+        }
         sliderValueChange?(speed)
     }
 

@@ -43,5 +43,10 @@ class AnalyticsManager {
         let eventName = "failed_invite"
         Analytics.logEvent(eventName, parameters: [:])
     }
+    
+    static func exportButtonTapped() {
+        let eventName = "export_button_tapped"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
 }
 

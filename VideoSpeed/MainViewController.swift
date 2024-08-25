@@ -136,29 +136,29 @@ class MainViewController: UIViewController {
         }
         
         // Add or Remove the Gift BarButtonItem
-        if needsToShowGiftButton() {
-            if let _ = navigationItem.leftBarButtonItems?.firstIndex(of: giftBarButtonItem) {
-                navigationItem.leftBarButtonItems?.replaceSubrange(1...1, with: [giftBarButtonItem])
-            }
-            else {
-                navigationItem.leftBarButtonItems?.append(giftBarButtonItem)
-            }
-        }
-        else {
-            navigationItem.leftBarButtonItems?.removeAll(where: {$0 == giftBarButtonItem})
-        }
+//        if needsToShowGiftButton() {
+//            if let _ = navigationItem.leftBarButtonItems?.firstIndex(of: giftBarButtonItem) {
+//                navigationItem.leftBarButtonItems?.replaceSubrange(1...1, with: [giftBarButtonItem])
+//            }
+//            else {
+//                navigationItem.leftBarButtonItems?.append(giftBarButtonItem)
+//            }
+//        }
+//        else {
+//            navigationItem.leftBarButtonItems?.removeAll(where: {$0 == giftBarButtonItem})
+//        }
         
         
-        if UserDataManager.main.twentyFourHoursPassedSinceInstallation() &&
-            SpidProducts.store.userPurchasedProVersion() == nil &&
-            UserDataManager.main.userBenefitStatus == .notInvoked &&
-            !UserDataManager.main.userAlreadySeenBenefitView
-        {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
-                self?.showBenefitView()
-                UserDataManager.main.userAlreadySeenBenefitView = true
-            }
-        }
+//        if UserDataManager.main.twentyFourHoursPassedSinceInstallation() &&
+//            SpidProducts.store.userPurchasedProVersion() == nil &&
+//            UserDataManager.main.userBenefitStatus == .notInvoked &&
+//            !UserDataManager.main.userAlreadySeenBenefitView
+//        {
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+//                self?.showBenefitView()
+//                UserDataManager.main.userAlreadySeenBenefitView = true
+//            }
+//        }
     }
     
     override func viewDidAppear(_ animated: Bool) {

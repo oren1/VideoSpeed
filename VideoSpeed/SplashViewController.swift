@@ -17,6 +17,9 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
     var adDidDismis = false
     var requestsDidFinish = false
     var error: Error?
+    let amountOfRequests: Float = 4
+    
+    @IBOutlet weak var progressView: UIProgressView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +33,7 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
         Task {
             downloadGroup.enter()
             let _ = try? await SpidProducts.store.refreshPurchasedProducts()
+            increaseProgress()
             downloadGroup.leave()
         }
         
@@ -37,14 +41,20 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
             downloadGroup.enter()
             if let benefitStatus = try? await NetworkManager.shared.getUserBenefitStatus() {
                 UserDataManager.main.userBenefitStatus = benefitStatus
+                increaseProgress()
                 downloadGroup.leave()
             }
         }
         
         downloadGroup.enter()
-        SpidProducts.store.requestProducts { success, products in
+        SpidProducts.store.requestProducts { [weak self] success, products in
+            guard let self = self else {return}
+          
             if let products = products, success {
                 UserDataManager.main.products = products
+                DispatchQueue.main.async {
+                    self.increaseProgress()
+                }
                 downloadGroup.leave()
             }
             /* In case of error it means that the products were not fetched and i dont want to enter the app
@@ -54,26 +64,29 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
         
         
         downloadGroup.enter()
-        getRemoteConfig {
+        getRemoteConfig { [weak self] in
+            guard let self = self else {return}
+            increaseProgress()
             downloadGroup.leave()
         }
         
-        downloadGroup.enter()
-        loadAppOpenAdIfAppropriate(viewVontroller: self) {
-            downloadGroup.leave()
-        }
-        
+//        downloadGroup.enter()
+//        loadAppOpenAdIfAppropriate(viewVontroller: self) {
+//            downloadGroup.leave()
+//        }
         
         
         downloadGroup.notify(queue: DispatchQueue.main) { [weak self] in
-             if let appOpenAd = self?.appOpenAd,
-                let rootViewController = self?.view.window?.rootViewController {
-                 appOpenAd.present(fromRootViewController: rootViewController)
-                 return
-             }
-             else {
                 self?.pushMainViewController()
-             }
+            
+//             if let appOpenAd = self?.appOpenAd,
+//                let rootViewController = self?.view.window?.rootViewController {
+//                 appOpenAd.present(fromRootViewController: rootViewController)
+//                 return
+//             }
+//             else {
+//                self?.pushMainViewController()
+//             }
         }
     }
     
@@ -142,6 +155,11 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
 
     }
     
+    // Increase progress for the progressView
+    func increaseProgress() {
+        let progress = progressView.progress + (1 / amountOfRequests)
+        progressView.setProgress(progress, animated: true)
+    }
 }
 
 fileprivate typealias FullScreenContentDelegate = SplashViewController
