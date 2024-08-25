@@ -152,15 +152,26 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eAU-5S-PIx">
+                                <rect key="frame" x="132.5" y="435" width="110" height="4"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="110" id="gdn-ly-yxn"/>
+                                </constraints>
+                            </progressView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="LSx-fl-2tO"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="2XE-TQ-8AN" firstAttribute="centerX" secondItem="ldt-pA-FDp" secondAttribute="centerX" id="E9a-aR-c0g"/>
+                            <constraint firstItem="eAU-5S-PIx" firstAttribute="top" secondItem="2XE-TQ-8AN" secondAttribute="bottom" constant="82" id="iZY-ci-mQ3"/>
                             <constraint firstItem="2XE-TQ-8AN" firstAttribute="centerY" secondItem="ldt-pA-FDp" secondAttribute="centerY" id="jmQ-Vv-VN1"/>
+                            <constraint firstItem="eAU-5S-PIx" firstAttribute="centerX" secondItem="ldt-pA-FDp" secondAttribute="centerX" id="wbM-e5-tt4"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="x3w-QS-lTv"/>
+                    <connections>
+                        <outlet property="progressView" destination="eAU-5S-PIx" id="eOk-QL-OP2"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dfb-az-hiu" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
