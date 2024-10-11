@@ -135,40 +135,59 @@ class MainViewController: UIViewController {
             removeProButton()
         }
         
-        // Add or Remove the Gift BarButtonItem
-//        if needsToShowGiftButton() {
-//            if let _ = navigationItem.leftBarButtonItems?.firstIndex(of: giftBarButtonItem) {
-//                navigationItem.leftBarButtonItems?.replaceSubrange(1...1, with: [giftBarButtonItem])
-//            }
-//            else {
-//                navigationItem.leftBarButtonItems?.append(giftBarButtonItem)
-//            }
-//        }
-//        else {
-//            navigationItem.leftBarButtonItems?.removeAll(where: {$0 == giftBarButtonItem})
-//        }
-        
-        
-//        if UserDataManager.main.twentyFourHoursPassedSinceInstallation() &&
-//            SpidProducts.store.userPurchasedProVersion() == nil &&
-//            UserDataManager.main.userBenefitStatus == .notInvoked &&
-//            !UserDataManager.main.userAlreadySeenBenefitView
-//        {
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
-//                self?.showBenefitView()
-//                UserDataManager.main.userAlreadySeenBenefitView = true
-//            }
-//        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        requestPermissionForIDFA()
+        Task {
+//            await requestPermissionForIDFAAsync()
+            
+//            if let lastPurchaseScreenApearance = UserDataManager.main.lastApearanceOfPurchaseScreen {
+//                // 'lastApearanceOfPurchaseScreen' date exists. it means the purchase screen was already seen one or more times, so show it only if 24 hours have passed since the last apearance.
+//                let now = Date().timeIntervalSince1970
+//                if lastPurchaseScreenApearance + (60 * 60 * 24) < now {
+//                  forceShowSplashScreen()
+//                }
+//            }
+//            else {
+//                // When there is no 'lastApearanceOfPurchaseScreen' date available it means that he purchase screen was never seen before, so show it now for the first time.
+//                forceShowSplashScreen()
+//            }
+        }
+//        requestPermissionForIDFA()
     }
     
+   
+    
+    func requestPermissionForIDFAAsync() async {
+        let status = await ATTrackingManager.requestTrackingAuthorization()
+        switch status {
+        case .authorized:
+            // Tracking authorization dialog was shown
+            // and we are authorized
+            print("Authorized")
+        
+            // Now that we are authorized we can get the IDFA
+            print(ASIdentifierManager.shared().advertisingIdentifier)
+        case .denied:
+           // Tracking authorization dialog was
+           // shown and permission is denied
+             print("Denied")
+        case .notDetermined:
+                // Tracking authorization dialog has not been shown
+                print("Not Determined")
+        case .restricted:
+                print("Restricted")
+        @unknown default:
+                print("Unknown")
+        }
+        Purchases.shared.attribution.enableAdServicesAttributionTokenCollection()
+
+    }
     
     func requestPermissionForIDFA() {
-        ATTrackingManager.requestTrackingAuthorization { status in
+        ATTrackingManager.requestTrackingAuthorization { [weak self] status in
+            guard let self = self else {return}
             switch status {
             case .authorized:
                 // Tracking authorization dialog was shown
@@ -190,7 +209,7 @@ class MainViewController: UIViewController {
                     print("Unknown")
             }
             
-            Purchases.shared.attribution.enableAdServicesAttributionTokenCollection()
+
         }
     }
     deinit {
@@ -203,8 +222,22 @@ class MainViewController: UIViewController {
         completionHandler(true)
         return
       }
+        
       // 2
       PHPhotoLibrary.requestAuthorization { status in
+         
+          switch status {
+          case .authorized:
+              AnalyticsManager.userAuthorizedPhotoLibraryPermission()
+          case .limited:
+              AnalyticsManager.userLimitedPhotoLibraryPermission()
+          case .denied:
+              AnalyticsManager.userDeniedPhotoLibraryPermission()
+          case .notDetermined:
+              AnalyticsManager.userNotDeterminedPhotoLibraryPermission()
+          default: break
+          }
+          
         completionHandler(status == .authorized)
       }
     }

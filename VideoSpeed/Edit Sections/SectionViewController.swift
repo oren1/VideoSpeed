@@ -6,18 +6,21 @@
 //
 
 import UIKit
+import FirebaseRemoteConfig
 
 typealias VoidClousure = () -> ()
 
 class SectionViewController: UIViewController {
     var currentSelectedButton: UIButton!
     var userNeedsToPurchase: VoidClousure?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = .clear
 
-        // Do any additional setup after loading the view.
     }
+    
     
     func setBorderAndRadius(button: UIButton) {
         button.layer.borderColor = UIColor.white.cgColor

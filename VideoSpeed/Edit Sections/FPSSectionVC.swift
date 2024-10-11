@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseRemoteConfig
+import Combine
 
 enum FPS: Int {
     case thirty = 30
@@ -29,6 +30,7 @@ class FPSSectionVC: SectionViewController {
     }
     
     let fpsOptions = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,60]
+    var sub: AnyCancellable!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,10 +41,14 @@ class FPSSectionVC: SectionViewController {
         pickerView.setValue(UIColor.white, forKey: "textColor")
         pickerView.selectRow(29, inComponent: 0, animated: false)
         
+        sub = PublishersManager.main.resetSelectionsPublisher.sink(receiveValue: { [weak self]  notification in
+            guard let self = self else {return}
+            pickerView.selectRow(29, inComponent: 0, animated: true)
+            fps = 30
+        })
+        
     }
 
-    
-    
     
     @IBAction func thirtyButtonTapped(_ sender: Any) {
         fps = 30

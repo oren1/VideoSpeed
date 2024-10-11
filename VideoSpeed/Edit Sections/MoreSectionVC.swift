@@ -8,6 +8,7 @@
 import UIKit
 import AVFoundation
 import FirebaseRemoteConfig
+import Combine
 
 typealias FileTypeClosure = (AVFileType) -> ()
 typealias SoundStateClosure = (Bool) -> ()
@@ -25,7 +26,8 @@ class MoreSectionVC: SectionViewController {
     var fileType: AVFileType = .mov
     var fileTypeDidChange: FileTypeClosure?
     var soundStateChanged: SoundStateClosure?
-    
+    var sub: AnyCancellable!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setBorderAndRadius(button: movButton)
@@ -35,7 +37,11 @@ class MoreSectionVC: SectionViewController {
 
         setSelectedButton(button: movButton)
         setSoundSelectedButton(button: onButton)
-
+        
+        sub = PublishersManager.main.resetSelectionsPublisher.sink(receiveValue: { [weak self]  notification in
+            guard let self = self else {return}
+            movButtonTapped(movButton)
+        })
     }
 
     func updateSoundSelection(soundOn: Bool) {
