@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseRemoteConfig
+import Combine
 
 typealias SpeedClosure = (Float) -> Void
 
@@ -31,12 +32,17 @@ class SpeedSectionVC: SectionViewController {
         }
     }
     
+    var sub: AnyCancellable!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
         
-       
-
+        sub = PublishersManager.main.resetSelectionsPublisher.sink(receiveValue: { [weak self]  notification in
+            guard let self = self else {return}
+            oneButtonTapped(oneButton)
+        })
+        
         setBorderAndRadius(button: point25Button)
         setBorderAndRadius(button: point5Button)
         setBorderAndRadius(button: oneButton)
@@ -47,7 +53,8 @@ class SpeedSectionVC: SectionViewController {
     }
 
     @objc func usingSliderChanged() {}
-    
+   
+
     @IBAction func point25ButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)
         speed = 0.25
@@ -62,7 +69,6 @@ class SpeedSectionVC: SectionViewController {
         slider.value = 10
         UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
-
     }
     @IBAction func oneButtonTapped(_ sender: UIButton) {
         setSelectedButton(button: sender)

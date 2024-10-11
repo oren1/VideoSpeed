@@ -66,4 +66,16 @@ class UserDataManager {
         }
         return false
     }
+    
+    var lastApearanceOfPurchaseScreen: Double? {
+        set {
+            UserDefaults.standard.set(newValue, forKey: "lastPurchaseScreenApearance")
+        }
+        get {
+            guard UserDefaults.standard.double(forKey: "lastPurchaseScreenApearance") != 0 else {
+                return nil
+            }
+            return UserDefaults.standard.double(forKey: "lastPurchaseScreenApearance")
+        }
+    }
 }

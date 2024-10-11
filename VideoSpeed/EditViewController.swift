@@ -15,6 +15,10 @@ enum ExportButtonType: String {
     case withText = "withText"
 }
 
+enum ForceShowPurchaseScreen: Int {
+    case dontForce = 0, forceShow
+}
+
 class EditViewController: UIViewController {
     var playerController: AVPlayerViewController!
     var asset: AVAsset!
@@ -115,38 +119,33 @@ class EditViewController: UIViewController {
 
         
     }
-
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        let forceShow = RemoteConfig.remoteConfig().configValue(forKey: "forceShow").numberValue.boolValue
+        
+        if forceShow && SpidProducts.store.userPurchasedProVersion() == nil {
+            if let lastApearanceOfPurchaseScreen = UserDataManager.main.lastApearanceOfPurchaseScreen {
+                let now = Date().timeIntervalSince1970
+                if lastApearanceOfPurchaseScreen + (60 * 60 * 24) < now {
+                      forceShowPurchaseScreen()
+                 }
+                
+                return
+            }
+            forceShowPurchaseScreen()
+        }
+       
+    }
+    
     deinit {
         UserDataManager.main.usingSlider = false
     }
     
     func createProButton() -> UIButton {
-        var buttonConfiguration = UIButton.Configuration.plain()
-        let symbolConfiguration = UIImage.SymbolConfiguration(scale: .large)
-       
-        buttonConfiguration.buttonSize = .small
-        buttonConfiguration.image = UIImage(named: "crown16", in: nil, with: symbolConfiguration)
-        buttonConfiguration.imagePlacement = .leading
-        buttonConfiguration.imagePadding = 4
-
-        let exportButtonTypeRaw = RemoteConfig.remoteConfig().configValue(forKey: "exportButtonType").stringValue!
-        let exportButtonType = ExportButtonType(rawValue: exportButtonTypeRaw)
-        let proButton: UIButton
-        let proButtonTitle: String
-        
-        switch exportButtonType {
-        case .withText:
-            proButton = UIButton(configuration: buttonConfiguration, primaryAction: nil)
-            proButtonTitle = "PRO"
-        default:
-            proButton = UIButton(type: .roundedRect)
-            proButtonTitle = "Pro Version"
-        }
-//        let proButton = UIButton(configuration: buttonConfiguration, primaryAction: nil)
-//        let proButton = UIButton(type: .roundedRect)
+        let proButton = UIButton(type: .roundedRect)
         proButton.tintColor = .systemBlue
         proButton.backgroundColor = .white
-        proButton.setTitle(proButtonTitle, for: .normal)
+        proButton.setTitle("Pro Version", for: .normal)
         proButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         proButton.addTarget(self, action: #selector(proButtonTapped), for: .touchUpInside)
         proButton.layer.cornerRadius = 8
@@ -253,54 +252,9 @@ class EditViewController: UIViewController {
     
     
     func setNavigationItems() {
-       
-        let symbolConfiguration = UIImage.SymbolConfiguration(scale: .medium)
-
-        var configuration = UIButton.Configuration.plain()
-        configuration.title = "Export"
-        configuration.image = UIImage(systemName: "square.and.arrow.up", withConfiguration: symbolConfiguration)
-        configuration.imagePlacement = .trailing
-        configuration.imagePadding = 4
-        configuration.buttonSize = .medium
+                       
+        let exportButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(tryToExportVideo))
         
-        let button = UIButton(configuration: configuration, primaryAction: nil)
-        button.backgroundColor = .systemBlue
-        button.tintColor = .white
-        button.layer.cornerRadius = 12
-        button.layer.borderWidth = 1
-        button.addTarget(self, action: #selector(tryToExportVideo), for: .touchUpInside)
-        
-        
-        let exportButtonTypeRaw = RemoteConfig.remoteConfig().configValue(forKey: "exportButtonType").stringValue!
-        let exportButtonType = ExportButtonType(rawValue: exportButtonTypeRaw)
-        let exportButton: UIBarButtonItem
-        
-        switch exportButtonType {
-        case .withText:
-            exportButton = UIBarButtonItem(customView: button)
-        default:
-            exportButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(tryToExportVideo))
-        }
-
-                
-//        let exportButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(tryToExportVideo))
-        
-        
-        
-        
-//        let exportButtonTypeRaw = RemoteConfig.remoteConfig().configValue(forKey: "exportButtonType").stringValue!
-//        let exportButtonType = ExportButtonType(rawValue: exportButtonTypeRaw)
-//        let exportButton: UIBarButtonItem
-//        switch exportButtonType {
-//        case .noText:
-//            exportButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(tryToExportVideo))
-//        default:
-//            let exportButtonView = ExportButtonView()
-//            exportButtonView.exportButton.addTarget(self, action: #selector(tryToExportVideo), for: .touchUpInside)
-//            exportButtonView.exportButton.setTitleColor(.black, for: .focused)
-//            exportButton = UIBarButtonItem(customView: exportButtonView)
-//        }
-       
         
         speedLabel = createRightItemLabel()
         speedLabel.text = "\(speed)x"
@@ -524,10 +478,10 @@ class EditViewController: UIViewController {
         }
     }
     
+    
+    
     // MARK: - Sections Logic
     func showProButton() {
-        let exportButtonTypeRaw = RemoteConfig.remoteConfig().configValue(forKey: "exportButtonType").stringValue!
-        let exportButtonType = ExportButtonType(rawValue: exportButtonTypeRaw)
         
         self.view.addSubview(proButton)
         proButton.translatesAutoresizingMaskIntoConstraints = false
@@ -535,9 +489,8 @@ class EditViewController: UIViewController {
         let constraints = [
             proButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
             proButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -18),
-            proButton.widthAnchor.constraint(equalToConstant: exportButtonType == .noText ? 100 : 75),
-//            proButton.widthAnchor.constraint(equalToConstant: 100),
-            proButton.heightAnchor.constraint(equalToConstant: exportButtonType == .noText ? 34: 30)
+            proButton.widthAnchor.constraint(equalToConstant: 100),
+            proButton.heightAnchor.constraint(equalToConstant: 34)
         ]
         NSLayoutConstraint.activate(constraints)
     }
@@ -781,6 +734,16 @@ class EditViewController: UIViewController {
         self.present(purchaseViewController, animated: true)
     }
     
+    func forceShowPurchaseScreen() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) { [weak self] in
+            guard let self = self else {return}
+            showPurchaseViewController()
+            
+            let now = Date().timeIntervalSince1970
+            UserDataManager.main.lastApearanceOfPurchaseScreen = now
+        }
+    }
+    
     @objc func updateExportProgress() {
         guard let progress = exportSession?.progress else { return }
         progressIndicatorView.progressView.progress = progress
@@ -818,6 +781,8 @@ class EditViewController: UIViewController {
           self?.playerController.player?.play()
       }
     }
+    
+    
 }
 
 fileprivate typealias NotificationObservers = EditViewController

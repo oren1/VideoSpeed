@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseRemoteConfig
+import Combine
 
 class SoundSectionVC: SectionViewController {
 
@@ -14,6 +15,7 @@ class SoundSectionVC: SectionViewController {
     @IBOutlet weak var offButton: UIButton!
     var soundOn: Bool! = true
     var soundStateChanged: SoundStateClosure?
+    var sub: AnyCancellable!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,7 +23,11 @@ class SoundSectionVC: SectionViewController {
         setBorderAndRadius(button: offButton)
         
         setSelectedButton(button: onButton)
-
+        
+        sub = PublishersManager.main.resetSelectionsPublisher.sink(receiveValue: { [weak self]  notification in
+            guard let self = self else {return}
+            onButtonTapped(onButton)
+        })
     }
 
     func updateSoundSelection(soundOn: Bool) {
@@ -34,13 +40,13 @@ class SoundSectionVC: SectionViewController {
         }
     }
     
-    @IBAction func onButtonTapped(_ sender: Any) {
+    @IBAction func onButtonTapped(_ sender: UIButton) {
         soundOn = true
         setSelectedButton(button: onButton)
         soundStateChanged?(soundOn)
     }
     
-    @IBAction func offButtonTapped(_ sender: Any) {
+    @IBAction func offButtonTapped(_ sender: UIButton) {
             soundOn = false
             setSelectedButton(button: offButton)
             soundStateChanged?(soundOn)

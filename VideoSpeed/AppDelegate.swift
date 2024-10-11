@@ -41,11 +41,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         Purchases.logLevel = .debug
         Purchases.configure(withAPIKey: "appl_TMmatMjmVJesESBWZFPzLFOZpfk", appUserID: nil)
-        if ATTrackingManager.trackingAuthorizationStatus != .notDetermined {
-             // The user has previously seen a tracking request, so enable automatic collection
-             // before configuring in order to to collect whichever token is available
-             Purchases.shared.attribution.enableAdServicesAttributionTokenCollection()
-        }
+        Purchases.shared.attribution.enableAdServicesAttributionTokenCollection()
+//        if ATTrackingManager.trackingAuthorizationStatus != .notDetermined {
+//             // The user has previously seen a tracking request, so enable automatic collection
+//             // before configuring in order to to collect whichever token is available
+//             Purchases.shared.attribution.enableAdServicesAttributionTokenCollection()
+//        }
         
         if UserDataManager.main.installationTime == nil {
             UserDataManager.main.installationTime = Date().timeIntervalSince1970
