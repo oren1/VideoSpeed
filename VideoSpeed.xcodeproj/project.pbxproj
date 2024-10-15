@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6B04F5852CB916FA000C8C59 /* CropSectioVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B04F5832CB916FA000C8C59 /* CropSectioVC.swift */; };
+		6B04F5862CB916FA000C8C59 /* CropSectioVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B04F5842CB916FA000C8C59 /* CropSectioVC.xib */; };
+		6B04F5892CBBAAC2000C8C59 /* CropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B04F5872CBBAAC2000C8C59 /* CropViewController.swift */; };
 		6B0C7D792C88894C00063CBE /* PublishersManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C7D782C88894C00063CBE /* PublishersManager.swift */; };
 		6B0C7D7B2C89E4A700063CBE /* NotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C7D7A2C89E4A700063CBE /* NotificationsManager.swift */; };
 		6B23C1DD2BF629DC001C4F24 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23C1DC2BF629DC001C4F24 /* NetworkManager.swift */; };
@@ -78,6 +81,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6B04F5832CB916FA000C8C59 /* CropSectioVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropSectioVC.swift; sourceTree = "<group>"; };
+		6B04F5842CB916FA000C8C59 /* CropSectioVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CropSectioVC.xib; sourceTree = "<group>"; };
+		6B04F5872CBBAAC2000C8C59 /* CropViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropViewController.swift; sourceTree = "<group>"; };
 		6B0C7D782C88894C00063CBE /* PublishersManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishersManager.swift; sourceTree = "<group>"; };
 		6B0C7D7A2C89E4A700063CBE /* NotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsManager.swift; sourceTree = "<group>"; };
 		6B23C1DC2BF629DC001C4F24 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
@@ -244,6 +250,8 @@
 				6BCDCF502A67FAC800D8B656 /* MoreSectionVC.xib */,
 				6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */,
 				6B71AAC32A9098A000C06619 /* SoundSectionVC.xib */,
+				6B04F5832CB916FA000C8C59 /* CropSectioVC.swift */,
+				6B04F5842CB916FA000C8C59 /* CropSectioVC.xib */,
 			);
 			path = "Edit Sections";
 			sourceTree = "<group>";
@@ -300,6 +308,7 @@
 				6BE9A3052A61811400FF8CB0 /* PhotoCell.swift */,
 				6BCEB60C2BF0C1A400010381 /* BenefitView.swift */,
 				6BCEB6102BF0C5CB00010381 /* ActivityViewController.swift */,
+				6B04F5872CBBAAC2000C8C59 /* CropViewController.swift */,
 				6BE9A2F12A5FC80C00FF8CB0 /* Main.storyboard */,
 				6BE9A2F42A5FC80D00FF8CB0 /* Assets.xcassets */,
 				6BE9A2F62A5FC80D00FF8CB0 /* LaunchScreen.storyboard */,
@@ -384,6 +393,7 @@
 				6BCAF7ED2A63C5100039BE15 /* SpeedSectionVC.xib in Resources */,
 				6BF019512B565CB800953AB6 /* SubscriptionOptionView.xib in Resources */,
 				6B67009D2A6BCAD2006F2980 /* ProgressIndicatorView.xib in Resources */,
+				6B04F5862CB916FA000C8C59 /* CropSectioVC.xib in Resources */,
 				6BB4EE882A8F48D1006CF87C /* UsingProFeaturesAlertView.xib in Resources */,
 				6BB4EE842A8F3881006CF87C /* BlackTransparentOverlay.xib in Resources */,
 				6B7D10852BA70AE4002DD73F /* remote_config_defaults.plist in Resources */,
@@ -470,9 +480,11 @@
 				6B6700A42A6CDCB8006F2980 /* UserDataManager.swift in Sources */,
 				6BCEB60D2BF0C1A400010381 /* BenefitView.swift in Sources */,
 				6BB4EE8A2A8F48E2006CF87C /* UsingProFeaturesAlertView.swift in Sources */,
+				6B04F5892CBBAAC2000C8C59 /* CropViewController.swift in Sources */,
 				6B71AAEB2AAA321300C06619 /* UIViewController+Extension.swift in Sources */,
 				6BE9A2F02A5FC80C00FF8CB0 /* EditViewController.swift in Sources */,
 				6B92E3672A7E2F3C008CB22A /* PhotoLibraryUsageDisabledView.swift in Sources */,
+				6B04F5852CB916FA000C8C59 /* CropSectioVC.swift in Sources */,
 				6B6700A22A6CD981006F2980 /* SplashViewController.swift in Sources */,
 				6B51C1FA2A7233A50013ABAD /* LoadingView.swift in Sources */,
 				6B923FA62C2EA38F00CD1381 /* WeeklySubscriptionVC.swift in Sources */,
