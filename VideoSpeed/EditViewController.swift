@@ -34,6 +34,7 @@ class EditViewController: UIViewController {
     var exportSession: AVAssetExportSession?
     var timer: Timer?
     var proButton: UIButton!
+    var cropViewController: CropViewController!
     
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     lazy var progressIndicatorView: ProgressIndicatorView = {
@@ -71,6 +72,9 @@ class EditViewController: UIViewController {
     var fpsSectionVC: FPSSectionVC!
     var soundSectionVC: SoundSectionVC!
     var moreSectionVC: MoreSectionVC!
+    var cropSectionVC: CropSectioVC!
+    
+    var editSections: [SectionViewController] = []
     
     @IBOutlet weak var dashboardContainerView: UIView!
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -90,10 +94,19 @@ class EditViewController: UIViewController {
         addFPSSection()
         addSoundSection()
         addFiletypeSection()
-
+        addCropSection()
+        
+        editSections.append(contentsOf: [speedSectionVC, fpsSectionVC, soundSectionVC, moreSectionVC, cropSectionVC])
+        
         showSpeedSection()
         
+//        cropViewController = CropViewController()
+        
+        
         asset = AVAsset(url: assetUrl)
+        
+        createCropViewController()
+
         Task {
             guard let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps, soundOn: soundOn) else {
                 return showNoTracksError()
@@ -445,6 +458,39 @@ class EditViewController: UIViewController {
     }
 
     
+    func addCropViewControllerToTop() {
+        //add as a childviewcontroller
+        addChild(cropViewController)
+
+         // Add the child's View as a subview
+         self.view.addSubview(cropViewController.view)
+
+        // give the cropPickerView it's parameters
+        
+        
+        cropViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        let constraints = [
+            cropViewController.view.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            cropViewController.view.leftAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leftAnchor),
+            cropViewController.view.rightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.rightAnchor),
+            cropViewController.view.bottomAnchor.constraint(equalTo: self.dashboardContainerView.topAnchor),
+        ]
+        NSLayoutConstraint.activate(constraints)
+        
+         // tell the childviewcontroller it's contained in it's parent
+        cropViewController.didMove(toParent: self)
+        cropViewController.view.layoutIfNeeded()
+        cropViewController.updateCropViewPickerSize()
+        cropViewController.view.layoutIfNeeded()
+
+    }
+
+    func removeCropVCFromTop() {
+        cropViewController.willMove(toParent: nil)
+        cropViewController.view.removeFromSuperview()
+        cropViewController.removeFromParent()
+    }
+    
     private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool) async -> AVMutableVideoCompositionLayerInstruction {
 
         let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
@@ -473,8 +519,11 @@ class EditViewController: UIViewController {
             showFPSSection()
         case 2:
             showSoundSection()
-        default:
+        case 3:
             showFileTypeSection()
+        default:
+            showCropSection()
+            addCropViewControllerToTop()
         }
     }
     
@@ -524,6 +573,21 @@ class EditViewController: UIViewController {
         }
         
         addSection(sectionVC: speedSectionVC)
+    }
+    
+    func addCropSection() {
+        cropSectionVC = CropSectioVC()
+        cropSectionVC.cropSectionChangedStatusTo = { [weak self] (cropStatus: CropStatus) in
+            guard let self = self else {return}
+            
+            switch cropStatus {
+            case .cropping:
+                addCropViewControllerToTop()
+            default:
+                removeCropVCFromTop()
+            }
+        }
+        addSection(sectionVC: cropSectionVC)
     }
     
     func addFPSSection() {
@@ -598,33 +662,67 @@ class EditViewController: UIViewController {
         sectionVC.didMove(toParent: self)
     }
     
+    func createCropViewController() {
+        Task {
+            cropViewController = CropViewController()
+            
+            guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+                  let naturalSize = try? await videoTrack.load(.naturalSize) else {return}
+            
+            cropViewController.videoAspectRatio = naturalSize.width / naturalSize.height
+            cropViewController.templateImage = await generateTemplateImage(asset: asset)
+
+        }
+        
+    }
+    
+    func showEditSection(_ editSection: SectionViewController) {
+        editSections.forEach { section in
+            if section == editSection {
+                section.view.isHidden = false
+                return
+            }
+            section.view.isHidden = true
+        }
+    }
     
     func showSpeedSection() {
-        speedSectionVC.view.isHidden = false
-        fpsSectionVC.view.isHidden = true
-        soundSectionVC.view.isHidden = true
-        moreSectionVC.view.isHidden = true
+       showEditSection(speedSectionVC)
+//        speedSectionVC.view.isHidden = false
+//        fpsSectionVC.view.isHidden = true
+//        soundSectionVC.view.isHidden = true
+//        moreSectionVC.view.isHidden = true
     }
 
     func showFPSSection() {
-        speedSectionVC.view.isHidden = true
-        fpsSectionVC.view.isHidden = false
-        soundSectionVC.view.isHidden = true
-        moreSectionVC.view.isHidden = true
+        showEditSection(fpsSectionVC)
+
+//        speedSectionVC.view.isHidden = true
+//        fpsSectionVC.view.isHidden = false
+//        soundSectionVC.view.isHidden = true
+//        moreSectionVC.view.isHidden = true
     }
     
     func showSoundSection() {
-        speedSectionVC.view.isHidden = true
-        fpsSectionVC.view.isHidden = true
-        soundSectionVC.view.isHidden = false
-        moreSectionVC.view.isHidden = true
+        showEditSection(soundSectionVC)
+
+//        speedSectionVC.view.isHidden = true
+//        fpsSectionVC.view.isHidden = true
+//        soundSectionVC.view.isHidden = false
+//        moreSectionVC.view.isHidden = true
     }
     
     func showFileTypeSection() {
-        speedSectionVC.view.isHidden = true
-        fpsSectionVC.view.isHidden = true
-        soundSectionVC.view.isHidden = true
-        moreSectionVC.view.isHidden = false
+        showEditSection(moreSectionVC)
+//        speedSectionVC.view.isHidden = true
+//        fpsSectionVC.view.isHidden = true
+//        soundSectionVC.view.isHidden = true
+//        moreSectionVC.view.isHidden = false
+    }
+    
+    func showCropSection() {
+        showEditSection(cropSectionVC)
+        // add CropViewController to top
     }
     
     func showProgreeView() {
@@ -782,6 +880,21 @@ class EditViewController: UIViewController {
       }
     }
     
+    func generateTemplateImage(asset: AVAsset) async -> UIImage {
+        let generator = AVAssetImageGenerator(asset: asset)
+        let time = CMTime(seconds: 0.0, preferredTimescale: 600)
+        let times = [NSValue(time: time)]
+        
+        return await withCheckedContinuation { continuation in
+            generator.generateCGImagesAsynchronously(forTimes: times) { [weak self] _, image, _, result, error in
+                guard let self = self, let image = image else {return}
+                continuation.resume(returning: UIImage(cgImage: image))
+
+            }
+            
+        }
+       
+    }
     
 }
 
