@@ -203,6 +203,7 @@
                                     <segment title="FPS"/>
                                     <segment title="SOUND"/>
                                     <segment title="MORE"/>
+                                    <segment title="CROP"/>
                                 </segments>
                                 <color key="selectedSegmentTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
@@ -231,6 +232,35 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="743" y="3"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="1gb-Rc-Mwk">
+            <objects>
+                <viewController id="Kme-fk-4vb" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="7if-63-r2y">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RbD-wv-YHh">
+                                <rect key="frame" x="67.5" y="269" width="240" height="128"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="240" id="zOA-Sa-csB"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="dIV-AK-bWL"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="RbD-wv-YHh" firstAttribute="centerX" secondItem="7if-63-r2y" secondAttribute="centerX" id="343-CV-6zU"/>
+                            <constraint firstItem="RbD-wv-YHh" firstAttribute="top" secondItem="dIV-AK-bWL" secondAttribute="top" constant="249" id="XJZ-oq-2dz"/>
+                            <constraint firstItem="dIV-AK-bWL" firstAttribute="bottom" secondItem="RbD-wv-YHh" secondAttribute="bottom" constant="270" id="ZK2-dw-7pP"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="XMB-18-fZf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-214" y="-1651"/>
         </scene>
         <!--Using Pro Features View Controller-->
         <scene sceneID="jeV-pU-eer">
