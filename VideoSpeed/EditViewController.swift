@@ -7,6 +7,7 @@
 
 import UIKit
 import AVFoundation
+import CoreImage
 import AVKit
 import FirebaseRemoteConfig
 
@@ -105,9 +106,10 @@ class EditViewController: UIViewController {
         
         asset = AVAsset(url: assetUrl)
         
-        createCropViewController()
 
         Task {
+            await createCropViewController()
+
             guard let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps, soundOn: soundOn) else {
                 return showNoTracksError()
             }
@@ -204,8 +206,6 @@ class EditViewController: UIViewController {
         composition.scaleTimeRange(CMTimeRange(start: .zero, duration: compositionOriginalDuration), toDuration: CMTime(value: newDuration, timescale: 1))
         
         
-        compositionVideoTrack.preferredTransform = preferredTransform
-
         let videoInfo = VideoHelper.orientation(from: preferredTransform)
         print("videoInfo.orientation \(videoInfo.orientation)")
 
@@ -219,7 +219,10 @@ class EditViewController: UIViewController {
           videoSize = naturalSize
         }
         
+        print("naturalSize", naturalSize)
         print("videoSize \(videoSize)")
+        
+        compositionVideoTrack.preferredTransform = .identity
 
         
         let instruction = AVMutableVideoCompositionInstruction()
@@ -235,16 +238,81 @@ class EditViewController: UIViewController {
         
         instruction.layerInstructions = [layerInstruction]
         
+//        let croppedVideoRect = aspectRatioCroppedVideoRect(naturalSize)
+
+//        let videoComposition = AVMutableVideoComposition(asset: self.asset) { [weak self] request in
+//            guard let self = self else {return}
+//            let filter = CIFilter(name: "CICrop")!
+//            filter.setValue(request.sourceImage, forKey: kCIInputImageKey)
+//            filter.setValue(CIVector(cgRect: croppedVideoRect), forKey: "inputRectangle")
+//
+//    //                self.currentFilter.setValue(0.5, forKey: kCIInputAmountKey)
+//            let imageAtOrigin = filter.outputImage!.transformed(by: CGAffineTransform(translationX: -croppedVideoRect.origin.x, y: -croppedVideoRect.origin.y)) //3
+//
+//    //                request.finish(with: filter.outputImage!, context: nil)
+//            request.finish(with: imageAtOrigin, context: nil)
+////            Task { @MainActor in
+////                self.applyFiltersForRequest(request, withCropRect: croppedVideoRect)
+////            }
+//            
+//        }
         let videoComposition = AVMutableVideoComposition()
+        let croppedVideoRect = aspectRatioCroppedVideoRect(naturalSize)
+//        let videoComposition = try! await AVMutableVideoComposition.videoComposition(with: composition) { [weak self] request in
+//            guard let self = self else {return}
+//            let outputImage = request.sourceImage.transformed(by: .identity)
+//
+//            let filter = CIFilter(name: "CICrop")!
+//            filter.setValue(outputImage, forKey: kCIInputImageKey)
+//            filter.setValue(CIVector(cgRect: croppedVideoRect), forKey: "inputRectangle")
+////            
+//            let imageAtOrigin = filter.outputImage!.transformed(by: CGAffineTransform(translationX: -croppedVideoRect.origin.x, y: -croppedVideoRect.origin.y)) //3
+////            request.finish(with: outputImage, context: nil)
+//
+//            request.finish(with: imageAtOrigin, context: nil)
+//
+//        }
+        
         videoComposition.instructions = [instruction]
         videoComposition.frameDuration = CMTimeMake(value: 1, timescale: fps)
-        videoComposition.renderSize = videoSize
+        videoComposition.renderSize = CGSize(width: naturalSize.width / 2, height: naturalSize.height / 2)
 
 
         return (composition,videoComposition)
         
     }
     
+    func applyFiltersForRequest(_ request: AVAsynchronousCIImageFilteringRequest, withCropRect cropRect: CGRect) {
+        let filter = CIFilter(name: "CICrop")!
+        filter.setValue(request.sourceImage, forKey: kCIInputImageKey)
+        filter.setValue(CIVector(cgRect: cropRect), forKey: "inputRectangle")
+
+//                self.currentFilter.setValue(0.5, forKey: kCIInputAmountKey)
+        
+        let imageAtOrigin = filter.outputImage!.transformed(by: CGAffineTransform(translationX: -cropRect.origin.x, y: -cropRect.origin.y)) //3
+
+//                request.finish(with: filter.outputImage!, context: nil)
+        request.finish(with: imageAtOrigin, context: nil)
+    }
+    
+    func aspectRatioCroppedVideoRect(_ naturalSize: CGSize) -> CGRect {
+        guard let videoRect = cropViewController.videoRect else
+        {
+            /* cropViewController.videoRect will exist only if the user cropped the video size with the CropPickerView at least once.
+             if he did't then return the full size of video
+             */
+            return CGRect(x: 0, y: 0, width: naturalSize.width, height: naturalSize.height)
+        }
+        let aspectRatioX = naturalSize.width / cropViewController.cropPickerView.frame.width
+        let aspectRatioY = naturalSize.height / cropViewController.cropPickerView.frame.height
+
+        let x = videoRect.origin.x * aspectRatioX
+        let y = videoRect.origin.y * aspectRatioY
+        let width = videoRect.width * aspectRatioX
+        let height = videoRect.height * aspectRatioY
+        let frame = CGRect(x: x, y: y, width: width, height: height)
+        return frame
+    }
     
     func reloadComposition() async {
         guard let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps, soundOn: soundOn) else {
@@ -492,8 +560,8 @@ class EditViewController: UIViewController {
     }
     
     private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool) async -> AVMutableVideoCompositionLayerInstruction {
-
         let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
+        
         let transform = try! await assetTrack.load(.preferredTransform)
         if isPortrait {
             var newTransform = CGAffineTransform(translationX: 0, y: 0)
@@ -504,10 +572,21 @@ class EditViewController: UIViewController {
         else {
             instruction.setTransform(transform, at: .zero)
         }
-
+        
+        instruction.setCropRectangle(CGRect(x: 0, y: 0, width: videoSize.width / 2, height: videoSize.height / 2), at: .zero)
+        
         return instruction
     }
     
+    func correctTransform(preferredTransform: CGAffineTransform, isPortrait: Bool, videoSize: CGSize) -> CGAffineTransform {
+        if isPortrait {
+            var newTransform = CGAffineTransform(translationX: 0, y: 0)
+            newTransform = newTransform.rotated(by: CGFloat(90 * Double.pi / 180))
+            newTransform = newTransform.translatedBy(x: 0, y: -videoSize.width)
+            return newTransform
+        }
+        return preferredTransform
+    }
     
     // MARK: - Actions
     @IBAction func segmentedValueChanged(_ segmentedControl: UISegmentedControl) {
@@ -584,7 +663,10 @@ class EditViewController: UIViewController {
             case .cropping:
                 addCropViewControllerToTop()
             default:
-                removeCropVCFromTop()
+                Task {
+                    await self.reloadComposition()
+                    self.removeCropVCFromTop()
+                }
             }
         }
         addSection(sectionVC: cropSectionVC)
@@ -662,17 +744,15 @@ class EditViewController: UIViewController {
         sectionVC.didMove(toParent: self)
     }
     
-    func createCropViewController() {
-        Task {
+    func createCropViewController() async {
             cropViewController = CropViewController()
             
             guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
                   let naturalSize = try? await videoTrack.load(.naturalSize) else {return}
             
             cropViewController.videoAspectRatio = naturalSize.width / naturalSize.height
+            print("cropViewController.videoAspectRatio", cropViewController.videoAspectRatio)
             cropViewController.templateImage = await generateTemplateImage(asset: asset)
-
-        }
         
     }
     
