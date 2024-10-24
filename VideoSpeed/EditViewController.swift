@@ -207,6 +207,8 @@ class EditViewController: UIViewController {
         let newDuration = Int64(compositionOriginalDuration.seconds / Double(speed))
         composition.scaleTimeRange(CMTimeRange(start: .zero, duration: compositionOriginalDuration), toDuration: CMTime(value: newDuration, timescale: 1))
         
+        compositionVideoTrack.preferredTransform = preferredTransform
+
         
         let videoInfo = VideoHelper.orientation(from: preferredTransform)
         print("videoInfo.orientation \(videoInfo.orientation)")
@@ -224,7 +226,6 @@ class EditViewController: UIViewController {
         print("naturalSize", naturalSize)
         print("videoSize \(videoSize)")
         
-        compositionVideoTrack.preferredTransform = .identity
 
         
         let instruction = AVMutableVideoCompositionInstruction()
@@ -577,7 +578,7 @@ class EditViewController: UIViewController {
             instruction.setTransform(transform, at: .zero)
         }
         
-        instruction.setCropRectangle(CGRect(x: 0, y: 0, width: videoSize.width / 2, height: videoSize.height / 2), at: .zero)
+//        instruction.setCropRectangle(CGRect(x: 0, y: 0, width: videoSize.width / 2, height: videoSize.height / 2), at: .zero)
         
         return instruction
     }
