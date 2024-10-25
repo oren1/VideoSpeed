@@ -224,7 +224,7 @@ class EditViewController: UIViewController {
         print("naturalSize", naturalSize)
         print("videoSize \(videoSize)")
         
-
+        let croppedVideoRect = aspectRatioCroppedVideoRect(videoSize)
         
         let instruction = AVMutableVideoCompositionInstruction()
         instruction.timeRange = CMTimeRange(
@@ -235,7 +235,8 @@ class EditViewController: UIViewController {
           for: compositionVideoTrack,
           assetTrack: videoTrack,
           videoSize: videoSize,
-          isPortrait: videoInfo.isPortrait)
+          isPortrait: videoInfo.isPortrait,
+          cropRect: croppedVideoRect)
         
         instruction.layerInstructions = [layerInstruction]
         
@@ -258,7 +259,6 @@ class EditViewController: UIViewController {
 //            
 //        }
         let videoComposition = AVMutableVideoComposition()
-        let croppedVideoRect = aspectRatioCroppedVideoRect(naturalSize)
 //        let videoComposition = try! await AVMutableVideoComposition.videoComposition(with: composition) { [weak self] request in
 //            guard let self = self else {return}
 //            let outputImage = request.sourceImage.transformed(by: .identity)
@@ -276,8 +276,8 @@ class EditViewController: UIViewController {
         
         videoComposition.instructions = [instruction]
         videoComposition.frameDuration = CMTimeMake(value: 1, timescale: fps)
-        videoComposition.renderSize = CGSize(width: naturalSize.width / 2, height: naturalSize.height / 2)
-
+        videoComposition.renderSize = croppedVideoRect.size
+//        videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
 
         return (composition,videoComposition)
         
@@ -296,16 +296,16 @@ class EditViewController: UIViewController {
         request.finish(with: imageAtOrigin, context: nil)
     }
     
-    func aspectRatioCroppedVideoRect(_ naturalSize: CGSize) -> CGRect {
+    func aspectRatioCroppedVideoRect(_ videoSize: CGSize) -> CGRect {
         guard let videoRect = cropViewController.videoRect else
         {
             /* cropViewController.videoRect will exist only if the user cropped the video size with the CropPickerView at least once.
              if he did't then return the full size of video
              */
-            return CGRect(x: 0, y: 0, width: naturalSize.width, height: naturalSize.height)
+            return CGRect(x: 0, y: 0, width: videoSize.width, height: videoSize.height)
         }
-        let aspectRatioX = naturalSize.width / cropViewController.cropPickerView.frame.width
-        let aspectRatioY = naturalSize.height / cropViewController.cropPickerView.frame.height
+        let aspectRatioX = videoSize.width / cropViewController.cropPickerView.frame.width
+        let aspectRatioY = videoSize.height / cropViewController.cropPickerView.frame.height
 
         let x = videoRect.origin.x * aspectRatioX
         let y = videoRect.origin.y * aspectRatioY
@@ -560,7 +560,7 @@ class EditViewController: UIViewController {
         cropViewController.removeFromParent()
     }
     
-    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool) async -> AVMutableVideoCompositionLayerInstruction {
+    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool, cropRect: CGRect) async -> AVMutableVideoCompositionLayerInstruction {
         let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
         
         let transform = try! await assetTrack.load(.preferredTransform)
@@ -574,8 +574,10 @@ class EditViewController: UIViewController {
             instruction.setTransform(transform, at: .zero)
         }
         
-//        instruction.setCropRectangle(CGRect(x: 0, y: 0, width: videoSize.width / 2, height: videoSize.height / 2), at: .zero)
+        instruction.setCropRectangle(CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.size.width, height: cropRect.size.height), at: .zero)
         
+        instruction.setTransform(CGAffineTransform(translationX: -cropRect.origin.x, y: -cropRect.origin.y), at: .zero)
+
         return instruction
     }
     
