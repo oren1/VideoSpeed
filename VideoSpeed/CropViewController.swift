@@ -75,7 +75,8 @@ extension CropViewController: CropPickerViewDelegate {
         print("CropViewController frame: \(frame)")
 //        print("cropPickerView.frame", cropPickerView.frame)
         videoRect = frame
-        videoRect.origin.y = cropPickerView.frame.height - frame.origin.y - frame.height
+//        videoRect.origin.x = cropPickerView.frame.width - frame.origin.x - frame.width
+//        videoRect.origin.y = cropPickerView.frame.height - frame.origin.y - frame.height
         print("videoRect: \(videoRect!)")
 
         
