@@ -231,9 +231,9 @@ class EditViewController: UIViewController {
         
         var croppedVideoRect = aspectRatioCroppedVideoRect(videoSize)
         
-        if videoInfo.isPortrait {
-            croppedVideoRect.origin.y = videoSize.width - croppedVideoRect.width - croppedVideoRect.origin.x
-        }
+//        if videoInfo.isPortrait {
+//            croppedVideoRect.origin.y = videoSize.width - croppedVideoRect.width - croppedVideoRect.origin.x
+//        }
         
         let instruction = AVMutableVideoCompositionInstruction()
         instruction.timeRange = CMTimeRange(
@@ -544,14 +544,11 @@ class EditViewController: UIViewController {
         if isPortrait {
             var newTransform = CGAffineTransform(translationX: 0, y: 0)
             newTransform = newTransform.rotated(by: CGFloat(90 * Double.pi / 180))
-//            newTransform = newTransform.rotated(by: CGFloat(Double.pi))
             newTransform = newTransform.translatedBy(x: 0, y: -videoSize.width)
             instruction.setTransform(newTransform, at: .zero)
 
-            instruction.setCropRectangle(CGRect(x: 0, y:  cropRect.size.width / 2, width: cropRect.size.height , height: cropRect.size.width), at: .zero)
-            
-//            newTransform = newTransform.translatedBy(x: 0, y: -videoSize.width)
-//            instruction.setTransform(newTransform, at: .zero)
+            let xPosition = videoSize.width - cropRect.size.width - cropRect.origin.x
+            instruction.setCropRectangle(CGRect(x: cropRect.origin.y, y: xPosition, width: cropRect.size.height, height: cropRect.size.width), at: .zero)
         }
         else {
             instruction.setCropRectangle(CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.size.width, height: cropRect.size.height), at: .zero)
