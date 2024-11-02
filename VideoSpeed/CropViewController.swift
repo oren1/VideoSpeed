@@ -23,6 +23,7 @@ class CropViewController: UIViewController {
         view.backgroundColor = .black
         cropPickerView = CropPickerView()
         cropPickerView.image = templateImage
+        cropPickerView.backgroundColor = .blue
         cropPickerView.aspectRatio = videoAspectRatio
         cropPickerView.delegate = self
 
