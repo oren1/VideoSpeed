@@ -110,10 +110,11 @@ class EditViewController: UIViewController {
 //        cropViewController = CropViewController()
         
         
-        asset = AVAsset(url: assetUrl)
+//        asset = AVAsset(url: assetUrl)
         
 
         Task {
+//            asset = await asset.rotateVideoToIntendedOrientation()
             await createCropViewController()
 
             guard let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps, soundOn: soundOn) else {
@@ -231,11 +232,7 @@ class EditViewController: UIViewController {
         print("naturalSize", naturalSize)
         print("videoSize \(videoSize)")
         
-        var croppedVideoRect = aspectRatioCroppedVideoRect(videoSize)
-        
-//        if videoInfo.isPortrait {
-//            croppedVideoRect.origin.y = videoSize.width - croppedVideoRect.width - croppedVideoRect.origin.x
-//        }
+        let croppedVideoRect = aspectRatioCroppedVideoRect(videoSize)
         
         let instruction = AVMutableVideoCompositionInstruction()
         instruction.timeRange = CMTimeRange(
@@ -258,6 +255,7 @@ class EditViewController: UIViewController {
         videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
 //        videoComposition.renderSize = CGSize(width: naturalSize.width, height: naturalSize.height)
 
+//        videoComposition.customVideoCompositorClass = CustomVideoCompositor.self
         return (composition,videoComposition)
         
     }
@@ -545,6 +543,15 @@ class EditViewController: UIViewController {
         let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
         
         let transform = try! await assetTrack.load(.preferredTransform)
+//        instruction.setTransform(transform, at: .zero)
+        
+//        instruction.setCropRectangle(CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.size.width, height: cropRect.size.height), at: .zero)
+//        
+//        let newTransform = transform.translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
+//        instruction.setTransform(transform, at: .zero)
+        
+        
+        
         if isPortrait {
             var newTransform = CGAffineTransform(translationX: 0, y: 0)
             newTransform = newTransform.rotated(by: CGFloat(90 * Double.pi / 180))
@@ -553,6 +560,11 @@ class EditViewController: UIViewController {
 
             let xPosition = videoSize.width - cropRect.size.width - cropRect.origin.x
             instruction.setCropRectangle(CGRect(x: cropRect.origin.y, y: xPosition, width: cropRect.size.height, height: cropRect.size.width), at: .zero)
+            
+            let translateToTopRight = transform.translatedBy(x: -cropRect.origin.y, y: cropRect.origin.x)
+
+
+            instruction.setTransform(translateToTopRight, at: .zero)
         }
         else {
             instruction.setCropRectangle(CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.size.width, height: cropRect.size.height), at: .zero)
@@ -561,6 +573,8 @@ class EditViewController: UIViewController {
             instruction.setTransform(newTransform, at: .zero)
 
         }
+
+
         
         return instruction
     }
@@ -804,8 +818,8 @@ class EditViewController: UIViewController {
         
         cropViewController.videoAspectRatio = videoSize.width / videoSize.height
 
-        // Sometimes the portrait video is saved in landscape, so this is a fix that rotates the generated image back to it's
-        // portrait original intended presentation
+//         Sometimes the portrait video is saved in landscape, so this is a fix that rotates the generated image back to it's
+//         portrait original intended presentation
         if videoInfo.isPortrait {
             var templateImage = await generateTemplateImage(asset: asset)
             templateImage = UIImage(cgImage: templateImage.cgImage!, scale: templateImage.scale, orientation: .right)
@@ -814,7 +828,7 @@ class EditViewController: UIViewController {
         else {
             cropViewController.templateImage = await generateTemplateImage(asset: asset)
         }
-        
+
     }
     
     func showEditSection(_ editSection: SectionViewController) {
