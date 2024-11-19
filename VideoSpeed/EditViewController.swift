@@ -129,10 +129,13 @@ class EditViewController: UIViewController {
                 if lastApearanceOfPurchaseScreen + (60 * 60 * 24) < now {
                       forceShowPurchaseScreen()
                  }
-                
                 return
             }
-            forceShowPurchaseScreen()
+            else {
+                let now = Date().timeIntervalSince1970
+                UserDataManager.main.lastApearanceOfPurchaseScreen = now
+            }
+//            forceShowPurchaseScreen()
         }
        
     }
