@@ -247,14 +247,22 @@ class EditViewController: UIViewController {
           cropRect: croppedVideoRect)
         
         instruction.layerInstructions = [layerInstruction]
-        
-        let videoComposition = AVMutableVideoComposition()
-        videoComposition.instructions = [instruction]
-        videoComposition.frameDuration = CMTimeMake(value: 1, timescale: fps)
-//        videoComposition.renderSize = croppedVideoRect.size
-        videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
-//        videoComposition.renderSize = CGSize(width: naturalSize.width, height: naturalSize.height)
+        let videoComposition = AVMutableVideoComposition(asset: composition, applyingCIFiltersWithHandler: {request in
+              
+            let cropFilter = CIFilter(name: "CICrop")! //1
+            cropFilter.setValue(request.sourceImage, forKey: kCIInputImageKey) //2
+            cropFilter.setValue(CIVector(cgRect: croppedVideoRect), forKey: "inputRectangle")
+                 
+            let imageAtOrigin = cropFilter.outputImage!.transformed(by: CGAffineTransform(translationX: -croppedVideoRect.origin.x, y: -croppedVideoRect.origin.y)) //3
 
+            request.finish(with: imageAtOrigin, context: nil) //4
+        })
+//        let videoComposition = AVMutableVideoComposition()
+//        videoComposition.instructions = [instruction]
+        videoComposition.frameDuration = CMTimeMake(value: 1, timescale: fps)
+        videoComposition.renderSize = croppedVideoRect.size
+//        videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
+//        videoComposition.renderSize = CGSize(width: naturalSize.width, height: naturalSize.height)
 //        videoComposition.customVideoCompositorClass = CustomVideoCompositor.self
         return (composition,videoComposition)
         
@@ -828,7 +836,7 @@ class EditViewController: UIViewController {
         else {
             cropViewController.templateImage = await generateTemplateImage(asset: asset)
         }
-
+    
     }
     
     func showEditSection(_ editSection: SectionViewController) {

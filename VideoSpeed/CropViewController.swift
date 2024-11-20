@@ -24,6 +24,8 @@ class CropViewController: UIViewController {
         cropPickerView = CropPickerView()
         cropPickerView.image = templateImage
         cropPickerView.backgroundColor = .blue
+        cropPickerView.scrollMinimumZoomScale = 1
+        cropPickerView.scrollMaximumZoomScale = 1
         cropPickerView.aspectRatio = videoAspectRatio
         cropPickerView.delegate = self
 
@@ -77,7 +79,7 @@ extension CropViewController: CropPickerViewDelegate {
 //        print("cropPickerView.frame", cropPickerView.frame)
         videoRect = frame
 //        videoRect.origin.x = cropPickerView.frame.width - frame.origin.x - frame.width
-//        videoRect.origin.y = cropPickerView.frame.height - frame.origin.y - frame.height
+        videoRect.origin.y = cropPickerView.frame.height - frame.origin.y - frame.height
         print("videoRect: \(videoRect!)")
 
         
