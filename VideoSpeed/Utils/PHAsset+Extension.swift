@@ -11,7 +11,7 @@ typealias PHAssetVideoProgressHandler = (Double, Error?, UnsafeMutablePointer<Ob
 
 extension PHAsset {
     
-    func getAVAssetUrl(progressHandler: PHAssetVideoProgressHandler?, completionHandler : @escaping ((_ responseURL : URL?) -> Void)){
+    func getAVAssetUrl(progressHandler: PHAssetVideoProgressHandler?, completionHandler : @escaping ((_ responseURL : URL?, _ asset: AVAsset?) -> Void)){
                let options: PHVideoRequestOptions = PHVideoRequestOptions()
                options.deliveryMode = .highQualityFormat
                options.isNetworkAccessAllowed = true
@@ -20,9 +20,9 @@ extension PHAsset {
                PHImageManager.default().requestAVAsset(forVideo: self, options: options, resultHandler: {(asset: AVAsset?, audioMix: AVAudioMix?, info: [AnyHashable : Any]?) -> Void in
                    if let urlAsset = asset as? AVURLAsset {
                             let localVideoUrl: URL = urlAsset.url as URL
-                                completionHandler(localVideoUrl)
+                       completionHandler(localVideoUrl, asset)
                             } else {
-                                completionHandler(nil)
+                                completionHandler(nil,nil)
                             }
                })
            

@@ -410,11 +410,16 @@ extension MainViewController: UICollectionViewDelegate {
                 }
                 print("progress \(progress)")
             }
-        } completionHandler: { responseURL in
+        } completionHandler: { responseURL, asset in
             DispatchQueue.main.async { [weak self] in
                 self?.hideLoading()
-                vc.assetUrl = responseURL
-                self?.navigationController?.pushViewController(vc, animated: true)
+//                vc.assetUrl = responseURL
+                Task {
+//                    let rotatedAsset = await asset?.rotateVideoToIntendedOrientation()
+                    vc.asset = asset
+                    self?.navigationController?.pushViewController(vc, animated: true)
+
+                }
             }
         }
     }

@@ -7,6 +7,7 @@
 
 import UIKit
 import AVFoundation
+import CoreImage
 import AVKit
 import FirebaseRemoteConfig
 
@@ -34,6 +35,7 @@ class EditViewController: UIViewController {
     var exportSession: AVAssetExportSession?
     var timer: Timer?
     var proButton: UIButton!
+    var cropViewController: CropViewController!
     
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     lazy var progressIndicatorView: ProgressIndicatorView = {
@@ -71,6 +73,9 @@ class EditViewController: UIViewController {
     var fpsSectionVC: FPSSectionVC!
     var soundSectionVC: SoundSectionVC!
     var moreSectionVC: MoreSectionVC!
+    var cropSectionVC: CropSectioVC!
+    
+    var editSections: [SectionViewController] = []
     
     @IBOutlet weak var dashboardContainerView: UIView!
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -78,6 +83,12 @@ class EditViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        segmentedControl.setTitle("SPEED", forSegmentAt: 0)
+        segmentedControl.setTitle("CROP", forSegmentAt: 1)
+        segmentedControl.setTitle("FPS", forSegmentAt: 2)
+        segmentedControl.setTitle("SOUND", forSegmentAt: 3)
+        segmentedControl.setTitle("MORE", forSegmentAt: 4)
+
         NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
         
         segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 17)], for: .selected)
@@ -90,11 +101,22 @@ class EditViewController: UIViewController {
         addFPSSection()
         addSoundSection()
         addFiletypeSection()
-
+        addCropSection()
+        
+        editSections.append(contentsOf: [speedSectionVC, fpsSectionVC, soundSectionVC, moreSectionVC, cropSectionVC])
+        
         showSpeedSection()
         
-        asset = AVAsset(url: assetUrl)
+//        cropViewController = CropViewController()
+        
+        
+//        asset = AVAsset(url: assetUrl)
+        
+
         Task {
+//            asset = await asset.rotateVideoToIntendedOrientation()
+            await createCropViewController()
+
             guard let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps, soundOn: soundOn) else {
                 return showNoTracksError()
             }
@@ -193,9 +215,8 @@ class EditViewController: UIViewController {
         let newDuration = Int64(compositionOriginalDuration.seconds / Double(speed))
         composition.scaleTimeRange(CMTimeRange(start: .zero, duration: compositionOriginalDuration), toDuration: CMTime(value: newDuration, timescale: 1))
         
-        
         compositionVideoTrack.preferredTransform = preferredTransform
-
+        
         let videoInfo = VideoHelper.orientation(from: preferredTransform)
         print("videoInfo.orientation \(videoInfo.orientation)")
 
@@ -209,8 +230,10 @@ class EditViewController: UIViewController {
           videoSize = naturalSize
         }
         
+        print("naturalSize", naturalSize)
         print("videoSize \(videoSize)")
-
+        
+        let croppedVideoRect = aspectRatioCroppedVideoRect(videoSize)
         
         let instruction = AVMutableVideoCompositionInstruction()
         instruction.timeRange = CMTimeRange(
@@ -221,20 +244,62 @@ class EditViewController: UIViewController {
           for: compositionVideoTrack,
           assetTrack: videoTrack,
           videoSize: videoSize,
-          isPortrait: videoInfo.isPortrait)
+          isPortrait: videoInfo.isPortrait,
+          cropRect: croppedVideoRect)
         
         instruction.layerInstructions = [layerInstruction]
-        
-        let videoComposition = AVMutableVideoComposition()
-        videoComposition.instructions = [instruction]
+        let videoComposition = AVMutableVideoComposition(asset: composition, applyingCIFiltersWithHandler: {request in
+              
+            let cropFilter = CIFilter(name: "CICrop")! //1
+            cropFilter.setValue(request.sourceImage, forKey: kCIInputImageKey) //2
+            cropFilter.setValue(CIVector(cgRect: croppedVideoRect), forKey: "inputRectangle")
+                 
+            let imageAtOrigin = cropFilter.outputImage!.transformed(by: CGAffineTransform(translationX: -croppedVideoRect.origin.x, y: -croppedVideoRect.origin.y)) //3
+
+            request.finish(with: imageAtOrigin, context: nil) //4
+        })
+//        let videoComposition = AVMutableVideoComposition()
+//        videoComposition.instructions = [instruction]
         videoComposition.frameDuration = CMTimeMake(value: 1, timescale: fps)
-        videoComposition.renderSize = videoSize
-
-
+        videoComposition.renderSize = croppedVideoRect.size
+//        videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
+//        videoComposition.renderSize = CGSize(width: naturalSize.width, height: naturalSize.height)
+//        videoComposition.customVideoCompositorClass = CustomVideoCompositor.self
         return (composition,videoComposition)
         
     }
     
+    func applyFiltersForRequest(_ request: AVAsynchronousCIImageFilteringRequest, withCropRect cropRect: CGRect) {
+        let filter = CIFilter(name: "CICrop")!
+        filter.setValue(request.sourceImage, forKey: kCIInputImageKey)
+        filter.setValue(CIVector(cgRect: cropRect), forKey: "inputRectangle")
+
+//                self.currentFilter.setValue(0.5, forKey: kCIInputAmountKey)
+        
+        let imageAtOrigin = filter.outputImage!.transformed(by: CGAffineTransform(translationX: -cropRect.origin.x, y: -cropRect.origin.y)) //3
+
+//                request.finish(with: filter.outputImage!, context: nil)
+        request.finish(with: imageAtOrigin, context: nil)
+    }
+    
+    func aspectRatioCroppedVideoRect(_ videoSize: CGSize) -> CGRect {
+        guard let videoRect = cropViewController.videoRect else
+        {
+            /* cropViewController.videoRect will exist only if the user cropped the video size with the CropPickerView at least once.
+             if he did't then return the full size of video
+             */
+            return CGRect(x: 0, y: 0, width: videoSize.width, height: videoSize.height)
+        }
+        let aspectRatioX = videoSize.width / cropViewController.cropPickerView.frame.width
+        let aspectRatioY = videoSize.height / cropViewController.cropPickerView.frame.height
+
+        let x = videoRect.origin.x * aspectRatioX
+        let y = videoRect.origin.y * aspectRatioY
+        let width = videoRect.width * aspectRatioX
+        let height = videoRect.height * aspectRatioY
+        let frame = CGRect(x: x, y: y, width: width, height: height)
+        return frame
+    }
     
     func reloadComposition() async {
         guard let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps, soundOn: soundOn) else {
@@ -448,33 +513,153 @@ class EditViewController: UIViewController {
     }
 
     
-    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool) async -> AVMutableVideoCompositionLayerInstruction {
+    func addCropViewControllerToTop() {
+        //add as a childviewcontroller
+        addChild(cropViewController)
 
+         // Add the child's View as a subview
+         self.view.addSubview(cropViewController.view)
+
+        // give the cropPickerView it's parameters
+        
+        
+        cropViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        let constraints = [
+            cropViewController.view.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            cropViewController.view.leftAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leftAnchor),
+            cropViewController.view.rightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.rightAnchor),
+            cropViewController.view.bottomAnchor.constraint(equalTo: self.dashboardContainerView.topAnchor),
+        ]
+        NSLayoutConstraint.activate(constraints)
+        
+         // tell the childviewcontroller it's contained in it's parent
+        cropViewController.didMove(toParent: self)
+        cropViewController.view.layoutIfNeeded()
+        cropViewController.updateCropViewPickerSize()
+        cropViewController.view.layoutIfNeeded()
+
+    }
+
+    func removeCropVCFromTop() {
+        cropViewController.willMove(toParent: nil)
+        cropViewController.view.removeFromSuperview()
+        cropViewController.removeFromParent()
+    }
+    
+    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool, cropRect: CGRect) async -> AVMutableVideoCompositionLayerInstruction {
         let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
+        
         let transform = try! await assetTrack.load(.preferredTransform)
+//        instruction.setTransform(transform, at: .zero)
+        
+//        instruction.setCropRectangle(CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.size.width, height: cropRect.size.height), at: .zero)
+//        
+//        let newTransform = transform.translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
+//        instruction.setTransform(transform, at: .zero)
+        
+        
+        
         if isPortrait {
             var newTransform = CGAffineTransform(translationX: 0, y: 0)
             newTransform = newTransform.rotated(by: CGFloat(90 * Double.pi / 180))
             newTransform = newTransform.translatedBy(x: 0, y: -videoSize.width)
             instruction.setTransform(newTransform, at: .zero)
+
+            let xPosition = videoSize.width - cropRect.size.width - cropRect.origin.x
+            instruction.setCropRectangle(CGRect(x: cropRect.origin.y, y: xPosition, width: cropRect.size.height, height: cropRect.size.width), at: .zero)
+            
+            let translateToTopRight = transform.translatedBy(x: -cropRect.origin.y, y: cropRect.origin.x)
+
+
+            instruction.setTransform(translateToTopRight, at: .zero)
         }
         else {
-            instruction.setTransform(transform, at: .zero)
+            instruction.setCropRectangle(CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.size.width, height: cropRect.size.height), at: .zero)
+           
+            let newTransform = transform.translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
+            instruction.setTransform(newTransform, at: .zero)
+
         }
 
+
+        
         return instruction
     }
     
+//    static func videoCompositionInstruction(
+//      _ track: AVCompositionTrack,
+//      asset: AVAsset
+//    ) -> AVMutableVideoCompositionLayerInstruction {
+//      // 1
+//      let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
+//
+//      // 2
+//      let assetTrack = asset.tracks(withMediaType: AVMediaType.video)[0]
+//
+//      // 3
+//      let transform = assetTrack.preferredTransform
+//      let assetInfo = orientationFromTransform(transform)
+//
+//      var scaleToFitRatio = UIScreen.main.bounds.width / assetTrack.naturalSize.width
+//      if assetInfo.isPortrait {
+//        // 4
+//        scaleToFitRatio = UIScreen.main.bounds.width / assetTrack.naturalSize.height
+//        let scaleFactor = CGAffineTransform(
+//          scaleX: scaleToFitRatio,
+//          y: scaleToFitRatio)
+//        instruction.setTransform(
+//          assetTrack.preferredTransform.concatenating(scaleFactor),
+//          at: .zero)
+//      }
+//        else {
+//        // 5
+//        let scaleFactor = CGAffineTransform(
+//          scaleX: scaleToFitRatio,
+//          y: scaleToFitRatio)
+//        var concat = assetTrack.preferredTransform.concatenating(scaleFactor)
+//          .concatenating(CGAffineTransform(
+//            translationX: 0,
+//            y: UIScreen.main.bounds.width / 2))
+//        if assetInfo.orientation == .down {
+//          let fixUpsideDown = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
+//          let windowBounds = UIScreen.main.bounds
+//          let yFix = assetTrack.naturalSize.height + windowBounds.height
+//          let centerFix = CGAffineTransform(
+//            translationX: assetTrack.naturalSize.width,
+//            y: yFix)
+//          concat = fixUpsideDown.concatenating(centerFix).concatenating(scaleFactor)
+//        }
+//        instruction.setTransform(concat, at: .zero)
+//      }
+//
+//      return instruction
+//    }
+    
+    func correctTransform(preferredTransform: CGAffineTransform, isPortrait: Bool, videoSize: CGSize) -> CGAffineTransform {
+        if isPortrait {
+            var newTransform = CGAffineTransform(translationX: 0, y: 0)
+            newTransform = newTransform.rotated(by: CGFloat(90 * Double.pi / 180))
+            newTransform = newTransform.translatedBy(x: 0, y: -videoSize.width)
+            return newTransform
+        }
+        return preferredTransform
+    }
     
     // MARK: - Actions
     @IBAction func segmentedValueChanged(_ segmentedControl: UISegmentedControl) {
         let currentIndex = segmentedControl.selectedSegmentIndex
-        switch currentIndex {
+        if currentIndex != 1 {
+            removeCropVCFromTop()
+        }
+            switch currentIndex {
         case 0:
             showSpeedSection()
         case 1:
-            showFPSSection()
+            showCropSection()
+            addCropViewControllerToTop()
         case 2:
+            showFPSSection()
+        case 3:
             showSoundSection()
         default:
             showFileTypeSection()
@@ -527,6 +712,24 @@ class EditViewController: UIViewController {
         }
         
         addSection(sectionVC: speedSectionVC)
+    }
+    
+    func addCropSection() {
+        cropSectionVC = CropSectioVC()
+        cropSectionVC.cropSectionChangedStatusTo = { [weak self] (cropStatus: CropStatus) in
+            guard let self = self else {return}
+            
+            switch cropStatus {
+            case .cropping:
+                addCropViewControllerToTop()
+            default:
+                Task {
+                    await self.reloadComposition()
+                    self.removeCropVCFromTop()
+                }
+            }
+        }
+        addSection(sectionVC: cropSectionVC)
     }
     
     func addFPSSection() {
@@ -601,33 +804,87 @@ class EditViewController: UIViewController {
         sectionVC.didMove(toParent: self)
     }
     
+    func createCropViewController() async {
+            cropViewController = CropViewController()
+            
+            guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+                  let naturalSize = try? await videoTrack.load(.naturalSize),
+                  let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return}
+
+        
+        let videoInfo = VideoHelper.orientation(from: preferredTransform)
+        let videoSize: CGSize
+
+        if videoInfo.isPortrait {
+          videoSize = CGSize(
+            width: naturalSize.height,
+            height: naturalSize.width)
+        } else {
+          videoSize = naturalSize
+        }
+        
+        cropViewController.videoAspectRatio = videoSize.width / videoSize.height
+
+//         Sometimes the portrait video is saved in landscape, so this is a fix that rotates the generated image back to it's
+//         portrait original intended presentation
+        if videoInfo.isPortrait {
+            var templateImage = await generateTemplateImage(asset: asset)
+            templateImage = UIImage(cgImage: templateImage.cgImage!, scale: templateImage.scale, orientation: .right)
+            cropViewController.templateImage = templateImage
+        }
+        else {
+            cropViewController.templateImage = await generateTemplateImage(asset: asset)
+        }
+    
+    }
+    
+    func showEditSection(_ editSection: SectionViewController) {
+        editSections.forEach { section in
+            if section == editSection {
+                section.view.isHidden = false
+                return
+            }
+            section.view.isHidden = true
+        }
+    }
     
     func showSpeedSection() {
-        speedSectionVC.view.isHidden = false
-        fpsSectionVC.view.isHidden = true
-        soundSectionVC.view.isHidden = true
-        moreSectionVC.view.isHidden = true
+       showEditSection(speedSectionVC)
+//        speedSectionVC.view.isHidden = false
+//        fpsSectionVC.view.isHidden = true
+//        soundSectionVC.view.isHidden = true
+//        moreSectionVC.view.isHidden = true
     }
 
     func showFPSSection() {
-        speedSectionVC.view.isHidden = true
-        fpsSectionVC.view.isHidden = false
-        soundSectionVC.view.isHidden = true
-        moreSectionVC.view.isHidden = true
+        showEditSection(fpsSectionVC)
+
+//        speedSectionVC.view.isHidden = true
+//        fpsSectionVC.view.isHidden = false
+//        soundSectionVC.view.isHidden = true
+//        moreSectionVC.view.isHidden = true
     }
     
     func showSoundSection() {
-        speedSectionVC.view.isHidden = true
-        fpsSectionVC.view.isHidden = true
-        soundSectionVC.view.isHidden = false
-        moreSectionVC.view.isHidden = true
+        showEditSection(soundSectionVC)
+
+//        speedSectionVC.view.isHidden = true
+//        fpsSectionVC.view.isHidden = true
+//        soundSectionVC.view.isHidden = false
+//        moreSectionVC.view.isHidden = true
     }
     
     func showFileTypeSection() {
-        speedSectionVC.view.isHidden = true
-        fpsSectionVC.view.isHidden = true
-        soundSectionVC.view.isHidden = true
-        moreSectionVC.view.isHidden = false
+        showEditSection(moreSectionVC)
+//        speedSectionVC.view.isHidden = true
+//        fpsSectionVC.view.isHidden = true
+//        soundSectionVC.view.isHidden = true
+//        moreSectionVC.view.isHidden = false
+    }
+    
+    func showCropSection() {
+        showEditSection(cropSectionVC)
+        // add CropViewController to top
     }
     
     func showProgreeView() {
@@ -785,6 +1042,22 @@ class EditViewController: UIViewController {
       }
     }
     
+    func generateTemplateImage(asset: AVAsset) async -> UIImage {
+        let generator = AVAssetImageGenerator(asset: asset)
+        let time = CMTime(seconds: 0.0, preferredTimescale: 600)
+        let times = [NSValue(time: time)]
+        
+        return await withCheckedContinuation { continuation in
+            
+            generator.generateCGImagesAsynchronously(forTimes: times) { [weak self] _, image, _, result, error in
+                guard let self = self, let image = image else {return}
+                continuation.resume(returning: UIImage(cgImage: image))
+
+            }
+            
+        }
+       
+    }
     
 }
 
