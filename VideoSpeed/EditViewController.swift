@@ -249,6 +249,8 @@ class EditViewController: UIViewController {
         instruction.layerInstructions = [layerInstruction]
         let videoComposition = AVMutableVideoComposition(asset: composition, applyingCIFiltersWithHandler: {request in
               
+//            let seconds = CMTimeGetSeconds(request.compositionTime)
+//            print("seconds", seconds)
             let cropFilter = CIFilter(name: "CICrop")! //1
             cropFilter.setValue(request.sourceImage, forKey: kCIInputImageKey) //2
             cropFilter.setValue(CIVector(cgRect: croppedVideoRect), forKey: "inputRectangle")
