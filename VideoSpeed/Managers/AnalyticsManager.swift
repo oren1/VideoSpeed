@@ -68,5 +68,25 @@ class AnalyticsManager {
         let eventName = "user_not_determined_photo_library_usage"
         Analytics.logEvent(eventName, parameters: [:])
     }
+    
+    static func speedUsedOnExportEvent() {
+        let eventName = "speed_used_on_export"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func fpsUsedOnExportEvent() {
+        let eventName = "fps_used_on_export"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func soundUsedOnExportEvent() {
+        let eventName = "sound_used_on_export"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func fileTypeUsedOnExportEvent() {
+        let eventName = "fileType_used_on_export"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
 }
 

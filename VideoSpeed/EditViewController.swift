@@ -116,9 +116,8 @@ class EditViewController: UIViewController {
             loopVideo()
             
         }
-
-        
     }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         let forceShow = RemoteConfig.remoteConfig().configValue(forKey: "forceShow").numberValue.boolValue
@@ -388,6 +387,8 @@ class EditViewController: UIViewController {
                    
                    // 3
                   UISaveVideoAtPathToSavedPhotosAlbum(exportURL.relativePath, self, #selector(self.video(_:didFinishSavingWithError:contextInfo:)),nil)
+                  
+                  sendExportCompletionEvents()
                   
               default:
                 print("Something went wrong during export.")
@@ -785,6 +786,12 @@ class EditViewController: UIViewController {
       }
     }
     
+    func sendExportCompletionEvents() {
+        if UserDataManager.main.usingSlider { AnalyticsManager.speedUsedOnExportEvent() }
+        if fps != 30 { AnalyticsManager.fpsUsedOnExportEvent() }
+        if !soundOn { AnalyticsManager.soundUsedOnExportEvent() }
+        if fileType == .mp4 { AnalyticsManager.fileTypeUsedOnExportEvent() }
+    }
     
 }
 
