@@ -138,6 +138,11 @@ class EditViewController: UIViewController {
             loopVideo()
             
         }
+
+//        segmentedControl.setTitleTextAttributes([.font: UIFont.boldSystemFont(ofSize: 14), .foregroundColor: UIColor.white], for: .normal)
+//        
+//        segmentedControl.setTitleTextAttributes([.font: UIFont.boldSystemFont(ofSize: 14), .foregroundColor: UIColor.black], for: .selected)
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
