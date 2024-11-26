@@ -76,6 +76,7 @@ extension CropViewController: CropPickerViewDelegate {
     
     func cropPickerView(_ cropPickerView: CropPickerView, didChange frame: CGRect) {
         print("CropViewController frame: \(frame)")
+        guard frame != CGRectZero else {return}
 //        print("cropPickerView.frame", cropPickerView.frame)
         videoRect = frame
 //        videoRect.origin.x = cropPickerView.frame.width - frame.origin.x - frame.width
