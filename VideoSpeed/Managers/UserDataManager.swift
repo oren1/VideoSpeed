@@ -21,6 +21,12 @@ class UserDataManager {
         }
     }
 
+    var usingCropFeature: Bool = false {
+        didSet {
+            NotificationCenter.default.post(name: Notification.Name("usingCropFeatureChanged"), object: nil)
+        }
+    }
+    
     var userBenefitStatus: BenefitStatus = .notInvoked
     
     
