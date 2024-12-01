@@ -34,7 +34,6 @@ class CropViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
     }
 
     
@@ -65,9 +64,23 @@ class CropViewController: UIViewController {
 
         ]
         NSLayoutConstraint.activate(constraints)
-        print("cropPickerView.frame", cropPickerView.frame)
     }
     
+    func isUsingCropFeature(croppedFrame: CGRect) -> Bool {
+        let pickerViewWidth = cropPickerView.frame.size.width
+        let pickerViewHeight = cropPickerView.frame.size.height
+        
+        let widthChangePercentage = (1 - (croppedFrame.width / pickerViewWidth)) * 100
+        let heightChangePercentage = (1 - (croppedFrame.height / pickerViewHeight)) * 100
+        print("widthChangePercentage: ", widthChangePercentage)
+        print("heightChangePercentage: ", widthChangePercentage)
+
+        if widthChangePercentage > 1.5 || heightChangePercentage > 1.5 {
+            return true
+        }
+        
+        return false
+    }
 }
 
 
@@ -76,12 +89,13 @@ extension CropViewController: CropPickerViewDelegate {
     
     func cropPickerView(_ cropPickerView: CropPickerView, didChange frame: CGRect) {
         print("CropViewController frame: \(frame)")
-//        print("cropPickerView.frame", cropPickerView.frame)
+        guard frame != CGRectZero else {return}
+        print("cropPickerView.frame", cropPickerView.frame)
         videoRect = frame
 //        videoRect.origin.x = cropPickerView.frame.width - frame.origin.x - frame.width
-        videoRect.origin.y = cropPickerView.frame.height - frame.origin.y - frame.height
+//        videoRect.origin.y = cropPickerView.frame.height - frame.origin.y - frame.height
         print("videoRect: \(videoRect!)")
-
-        
+//        print("videw frame:", view.frame)
+        UserDataManager.main.usingCropFeature = isUsingCropFeature(croppedFrame: frame)
     }
 }
