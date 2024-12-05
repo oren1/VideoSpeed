@@ -48,6 +48,13 @@ extension AVAsset {
         exportSession.videoComposition = videoComposition
         exportSession.outputFileType = .mov
         exportSession.outputURL = exportURL
+//        if #available(iOS 18, *) {
+//            for await state in exportSession.states(updateInterval: 0.2) {
+//                print("state: ", state)
+//            }
+//        } else {
+//            // Fallback on earlier versions
+//        }
         
         await exportSession.export()
         
