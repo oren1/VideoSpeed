@@ -46,7 +46,6 @@ class EditViewController: UIViewController {
                 await self.reloadComposition()
                 self.removeCropVCFromTop()
             }
-            
         }
     }
     var loadingMediaVC: UIHostingController<LoadingMediaView>?
