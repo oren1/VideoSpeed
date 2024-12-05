@@ -81,6 +81,7 @@ class CropViewController: UIViewController {
         
         return false
     }
+
 }
 
 
@@ -97,5 +98,6 @@ extension CropViewController: CropPickerViewDelegate {
         print("videoRect: \(videoRect!)")
 //        print("videw frame:", view.frame)
         UserDataManager.main.usingCropFeature = isUsingCropFeature(croppedFrame: frame)
+
     }
 }
