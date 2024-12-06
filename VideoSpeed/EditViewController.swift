@@ -11,6 +11,7 @@ import CoreImage
 import AVKit
 import FirebaseRemoteConfig
 import SwiftUI
+import Combine
 
 enum ExportButtonType: String {
     case noText = "noText"
@@ -49,8 +50,10 @@ class EditViewController: UIViewController {
         }
     }
     var loadingMediaVC: UIHostingController<LoadingMediaView>?
-    var videoRotatedForIntendedOrientation: Bool = false
-
+    var loadingMediaViewModel = LoadingMediaViewModel()
+    var assetRotator: AssetRotator?
+    var assetRotateProgressSubscription: AnyCancellable?
+    var assetRotateFinishedSubscription: AnyCancellable?
     
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     lazy var progressIndicatorView: ProgressIndicatorView = {
@@ -124,7 +127,6 @@ class EditViewController: UIViewController {
         
 
         Task {
-//            asset = await asset.rotateVideoToIntendedOrientation()
             await createCropViewController()
             
             guard let (composition, videoComposition) = await createCompositionWith(asset: asset!, speed: speed, fps: fps, soundOn: soundOn) else {
@@ -175,7 +177,6 @@ class EditViewController: UIViewController {
                 let now = Date().timeIntervalSince1970
                 UserDataManager.main.lastApearanceOfPurchaseScreen = now
             }
-            //            forceShowPurchaseScreen()
         }
         
     }
@@ -267,18 +268,6 @@ class EditViewController: UIViewController {
             cropRect: croppedVideoRect)
         
         instruction.layerInstructions = [layerInstruction]
-//        let videoComposition = AVMutableVideoComposition(asset: asset, applyingCIFiltersWithHandler: {request in
-//            
-//            //            let seconds = CMTimeGetSeconds(request.compositionTime)
-//            //            print("seconds", seconds)
-//            let cropFilter = CIFilter(name: "CICrop")! //1
-//            cropFilter.setValue(request.sourceImage, forKey: kCIInputImageKey) //2
-//            cropFilter.setValue(CIVector(cgRect: croppedVideoRect), forKey: "inputRectangle")
-//            
-//            let imageAtOrigin = cropFilter.outputImage!.transformed(by: CGAffineTransform(translationX: -croppedVideoRect.origin.x, y: -croppedVideoRect.origin.y)) //3
-//            
-//            request.finish(with: imageAtOrigin, context: nil) //4
-//        })
         
         
         let videoComposition = AVMutableVideoComposition()
@@ -293,19 +282,6 @@ class EditViewController: UIViewController {
         
     }
     
-    func applyFiltersForRequest(_ request: AVAsynchronousCIImageFilteringRequest, withCropRect cropRect: CGRect) {
-        let filter = CIFilter(name: "CICrop")!
-        filter.setValue(request.sourceImage, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgRect: cropRect), forKey: "inputRectangle")
-        
-        //                self.currentFilter.setValue(0.5, forKey: kCIInputAmountKey)
-        
-        let imageAtOrigin = filter.outputImage!.transformed(by: CGAffineTransform(translationX: -cropRect.origin.x, y: -cropRect.origin.y)) //3
-        
-        //                request.finish(with: filter.outputImage!, context: nil)
-
-        request.finish(with: imageAtOrigin, context: nil)
-    }
     
     func aspectRatioCroppedVideoRect(_ videoSize: CGSize) -> CGRect {
         guard let videoRect = cropViewController.videoRect else
@@ -424,13 +400,6 @@ class EditViewController: UIViewController {
             
             if !usingProFeatures() {
                 return self.exportVideo()
-                
-                //                  self.playerController.player?.pause()
-                //                  return InterstitialAd.manager.showAd(controller: self) { [weak self] in
-                //                        self?.playerController.player?.play()
-                //                        self?.exportVideo()
-                //                    }
-                
             }
             else {
                 // show alert for purchase
@@ -587,13 +556,6 @@ class EditViewController: UIViewController {
         let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
         
         let transform = try! await assetTrack.load(.preferredTransform)
-        //        instruction.setTransform(transform, at: .zero)
-        
-        //        instruction.setCropRectangle(CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.size.width, height: cropRect.size.height), at: .zero)
-        //
-        //        let newTransform = transform.translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
-        //        instruction.setTransform(transform, at: .zero)
-
         
         if isPortrait {
             var newTransform = CGAffineTransform(translationX: 0, y: 0)
@@ -613,135 +575,6 @@ class EditViewController: UIViewController {
         return instruction
     }
     
-//    static func videoCompositionInstruction(
-//      _ track: AVCompositionTrack,
-//      asset: AVAsset
-//    ) -> AVMutableVideoCompositionLayerInstruction {
-//      // 1
-//      let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
-//
-//      // 2
-//      let assetTrack = asset.tracks(withMediaType: AVMediaType.video)[0]
-//
-//      // 3
-//      let transform = assetTrack.preferredTransform
-//      let assetInfo = orientationFromTransform(transform)
-//
-//      var scaleToFitRatio = UIScreen.main.bounds.width / assetTrack.naturalSize.width
-//      if assetInfo.isPortrait {
-//        // 4
-//        scaleToFitRatio = UIScreen.main.bounds.width / assetTrack.naturalSize.height
-//        let scaleFactor = CGAffineTransform(
-//          scaleX: scaleToFitRatio,
-//          y: scaleToFitRatio)
-//        instruction.setTransform(
-//          assetTrack.preferredTransform.concatenating(scaleFactor),
-//          at: .zero)
-//      }
-//        else {
-//        // 5
-//        let scaleFactor = CGAffineTransform(
-//          scaleX: scaleToFitRatio,
-//          y: scaleToFitRatio)
-//        var concat = assetTrack.preferredTransform.concatenating(scaleFactor)
-//          .concatenating(CGAffineTransform(
-//            translationX: 0,
-//            y: UIScreen.main.bounds.width / 2))
-//        if assetInfo.orientation == .down {
-//          let fixUpsideDown = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
-//          let windowBounds = UIScreen.main.bounds
-//          let yFix = assetTrack.naturalSize.height + windowBounds.height
-//          let centerFix = CGAffineTransform(
-//            translationX: assetTrack.naturalSize.width,
-//            y: yFix)
-//          concat = fixUpsideDown.concatenating(centerFix).concatenating(scaleFactor)
-//        }
-//        instruction.setTransform(concat, at: .zero)
-//      }
-//
-//      return instruction
-//    }
-    
-    func correctTransformcorrectTransform(preferredTransform: CGAffineTransform, isPortrait: Bool, videoSize: CGSize) -> CGAffineTransform {
-        if isPortrait {
-            var newTransform = CGAffineTransform(translationX: 0, y: 0)
-            newTransform = newTransform.rotated(by: CGFloat(90 * Double.pi / 180))
-            newTransform = newTransform.translatedBy(x: 0, y: -videoSize.width)
-            return newTransform
-        }
-        return preferredTransform
-    }
-    
-    private func compositionLayerInstructionForIntendedAssetOrientation(for track: AVCompositionTrack, assetTrack: AVAssetTrack, cropRect: CGRect) async -> AVMutableVideoCompositionLayerInstruction {
-        let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
-        
-        let transform = try! await assetTrack.load(.preferredTransform)
-        instruction.setCropRectangle(CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.size.width, height: cropRect.size.height), at: .zero)
-        
-        let newTransform = transform.translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
-        instruction.setTransform(newTransform, at: .zero)
-        
-        return instruction
-    }
-    
-    //    static func videoCompositionInstruction(
-    //      _ track: AVCompositionTrack,
-    //      asset: AVAsset
-    //    ) -> AVMutableVideoCompositionLayerInstruction {
-    //      // 1
-    //      let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
-    //
-    //      // 2
-    //      let assetTrack = asset.tracks(withMediaType: AVMediaType.video)[0]
-    //
-    //      // 3
-    //      let transform = assetTrack.preferredTransform
-    //      let assetInfo = orientationFromTransform(transform)
-    //
-    //      var scaleToFitRatio = UIScreen.main.bounds.width / assetTrack.naturalSize.width
-    //      if assetInfo.isPortrait {
-    //        // 4
-    //        scaleToFitRatio = UIScreen.main.bounds.width / assetTrack.naturalSize.height
-    //        let scaleFactor = CGAffineTransform(
-    //          scaleX: scaleToFitRatio,
-    //          y: scaleToFitRatio)
-    //        instruction.setTransform(
-    //          assetTrack.preferredTransform.concatenating(scaleFactor),
-    //          at: .zero)
-    //      }
-    //        else {
-    //        // 5
-    //        let scaleFactor = CGAffineTransform(
-    //          scaleX: scaleToFitRatio,
-    //          y: scaleToFitRatio)
-    //        var concat = assetTrack.preferredTransform.concatenating(scaleFactor)
-    //          .concatenating(CGAffineTransform(
-    //            translationX: 0,
-    //            y: UIScreen.main.bounds.width / 2))
-    //        if assetInfo.orientation == .down {
-    //          let fixUpsideDown = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
-    //          let windowBounds = UIScreen.main.bounds
-    //          let yFix = assetTrack.naturalSize.height + windowBounds.height
-    //          let centerFix = CGAffineTransform(
-    //            translationX: assetTrack.naturalSize.width,
-    //            y: yFix)
-    //          concat = fixUpsideDown.concatenating(centerFix).concatenating(scaleFactor)
-    //        }
-    //        instruction.setTransform(concat, at: .zero)
-    //      }
-    //
-    //      return instruction
-    //    }
-    
-    func correctTransform(preferredTransform: CGAffineTransform, isPortrait: Bool, videoSize: CGSize) -> CGAffineTransform {
-        if isPortrait {
-            var newTransform = CGAffineTransform(translationX: 0, y: 0)
-            newTransform = newTransform.rotated(by: CGFloat(90 * Double.pi / 180))
-            newTransform = newTransform.translatedBy(x: 0, y: -videoSize.width)
-            return newTransform
-        }
-        return preferredTransform
-    }
     
     // MARK: - Actions
     @IBAction func segmentedValueChanged(_ segmentedControl: UISegmentedControl) {
@@ -829,7 +662,7 @@ class EditViewController: UIViewController {
                     */
                     guard let _ = self.rotatedAsset else {
                         // 1. Show a loading view until the asset has been rotated
-                        self.loadingMediaVC = UIHostingController(rootView: LoadingMediaView())
+                        self.loadingMediaVC = UIHostingController(rootView: LoadingMediaView(loadingMediaViewModel: self.loadingMediaViewModel))
                         self.loadingMediaVC!.view.backgroundColor = .clear
                         self.loadingMediaVC!.view.frame = self.navigationController!.view.bounds
                         self.navigationController!.view.addSubview(self.loadingMediaVC!.view)
@@ -1156,7 +989,7 @@ class EditViewController: UIViewController {
         return await withCheckedContinuation { continuation in
             
             generator.generateCGImagesAsynchronously(forTimes: times) { [weak self] _, image, _, result, error in
-                guard let self = self, let image = image else {return}
+                guard let _ = self, let image = image else {return}
                 continuation.resume(returning: UIImage(cgImage: image))
                 
             }
@@ -1166,12 +999,20 @@ class EditViewController: UIViewController {
     }
 
     func rotateVideoForCropFeature() async {
-        let asset = await asset.rotateVideoToIntendedOrientation()
-        DispatchQueue.main.async { [weak self] in
-            self?.rotatedAsset = asset
-            self?.videoRotatedForIntendedOrientation = true
-            print("rotateVideoForCropFeature")
+        // Creat AssetRotator instance and listen to progress changes and done rotating chenges
+        assetRotator = AssetRotator(asset: asset)
+        assetRotateProgressSubscription = assetRotator?.$progress.sink { [weak self] progress in
+            self?.loadingMediaViewModel.progress = progress
         }
+        assetRotateFinishedSubscription = assetRotator?.$assetRotated.sink { assetRotated in
+            print("assetRotated: ",assetRotated)
+        }
+        rotatedAsset = await assetRotator?.rotateVideoToIntendedOrientation()
+//        let asset = await asset.rotateVideoToIntendedOrientation()
+//        DispatchQueue.main.async { [weak self] in
+//            self?.rotatedAsset = asset
+//            print("rotateVideoForCropFeature")
+//        }
     }
 }
 
