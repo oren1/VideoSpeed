@@ -9,7 +9,6 @@ import AVFoundation
 
 class AssetRotator {
     
-    @Published var assetRotated = false
     @Published var progress: Float = 0
     var asset: AVAsset
     var exportSession: AVAssetExportSession!
@@ -69,7 +68,6 @@ class AssetRotator {
         switch exportSession.status {
         case .completed:
           print("completed export with url: \(exportURL)")
-            assetRotated = true
             return AVURLAsset(url: exportURL)
                
         default:

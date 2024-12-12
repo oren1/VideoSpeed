@@ -10,7 +10,7 @@ import StoreKit
 
 let twentyFourHoursInSeconds = 24.0 * 60 * 60
 
-class UserDataManager {
+class UserDataManager: ObservableObject {
     
     static let main: UserDataManager = UserDataManager()
     var products: [SKProduct]!
@@ -21,11 +21,8 @@ class UserDataManager {
         }
     }
 
-    var usingCropFeature: Bool = false {
-        didSet {
-            NotificationCenter.default.post(name: Notification.Name("usingCropFeatureChanged"), object: nil)
-        }
-    }
+    @Published
+    var isUsingCropFeature: Bool = false
     
     var userBenefitStatus: BenefitStatus = .notInvoked
     

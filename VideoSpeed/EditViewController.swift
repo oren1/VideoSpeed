@@ -39,21 +39,13 @@ class EditViewController: UIViewController {
     var timer: Timer?
     var proButton: UIButton!
     var cropViewController: CropViewController!
-    var rotatedAsset: AVAsset? {
-        didSet {
-            Task {
-                print("rotated asset")
-                removeLoadingMediaVC()
-                await self.reloadComposition()
-                self.removeCropVCFromTop()
-            }
-        }
-    }
+    var rotatedAsset: AVAsset?
     var loadingMediaVC: UIHostingController<LoadingMediaView>?
     var loadingMediaViewModel = LoadingMediaViewModel()
     var assetRotator: AssetRotator?
     var assetRotateProgressSubscription: AnyCancellable?
-    var assetRotateFinishedSubscription: AnyCancellable?
+    var isUsingCropFeatureSubscriber: AnyCancellable?
+    var isCropFeatureFree: Bool!
     
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     lazy var progressIndicatorView: ProgressIndicatorView = {
@@ -107,7 +99,7 @@ class EditViewController: UIViewController {
         segmentedControl.setTitle("SOUND", forSegmentAt: 3)
         segmentedControl.setTitle("MORE", forSegmentAt: 4)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
+       
         
         segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 17)], for: .selected)
         segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
@@ -125,7 +117,14 @@ class EditViewController: UIViewController {
         
         showSpeedSection()
         
+        isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
+        isUsingCropFeatureSubscriber = UserDataManager.main.$isUsingCropFeature.sink(receiveValue: { [weak self] isUsingCropFeature in
+            self?.showProButtonIfNeeded()
+        })
 
+        
         Task {
             await createCropViewController()
             
@@ -516,7 +515,8 @@ class EditViewController: UIViewController {
         addChild(cropViewController)
         
         // Add the child's View as a subview
-        self.view.addSubview(cropViewController.view)
+//        self.view.addSubview(cropViewController.view)
+        self.view.insertSubview(cropViewController.view, belowSubview: proButton)
         // give the cropPickerView it's parameters
         
         
@@ -550,6 +550,7 @@ class EditViewController: UIViewController {
         loadingMediaVC?.willMove(toParent: nil)
         loadingMediaVC?.view.removeFromSuperview()
         loadingMediaVC?.removeFromParent()
+        loadingMediaVC = nil
     }
     
     private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool, cropRect: CGRect) async -> AVMutableVideoCompositionLayerInstruction {
@@ -866,7 +867,8 @@ class EditViewController: UIViewController {
         usingProFeaturesAlertView.updateStatus(usingSlider: UserDataManager.main.usingSlider,
                                                soundOn: soundOn,
                                                fps: fps,
-                                               fileType: fileType)
+                                               fileType: fileType,
+                                               usingCropFeature: UserDataManager.main.isUsingCropFeature)
         usingProFeaturesAlertView.layer.opacity = 0
         self.navigationController!.view.addSubview(usingProFeaturesAlertView)
         usingProFeaturesAlertView.translatesAutoresizingMaskIntoConstraints = false
@@ -878,7 +880,7 @@ class EditViewController: UIViewController {
             self?.hideProFeatureAlert()
         }
         let constraints = [
-            usingProFeaturesAlertView.heightAnchor.constraint(equalToConstant: 300),
+            usingProFeaturesAlertView.heightAnchor.constraint(equalToConstant: 350),
             usingProFeaturesAlertView.widthAnchor.constraint(equalToConstant: 340),
             usingProFeaturesAlertView.centerXAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerXAnchor),
             usingProFeaturesAlertView.centerYAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerYAnchor)
@@ -978,7 +980,7 @@ class EditViewController: UIViewController {
         if fps != 30 { AnalyticsManager.fpsUsedOnExportEvent() }
         if !soundOn { AnalyticsManager.soundUsedOnExportEvent() }
         if fileType == .mp4 { AnalyticsManager.fileTypeUsedOnExportEvent() }
-        if UserDataManager.main.usingCropFeature { AnalyticsManager.cropUsedOnExportEvent() }
+        if UserDataManager.main.isUsingCropFeature { AnalyticsManager.cropUsedOnExportEvent() }
     }
     
     func generateTemplateImage(asset: AVAsset) async -> UIImage {
@@ -1004,15 +1006,20 @@ class EditViewController: UIViewController {
         assetRotateProgressSubscription = assetRotator?.$progress.sink { [weak self] progress in
             self?.loadingMediaViewModel.progress = progress
         }
-        assetRotateFinishedSubscription = assetRotator?.$assetRotated.sink { assetRotated in
-            print("assetRotated: ",assetRotated)
-        }
         rotatedAsset = await assetRotator?.rotateVideoToIntendedOrientation()
-//        let asset = await asset.rotateVideoToIntendedOrientation()
-//        DispatchQueue.main.async { [weak self] in
-//            self?.rotatedAsset = asset
-//            print("rotateVideoForCropFeature")
-//        }
+        // I don't want the video to reload after the rotated asset is ready, because it can case a bug
+        // that the video reloads in the middle of playing.
+        // if the 'LoadingMediaView' is shown when the rotation finished it means that the user pressed 'done' cropping.
+        // so if the LoadingMediaView shown, remove it and reload the composition
+    
+        if let _ = loadingMediaVC {
+            removeLoadingMediaVC()
+            await self.reloadComposition()
+            self.removeCropVCFromTop()
+        }
+        
+        assetRotator = nil
+    
     }
 }
 
@@ -1023,14 +1030,29 @@ extension NotificationObservers {
     }
     
     func usingProFeatures() -> Bool {
-        if UserDataManager.main.usingSlider ||
-            fps != 30 ||
-            !soundOn ||
-            fileType == .mp4 {
-            
-            return true
+        
+        if isCropFeatureFree {
+            if UserDataManager.main.usingSlider ||
+                fps != 30 ||
+                !soundOn ||
+                fileType == .mp4 {
+                
+                return true
+            }
+            return false
         }
-        return false
+        else {
+            if UserDataManager.main.usingSlider ||
+                UserDataManager.main.isUsingCropFeature ||
+                fps != 30 ||
+                !soundOn ||
+                fileType == .mp4 {
+                
+                return true
+            }
+            return false
+        }
+
     }
     
    @objc func proButtonTapped() {

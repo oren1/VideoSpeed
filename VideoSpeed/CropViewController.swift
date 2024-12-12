@@ -72,10 +72,8 @@ class CropViewController: UIViewController {
         
         let widthChangePercentage = (1 - (croppedFrame.width / pickerViewWidth)) * 100
         let heightChangePercentage = (1 - (croppedFrame.height / pickerViewHeight)) * 100
-        print("widthChangePercentage: ", widthChangePercentage)
-        print("heightChangePercentage: ", widthChangePercentage)
 
-        if widthChangePercentage > 1.5 || heightChangePercentage > 1.5 {
+        if widthChangePercentage > 2 || heightChangePercentage > 2 {
             return true
         }
         
@@ -97,7 +95,7 @@ extension CropViewController: CropPickerViewDelegate {
 //        videoRect.origin.y = cropPickerView.frame.height - frame.origin.y - frame.height
         print("videoRect: \(videoRect!)")
 //        print("videw frame:", view.frame)
-        UserDataManager.main.usingCropFeature = isUsingCropFeature(croppedFrame: frame)
+        UserDataManager.main.isUsingCropFeature = isUsingCropFeature(croppedFrame: frame)
 
     }
 }
