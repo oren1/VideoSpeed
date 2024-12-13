@@ -889,7 +889,8 @@ class EditViewController: UIViewController {
         if fps != 30 { AnalyticsManager.fpsUsedOnExportEvent() }
         if !soundOn { AnalyticsManager.soundUsedOnExportEvent() }
         if fileType == .mp4 { AnalyticsManager.fileTypeUsedOnExportEvent() }
-
+    }
+    
     func generateTemplateImage(asset: AVAsset) async -> UIImage {
         let generator = AVAssetImageGenerator(asset: asset)
         let time = CMTime(seconds: 0.0, preferredTimescale: 600)
