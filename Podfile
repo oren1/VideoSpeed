@@ -11,7 +11,7 @@ target 'VideoSpeed' do
     pod 'FirebaseCrashlytics'
     pod 'RevenueCat'
     pod 'CropPickerView', '~> 0.3'
-
+    pod 'ActivityIndicatorView'
   # Pods for VideoSpeed
 
 end

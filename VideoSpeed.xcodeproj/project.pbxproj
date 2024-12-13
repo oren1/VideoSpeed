@@ -16,6 +16,8 @@
 		6B23C1E02BF62F11001C4F24 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23C1DF2BF62F11001C4F24 /* User.swift */; };
 		6B23C1E22BF65B7C001C4F24 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23C1E12BF65B7C001C4F24 /* Response.swift */; };
 		6B3EF4682B4BF6460017C380 /* SubscriptionPurchaseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3EF4672B4BF6460017C380 /* SubscriptionPurchaseVC.swift */; };
+		6B45B4052D01EEC80074C422 /* LoadingMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B45B4042D01EEC80074C422 /* LoadingMediaViewModel.swift */; };
+		6B45B4072D01F1590074C422 /* AssetRotator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B45B4062D01F1500074C422 /* AssetRotator.swift */; };
 		6B51C1FA2A7233A50013ABAD /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B51C1F92A7233A50013ABAD /* LoadingView.swift */; };
 		6B51C1FC2A7233B80013ABAD /* LoadingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B51C1FB2A7233B80013ABAD /* LoadingView.xib */; };
 		6B59549A2B5EA93100483047 /* TransactionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5954992B5EA93100483047 /* TransactionObserver.swift */; };
@@ -45,6 +47,8 @@
 		6B92E35D2A7933C3008CB22A /* SuccessMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B92E35C2A7933C3008CB22A /* SuccessMessageViewController.swift */; };
 		6B92E3672A7E2F3C008CB22A /* PhotoLibraryUsageDisabledView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B92E3662A7E2F3C008CB22A /* PhotoLibraryUsageDisabledView.swift */; };
 		6B92E3692A7E2F5E008CB22A /* PhotoLibraryUsageDisabledView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B92E3682A7E2F5E008CB22A /* PhotoLibraryUsageDisabledView.xib */; };
+		6BA101362CE0A091001780BA /* AVAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA101352CE0A084001780BA /* AVAsset+Extension.swift */; };
+		6BA101482CFAEDAA001780BA /* LoadingMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA101472CFAEDAA001780BA /* LoadingMediaView.swift */; };
 		6BAC9BBF2A666EBE0071A41B /* TopIndicatorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */; };
 		6BAC9BC12A666EEA0071A41B /* TopIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAC9BC02A666EEA0071A41B /* TopIndicatorView.swift */; };
 		6BB4EE7E2A8E1109006CF87C /* CrownView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BB4EE7D2A8E1109006CF87C /* CrownView.xib */; };
@@ -90,6 +94,8 @@
 		6B23C1DF2BF62F11001C4F24 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		6B23C1E12BF65B7C001C4F24 /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		6B3EF4672B4BF6460017C380 /* SubscriptionPurchaseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPurchaseVC.swift; sourceTree = "<group>"; };
+		6B45B4042D01EEC80074C422 /* LoadingMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingMediaViewModel.swift; sourceTree = "<group>"; };
+		6B45B4062D01F1500074C422 /* AssetRotator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetRotator.swift; sourceTree = "<group>"; };
 		6B51C1F92A7233A50013ABAD /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		6B51C1FB2A7233B80013ABAD /* LoadingView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoadingView.xib; sourceTree = "<group>"; };
 		6B5954992B5EA93100483047 /* TransactionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionObserver.swift; sourceTree = "<group>"; };
@@ -118,6 +124,8 @@
 		6B92E35C2A7933C3008CB22A /* SuccessMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessMessageViewController.swift; sourceTree = "<group>"; };
 		6B92E3662A7E2F3C008CB22A /* PhotoLibraryUsageDisabledView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryUsageDisabledView.swift; sourceTree = "<group>"; };
 		6B92E3682A7E2F5E008CB22A /* PhotoLibraryUsageDisabledView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhotoLibraryUsageDisabledView.xib; sourceTree = "<group>"; };
+		6BA101352CE0A084001780BA /* AVAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAsset+Extension.swift"; sourceTree = "<group>"; };
+		6BA101472CFAEDAA001780BA /* LoadingMediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingMediaView.swift; sourceTree = "<group>"; };
 		6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TopIndicatorView.xib; sourceTree = "<group>"; };
 		6BAC9BC02A666EEA0071A41B /* TopIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopIndicatorView.swift; sourceTree = "<group>"; };
 		6BB4EE7D2A8E1109006CF87C /* CrownView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CrownView.xib; sourceTree = "<group>"; };
@@ -185,6 +193,7 @@
 			children = (
 				6B23C1DF2BF62F11001C4F24 /* User.swift */,
 				6B23C1E12BF65B7C001C4F24 /* Response.swift */,
+				6B45B4042D01EEC80074C422 /* LoadingMediaViewModel.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -259,6 +268,8 @@
 		6BCAF7E52A63B6800039BE15 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				6B45B4062D01F1500074C422 /* AssetRotator.swift */,
+				6BA101352CE0A084001780BA /* AVAsset+Extension.swift */,
 				6BE9A3092A618B2500FF8CB0 /* UIImageView+Extension.swift */,
 				6BE9A30B2A62809D00FF8CB0 /* PHAsset+Extension.swift */,
 				6B6700982A6BAE36006F2980 /* VideoHelper.swift */,
@@ -309,6 +320,7 @@
 				6BCEB60C2BF0C1A400010381 /* BenefitView.swift */,
 				6BCEB6102BF0C5CB00010381 /* ActivityViewController.swift */,
 				6B04F5872CBBAAC2000C8C59 /* CropViewController.swift */,
+				6BA101472CFAEDAA001780BA /* LoadingMediaView.swift */,
 				6BE9A2F12A5FC80C00FF8CB0 /* Main.storyboard */,
 				6BE9A2F42A5FC80D00FF8CB0 /* Assets.xcassets */,
 				6BE9A2F62A5FC80D00FF8CB0 /* LaunchScreen.storyboard */,
@@ -500,6 +512,7 @@
 				6B92E3592A77A192008CB22A /* AppOpenAd.swift in Sources */,
 				6BB4EE822A8F31EA006CF87C /* UsingProFeaturesViewController.swift in Sources */,
 				6BE9A30C2A62809D00FF8CB0 /* PHAsset+Extension.swift in Sources */,
+				6BA101362CE0A091001780BA /* AVAsset+Extension.swift in Sources */,
 				6BB4FAD92AEE416D00D00E2D /* InterstitialAd.swift in Sources */,
 				6BB4EE862A8F38B4006CF87C /* BlackTransparentOverlay.swift in Sources */,
 				6B0C7D7B2C89E4A700063CBE /* NotificationsManager.swift in Sources */,
@@ -509,12 +522,15 @@
 				6B6700AA2A6E5FE7006F2980 /* AppStoreReviewManager.swift in Sources */,
 				6BCDCF542A67FADD00D8B656 /* SectionViewController.swift in Sources */,
 				6B6700942A6A6C13006F2980 /* PhotosHeader.swift in Sources */,
+				6B45B4052D01EEC80074C422 /* LoadingMediaViewModel.swift in Sources */,
 				6BCDCF512A67FAC800D8B656 /* MoreSectionVC.swift in Sources */,
 				6BCDCF4D2A67E5FA00D8B656 /* FPSSectionVC.swift in Sources */,
 				6BAC9BC12A666EEA0071A41B /* TopIndicatorView.swift in Sources */,
+				6B45B4072D01F1590074C422 /* AssetRotator.swift in Sources */,
 				6B6700AE2A6E608C006F2980 /* UIApplication+Utils.swift in Sources */,
 				6B7D10832BA6EF5B002DD73F /* YearlySubscriptionPurchaseVC.swift in Sources */,
 				6B59549A2B5EA93100483047 /* TransactionObserver.swift in Sources */,
+				6BA101482CFAEDAA001780BA /* LoadingMediaView.swift in Sources */,
 				6B92E35B2A77C72C008CB22A /* SceneDelegate.swift in Sources */,
 				6BF019532B57DB7400953AB6 /* AnalyticsManager.swift in Sources */,
 				6BCAF7EC2A63C5100039BE15 /* SpeedSectionVC.swift in Sources */,
