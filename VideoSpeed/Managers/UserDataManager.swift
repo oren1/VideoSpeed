@@ -10,7 +10,7 @@ import StoreKit
 
 let twentyFourHoursInSeconds = 24.0 * 60 * 60
 
-class UserDataManager {
+class UserDataManager: ObservableObject {
     
     static let main: UserDataManager = UserDataManager()
     var products: [SKProduct]!
@@ -21,6 +21,9 @@ class UserDataManager {
         }
     }
 
+    @Published
+    var isUsingCropFeature: Bool = false
+    
     var userBenefitStatus: BenefitStatus = .notInvoked
     
     

@@ -1,4 +1,5 @@
 PODS:
+  - ActivityIndicatorView (1.1.1)
   - CropPickerView (0.3.0)
   - FirebaseABTesting (10.24.0):
     - FirebaseCore (~> 10.0)
@@ -136,6 +137,7 @@ PODS:
   - RevenueCat (5.2.0)
 
 DEPENDENCIES:
+  - ActivityIndicatorView
   - CropPickerView (~> 0.3)
   - FirebaseAnalytics
   - FirebaseAuth
@@ -146,6 +148,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - ActivityIndicatorView
     - CropPickerView
     - FirebaseABTesting
     - FirebaseAnalytics
@@ -173,6 +176,7 @@ SPEC REPOS:
     - RevenueCat
 
 SPEC CHECKSUMS:
+  ActivityIndicatorView: f14ac8e200a344fe992577807998b0c8562bd964
   CropPickerView: 7149fca438041a7a78d88e88dd0de805c182fc6a
   FirebaseABTesting: 4431c2c56ac6e56f463b9cab05cc111078639f99
   FirebaseAnalytics: b5efc493eb0f40ec560b04a472e3e1a15d39ca13
@@ -199,6 +203,6 @@ SPEC CHECKSUMS:
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   RevenueCat: 6dfcfac3395509b65aa483fbc6c666ac7aaac4ba
 
-PODFILE CHECKSUM: 83d8737f6e6babfc93479cf625591169640cc8ae
+PODFILE CHECKSUM: 07beb2bb45b242aa4fa49d672792150e12f08d21
 
 COCOAPODS: 1.15.2

@@ -11,6 +11,7 @@ import MobileCoreServices
 import UniformTypeIdentifiers
 
 class VideoHelper {
+        
     static func startMediaBrowser(
       delegate: UIViewController & UINavigationControllerDelegate & UIImagePickerControllerDelegate,
       sourceType: UIImagePickerController.SourceType
@@ -82,4 +83,5 @@ class VideoHelper {
                 return .identity
             }
         }
+    
 }
