@@ -162,21 +162,21 @@ class EditViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        let forceShow = RemoteConfig.remoteConfig().configValue(forKey: "forceShow").numberValue.boolValue
-        
-        if forceShow && SpidProducts.store.userPurchasedProVersion() == nil {
-            if let lastApearanceOfPurchaseScreen = UserDataManager.main.lastApearanceOfPurchaseScreen {
-                let now = Date().timeIntervalSince1970
-                if lastApearanceOfPurchaseScreen + (60 * 60 * 24) < now {
-                    forceShowPurchaseScreen()
-                }
-                return
-            }
-            else {
-                let now = Date().timeIntervalSince1970
-                UserDataManager.main.lastApearanceOfPurchaseScreen = now
-            }
-        }
+//        let forceShow = RemoteConfig.remoteConfig().configValue(forKey: "forceShow").numberValue.boolValue
+//        
+//        if forceShow && SpidProducts.store.userPurchasedProVersion() == nil {
+//            if let lastApearanceOfPurchaseScreen = UserDataManager.main.lastApearanceOfPurchaseScreen {
+//                let now = Date().timeIntervalSince1970
+//                if lastApearanceOfPurchaseScreen + (60 * 60 * 24) < now {
+//                    forceShowPurchaseScreen()
+//                }
+//                return
+//            }
+//            else {
+//                let now = Date().timeIntervalSince1970
+//                UserDataManager.main.lastApearanceOfPurchaseScreen = now
+//            }
+//        }
         
     }
     
@@ -274,7 +274,7 @@ class EditViewController: UIViewController {
         videoComposition.frameDuration = CMTimeMake(value: 1, timescale: fps)
         videoComposition.renderSize = croppedVideoRect.size
         //                videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
-        //        videoComposition.renderSize = CGSize(width: naturalSize.width, height: naturalSize.height)
+        //                videoComposition.renderSize = CGSize(width: naturalSize.width, height: naturalSize.height)
         //        videoComposition.customVideoCompositorClass = CustomVideoCompositor.self
         
         return (composition,videoComposition)
