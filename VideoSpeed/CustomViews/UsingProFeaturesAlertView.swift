@@ -7,6 +7,7 @@
 
 import UIKit
 import AVFoundation
+import FirebaseRemoteConfig
 
 class UsingProFeaturesAlertView: UIView {
 
@@ -24,10 +25,12 @@ class UsingProFeaturesAlertView: UIView {
     @IBOutlet weak var soundOffView: UIView!
     @IBOutlet weak var sliderPrecisionView: UIView!
     
+    @IBOutlet weak var cropView: UIView!
     @IBOutlet weak var sliderPrecisionViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var soundOffViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var fpsViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var videoFormatViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var cropViewHeightConstraint: NSLayoutConstraint!
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -43,7 +46,10 @@ class UsingProFeaturesAlertView: UIView {
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
     
-    func updateStatus(usingSlider: Bool, soundOn: Bool, fps: Int32, fileType: AVFileType) {
+    func updateStatus(usingSlider: Bool, soundOn: Bool, fps: Int32, fileType: AVFileType, usingCropFeature: Bool) {
+        
+        let isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
+
         sliderPrecisionViewHeightConstraint.constant = 0
         sliderPrecisionView.isHidden = true
         
@@ -56,6 +62,9 @@ class UsingProFeaturesAlertView: UIView {
         videoFormatViewHeightConstraint.constant = 0
         mp4View.isHidden = true
 
+        cropViewHeightConstraint.constant = 0
+        cropView.isHidden = true
+        
         if usingSlider {
             sliderPrecisionViewHeightConstraint.constant = 24
             sliderPrecisionView.isHidden = false
@@ -71,6 +80,10 @@ class UsingProFeaturesAlertView: UIView {
         if fileType == .mp4 {
             videoFormatViewHeightConstraint.constant = 24
             mp4View.isHidden = false
+        }
+        if usingCropFeature && !isCropFeatureFree {
+            cropViewHeightConstraint.constant = 24
+            cropView.isHidden = false
         }
         
     }
