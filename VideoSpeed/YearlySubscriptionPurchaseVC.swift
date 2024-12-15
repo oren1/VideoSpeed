@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseRemoteConfig
 
 enum SubscriptionModel: String {
     case weekly = "weekly"
@@ -14,10 +15,22 @@ enum SubscriptionModel: String {
 
 class YearlySubscriptionPurchaseVC: PurchaseViewController {
 
+    @IBOutlet weak var cropView: UIView!
+    @IBOutlet weak var cropViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var cropViewBottomHeightConstraint: NSLayoutConstraint!
     override func viewDidLoad() {
         super.viewDidLoad()
         product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier}
         priceLabel?.text = "\(product.localizedPrice) / year"
+      
+        let isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
+        
+        if isCropFeatureFree {
+            cropView.isHidden = true
+            cropViewHeightConstraint.constant = 0
+            cropViewBottomHeightConstraint.constant = 0
+        }
+        
     }
     
 

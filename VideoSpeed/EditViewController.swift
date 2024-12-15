@@ -7,8 +7,11 @@
 
 import UIKit
 import AVFoundation
+import CoreImage
 import AVKit
 import FirebaseRemoteConfig
+import SwiftUI
+import Combine
 
 enum ExportButtonType: String {
     case noText = "noText"
@@ -22,6 +25,7 @@ enum ForceShowPurchaseScreen: Int {
 class EditViewController: UIViewController {
     var playerController: AVPlayerViewController!
     var asset: AVAsset!
+    
     var composition: AVMutableComposition!
     var videoComposition: AVMutableVideoComposition!
     var speed: Float = 1
@@ -34,6 +38,14 @@ class EditViewController: UIViewController {
     var exportSession: AVAssetExportSession?
     var timer: Timer?
     var proButton: UIButton!
+    var cropViewController: CropViewController!
+    var rotatedAsset: AVAsset?
+    var loadingMediaVC: UIHostingController<LoadingMediaView>?
+    var loadingMediaViewModel = LoadingMediaViewModel()
+    var assetRotator: AssetRotator?
+    var assetRotateProgressSubscription: AnyCancellable?
+    var isUsingCropFeatureSubscriber: AnyCancellable?
+    var isCropFeatureFree: Bool!
     
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     lazy var progressIndicatorView: ProgressIndicatorView = {
@@ -56,7 +68,7 @@ class EditViewController: UIViewController {
     @IBOutlet weak var fpsButton: UIButton!
     @IBOutlet weak var fileTypeButton: UIButton!
     var selectedBottomButton: UIButton!
-
+    
     
     // Navigation right item labels
     var speedLabel: UILabel!
@@ -71,6 +83,9 @@ class EditViewController: UIViewController {
     var fpsSectionVC: FPSSectionVC!
     var soundSectionVC: SoundSectionVC!
     var moreSectionVC: MoreSectionVC!
+    var cropSectionVC: CropSectioVC!
+    
+    var editSections: [SectionViewController] = []
     
     @IBOutlet weak var dashboardContainerView: UIView!
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -78,7 +93,13 @@ class EditViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
+        segmentedControl.setTitle("SPEED", forSegmentAt: 0)
+        segmentedControl.setTitle("CROP", forSegmentAt: 1)
+        segmentedControl.setTitle("FPS", forSegmentAt: 2)
+        segmentedControl.setTitle("SOUND", forSegmentAt: 3)
+        segmentedControl.setTitle("MORE", forSegmentAt: 4)
+        
+        
         
         segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 17)], for: .selected)
         segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
@@ -90,12 +111,24 @@ class EditViewController: UIViewController {
         addFPSSection()
         addSoundSection()
         addFiletypeSection()
-
+        addCropSection()
+        
+        editSections.append(contentsOf: [speedSectionVC, fpsSectionVC, soundSectionVC, moreSectionVC, cropSectionVC])
+        
         showSpeedSection()
         
-        asset = AVAsset(url: assetUrl)
+        
+        isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
+        isUsingCropFeatureSubscriber = UserDataManager.main.$isUsingCropFeature.sink(receiveValue: { [weak self] isUsingCropFeature in
+            self?.showProButtonIfNeeded()
+        })
+        
         Task {
-            guard let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps, soundOn: soundOn) else {
+            await createCropViewController()
+            
+            guard let (composition, videoComposition) = await createCompositionWith(asset: asset!, speed: speed, fps: fps, soundOn: soundOn) else {
                 return showNoTracksError()
             }
             self.composition = composition
@@ -103,40 +136,48 @@ class EditViewController: UIViewController {
             
             let compositionCopy = self.composition.copy() as! AVComposition
             let videoCompositionCopy = self.videoComposition.copy() as! AVVideoComposition
-
+            
             let playerItem = AVPlayerItem(asset: compositionCopy)
             playerItem.audioTimePitchAlgorithm = .spectral
             playerItem.videoComposition = videoCompositionCopy
             
+            
             let player = AVPlayer(playerItem: playerItem)
-        
+            
             playerController = AVPlayerViewController()
             playerController.player = player
             addPlayerToTop()
             loopVideo()
             
+            Task {
+                await rotateVideoForCropFeature()
+            }
         }
+        
+        //        segmentedControl.setTitleTextAttributes([.font: UIFont.boldSystemFont(ofSize: 14), .foregroundColor: UIColor.white], for: .normal)
+        //
+        //        segmentedControl.setTitleTextAttributes([.font: UIFont.boldSystemFont(ofSize: 14), .foregroundColor: UIColor.black], for: .selected)
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        let forceShow = RemoteConfig.remoteConfig().configValue(forKey: "forceShow").numberValue.boolValue
+//        let forceShow = RemoteConfig.remoteConfig().configValue(forKey: "forceShow").numberValue.boolValue
+//        
+//        if forceShow && SpidProducts.store.userPurchasedProVersion() == nil {
+//            if let lastApearanceOfPurchaseScreen = UserDataManager.main.lastApearanceOfPurchaseScreen {
+//                let now = Date().timeIntervalSince1970
+//                if lastApearanceOfPurchaseScreen + (60 * 60 * 24) < now {
+//                    forceShowPurchaseScreen()
+//                }
+//                return
+//            }
+//            else {
+//                let now = Date().timeIntervalSince1970
+//                UserDataManager.main.lastApearanceOfPurchaseScreen = now
+//            }
+//        }
         
-        if forceShow && SpidProducts.store.userPurchasedProVersion() == nil {
-            if let lastApearanceOfPurchaseScreen = UserDataManager.main.lastApearanceOfPurchaseScreen {
-                let now = Date().timeIntervalSince1970
-                if lastApearanceOfPurchaseScreen + (60 * 60 * 24) < now {
-                      forceShowPurchaseScreen()
-                 }
-                return
-            }
-            else {
-                let now = Date().timeIntervalSince1970
-                UserDataManager.main.lastApearanceOfPurchaseScreen = now
-            }
-//            forceShowPurchaseScreen()
-        }
-       
     }
     
     deinit {
@@ -156,9 +197,9 @@ class EditViewController: UIViewController {
         return proButton
     }
     
-    func createCompositionWith(speed: Float, fps: Int32, soundOn: Bool) async -> (composition: AVMutableComposition, videoComposition: AVMutableVideoComposition)? {
+    func createCompositionWith(asset: AVAsset, speed: Float, fps: Int32, soundOn: Bool) async -> (composition: AVMutableComposition, videoComposition: AVMutableVideoComposition)? {
         let composition = AVMutableComposition(urlAssetInitializationOptions: nil)
-
+        
         let compositionVideoTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: 1)!
         
         if let audioTracks = try? await asset.loadTracks(withMediaType: .audio),
@@ -168,9 +209,9 @@ class EditViewController: UIViewController {
             let audioDuration = try! await asset.load(.duration)
             
             try? compositionAudioTrack.insertTimeRange(CMTimeRange(start: .zero, duration: audioDuration),
-                                                                    of: audioTrack,
-                                                                    at: CMTime.invalid)
-
+                                                       of: audioTrack,
+                                                       at: CMTime.invalid)
+            
         }
         
         
@@ -178,92 +219,118 @@ class EditViewController: UIViewController {
               let videoDuration = try? await asset.load(.duration),
               let naturalSize = try? await videoTrack.load(.naturalSize),
               let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return nil}
-
-                
+        
+        
         try? compositionVideoTrack.insertTimeRange(CMTimeRange(start: .zero, duration: videoDuration),
-                                                                of: videoTrack,
-                                                                at: CMTime.invalid)
+                                                   of: videoTrack,
+                                                   at: CMTime.invalid)
         
         
-       
         
         guard let compositionOriginalDuration = try? await composition.load(.duration) else {return nil}
         self.compositionOriginalDuration = compositionOriginalDuration
         let newDuration = Int64(compositionOriginalDuration.seconds / Double(speed))
         composition.scaleTimeRange(CMTimeRange(start: .zero, duration: compositionOriginalDuration), toDuration: CMTime(value: newDuration, timescale: 1))
         
-        
         compositionVideoTrack.preferredTransform = preferredTransform
-
+        
         let videoInfo = VideoHelper.orientation(from: preferredTransform)
         print("videoInfo.orientation \(videoInfo.orientation)")
-
+        
         let videoSize: CGSize
-
+        
         if videoInfo.isPortrait {
-          videoSize = CGSize(
-            width: naturalSize.height,
-            height: naturalSize.width)
+            videoSize = CGSize(
+                width: naturalSize.height,
+                height: naturalSize.width)
         } else {
-          videoSize = naturalSize
+            videoSize = naturalSize
         }
         
+        print("naturalSize", naturalSize)
         print("videoSize \(videoSize)")
-
+        
+        let croppedVideoRect = aspectRatioCroppedVideoRect(videoSize)
         
         let instruction = AVMutableVideoCompositionInstruction()
         instruction.timeRange = CMTimeRange(
-          start: .zero,
-          duration: composition.duration)
+            start: .zero,
+            duration: composition.duration)
+        
+        // If the user is not using crop feature then use the regular 'compositionLayerInstruction'
         
         let layerInstruction = await compositionLayerInstruction(
-          for: compositionVideoTrack,
-          assetTrack: videoTrack,
-          videoSize: videoSize,
-          isPortrait: videoInfo.isPortrait)
+            for: compositionVideoTrack,
+            assetTrack: videoTrack,
+            videoSize: videoSize,
+            isPortrait: videoInfo.isPortrait,
+            cropRect: croppedVideoRect)
         
         instruction.layerInstructions = [layerInstruction]
+        
         
         let videoComposition = AVMutableVideoComposition()
         videoComposition.instructions = [instruction]
         videoComposition.frameDuration = CMTimeMake(value: 1, timescale: fps)
-        videoComposition.renderSize = videoSize
-
-
+        videoComposition.renderSize = croppedVideoRect.size
+        //                videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
+        //                videoComposition.renderSize = CGSize(width: naturalSize.width, height: naturalSize.height)
+        //        videoComposition.customVideoCompositorClass = CustomVideoCompositor.self
+        
         return (composition,videoComposition)
         
     }
     
     
+    func aspectRatioCroppedVideoRect(_ videoSize: CGSize) -> CGRect {
+        guard let videoRect = cropViewController.videoRect else
+        {
+            /* cropViewController.videoRect will exist only if the user cropped the video size with the CropPickerView at least once.
+             if he did't then return the full size of video
+             */
+            return CGRect(x: 0, y: 0, width: videoSize.width, height: videoSize.height)
+        }
+        let aspectRatioX = videoSize.width / cropViewController.cropPickerView.frame.width
+        let aspectRatioY = videoSize.height / cropViewController.cropPickerView.frame.height
+        
+        let x = videoRect.origin.x * aspectRatioX
+        let y = videoRect.origin.y * aspectRatioY
+        let width = videoRect.width * aspectRatioX
+        let height = videoRect.height * aspectRatioY
+        let frame = CGRect(x: x, y: y, width: width, height: height)
+        return frame
+    }
+    
     func reloadComposition() async {
-        guard let (composition, videoComposition) = await createCompositionWith(speed: speed, fps: fps, soundOn: soundOn) else {
+        let asset = rotatedAsset != nil ? rotatedAsset! : asset!
+        guard let (composition, videoComposition) = await createCompositionWith(asset: asset, speed: speed, fps: fps, soundOn: soundOn) else {
             return showNoTracksError()
         }
         self.composition = composition
         self.videoComposition = videoComposition
         let compositionCopy = self.composition.copy() as! AVComposition
         let videoCompositionCopy = self.videoComposition.copy() as! AVVideoComposition
-
+        
         let playerItem = AVPlayerItem(asset: compositionCopy)
         playerItem.audioTimePitchAlgorithm = .spectral
         playerItem.videoComposition = videoCompositionCopy
-
+        
         playerController.player?.replaceCurrentItem(with: playerItem)
     }
     
     
     
     func setNavigationItems() {
-                       
+        
         let exportButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(tryToExportVideo))
         
         
         speedLabel = createRightItemLabel()
         speedLabel.text = "\(speed)x"
-
+        
         fpsLabel = createRightItemLabel()
         fpsLabel.text = "\(fps):FPS"
-
+        
         fileTypeLabel = createRightItemLabel()
         fileTypeLabel.text = fileType == .mov ? "MOV" : "MP4"
         
@@ -279,35 +346,35 @@ class EditViewController: UIViewController {
         let fpsItem = UIBarButtonItem(customView: fpsLabel)
         let fileTypeItem = UIBarButtonItem(customView: fileTypeLabel)
         let soundItem = UIBarButtonItem(customView: soundButton)
-
+        
         
         navigationItem.rightBarButtonItems = [exportButton, soundItem, fileTypeItem, fpsItem, speedItem]
     }
     
     @objc func soundButtonTapped() {
-       
-            guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
-                
-                    soundOn = !soundOn
-                    let imageName = soundOn ? "volume.2.fill" : "volume.slash"
-                    soundButton.setImage(UIImage(systemName: imageName), for: .normal)
-                    soundSectionVC.updateSoundSelection(soundOn: soundOn)
-                    showProButtonIfNeeded()
-                    Task {
-                        await self.reloadComposition()
-                    }
-                
-                    return
-            }
         
+        guard let purchasedProduct = SpidProducts.store.userPurchasedProVersion() else {
+            
             soundOn = !soundOn
             let imageName = soundOn ? "volume.2.fill" : "volume.slash"
             soundButton.setImage(UIImage(systemName: imageName), for: .normal)
             soundSectionVC.updateSoundSelection(soundOn: soundOn)
-            
+            showProButtonIfNeeded()
             Task {
                 await self.reloadComposition()
             }
+            
+            return
+        }
+        
+        soundOn = !soundOn
+        let imageName = soundOn ? "volume.2.fill" : "volume.slash"
+        soundButton.setImage(UIImage(systemName: imageName), for: .normal)
+        soundSectionVC.updateSoundSelection(soundOn: soundOn)
+        
+        Task {
+            await self.reloadComposition()
+        }
         
     }
     
@@ -325,29 +392,22 @@ class EditViewController: UIViewController {
     
     
     @objc func tryToExportVideo() {
-            AnalyticsManager.exportButtonTapped()
+        AnalyticsManager.exportButtonTapped()
         
-            guard  SpidProducts.store.userPurchasedProVersion() != nil ||
-                  UserDataManager.main.userBenefitStatus == .entitled else {
-
-                if !usingProFeatures() {
-                   return self.exportVideo()
-
-//                  self.playerController.player?.pause()
-//                  return InterstitialAd.manager.showAd(controller: self) { [weak self] in
-//                        self?.playerController.player?.play()
-//                        self?.exportVideo()
-//                    }
-                    
-                }
-                else {
-                    // show alert for purchase
-                    showProFeatureAlert()
-                    return
-                }
+        guard  SpidProducts.store.userPurchasedProVersion() != nil ||
+                UserDataManager.main.userBenefitStatus == .entitled else {
+            
+            if !usingProFeatures() {
+                return self.exportVideo()
             }
+            else {
+                // show alert for purchase
+                showProFeatureAlert()
+                return
+            }
+        }
         
-            exportVideo()
+        exportVideo()
     }
     
     @objc func exportVideo() {
@@ -355,9 +415,9 @@ class EditViewController: UIViewController {
         let videoComposition = videoComposition.copy() as! AVVideoComposition
         
         guard let exportSession = AVAssetExportSession(
-          asset: theComposition,
-          presetName: AVAssetExportPresetHighestQuality)
-          else {
+            asset: theComposition,
+            presetName: AVAssetExportPresetHighestQuality)
+        else {
             print("Cannot create export session.")
             return
         }
@@ -368,8 +428,8 @@ class EditViewController: UIViewController {
         let fileExtension = fileType == .mov ? "mov" : "mp4"
         let videoName = UUID().uuidString
         let exportURL = URL(fileURLWithPath: NSTemporaryDirectory())
-          .appendingPathComponent(videoName)
-          .appendingPathExtension(fileExtension)
+            .appendingPathComponent(videoName)
+            .appendingPathExtension(fileExtension)
         
         exportSession.videoComposition = videoComposition
         exportSession.outputFileType = fileType
@@ -378,33 +438,34 @@ class EditViewController: UIViewController {
         showProgreeView()
         exportSession.exportAsynchronously {
             DispatchQueue.main.async { [weak self] in
-              guard let self = self else { return  }
-              self.removeProgressView()
-              switch exportSession.status {
-              case .completed:
-                print("completed export with url: \(exportURL)")
-                  guard UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(exportURL.relativePath) else { return }
-                   
-                   // 3
-                  UISaveVideoAtPathToSavedPhotosAlbum(exportURL.relativePath, self, #selector(self.video(_:didFinishSavingWithError:contextInfo:)),nil)
-                  
-                  sendExportCompletionEvents()
-                  
-              default:
-                print("Something went wrong during export.")
-                print(exportSession.error ?? "unknown error")
-                break
-              }
+                guard let self = self else { return  }
+                self.removeProgressView()
+                switch exportSession.status {
+                case .completed:
+                    print("completed export with url: \(exportURL)")
+                    guard UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(exportURL.relativePath) else { return }
+                    
+                    print("save to path: \(exportURL.relativePath)")
+                    // 3
+                    UISaveVideoAtPathToSavedPhotosAlbum(exportURL.relativePath, self, #selector(self.video(_:didFinishSavingWithError:contextInfo:)),nil)
+                    
+                    sendExportCompletionEvents()
+                    
+                default:
+                    print("Something went wrong during export.")
+                    print(exportSession.error ?? "unknown error")
+                    break
+                }
             }
-
+            
         }
         
     }
     
     @objc func video(
-      _ videoPath: String,
-      didFinishSavingWithError error: Error?,
-      contextInfo info: AnyObject
+        _ videoPath: String,
+        didFinishSavingWithError error: Error?,
+        contextInfo info: AnyObject
     ) {
         if error == nil {
             let successMessageViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SuccessMessageViewController") as! SuccessMessageViewController
@@ -415,25 +476,25 @@ class EditViewController: UIViewController {
         }
         else {
             let alert = UIAlertController(
-              title: "Error",
-              message: "Video failed to save",
-              preferredStyle: .alert)
+                title: "Error",
+                message: "Video failed to save",
+                preferredStyle: .alert)
             alert.addAction(UIAlertAction(
-              title: "OK",
-              style: UIAlertAction.Style.cancel,
-              handler: nil))
+                title: "OK",
+                style: UIAlertAction.Style.cancel,
+                handler: nil))
             present(alert, animated: true, completion: nil)
         }
-
+        
     }
     
     func addPlayerToTop() {
         //add as a childviewcontroller
         addChild(playerController)
-
-         // Add the child's View as a subview
-         self.view.addSubview(playerController.view)
-
+        
+        // Add the child's View as a subview
+        self.view.addSubview(playerController.view)
+        
         playerController.view.translatesAutoresizingMaskIntoConstraints = false
         let constraints = [
             playerController.view.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
@@ -443,26 +504,80 @@ class EditViewController: UIViewController {
         ]
         NSLayoutConstraint.activate(constraints)
         
-         // tell the childviewcontroller it's contained in it's parent
+        // tell the childviewcontroller it's contained in it's parent
         playerController.didMove(toParent: self)
         self.playerController.player?.play()
     }
-
     
-    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool) async -> AVMutableVideoCompositionLayerInstruction {
-
+    func addCropViewControllerToTop() {
+        //add as a childviewcontroller
+        addChild(cropViewController)
+        
+        // Add the child's View as a subview
+        //        self.view.addSubview(cropViewController.view)
+        self.view.insertSubview(cropViewController.view, belowSubview: proButton)
+        // give the cropPickerView it's parameters
+        
+        cropViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        let constraints = [
+            cropViewController.view.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            cropViewController.view.leftAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leftAnchor),
+            cropViewController.view.rightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.rightAnchor),
+            cropViewController.view.bottomAnchor.constraint(equalTo: self.dashboardContainerView.topAnchor),
+        ]
+        NSLayoutConstraint.activate(constraints)
+        
+        // tell the childviewcontroller it's contained in it's parent
+        cropViewController.didMove(toParent: self)
+        cropViewController.view.layoutIfNeeded()
+        cropViewController.updateCropViewPickerSize()
+        cropViewController.view.layoutIfNeeded()
+        
+    }
+    
+    func removeCropVCFromTop() {
+        cropViewController.willMove(toParent: nil)
+        cropViewController.view.removeFromSuperview()
+        cropViewController.removeFromParent()
+    }
+    
+    //    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool) async -> AVMutableVideoCompositionLayerInstruction {
+    //
+    //        cropViewController.didMove(toParent: self)
+    //        cropViewController.view.layoutIfNeeded()
+    //        cropViewController.updateCropViewPickerSize()
+    //        cropViewController.view.layoutIfNeeded()
+    //
+    //    }
+    
+    
+    func removeLoadingMediaVC() {
+        loadingMediaVC?.willMove(toParent: nil)
+        loadingMediaVC?.view.removeFromSuperview()
+        loadingMediaVC?.removeFromParent()
+        loadingMediaVC = nil
+    }
+    
+    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool, cropRect: CGRect) async -> AVMutableVideoCompositionLayerInstruction {
         let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
+        
         let transform = try! await assetTrack.load(.preferredTransform)
+        
         if isPortrait {
             var newTransform = CGAffineTransform(translationX: 0, y: 0)
             newTransform = newTransform.rotated(by: CGFloat(90 * Double.pi / 180))
             newTransform = newTransform.translatedBy(x: 0, y: -videoSize.width)
             instruction.setTransform(newTransform, at: .zero)
+            
         }
         else {
-            instruction.setTransform(transform, at: .zero)
+            instruction.setCropRectangle(CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.size.width, height: cropRect.size.height), at: .zero)
+            
+            let newTransform = transform.translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
+            instruction.setTransform(newTransform, at: .zero)
+            
         }
-
+        
         return instruction
     }
     
@@ -470,15 +585,24 @@ class EditViewController: UIViewController {
     // MARK: - Actions
     @IBAction func segmentedValueChanged(_ segmentedControl: UISegmentedControl) {
         let currentIndex = segmentedControl.selectedSegmentIndex
+        if currentIndex != 1 {
+            removeCropVCFromTop()
+        }
         switch currentIndex {
         case 0:
             showSpeedSection()
         case 1:
-            showFPSSection()
+            showCropSection()
+            addCropViewControllerToTop()
         case 2:
+            showFPSSection()
+        case 3:
             showSoundSection()
-        default:
+        case 3:
             showFileTypeSection()
+        default:
+            showCropSection()
+            addCropViewControllerToTop()
         }
     }
     
@@ -489,7 +613,7 @@ class EditViewController: UIViewController {
         
         self.view.addSubview(proButton)
         proButton.translatesAutoresizingMaskIntoConstraints = false
-
+        
         let constraints = [
             proButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
             proButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -18),
@@ -512,9 +636,9 @@ class EditViewController: UIViewController {
         speedSectionVC.speedDidChange = { [weak self] (speed: Float) -> () in
             self?.speed = speed
             self?.speedLabel.text = "\(speed)x"
-
+            
             Task {
-              await self?.reloadComposition()
+                await self?.reloadComposition()
             }
         }
         
@@ -523,11 +647,43 @@ class EditViewController: UIViewController {
             self?.speed = 1
             self?.speedLabel.text = "1x"
             Task {
-              await self?.reloadComposition()
+                await self?.reloadComposition()
             }
         }
         
         addSection(sectionVC: speedSectionVC)
+    }
+    
+    func addCropSection() {
+        cropSectionVC = CropSectioVC()
+        cropSectionVC.cropSectionChangedStatusTo = { [weak self] (cropStatus: CropStatus) in
+            guard let self = self else {return}
+            
+            switch cropStatus {
+            case .cropping:
+                addCropViewControllerToTop()
+            default:
+                Task {
+                    /*
+                     Before reloading the composition, make sure that the 'rotatedAsset' is ready.
+                     The crop will work only for assets that their orientation is the intended orientation
+                     of the video
+                     */
+                    guard let _ = self.rotatedAsset else {
+                        // 1. Show a loading view until the asset has been rotated
+                        self.loadingMediaVC = UIHostingController(rootView: LoadingMediaView(loadingMediaViewModel: self.loadingMediaViewModel))
+                        self.loadingMediaVC!.view.backgroundColor = .clear
+                        self.loadingMediaVC!.view.frame = self.navigationController!.view.bounds
+                        self.navigationController!.view.addSubview(self.loadingMediaVC!.view)
+                        return
+                    }
+                    
+                    await self.reloadComposition()
+                    self.removeCropVCFromTop()
+                }
+            }
+        }
+        addSection(sectionVC: cropSectionVC)
     }
     
     func addFPSSection() {
@@ -555,7 +711,7 @@ class EditViewController: UIViewController {
             self?.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
             self?.showProButtonIfNeeded()
             Task {
-              await self?.reloadComposition()
+                await self?.reloadComposition()
             }
         }
         soundSectionVC.userNeedsToPurchase = {[weak self] in
@@ -574,10 +730,10 @@ class EditViewController: UIViewController {
         moreSectionVC.soundStateChanged = {[weak self] (soundOn: Bool) in
             self?.soundOn = soundOn
             let imageName = soundOn ? "volume.2.fill" : "volume.slash"
-            self?.soundButton.setImage(UIImage(systemName: imageName), for: .normal) 
+            self?.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
             self?.showProButtonIfNeeded()
             Task {
-              await self?.reloadComposition()
+                await self?.reloadComposition()
             }
         }
         moreSectionVC.userNeedsToPurchase = {[weak self] in
@@ -590,7 +746,7 @@ class EditViewController: UIViewController {
         addChild(sectionVC)
         dashboardContainerView.addSubview(sectionVC.view)
         sectionVC.view.translatesAutoresizingMaskIntoConstraints = false
-
+        
         let constraints = [
             sectionVC.view.topAnchor.constraint(equalTo: dashboardContainerView.topAnchor),
             sectionVC.view.leftAnchor.constraint(equalTo: dashboardContainerView.leftAnchor),
@@ -603,38 +759,91 @@ class EditViewController: UIViewController {
     }
     
     
-    func showSpeedSection() {
-        speedSectionVC.view.isHidden = false
-        fpsSectionVC.view.isHidden = true
-        soundSectionVC.view.isHidden = true
-        moreSectionVC.view.isHidden = true
+    func createCropViewController() async {
+        cropViewController = CropViewController()
+        guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+              let naturalSize = try? await videoTrack.load(.naturalSize),
+              let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return}
+        
+        
+        let videoInfo = VideoHelper.orientation(from: preferredTransform)
+        let videoSize: CGSize
+        
+        if videoInfo.isPortrait {
+            videoSize = CGSize(
+                width: naturalSize.height,
+                height: naturalSize.width)
+        } else {
+            videoSize = naturalSize
+        }
+        
+        cropViewController.videoAspectRatio = videoSize.width / videoSize.height
+        
+        //         Sometimes the portrait video is saved in landscape, so this is a fix that rotates the generated image back to it's
+        //         portrait original intended presentation
+        
+        if videoInfo.isPortrait {
+            var templateImage = await generateTemplateImage(asset: asset)
+            templateImage = UIImage(cgImage: templateImage.cgImage!, scale: templateImage.scale, orientation: .right)
+            cropViewController.templateImage = templateImage
+        }
+        else {
+            cropViewController.templateImage = await generateTemplateImage(asset: asset)
+        }
+        
     }
-
+    
+    func showEditSection(_ editSection: SectionViewController) {
+        editSections.forEach { section in
+            if section == editSection {
+                section.view.isHidden = false
+                return
+            }
+            section.view.isHidden = true
+        }
+    }
+    
+    func showSpeedSection() {
+        showEditSection(speedSectionVC)
+        //        speedSectionVC.view.isHidden = false
+        //        fpsSectionVC.view.isHidden = true
+        //        soundSectionVC.view.isHidden = true
+        //        moreSectionVC.view.isHidden = true
+    }
+    
     func showFPSSection() {
-        speedSectionVC.view.isHidden = true
-        fpsSectionVC.view.isHidden = false
-        soundSectionVC.view.isHidden = true
-        moreSectionVC.view.isHidden = true
+        showEditSection(fpsSectionVC)
+        //        speedSectionVC.view.isHidden = true
+        //        fpsSectionVC.view.isHidden = false
+        //        soundSectionVC.view.isHidden = true
+        //        moreSectionVC.view.isHidden = true
     }
     
     func showSoundSection() {
-        speedSectionVC.view.isHidden = true
-        fpsSectionVC.view.isHidden = true
-        soundSectionVC.view.isHidden = false
-        moreSectionVC.view.isHidden = true
+        showEditSection(soundSectionVC)
+        //        speedSectionVC.view.isHidden = true
+        //        fpsSectionVC.view.isHidden = true
+        //        soundSectionVC.view.isHidden = false
+        //        moreSectionVC.view.isHidden = true
     }
     
     func showFileTypeSection() {
-        speedSectionVC.view.isHidden = true
-        fpsSectionVC.view.isHidden = true
-        soundSectionVC.view.isHidden = true
-        moreSectionVC.view.isHidden = false
+        showEditSection(moreSectionVC)
+        //        speedSectionVC.view.isHidden = true
+        //        fpsSectionVC.view.isHidden = true
+        //        soundSectionVC.view.isHidden = true
+        //        moreSectionVC.view.isHidden = false
+    }
+    
+    func showCropSection() {
+        showEditSection(cropSectionVC)
+        // add CropViewController to top
     }
     
     func showProgreeView() {
         view.addSubview(progressIndicatorView)
         progressIndicatorView.translatesAutoresizingMaskIntoConstraints = false
-
+        
         let constraints = [
             progressIndicatorView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             progressIndicatorView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
@@ -647,7 +856,7 @@ class EditViewController: UIViewController {
             guard let progress = self?.exportSession?.progress else { return }
             self?.progressIndicatorView.progressView.progress = progress
         }
-
+        
     }
     
     func removeProgressView() {
@@ -661,7 +870,7 @@ class EditViewController: UIViewController {
     func showBlackTransparentOverlay() {
         self.navigationController!.view.addSubview(blackTransparentOverlay)
         blackTransparentOverlay.translatesAutoresizingMaskIntoConstraints = false
-
+        
         let constraints = [
             blackTransparentOverlay.topAnchor.constraint(equalTo: navigationController!.view.topAnchor),
             blackTransparentOverlay.leftAnchor.constraint(equalTo: navigationController!.view.leftAnchor),
@@ -679,7 +888,8 @@ class EditViewController: UIViewController {
         usingProFeaturesAlertView.updateStatus(usingSlider: UserDataManager.main.usingSlider,
                                                soundOn: soundOn,
                                                fps: fps,
-                                               fileType: fileType)
+                                               fileType: fileType,
+                                               usingCropFeature: UserDataManager.main.isUsingCropFeature)
         usingProFeaturesAlertView.layer.opacity = 0
         self.navigationController!.view.addSubview(usingProFeaturesAlertView)
         usingProFeaturesAlertView.translatesAutoresizingMaskIntoConstraints = false
@@ -691,7 +901,7 @@ class EditViewController: UIViewController {
             self?.hideProFeatureAlert()
         }
         let constraints = [
-            usingProFeaturesAlertView.heightAnchor.constraint(equalToConstant: 300),
+            usingProFeaturesAlertView.heightAnchor.constraint(equalToConstant: 350),
             usingProFeaturesAlertView.widthAnchor.constraint(equalToConstant: 340),
             usingProFeaturesAlertView.centerXAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerXAnchor),
             usingProFeaturesAlertView.centerYAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerYAnchor)
@@ -721,7 +931,7 @@ class EditViewController: UIViewController {
         
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
         purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
-    
+        
         purchaseViewController.onDismiss = { [weak self] in
             if let _ = SpidProducts.store.userPurchasedProVersion() {
                 self?.hideProButton()
@@ -752,24 +962,24 @@ class EditViewController: UIViewController {
         guard let progress = exportSession?.progress else { return }
         progressIndicatorView.progressView.progress = progress
     }
-        
+    
     func showNoTracksError() {
         let alert = UIAlertController(
-          title: "Error",
-          message: "Couldn't find video tracks",
-          preferredStyle: .alert)
+            title: "Error",
+            message: "Couldn't find video tracks",
+            preferredStyle: .alert)
         alert.addAction(UIAlertAction(
-          title: "OK",
-          style: UIAlertAction.Style.cancel,
-          handler: { [weak self] _ in
-              self?.navigationController?.popViewController(animated: true)
-          }))
+            title: "OK",
+            style: UIAlertAction.Style.cancel,
+            handler: { [weak self] _ in
+                self?.navigationController?.popViewController(animated: true)
+            }))
         present(alert, animated: true, completion: nil)
     }
     
     func showProButtonIfNeeded() {
         guard SpidProducts.store.userPurchasedProVersion() == nil &&
-        UserDataManager.main.userBenefitStatus != .entitled else {return}
+                UserDataManager.main.userBenefitStatus != .entitled else {return}
         
         if self.usingProFeatures() {
             self.showProButton()
@@ -780,10 +990,10 @@ class EditViewController: UIViewController {
     }
     
     func loopVideo() {
-      NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { [weak self] notification in
-          self?.playerController.player?.seek(to: .zero)
-          self?.playerController.player?.play()
-      }
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { [weak self] notification in
+            self?.playerController.player?.seek(to: .zero)
+            self?.playerController.player?.play()
+        }
     }
     
     func sendExportCompletionEvents() {
@@ -791,6 +1001,46 @@ class EditViewController: UIViewController {
         if fps != 30 { AnalyticsManager.fpsUsedOnExportEvent() }
         if !soundOn { AnalyticsManager.soundUsedOnExportEvent() }
         if fileType == .mp4 { AnalyticsManager.fileTypeUsedOnExportEvent() }
+        if UserDataManager.main.isUsingCropFeature { AnalyticsManager.cropUsedOnExportEvent() }
+    }
+    
+    func generateTemplateImage(asset: AVAsset) async -> UIImage {
+        let generator = AVAssetImageGenerator(asset: asset)
+        let time = CMTime(seconds: 0.0, preferredTimescale: 600)
+        let times = [NSValue(time: time)]
+        
+        return await withCheckedContinuation { continuation in
+            
+            generator.generateCGImagesAsynchronously(forTimes: times) { [weak self] _, image, _, result, error in
+                guard let _ = self, let image = image else {return}
+                continuation.resume(returning: UIImage(cgImage: image))
+                
+            }
+            
+        }
+        
+    }
+    
+    func rotateVideoForCropFeature() async {
+        // Creat AssetRotator instance and listen to progress changes and done rotating chenges
+        assetRotator = AssetRotator(asset: asset)
+        assetRotateProgressSubscription = assetRotator?.$progress.sink { [weak self] progress in
+            self?.loadingMediaViewModel.progress = progress
+        }
+        rotatedAsset = await assetRotator?.rotateVideoToIntendedOrientation()
+        // I don't want the video to reload after the rotated asset is ready, because it can case a bug
+        // that the video reloads in the middle of playing.
+        // if the 'LoadingMediaView' is shown when the rotation finished it means that the user pressed 'done' cropping.
+        // so if the LoadingMediaView shown, remove it and reload the composition
+        
+        if let _ = loadingMediaVC {
+            removeLoadingMediaVC()
+            await self.reloadComposition()
+            self.removeCropVCFromTop()
+        }
+        
+        assetRotator = nil
+        
     }
     
 }
@@ -802,14 +1052,29 @@ extension NotificationObservers {
     }
     
     func usingProFeatures() -> Bool {
-        if UserDataManager.main.usingSlider ||
-            fps != 30 ||
-            !soundOn ||
-            fileType == .mp4 {
-            
-            return true
+        
+        if isCropFeatureFree {
+            if UserDataManager.main.usingSlider ||
+                fps != 30 ||
+                !soundOn ||
+                fileType == .mp4 {
+                
+                return true
+            }
+            return false
         }
-        return false
+        else {
+            if UserDataManager.main.usingSlider ||
+                UserDataManager.main.isUsingCropFeature ||
+                fps != 30 ||
+                !soundOn ||
+                fileType == .mp4 {
+                
+                return true
+            }
+            return false
+        }
+
     }
     
    @objc func proButtonTapped() {
