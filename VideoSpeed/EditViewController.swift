@@ -514,8 +514,12 @@ class EditViewController: UIViewController {
         addChild(cropViewController)
         
         // Add the child's View as a subview
-        //        self.view.addSubview(cropViewController.view)
-        self.view.insertSubview(cropViewController.view, belowSubview: proButton)
+         
+        self.view.addSubview(cropViewController.view)
+        if view.subviews.contains(where: {$0 == proButton}) {
+            self.view.bringSubviewToFront(proButton)
+        }
+
         // give the cropPickerView it's parameters
         
         cropViewController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -598,7 +602,7 @@ class EditViewController: UIViewController {
             showFPSSection()
         case 3:
             showSoundSection()
-        case 3:
+        case 4:
             showFileTypeSection()
         default:
             showCropSection()
@@ -612,6 +616,8 @@ class EditViewController: UIViewController {
     func showProButton() {
         
         self.view.addSubview(proButton)
+        self.view.bringSubviewToFront(proButton)
+
         proButton.translatesAutoresizingMaskIntoConstraints = false
         
         let constraints = [
@@ -622,6 +628,7 @@ class EditViewController: UIViewController {
         ]
         NSLayoutConstraint.activate(constraints)
     }
+    
     func hideProButton() {
         proButton.removeFromSuperview()
     }
@@ -836,6 +843,7 @@ class EditViewController: UIViewController {
     }
     
     func showCropSection() {
+        cropSectionVC.resetStatus()
         showEditSection(cropSectionVC)
         // add CropViewController to top
     }
