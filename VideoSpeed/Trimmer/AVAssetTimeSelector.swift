@@ -1,10 +1,3 @@
-//
-//  AVAssetTimeSelector.swift
-//  Pods
-//
-//  Created by Henry on 06/04/2017.
-//
-//
 
 import UIKit
 import AVFoundation
