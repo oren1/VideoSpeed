@@ -1,11 +1,3 @@
-//
-//  AssetVideoScrollView.swift
-//  PryntTrimmerView
-//
-//  Created by HHK on 28/03/2017.
-//  Copyright © 2017 Prynt. All rights reserved.
-//
-
 import AVFoundation
 import UIKit
 

@@ -1,10 +1,3 @@
-//
-//  PryntTrimmerView.swift
-//  PryntTrimmerView
-//
-//  Created by HHK on 27/03/2017.
-//  Copyright © 2017 Prynt. All rights reserved.
-//
 
 import AVFoundation
 import UIKit
@@ -15,11 +8,7 @@ public protocol TrimmerViewDelegate: AnyObject {
     func positionBarStoppedMoving(_ playerTime: CMTime)
 }
 
-/// A view to select a specific time range of a video. It consists of an asset preview with thumbnails inside a scroll view, two
-/// handles on the side to select the beginning and the end of the range, and a position bar to synchronize the control with a
-/// video preview, typically with an `AVPlayer`.
-/// Load the video by setting the `asset` property. Access the `startTime` and `endTime` of the view to get the selected time
-// range
+
 @IBDesignable public class TrimmerView: AVAssetTimeSelector {
 
     // MARK: - Properties

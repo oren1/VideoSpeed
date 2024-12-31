@@ -1,10 +1,3 @@
-//
-//  HandlerView.swift
-//  PryntTrimmerView
-//
-//  Created by HHK on 27/03/2017.
-//  Copyright © 2017 Prynt. All rights reserved.
-//
 
 import Foundation
 import UIKit

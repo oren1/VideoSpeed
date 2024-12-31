@@ -1,10 +1,3 @@
-//
-//  AssetSelectionViewController.swift
-//  PryntTrimmerView
-//
-//  Created by Henry on 25/06/2017.
-//  Copyright © 2017 CocoaPods. All rights reserved.
-//
 
 import UIKit
 import Photos
