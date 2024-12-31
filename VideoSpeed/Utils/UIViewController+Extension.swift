@@ -62,4 +62,9 @@ extension UIViewController {
         isModalInPresentation = false
     }
 
+    func remove() {
+            willMove(toParent: nil)
+            view.removeFromSuperview()
+            removeFromParent()
+    }
 }

@@ -48,7 +48,7 @@ class UsingProFeaturesAlertView: UIView {
     
     func updateStatus(usingSlider: Bool, soundOn: Bool, fps: Int32, fileType: AVFileType, usingCropFeature: Bool) {
         
-        let isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
+//        let isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
 
         sliderPrecisionViewHeightConstraint.constant = 0
         sliderPrecisionView.isHidden = true
@@ -81,10 +81,10 @@ class UsingProFeaturesAlertView: UIView {
             videoFormatViewHeightConstraint.constant = 24
             mp4View.isHidden = false
         }
-        if usingCropFeature && !isCropFeatureFree {
-            cropViewHeightConstraint.constant = 24
-            cropView.isHidden = false
-        }
+//        if usingCropFeature && !isCropFeatureFree {
+//            cropViewHeightConstraint.constant = 24
+//            cropView.isHidden = false
+//        }
         
     }
     

@@ -10,11 +10,15 @@ import StoreKit
 
 let twentyFourHoursInSeconds = 24.0 * 60 * 60
 
+
 class UserDataManager: ObservableObject {
     
     static let main: UserDataManager = UserDataManager()
     var products: [SKProduct]!
     var subscriptionProducts: [Product]!
+   
+    var currentSpidAsset: SpidAsset!
+    
     var usingSlider: Bool = false {
         didSet {
             NotificationCenter.default.post(name: Notification.Name("usingSliderChanged"), object: nil)
@@ -24,8 +28,17 @@ class UserDataManager: ObservableObject {
     @Published
     var isUsingCropFeature: Bool = false
     
-    var userBenefitStatus: BenefitStatus = .notInvoked
+    func isUsingTrimFeature() async -> Bool {
+        guard let originalDuration = try? await currentSpidAsset.getAsset().load(.duration).seconds else { return false }
+        let trimmedDuration = await currentSpidAsset.timeRange.duration.seconds
+        print("originalDuration ", originalDuration)
+        print("trimmedDuration ", trimmedDuration)
+
+        if originalDuration - trimmedDuration > 0.5 { return true }
+        return false
+    }
     
+    var userBenefitStatus: BenefitStatus = .notInvoked
     
     func productforIdentifier(productIndentifier: ProductIdentifier) -> SKProduct? {
         if let product =  products.first(where: { $0.productIdentifier ==  productIndentifier}) {
@@ -34,13 +47,7 @@ class UserDataManager: ObservableObject {
         
         return nil
     }
-    
-    func isNotUsingProFeatures() -> Bool {
-        if !usingSlider {
-            return true
-        }
-        return false
-    }
+
     
     var installationTime: Double? {
         set {
