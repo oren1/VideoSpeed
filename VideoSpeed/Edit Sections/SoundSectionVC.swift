@@ -24,10 +24,10 @@ class SoundSectionVC: SectionViewController {
         
         setSelectedButton(button: onButton)
         
-        sub = PublishersManager.main.resetSelectionsPublisher.sink(receiveValue: { [weak self]  notification in
-            guard let self = self else {return}
-            onButtonTapped(onButton)
-        })
+//        sub = PublishersManager.main.resetSelectionsPublisher.sink(receiveValue: { [weak self]  notification in
+//            guard let self = self else {return}
+//            onButtonTapped(onButton)
+//        })
     }
 
     func updateSoundSelection(soundOn: Bool) {

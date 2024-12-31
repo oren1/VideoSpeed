@@ -18,7 +18,7 @@ class AssetRotator {
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
             guard let progress = self?.exportSession?.progress else { return }
             self?.progress = progress
-            print("progress: ",progress)
+//            print("progress: ",progress)
         }
     }
     

@@ -38,10 +38,10 @@ class MoreSectionVC: SectionViewController {
         setSelectedButton(button: movButton)
         setSoundSelectedButton(button: onButton)
         
-        sub = PublishersManager.main.resetSelectionsPublisher.sink(receiveValue: { [weak self]  notification in
-            guard let self = self else {return}
-            movButtonTapped(movButton)
-        })
+//        sub = PublishersManager.main.resetSelectionsPublisher.sink(receiveValue: { [weak self]  notification in
+//            guard let self = self else {return}
+//            movButtonTapped(movButton)
+//        })
     }
 
     func updateSoundSelection(soundOn: Bool) {

@@ -23,13 +23,13 @@ class YearlySubscriptionPurchaseVC: PurchaseViewController {
         product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier}
         priceLabel?.text = "\(product.localizedPrice) / year"
       
-        let isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
+//        let isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
         
-        if isCropFeatureFree {
+//        if isCropFeatureFree {
             cropView.isHidden = true
             cropViewHeightConstraint.constant = 0
             cropViewBottomHeightConstraint.constant = 0
-        }
+//        }
         
     }
     

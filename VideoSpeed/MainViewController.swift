@@ -415,8 +415,13 @@ extension MainViewController: UICollectionViewDelegate {
                 self?.hideLoading()
 //                vc.assetUrl = responseURL
                 Task {
-//                    let rotatedAsset = await asset?.rotateVideoToIntendedOrientation()
+                    guard let asset = asset,
+                          let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+                          let timeRange = try? await videoTrack.load(.timeRange) else {return}
+                    
+                    UserDataManager.main.currentSpidAsset = SpidAsset(asset: asset,timeRange: timeRange)
                     vc.asset = asset
+                    
                     self?.navigationController?.pushViewController(vc, animated: true)
 
                 }
