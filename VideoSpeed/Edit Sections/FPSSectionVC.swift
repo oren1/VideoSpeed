@@ -41,11 +41,11 @@ class FPSSectionVC: SectionViewController {
         pickerView.setValue(UIColor.white, forKey: "textColor")
         pickerView.selectRow(29, inComponent: 0, animated: false)
         
-        sub = PublishersManager.main.resetSelectionsPublisher.sink(receiveValue: { [weak self]  notification in
-            guard let self = self else {return}
-            pickerView.selectRow(29, inComponent: 0, animated: true)
-            fps = 30
-        })
+//        sub = PublishersManager.main.resetSelectionsPublisher.sink(receiveValue: { [weak self]  notification in
+//            guard let self = self else {return}
+//            pickerView.selectRow(29, inComponent: 0, animated: true)
+//            fps = 30
+//        })
         
     }
 

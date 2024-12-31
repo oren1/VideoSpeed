@@ -36,12 +36,12 @@ class SpeedSectionVC: SectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
         
-        sub = PublishersManager.main.resetSelectionsPublisher.sink(receiveValue: { [weak self]  notification in
-            guard let self = self else {return}
-            oneButtonTapped(oneButton)
-        })
+//        sub = PublishersManager.main.resetSelectionsPublisher.sink(receiveValue: { [weak self]  notification in
+//            guard let self = self else {return}
+//            oneButtonTapped(oneButton)
+//        })
         
         setBorderAndRadius(button: point25Button)
         setBorderAndRadius(button: point5Button)
@@ -52,7 +52,7 @@ class SpeedSectionVC: SectionViewController {
         setSelectedButton(button: oneButton)
     }
 
-    @objc func usingSliderChanged() {}
+//    @objc func usingSliderChanged() {}
    
 
     @IBAction func point25ButtonTapped(_ sender: UIButton) {

@@ -93,5 +93,10 @@ class AnalyticsManager {
         let eventName = "crop_used_on_export"
         Analytics.logEvent(eventName, parameters: [:])
     }
+    
+    static func trimUsedOnExportEvent() {
+        let eventName = "trim_used_on_export"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
 }
 

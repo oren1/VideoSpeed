@@ -21,16 +21,17 @@ class CropSectioVC: SectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        resetStatus()
-
-        // Do any additional setup after loading the view.
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        resetStatus()
+    }
+    
     func resetStatus() {
         cropStatus = .cropping
         cropButton.setTitle("Done", for: .normal)
     }
+
     
     @IBAction func cropButtonTapped(_ sender: Any) {
         if cropStatus == .cropping {
