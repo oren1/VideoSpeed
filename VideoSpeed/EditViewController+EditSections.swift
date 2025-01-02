@@ -143,7 +143,7 @@ extension EditViewController {
         trimmerSectionVC.timeRangeDidChange = { [weak self] timeRange in
             Task {
                 await UserDataManager.main.currentSpidAsset.updateTimeRange(timeRange: timeRange)
-                print("using trim: ", await  UserDataManager.main.isUsingTrimFeature())
+//                print("using trim: ", await  UserDataManager.main.isUsingTrimFeature())
                 await self?.reloadComposition()
             }
         }
