@@ -87,8 +87,9 @@ class PurchaseViewController: UIViewController {
                             break
                         }
                     }
-                    catch {
-                        print("fatal error: couldn't get subscription products from Product struct")
+                    catch  {
+                        print("fatal error: couldn't get subscription products from Product struct: \(error)")
+                        AnalyticsManager.couldntGetProductsEvent()
                     }
         
                 }

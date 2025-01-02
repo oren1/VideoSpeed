@@ -98,5 +98,10 @@ class AnalyticsManager {
         let eventName = "trim_used_on_export"
         Analytics.logEvent(eventName, parameters: [:])
     }
+    
+    static func couldntGetProductsEvent() {
+        let eventName = "couldnt_get_products"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
 }
 

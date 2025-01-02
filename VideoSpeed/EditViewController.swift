@@ -306,6 +306,7 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         return frame
     }
     
+    @MainActor
     func reloadComposition() async {
         let asset = await UserDataManager.main.currentSpidAsset.getAsset()
         guard let (composition, videoComposition) = await createCompositionWith(asset: asset, speed: speed, fps: fps, soundOn: soundOn) else {
@@ -319,7 +320,6 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         let playerItem = AVPlayerItem(asset: compositionCopy)
         playerItem.audioTimePitchAlgorithm = .spectral
         playerItem.videoComposition = videoCompositionCopy
-        
         playerController.player?.replaceCurrentItem(with: playerItem)
     }
     
@@ -780,7 +780,6 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
         purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
-        
         purchaseViewController.onDismiss = { [weak self] in
             if let _ = SpidProducts.store.userPurchasedProVersion() {
                 self?.hideProButton()
