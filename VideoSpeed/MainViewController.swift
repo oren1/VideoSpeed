@@ -103,7 +103,7 @@ class MainViewController: UIViewController {
         purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
        
         if UIDevice.current.userInterfaceIdiom == .phone {
-            purchaseViewController.modalPresentationStyle = .fullScreen
+            purchaseViewController.modalPresentationStyle = .automatic
         }
         else if UIDevice.current.userInterfaceIdiom == .pad {
             purchaseViewController.modalPresentationStyle = .formSheet
