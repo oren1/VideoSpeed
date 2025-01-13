@@ -10,12 +10,12 @@ import AVFoundation
 import AVKit
 
 protocol TrimmerSectionViewDelegate: AnyObject {
-    var playerController: AVPlayerViewController! { get set }
+    var spidPlayerController: SpidPlayerViewController! { get set }
 }
 
 // added an extension to give the 'playerViewController' variable a default implementation.
 extension TrimmerSectionViewDelegate {
-    var playerController: AVPlayerViewController! {
+    var spidPlayerController: SpidPlayerViewController! {
         get { nil }
     }
 }
@@ -68,7 +68,7 @@ class TrimmerSectionVC: SectionViewController {
 
         guard let startTime = trimmerView.startTime,
               let endTime = trimmerView.endTime,
-              let player = delegate?.playerController?.player else {
+              let player = delegate?.spidPlayerController?.player else {
             return
         }
 
@@ -84,8 +84,8 @@ class TrimmerSectionVC: SectionViewController {
 
 extension TrimmerSectionVC: TrimmerViewDelegate {
     func positionBarStoppedMoving(_ playerTime: CMTime) {
-        delegate?.playerController?.player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-        delegate?.playerController?.player?.play()
+        delegate?.spidPlayerController?.player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+        delegate?.spidPlayerController?.player?.play()
         
         guard let startTime = trimmerView.startTime, let endTime = trimmerView.endTime else {return}
         
@@ -96,13 +96,12 @@ extension TrimmerSectionVC: TrimmerViewDelegate {
     func didChangePositionBar(_ playerTime: CMTime) {
         Task {
             await MainActor.run {
-                delegate?.playerController?.player?.pause()
+                delegate?.spidPlayerController?.player?.pause()
             }
             // 2. Set the playerController's player with the new PlayerItem
-            delegate?.playerController?.player?.replaceCurrentItem(with: playerItem!)
-            await delegate?.playerController?.player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+            delegate?.spidPlayerController?.player?.replaceCurrentItem(with: playerItem!)
+            await delegate?.spidPlayerController?.player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         }
-        
         
     }
     

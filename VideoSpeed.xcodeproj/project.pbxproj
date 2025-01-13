@@ -44,6 +44,8 @@
 		6B6801252D1557A4002B5454 /* TrimmerSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B6801232D1557A4002B5454 /* TrimmerSectionVC.xib */; };
 		6B6801272D17F31F002B5454 /* SpidAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6801262D17F31F002B5454 /* SpidAsset.swift */; };
 		6B68012B2D1FD9FA002B5454 /* EditViewController+EditSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B68012A2D1FD9F0002B5454 /* EditViewController+EditSections.swift */; };
+		6B6801322D2D6BE0002B5454 /* SpidPlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B6801312D2D6BE0002B5454 /* SpidPlayerViewController.xib */; };
+		6B6801332D2D6BE0002B5454 /* SpidPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6801302D2D6BE0002B5454 /* SpidPlayerViewController.swift */; };
 		6B71AAC42A9098A000C06619 /* SoundSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */; };
 		6B71AAC52A9098A000C06619 /* SoundSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B71AAC32A9098A000C06619 /* SoundSectionVC.xib */; };
 		6B71AAEB2AAA321300C06619 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B71AAEA2AAA321300C06619 /* UIViewController+Extension.swift */; };
@@ -132,6 +134,8 @@
 		6B6801232D1557A4002B5454 /* TrimmerSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TrimmerSectionVC.xib; sourceTree = "<group>"; };
 		6B6801262D17F31F002B5454 /* SpidAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidAsset.swift; sourceTree = "<group>"; };
 		6B68012A2D1FD9F0002B5454 /* EditViewController+EditSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditViewController+EditSections.swift"; sourceTree = "<group>"; };
+		6B6801302D2D6BE0002B5454 /* SpidPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidPlayerViewController.swift; sourceTree = "<group>"; };
+		6B6801312D2D6BE0002B5454 /* SpidPlayerViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SpidPlayerViewController.xib; sourceTree = "<group>"; };
 		6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSectionVC.swift; sourceTree = "<group>"; };
 		6B71AAC32A9098A000C06619 /* SoundSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SoundSectionVC.xib; sourceTree = "<group>"; };
 		6B71AAEA2AAA321300C06619 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
@@ -358,6 +362,8 @@
 				6BCEB6102BF0C5CB00010381 /* ActivityViewController.swift */,
 				6B04F5872CBBAAC2000C8C59 /* CropViewController.swift */,
 				6BA101472CFAEDAA001780BA /* LoadingMediaView.swift */,
+				6B6801302D2D6BE0002B5454 /* SpidPlayerViewController.swift */,
+				6B6801312D2D6BE0002B5454 /* SpidPlayerViewController.xib */,
 				6BE9A2F12A5FC80C00FF8CB0 /* Main.storyboard */,
 				6BE9A2F42A5FC80D00FF8CB0 /* Assets.xcassets */,
 				6BE9A2F62A5FC80D00FF8CB0 /* LaunchScreen.storyboard */,
@@ -439,6 +445,7 @@
 				6B92E3692A7E2F5E008CB22A /* PhotoLibraryUsageDisabledView.xib in Resources */,
 				6BE9A2F82A5FC80D00FF8CB0 /* LaunchScreen.storyboard in Resources */,
 				6BE9A3022A5FD5A000FF8CB0 /* climbing.mov in Resources */,
+				6B6801322D2D6BE0002B5454 /* SpidPlayerViewController.xib in Resources */,
 				6BCDCF4E2A67E5FA00D8B656 /* FPSSectionVC.xib in Resources */,
 				6BCAF7ED2A63C5100039BE15 /* SpeedSectionVC.xib in Resources */,
 				6BF019512B565CB800953AB6 /* SubscriptionOptionView.xib in Resources */,
@@ -578,6 +585,7 @@
 				6B68011C2D153D44002B5454 /* AssetSelectionViewController.swift in Sources */,
 				6B68011D2D153D44002B5454 /* AVAssetTimeSelector.swift in Sources */,
 				6BA101482CFAEDAA001780BA /* LoadingMediaView.swift in Sources */,
+				6B6801332D2D6BE0002B5454 /* SpidPlayerViewController.swift in Sources */,
 				6B92E35B2A77C72C008CB22A /* SceneDelegate.swift in Sources */,
 				6BF019532B57DB7400953AB6 /* AnalyticsManager.swift in Sources */,
 				6BCAF7EC2A63C5100039BE15 /* SpeedSectionVC.swift in Sources */,

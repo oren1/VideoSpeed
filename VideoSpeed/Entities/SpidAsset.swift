@@ -13,10 +13,13 @@ actor SpidAsset {
     private var rotatedAsset: AVAsset?
     private(set) var assetHasBeenRotated: Bool = false
     var timeRange: CMTimeRange
+    var videoSize: CGSize
+    var speed: Float = 1
     
-    init(asset: AVAsset, timeRange: CMTimeRange) {
+    init(asset: AVAsset, timeRange: CMTimeRange, videoSize: CGSize) {
         self.asset = asset
         self.timeRange = timeRange
+        self.videoSize = videoSize
     }
     
     func getOriginalAsset() -> AVAsset {
@@ -32,5 +35,13 @@ actor SpidAsset {
     
     func updateTimeRange(timeRange: CMTimeRange) {
         self.timeRange = timeRange
+    }
+    
+    func updateSpeed(speed: Float) {
+        self.speed = speed
+    }
+    
+    func videoDuration() -> Double {
+        self.timeRange.duration.seconds / Double(speed)
     }
 }
