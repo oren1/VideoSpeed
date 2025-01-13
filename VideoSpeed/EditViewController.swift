@@ -47,6 +47,7 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     var isUsingCropFeatureSubscriber: AnyCancellable?
     var isCropFeatureFree: Bool!
     var currentShownSection: SectionViewController!
+    var spidPlayerController: SpidPlayerViewController!
     
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     lazy var progressIndicatorView: ProgressIndicatorView = {
@@ -95,6 +96,7 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         segmentedControl.setTitle("SPEED", forSegmentAt: 0)
         segmentedControl.setTitle("TRIM", forSegmentAt: 1)
         segmentedControl.setTitle("CROP", forSegmentAt: 2)
@@ -140,9 +142,13 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
             
             let player = AVPlayer(playerItem: playerItem)
             
-            playerController = AVPlayerViewController()
-            playerController.player = player
-            addPlayerToTop()
+            // playerController = AVPlayerViewController()
+            // playerController.player = player
+            // addPlayerToTop()
+
+            spidPlayerController = SpidPlayerViewController()
+            spidPlayerController.player = player
+            addSpidPlayerTop()
             loopVideo()
             
             Task {
@@ -320,7 +326,7 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         let playerItem = AVPlayerItem(asset: compositionCopy)
         playerItem.audioTimePitchAlgorithm = .spectral
         playerItem.videoComposition = videoCompositionCopy
-        playerController.player?.replaceCurrentItem(with: playerItem)
+        spidPlayerController.player?.replaceCurrentItem(with: playerItem)
     }
     
     
@@ -513,6 +519,27 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         // tell the childviewcontroller it's contained in it's parent
         playerController.didMove(toParent: self)
         self.playerController.player?.play()
+    }
+    
+    func addSpidPlayerTop() {
+        //add as a childviewcontroller
+//        let spidPlayerViewController = SpidPlayerViewController()
+        addChild(spidPlayerController)
+        
+        // Add the child's View as a subview
+        self.view.addSubview(spidPlayerController.view)
+        
+        spidPlayerController.view.translatesAutoresizingMaskIntoConstraints = false
+        let constraints = [
+            spidPlayerController.view.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            spidPlayerController.view.leftAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leftAnchor),
+            spidPlayerController.view.rightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.rightAnchor),
+            spidPlayerController.view.bottomAnchor.constraint(equalTo: self.dashboardContainerView.topAnchor),
+        ]
+        NSLayoutConstraint.activate(constraints)
+        
+        // tell the childviewcontroller it's contained in it's parent
+        spidPlayerController.didMove(toParent: self)
     }
     
     @MainActor
@@ -839,8 +866,9 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     
     func loopVideo() {
         NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { [weak self] notification in
-            self?.playerController.player?.seek(to: .zero)
-            self?.playerController.player?.play()
+            
+            self?.spidPlayerController.player?.seek(to: .zero)
+            self?.spidPlayerController.player?.play()
         }
     }
     

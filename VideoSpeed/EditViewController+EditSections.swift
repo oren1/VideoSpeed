@@ -32,7 +32,9 @@ extension EditViewController {
             self?.speedLabel.text = "\(speed)x"
             
             Task {
+                await UserDataManager.main.currentSpidAsset.updateSpeed(speed: speed)
                 await self?.reloadComposition()
+                self?.spidPlayerController?.player.play()
             }
         }
         
@@ -143,7 +145,6 @@ extension EditViewController {
         trimmerSectionVC.timeRangeDidChange = { [weak self] timeRange in
             Task {
                 await UserDataManager.main.currentSpidAsset.updateTimeRange(timeRange: timeRange)
-//                print("using trim: ", await  UserDataManager.main.isUsingTrimFeature())
                 await self?.reloadComposition()
             }
         }

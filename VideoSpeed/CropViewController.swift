@@ -8,10 +8,12 @@
 import UIKit
 import CropPickerView
 
+let minVerticalMargin = 20.0
+let minHorizontalMargin = 20.0
+
 class CropViewController: UIViewController {
    
-    var minVerticalMargin = 20.0
-    var minHorizontalMargin = 20.0
+    
     var videoAspectRatio: CGFloat = 736 / 1407
     var templateImage: UIImage  = UIImage(named: "mountain-2")!
     var videoRect: CGRect!
