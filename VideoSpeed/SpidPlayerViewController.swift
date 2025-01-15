@@ -40,6 +40,10 @@ class SpidPlayerViewController: UIViewController {
         timeContainerView?.layer.cornerRadius = 4
         setTimeFormatter()
         
+        
+        slider.setThumbImage(UIImage(), for: .normal)
+               slider.setThumbImage(UIImage(), for: .highlighted)
+        
         cancellable = player?.publisher(for: \.timeControlStatus).sink(receiveValue: { timeControlStatus in
             switch timeControlStatus {
             case .paused:
@@ -82,8 +86,19 @@ class SpidPlayerViewController: UIViewController {
             player.play()
 
             startPlaybackTimeChecker()
+            
+            addLabels()
         }
     
+    }
+    
+    func addLabels() {
+        let testLabel = UILabel(frame: CGRect(origin: CGPointZero, size: CGSize(width: 100, height: 50)))
+        testLabel.backgroundColor = .darkGray
+        testLabel.textColor = .white
+        testLabel.text = "This is a test"
+        self.videoContainerView.addSubview(testLabel)
+        testLabel.center = CGPoint(x: self.videoContainerView.frame.width / 2, y: self.videoContainerView.frame.height / 2)
     }
     
     func videoContainerRect() -> CGRect{
@@ -129,8 +144,10 @@ class SpidPlayerViewController: UIViewController {
         Task {
             await updateTimeLabels()
             let currentTime = player.currentTime().seconds
+//            print("current time: \(currentTime)")
             let sliderValue = await getSliderValue(currentTime)
-            
+            print("sliderValue: \(sliderValue)")
+
             await MainActor.run {
                 slider.value = sliderValue
             }
@@ -150,9 +167,10 @@ class SpidPlayerViewController: UIViewController {
     
     func updateTimeLabels() async {
         let videoCurrentTime =  playerLayer.player!.currentTime().seconds
+        
         let videoDuration = await UserDataManager.main.currentSpidAsset.videoDuration()
 
-        let formattedVideoCurrentTimeString = timeFormatter.string(from: TimeInterval(videoCurrentTime))
+        let formattedVideoCurrentTimeString = timeFormatter.string(from: TimeInterval(ceill(videoCurrentTime)))
         let formattedVideoDurationString =  timeFormatter.string(from: TimeInterval(videoDuration))
         
         await MainActor.run {
@@ -164,8 +182,9 @@ class SpidPlayerViewController: UIViewController {
     
     func getTime(_ sliderValue: Float) async -> CMTime {
         let videoDuration = await UserDataManager.main.currentSpidAsset.videoDuration()
-        let seconds = videoDuration * Double(sliderValue)
-        return CMTime(value: CMTimeValue(seconds), timescale: 1)
+        let seconds = videoDuration * Double(sliderValue) * 600
+
+        return CMTime(value: CMTimeValue(seconds), timescale: 600)
     }
     
     func getSliderValue(_ currentTime: TimeInterval) async -> Float {
@@ -188,10 +207,12 @@ class SpidPlayerViewController: UIViewController {
     @IBAction func sliderValueChanged(_ slider: UISlider) {
         Task {
             let currentTime = await getTime(slider.value)
+            await MainActor.run(body: { [weak self] in self?.player.pause()})
             player.pause()
-            await player.seek(to: currentTime)
+            await player.seek(to: currentTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
             await updateTimeLabels()
         }
     }
+    
     
 }
