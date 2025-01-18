@@ -32,7 +32,9 @@ class SpidPlayerViewController: UIViewController {
     let timeFormatter = DateComponentsFormatter()
     var videoDuration = 0.0
     var cancellable: Cancellable?
-
+    var testLabel: UILabel!
+    var panGestureRecognizer: UIPanGestureRecognizer!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         videoContainerView = UIView(frame: CGRectZero)
@@ -81,6 +83,7 @@ class SpidPlayerViewController: UIViewController {
             videoContainerView.frame = videoContainerRect()
             videoContainerView.center = CGPointMake(mainContainer.frame.width / 2, mainContainer.frame.height / 2)
             videoContainerView.layer.addSublayer(playerLayer)
+            videoContainerView.clipsToBounds = true
             playerLayer.frame = videoContainerView.bounds
            
             player.play()
@@ -93,12 +96,40 @@ class SpidPlayerViewController: UIViewController {
     }
     
     func addLabels() {
-        let testLabel = UILabel(frame: CGRect(origin: CGPointZero, size: CGSize(width: 100, height: 50)))
+        testLabel = UILabel(frame: CGRect(origin: CGPointZero, size: CGSize(width: 100, height: 50)))
         testLabel.backgroundColor = .darkGray
         testLabel.textColor = .white
         testLabel.text = "This is a test"
         self.videoContainerView.addSubview(testLabel)
         testLabel.center = CGPoint(x: self.videoContainerView.frame.width / 2, y: self.videoContainerView.frame.height / 2)
+        testLabel.isUserInteractionEnabled = true
+
+        panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanLabel(_:)))
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapView(_:)))
+
+        testLabel.addGestureRecognizer(panGestureRecognizer)
+        testLabel.addGestureRecognizer(tapGestureRecognizer)
+    
+    }
+    
+    @objc func didTapView(_ sender: UITapGestureRecognizer) {
+        print("did tap view", sender)
+    }
+    
+    @objc func didPanLabel(_ gesture: UIPanGestureRecognizer) {
+         let translation = gesture.translation(in: self.videoContainerView)
+         
+          guard let gestureView = gesture.view else {
+            return
+          }
+
+          gestureView.center = CGPoint(
+            x: gestureView.center.x + translation.x,
+            y: gestureView.center.y + translation.y
+          )
+
+          // 3
+          gesture.setTranslation(.zero, in: view)
     }
     
     func videoContainerRect() -> CGRect{
@@ -146,7 +177,6 @@ class SpidPlayerViewController: UIViewController {
             let currentTime = player.currentTime().seconds
 //            print("current time: \(currentTime)")
             let sliderValue = await getSliderValue(currentTime)
-            print("sliderValue: \(sliderValue)")
 
             await MainActor.run {
                 slider.value = sliderValue
