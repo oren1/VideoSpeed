@@ -778,8 +778,18 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     // MARK: - Custom Logic
     func showPurchaseViewController() {
         
+        let productIdentifier: String
+        let pricingRaw = RemoteConfig.remoteConfig().configValue(forKey: "pricing").stringValue!
+        let pricing = Pricing(rawValue: pricingRaw)
+        switch pricing {
+        case .normal:
+            productIdentifier = SpidProducts.yearlySubscription
+        default:
+            productIdentifier = SpidProducts.yearlyFifteen
+        }
+        
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
-        purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+        purchaseViewController.productIdentifier = productIdentifier
         purchaseViewController.onDismiss = { [weak self] in
             if let _ = SpidProducts.store.userPurchasedProVersion() {
                 self?.hideProButton()

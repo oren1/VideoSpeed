@@ -13,6 +13,10 @@ import FirebaseRemoteConfig
 import SwiftUI
 import RevenueCat
 
+enum Pricing: String {
+    case normal = "normal"
+    case higher = "higher"
+}
 
 class MainViewController: UIViewController {
     
@@ -99,8 +103,18 @@ class MainViewController: UIViewController {
     
     @objc func showPurchaseViewController() {
        
+        let productIdentifier: String
+        let pricingRaw = RemoteConfig.remoteConfig().configValue(forKey: "pricing").stringValue!
+        let pricing = Pricing(rawValue: pricingRaw)
+        switch pricing {
+        case .normal:
+            productIdentifier = SpidProducts.yearlySubscription
+        default:
+            productIdentifier = SpidProducts.yearlyFifteen
+        }
+        
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
-        purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+        purchaseViewController.productIdentifier = productIdentifier
        
         if UIDevice.current.userInterfaceIdiom == .phone {
             purchaseViewController.modalPresentationStyle = .automatic
