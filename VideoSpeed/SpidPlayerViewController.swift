@@ -32,8 +32,15 @@ class SpidPlayerViewController: UIViewController {
     let timeFormatter = DateComponentsFormatter()
     var videoDuration = 0.0
     var cancellable: Cancellable?
-    var testLabel: UILabel!
+    
     var panGestureRecognizer: UIPanGestureRecognizer!
+    var tapGestureRecognizer: UITapGestureRecognizer!
+    var pinchGestureRecognizer: UIPinchGestureRecognizer!
+    var rotationGestureRecognizer: UIRotationGestureRecognizer!
+    var testLabel: UILabel!
+    var secondLabel: UILabel!
+    var selectedLabel: UILabel!
+    var labels: [UILabel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +48,8 @@ class SpidPlayerViewController: UIViewController {
         mainContainer.insertSubview(videoContainerView, belowSubview: timeContainerView)
         timeContainerView?.layer.cornerRadius = 4
         setTimeFormatter()
-        
+        setGestureRecognizers()
+        addLabels()
         
         slider.setThumbImage(UIImage(), for: .normal)
                slider.setThumbImage(UIImage(), for: .highlighted)
@@ -92,28 +100,84 @@ class SpidPlayerViewController: UIViewController {
             
             addLabels()
         }
-    
+        
     }
     
     func addLabels() {
         testLabel = UILabel(frame: CGRect(origin: CGPointZero, size: CGSize(width: 100, height: 50)))
-        testLabel.backgroundColor = .darkGray
+//        testLabel.backgroundColor = .darkGray
         testLabel.textColor = .white
         testLabel.text = "This is a test"
         self.videoContainerView.addSubview(testLabel)
         testLabel.center = CGPoint(x: self.videoContainerView.frame.width / 2, y: self.videoContainerView.frame.height / 2)
         testLabel.isUserInteractionEnabled = true
 
-        panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanLabel(_:)))
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapView(_:)))
-
-        testLabel.addGestureRecognizer(panGestureRecognizer)
+        secondLabel = UILabel(frame: CGRect(origin: CGPointZero, size: CGSize(width: 100, height: 50)))
+//        secondLabel.backgroundColor = .black
+        secondLabel.textColor = .white
+        secondLabel.text = "This is a test"
+        self.videoContainerView.addSubview(secondLabel)
+//        secondLabel.center = CGPoint(x: self.videoContainerView.frame.width / 2, y: self.videoContainerView.frame.height / 2)
+        secondLabel.isUserInteractionEnabled = true
+       
+        let secondTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapView(_:)))
+        
         testLabel.addGestureRecognizer(tapGestureRecognizer)
-    
+        secondLabel.addGestureRecognizer(secondTapGestureRecognizer)
+        labels.append(contentsOf: [testLabel, secondLabel])
+        
     }
     
-    @objc func didTapView(_ sender: UITapGestureRecognizer) {
-        print("did tap view", sender)
+    func addGestureRecognizersFor(label: UILabel) {
+        label.layer.borderColor = UIColor.orange.cgColor
+        label.layer.borderWidth = 0.5
+        label.addGestureRecognizer(panGestureRecognizer)
+        label.addGestureRecognizer(pinchGestureRecognizer)
+        label.addGestureRecognizer(rotationGestureRecognizer)
+    }
+    
+    func removeGestureRecognizersFrom(label: UILabel) {
+        label.layer.borderWidth = 0
+        label.removeGestureRecognizer(panGestureRecognizer)
+        label.removeGestureRecognizer(pinchGestureRecognizer)
+        label.removeGestureRecognizer(rotationGestureRecognizer)
+    }
+    
+    @objc func didRotate(_ gesture: UIRotationGestureRecognizer) {
+        guard let gestureView = gesture.view else {
+          return
+        }
+
+        gestureView.transform = gestureView.transform.rotated(
+          by: gesture.rotation
+        )
+        gesture.rotation = 0
+    }
+    
+    @objc func didPinch(_ gesture: UIPinchGestureRecognizer) {
+        guard let gestureView = gesture.view else {
+          return
+        }
+
+        gestureView.transform = gestureView.transform.scaledBy(
+          x: gesture.scale,
+          y: gesture.scale
+        )
+        gesture.scale = 1
+    }
+    
+    @objc func didTapView(_ gesture: UITapGestureRecognizer) {
+        guard let tappedLabel = gesture.view as? UILabel else {
+          return
+        }
+        
+        selectedLabel = tappedLabel
+//        for label in labels {
+//            removeGestureRecognizersFrom(label: label)
+//        }
+//        
+//        
+//        addGestureRecognizersFor(label: tappedLabel)
     }
     
     @objc func didPanLabel(_ gesture: UIPanGestureRecognizer) {
@@ -123,9 +187,9 @@ class SpidPlayerViewController: UIViewController {
             return
           }
 
-          gestureView.center = CGPoint(
-            x: gestureView.center.x + translation.x,
-            y: gestureView.center.y + translation.y
+        selectedLabel.center = CGPoint(
+            x: selectedLabel.center.x + translation.x,
+            y: selectedLabel.center.y + translation.y
           )
 
           // 3
@@ -153,6 +217,17 @@ class SpidPlayerViewController: UIViewController {
     }
     
     
+    // MARK: Custom Logic
+    func setGestureRecognizers() {
+        panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanLabel(_:)))
+        tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapView(_:)))
+        pinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(didPinch(_:)))
+        rotationGestureRecognizer = UIRotationGestureRecognizer(target: self, action: #selector(didRotate(_:)))
+        
+        view.addGestureRecognizer(panGestureRecognizer)
+        view.addGestureRecognizer(pinchGestureRecognizer)
+        view.addGestureRecognizer(rotationGestureRecognizer)
+    }
     
     
     // MARK: Playback Cheker
