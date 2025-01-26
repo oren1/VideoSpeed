@@ -37,10 +37,10 @@ class SpidPlayerViewController: UIViewController {
     var tapGestureRecognizer: UITapGestureRecognizer!
     var pinchGestureRecognizer: UIPinchGestureRecognizer!
     var rotationGestureRecognizer: UIRotationGestureRecognizer!
-    var testLabel: UILabel!
-    var secondLabel: UILabel!
-    var selectedLabel: UILabel!
-    var labels: [UILabel] = []
+    var testLabel: SpidLabel!
+    var secondLabel: SpidLabel!
+    var selectedLabel: SpidLabel!
+    var labels: [SpidLabel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,6 +68,7 @@ class SpidPlayerViewController: UIViewController {
                 return
             }
         })
+        
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -104,15 +105,22 @@ class SpidPlayerViewController: UIViewController {
     }
     
     func addLabels() {
-        testLabel = UILabel(frame: CGRect(origin: CGPointZero, size: CGSize(width: 100, height: 50)))
+        let testString = "This is a test label string"
+
+        let testLabelFrame = testString.textSize(withConstrainedWidth: videoContainerView.frame.size.width, font: .boldSystemFont(ofSize: 17))
+        testLabel = SpidLabel(frame: testLabelFrame)
 //        testLabel.backgroundColor = .darkGray
         testLabel.textColor = .white
-        testLabel.text = "This is a test"
+//        testLabel.attributedText = attributedQuote
+        testLabel.numberOfLines = 0
+        testLabel.font = UIFont.boldSystemFont(ofSize: 17)
+        testLabel.text = testString
+        testLabel.backgroundColor = .black
         self.videoContainerView.addSubview(testLabel)
         testLabel.center = CGPoint(x: self.videoContainerView.frame.width / 2, y: self.videoContainerView.frame.height / 2)
         testLabel.isUserInteractionEnabled = true
 
-        secondLabel = UILabel(frame: CGRect(origin: CGPointZero, size: CGSize(width: 100, height: 50)))
+        secondLabel = SpidLabel(frame: CGRect(origin: CGPointZero, size: CGSize(width: 100, height: 21)))
 //        secondLabel.backgroundColor = .black
         secondLabel.textColor = .white
         secondLabel.text = "This is a test"
@@ -128,71 +136,59 @@ class SpidPlayerViewController: UIViewController {
         
     }
     
-    func addGestureRecognizersFor(label: UILabel) {
-        label.layer.borderColor = UIColor.orange.cgColor
-        label.layer.borderWidth = 0.5
-        label.addGestureRecognizer(panGestureRecognizer)
-        label.addGestureRecognizer(pinchGestureRecognizer)
-        label.addGestureRecognizer(rotationGestureRecognizer)
-    }
-    
-    func removeGestureRecognizersFrom(label: UILabel) {
-        label.layer.borderWidth = 0
-        label.removeGestureRecognizer(panGestureRecognizer)
-        label.removeGestureRecognizer(pinchGestureRecognizer)
-        label.removeGestureRecognizer(rotationGestureRecognizer)
+    @objc func didTapView(_ gesture: UITapGestureRecognizer) {
+        guard let tappedLabel = gesture.view as? SpidLabel else {
+          return
+        }
+        
+        selectedLabel?.layer.borderWidth = 0
+        
+        tappedLabel.layer.borderColor = UIColor.orange.cgColor
+        tappedLabel.layer.borderWidth = 1
+        
+        selectedLabel = tappedLabel
     }
     
     @objc func didRotate(_ gesture: UIRotationGestureRecognizer) {
-        guard let gestureView = gesture.view else {
-          return
-        }
+//        guard let gestureView = gesture.view else {
+//          return
+//        }
 
-        gestureView.transform = gestureView.transform.rotated(
+        selectedLabel?.transform = selectedLabel.transform.rotated(
           by: gesture.rotation
         )
+        selectedLabel.rotation += gesture.rotation
+        print("rotation \(selectedLabel.rotation)")
+        
         gesture.rotation = 0
     }
     
     @objc func didPinch(_ gesture: UIPinchGestureRecognizer) {
-        guard let gestureView = gesture.view else {
-          return
-        }
+//        guard let gestureView = gesture.view else {
+//          return
+//        }
 
-        gestureView.transform = gestureView.transform.scaledBy(
+        selectedLabel?.transform = selectedLabel.transform.scaledBy(
           x: gesture.scale,
           y: gesture.scale
         )
         gesture.scale = 1
     }
     
-    @objc func didTapView(_ gesture: UITapGestureRecognizer) {
-        guard let tappedLabel = gesture.view as? UILabel else {
-          return
-        }
-        
-        selectedLabel = tappedLabel
-//        for label in labels {
-//            removeGestureRecognizersFrom(label: label)
-//        }
-//        
-//        
-//        addGestureRecognizersFor(label: tappedLabel)
-    }
+    
     
     @objc func didPanLabel(_ gesture: UIPanGestureRecognizer) {
          let translation = gesture.translation(in: self.videoContainerView)
          
-          guard let gestureView = gesture.view else {
-            return
-          }
+//          guard let gestureView = gesture.view else {
+//            return
+//          }
 
-        selectedLabel.center = CGPoint(
+        selectedLabel?.center = CGPoint(
             x: selectedLabel.center.x + translation.x,
             y: selectedLabel.center.y + translation.y
           )
 
-          // 3
           gesture.setTranslation(.zero, in: view)
     }
     
@@ -218,6 +214,19 @@ class SpidPlayerViewController: UIViewController {
     
     
     // MARK: Custom Logic
+    func getCATextLayers() -> [CATextLayer] {
+        let textLayers =  labels.map { label in
+            let textLayer = CATextLayer()
+            textLayer.string = label.text
+            textLayer.shouldRasterize = true
+            textLayer.rasterizationScale = 2
+            textLayer.backgroundColor = UIColor.green.cgColor
+            textLayer.alignmentMode = .center
+            return textLayer
+        }
+        return textLayers
+    }
+    
     func setGestureRecognizers() {
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanLabel(_:)))
         tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapView(_:)))
@@ -226,7 +235,7 @@ class SpidPlayerViewController: UIViewController {
         
         view.addGestureRecognizer(panGestureRecognizer)
         view.addGestureRecognizer(pinchGestureRecognizer)
-        view.addGestureRecognizer(rotationGestureRecognizer)
+//        view.addGestureRecognizer(rotationGestureRecognizer)
     }
     
     

@@ -192,46 +192,67 @@
                                     <constraint firstAttribute="height" constant="200" id="Cck-Pu-VSS"/>
                                 </constraints>
                             </view>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Jtw-yn-DVK">
-                                <rect key="frame" x="0.0" y="613" width="375" height="55"/>
-                                <color key="backgroundColor" red="0.022874161037037041" green="0.023331644257777784" blue="0.023331644257777784" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Fno-f5-RKp">
+                                <rect key="frame" x="0.0" y="613" width="375" height="54"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="54" id="g9e-Nm-ZrM"/>
+                                    <constraint firstAttribute="height" constant="54" id="UVk-Vu-nq5"/>
                                 </constraints>
-                                <segments>
-                                    <segment title="SPEED"/>
-                                    <segment title="FPS"/>
-                                    <segment title="SOUND"/>
-                                    <segment title="MORE"/>
-                                    <segment title="CROP"/>
-                                </segments>
-                                <color key="selectedSegmentTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <connections>
-                                    <action selector="segmentedValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="yw5-uY-u7y"/>
-                                </connections>
-                            </segmentedControl>
+                                <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="9sR-ZW-M5R">
+                                    <size key="itemSize" width="128" height="54"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MenuItem" id="Ip6-QQ-yNH" customClass="MenuItemCell" customModule="VideoSpeed" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="128" height="54"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Gro-87-Sga">
+                                            <rect key="frame" x="0.0" y="0.0" width="128" height="54"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SPEED" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G1v-SI-JUJ">
+                                                    <rect key="frame" x="42" y="18.5" width="44" height="17"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="G1v-SI-JUJ" firstAttribute="centerX" secondItem="Gro-87-Sga" secondAttribute="centerX" id="QyT-OS-1XU"/>
+                                                <constraint firstItem="G1v-SI-JUJ" firstAttribute="centerY" secondItem="Gro-87-Sga" secondAttribute="centerY" id="pjX-1C-who"/>
+                                            </constraints>
+                                        </collectionViewCellContentView>
+                                        <size key="customSize" width="128" height="54"/>
+                                        <connections>
+                                            <outlet property="titleLabel" destination="G1v-SI-JUJ" id="Sv8-PH-Nzc"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Jtw-yn-DVK" secondAttribute="bottom" id="Hue-kl-D1X"/>
+                            <constraint firstItem="Fno-f5-RKp" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="AUT-D3-zel"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Fno-f5-RKp" secondAttribute="trailing" id="MZF-1F-cMG"/>
                             <constraint firstItem="vbx-Bd-bL2" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Qam-3V-IsN"/>
-                            <constraint firstItem="Jtw-yn-DVK" firstAttribute="top" secondItem="vbx-Bd-bL2" secondAttribute="bottom" id="Rga-Rp-j40"/>
-                            <constraint firstItem="Jtw-yn-DVK" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="TKF-S9-M6c"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Jtw-yn-DVK" secondAttribute="trailing" id="dx7-FU-WSO"/>
+                            <constraint firstItem="Fno-f5-RKp" firstAttribute="top" secondItem="vbx-Bd-bL2" secondAttribute="bottom" id="eCh-0o-dBO"/>
                             <constraint firstItem="vbx-Bd-bL2" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="mca-1D-Ubj"/>
+                            <constraint firstItem="Fno-f5-RKp" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="oO4-pT-dm6"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="ikv-X5-wBp"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
+                        <outlet property="bottomMenuCollectionView" destination="Fno-f5-RKp" id="GkF-De-YYg"/>
                         <outlet property="dashboardContainerView" destination="vbx-Bd-bL2" id="A1m-Ij-OKL"/>
-                        <outlet property="segmentedControl" destination="Jtw-yn-DVK" id="ogc-x5-GbQ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="743" y="3"/>
+            <point key="canvasLocation" x="741.60000000000002" y="2.2488755622188905"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="1gb-Rc-Mwk">

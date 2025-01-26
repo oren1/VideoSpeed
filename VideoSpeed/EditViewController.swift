@@ -33,6 +33,7 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     var fileType: AVFileType = .mov
     var soundOn: Bool! = true
     var assetUrl: URL!
+    var videoSize: CGSize!
     var compositionOriginalDuration: CMTime!
     var compositionVideoTrack: AVMutableCompositionTrack!
     var exportSession: AVAssetExportSession?
@@ -49,7 +50,13 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     var currentShownSection: SectionViewController!
     var spidPlayerController: SpidPlayerViewController!
     
+    
     @IBOutlet weak var segmentedControl: UISegmentedControl!
+    private(set) var sectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
+    @IBOutlet weak var bottomMenuCollectionView: UICollectionView!
+    let menuItemReuseIdentifier = "MenuItem"
+    let menuItems: [MenuItem] = [MenuItem(id: .speed , title: "SPEED"), MenuItem(id: .trim , title: "TRIM"), MenuItem(id: .crop , title: "CROP"), MenuItem(id: .fps , title: "FPS"), MenuItem(id: .sound , title: "SOUND"), MenuItem(id: .more , title: "MORE")]
+    
     lazy var progressIndicatorView: ProgressIndicatorView = {
         progressIndicatorView = ProgressIndicatorView()
         return progressIndicatorView
@@ -97,17 +104,20 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        segmentedControl.setTitle("SPEED", forSegmentAt: 0)
-        segmentedControl.setTitle("TRIM", forSegmentAt: 1)
-        segmentedControl.setTitle("CROP", forSegmentAt: 2)
-        segmentedControl.setTitle("FPS", forSegmentAt: 3)
-        segmentedControl.setTitle("SOUND", forSegmentAt: 4)
-        segmentedControl.insertSegment(withTitle: "MORE", at: 5, animated: false)
+//        segmentedControl.setTitle("SPEED", forSegmentAt: 0)
+//        segmentedControl.setTitle("TRIM", forSegmentAt: 1)
+//        segmentedControl.setTitle("CROP", forSegmentAt: 2)
+//        segmentedControl.setTitle("FPS", forSegmentAt: 3)
+//        segmentedControl.setTitle("SOUND", forSegmentAt: 4)
+//        segmentedControl.insertSegment(withTitle: "MORE", at: 5, animated: false)
+//        
+//        
+//        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 14)], for: .selected)
+//        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
+//                                                 .font: UIFont.boldSystemFont(ofSize: 14)], for: .normal)
         
-        
-        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 14)], for: .selected)
-        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
-                                                 .font: UIFont.boldSystemFont(ofSize: 14)], for: .normal)
+        bottomMenuCollectionView.delegate = self
+        bottomMenuCollectionView.dataSource = self
         
         setNavigationItems()
         proButton = createProButton()
@@ -278,12 +288,15 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         
         instruction.layerInstructions = [layerInstruction]
         
+       
         
         let videoComposition = AVMutableVideoComposition()
         videoComposition.instructions = [instruction]
         videoComposition.frameDuration = CMTimeMake(value: 1, timescale: fps)
         videoComposition.renderSize = croppedVideoRect.size
-        
+//        videoComposition.animationTool = AVVideoCompositionCoreAnimationTool(
+//          postProcessingAsVideoLayer: videoLayer,
+//          in: outputLayer)
         //                videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
         //                videoComposition.renderSize = CGSize(width: naturalSize.width, height: naturalSize.height)
         //        videoComposition.customVideoCompositorClass = CustomVideoCompositor.self
@@ -292,6 +305,30 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         
     }
     
+    private func add(label: SpidLabel, to layer: CALayer, videoSize: CGSize) {
+        
+        let scaleX = videoSize.width / spidPlayerController.videoContainerView.frame.width
+        let scaleY = videoSize.height / spidPlayerController.videoContainerView.frame.height
+
+
+        let testString = "This is a test label string"
+       
+//        let someLabel = UILabel(frame: CGRect(x: label.frame.origin.x * scaleX, y: label.frame.origin.y * scaleY, width: label.frame.size.width * scaleX, height: label.frame.size.height * scaleY))
+//        
+//        someLabel.text = "sefgasrgadrgadrh dsrg"
+////        someLabel.attributedText = NSAttributedString("wefrefr")
+//        someLabel.backgroundColor = .black
+//        someLabel.layer.borderColor = UIColor.green.cgColor
+//        someLabel.layer.borderWidth = 1
+//        someLabel.textColor = .white
+//        someLabel.numberOfLines = 0
+//        someLabel.font = UIFont.boldSystemFont(ofSize: 34)
+//        someLabel.layer.displayIfNeeded()
+        let scaledLabel = label.scaledBy(scaleX)
+        scaledLabel.layer.displayIfNeeded()
+        layer.addSublayer(scaledLabel.layer)
+
+    }
     
     func aspectRatioCroppedVideoRect(_ videoSize: CGSize) -> CGRect {
         guard let videoRect = cropViewController.videoRect else
@@ -409,7 +446,10 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
                 UserDataManager.main.userBenefitStatus == .entitled else {
             
             if !usingProFeatures() {
-                return self.exportVideo()
+                Task {
+                    await self.exportVideo()
+                }
+                return
             }
             else {
                 // show alert for purchase
@@ -418,12 +458,35 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
             }
         }
         
-        exportVideo()
+        Task {
+           await exportVideo()
+
+        }
     }
     
-    @objc func exportVideo() {
+    @objc func exportVideo() async {
         let theComposition = composition.copy() as! AVComposition
-        let videoComposition = videoComposition.copy() as! AVVideoComposition
+//        let videoComposition = videoComposition.copy() as! AVVideoComposition
+        
+        let videoSize = await UserDataManager.main.currentSpidAsset.videoSize
+        let videoLayer = CALayer()
+        videoLayer.frame = CGRect(origin: .zero, size: videoSize)
+        videoLayer.isGeometryFlipped = true
+        let overlayLayer = CALayer()
+        overlayLayer.frame = CGRect(origin: .zero, size: videoSize)
+        overlayLayer.isGeometryFlipped = true
+        let outputLayer = CALayer()
+        outputLayer.frame = CGRect(origin: .zero, size: videoSize)
+        outputLayer.addSublayer(videoLayer)
+        outputLayer.addSublayer(overlayLayer)
+        
+        for label in spidPlayerController.labels {
+            add(label: label, to: overlayLayer, videoSize: videoSize)
+        }
+        
+        videoComposition.animationTool = AVVideoCompositionCoreAnimationTool(
+          postProcessingAsVideoLayer: videoLayer,
+          in: outputLayer)
         
         guard let exportSession = AVAssetExportSession(
             asset: theComposition,
