@@ -8,6 +8,8 @@
 import Foundation
 import UIKit
 
+let minimumItemWidth = 64.0
+
 extension EditViewController: UICollectionViewDataSource {
      func numberOfSections(in collectionView: UICollectionView) -> Int {
       return 1
@@ -29,8 +31,22 @@ extension EditViewController: UICollectionViewDataSource {
 
       
       let item = menuItems[indexPath.row]
-      cell.titleLabel.text = item.title
+      if item == selectedMenuItem {
+          cell.backgroundColor = .white
+          cell.imageView.tintColor = .black
+          cell.titleLabel.textColor = .black
+      }
+      else {
+          cell.backgroundColor = UIColor(red: 0.093, green: 0.093, blue: 0.093, alpha: 1)
+          cell.titleLabel.textColor = .white
+          cell.imageView.tintColor = .white
+      }
+      
       cell.layer.cornerRadius = 8
+
+         
+      cell.titleLabel.text = item.title
+      cell.imageView.image = UIImage(systemName: item.imageName)
 
       return cell
     }
@@ -39,7 +55,7 @@ extension EditViewController: UICollectionViewDataSource {
 extension EditViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let menuItem = menuItems[indexPath.row]
-        
+        selectedMenuItem = menuItem
         if menuItem.id != .crop {
             removeCropVCFromTop()
         }
@@ -58,10 +74,14 @@ extension EditViewController: UICollectionViewDelegate {
             addFPSSection()
         case .sound:
             addSoundSection()
+        case .text:
+            print("text")
         case .more:
             addFiletypeSection()
             
         }
+        
+        collectionView.reloadData()
     }
 }
 
@@ -73,10 +93,13 @@ extension EditViewController: UICollectionViewDelegateFlowLayout {
       sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
       // 2
-//      let paddingSpace = sectionInsets.left * (itemsPerRow + 1)
-//      let availableWidth = view.frame.width - paddingSpace
-//      let widthPerItem = floor(availableWidth / itemsPerRow)
-      return CGSize(width: 60, height: 54)
+        let paddingSpace = sectionInsets.top * 2
+        let availableHeight = collectionView.frame.height - paddingSpace
+        let availabelWidth = collectionView.frame.width - (sectionInsets.left * CGFloat(menuItems.count + 1))
+        let itemWidth = floor(availabelWidth / CGFloat(menuItems.count))
+        
+        return CGSize(width: max(minimumItemWidth, itemWidth), height: availableHeight)
+    
     }
 
     // 3

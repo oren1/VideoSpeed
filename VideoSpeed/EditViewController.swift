@@ -49,13 +49,20 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     var isCropFeatureFree: Bool!
     var currentShownSection: SectionViewController!
     var spidPlayerController: SpidPlayerViewController!
-    
+    var selectedMenuItem: MenuItem!
     
     @IBOutlet weak var segmentedControl: UISegmentedControl!
-    private(set) var sectionInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
+    private(set) var sectionInsets = UIEdgeInsets(top: 2, left: 4, bottom: 2, right: 4)
     @IBOutlet weak var bottomMenuCollectionView: UICollectionView!
     let menuItemReuseIdentifier = "MenuItem"
-    let menuItems: [MenuItem] = [MenuItem(id: .speed , title: "SPEED"), MenuItem(id: .trim , title: "TRIM"), MenuItem(id: .crop , title: "CROP"), MenuItem(id: .fps , title: "FPS"), MenuItem(id: .sound , title: "SOUND"), MenuItem(id: .more , title: "MORE")]
+    let menuItems: [MenuItem] = [MenuItem(id: .speed , title: "SPEED", imageName: "timer"),
+                                 MenuItem(id: .trim , title: "TRIM", imageName: "timeline.selection"),
+                                 MenuItem(id: .crop , title: "CROP", imageName: "crop"),
+                                 MenuItem(id: .fps , title: "FPS", imageName: "square.stack.3d.down.right.fill"),
+                                 MenuItem(id: .sound , title: "SOUND", imageName: "speaker.wave.2"),
+                                 MenuItem(id: .text , title: "TEXT", imageName: "textformat.alt"),
+                                 MenuItem(id: .more , title: "MORE", imageName: "ellipsis")
+    ]
     
     lazy var progressIndicatorView: ProgressIndicatorView = {
         progressIndicatorView = ProgressIndicatorView()
@@ -115,6 +122,7 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
 //        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 14)], for: .selected)
 //        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
 //                                                 .font: UIFont.boldSystemFont(ofSize: 14)], for: .normal)
+        selectedMenuItem = menuItems.first
         
         bottomMenuCollectionView.delegate = self
         bottomMenuCollectionView.dataSource = self
