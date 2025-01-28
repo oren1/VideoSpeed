@@ -8,10 +8,15 @@
 
 
 enum ItemId {
-    case speed, trim, crop, fps, sound, more
+    case speed, trim, crop, fps, sound, text, more
 }
 
-struct MenuItem {
+struct MenuItem: Equatable {
     let id: ItemId
     let title: String
+    let imageName: String
+    
+    static func ==(lhs: MenuItem, rhs: MenuItem) -> Bool {
+        return lhs.id == rhs.id
+    }
 }

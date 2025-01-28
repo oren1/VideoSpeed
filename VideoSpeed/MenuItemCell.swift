@@ -10,4 +10,5 @@ import UIKit
 class MenuItemCell: UICollectionViewCell {
     
     @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var imageView: UIImageView!
 }
