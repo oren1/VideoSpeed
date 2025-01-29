@@ -17,6 +17,7 @@ extension EditViewController {
         createSoundSection()
         createFiletypeSection()
         createTrimmerSection()
+        createTextSection()
     }
     
     // MARK: Creating Sections
@@ -151,6 +152,9 @@ extension EditViewController {
         let _ = trimmerSectionVC.view
     }
     
+    func createTextSection() {
+        textSectionVC = TextSectionVC()
+    }
     
     // MARK: Adding Sections
     func addSpeedSection() {
@@ -183,5 +187,8 @@ extension EditViewController {
         addSection(sectionVC: trimmerSectionVC)
         currentShownSection = trimmerSectionVC
     }
-    
+    func addTextSection() {
+        addSection(sectionVC: textSectionVC)
+        currentShownSection = textSectionVC
+    }
 }

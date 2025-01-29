@@ -65,6 +65,12 @@
 		6B96101A2D46050500DEE296 /* EditViewController+BottomMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9610192D46050500DEE296 /* EditViewController+BottomMenu.swift */; };
 		6B96101C2D46091400DEE296 /* MenuItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B96101B2D46091400DEE296 /* MenuItemCell.swift */; };
 		6B96101E2D460B7100DEE296 /* MenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B96101D2D460B6C00DEE296 /* MenuItem.swift */; };
+		6B9610212D49ECA200DEE296 /* TextSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B96101F2D49ECA200DEE296 /* TextSectionVC.swift */; };
+		6B9610222D49ECA200DEE296 /* TextSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B9610202D49ECA200DEE296 /* TextSectionVC.xib */; };
+		6B9610252D49F1C000DEE296 /* TextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9610232D49F1C000DEE296 /* TextCell.swift */; };
+		6B9610262D49F1C000DEE296 /* TextCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B9610242D49F1C000DEE296 /* TextCell.xib */; };
+		6B96102A2D4A23F900DEE296 /* PlusFooterReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B9610292D4A23F900DEE296 /* PlusFooterReusableView.xib */; };
+		6B96102B2D4A23F900DEE296 /* PlusFooterReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9610282D4A23F900DEE296 /* PlusFooterReusableView.swift */; };
 		6BA101362CE0A091001780BA /* AVAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA101352CE0A084001780BA /* AVAsset+Extension.swift */; };
 		6BA101482CFAEDAA001780BA /* LoadingMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA101472CFAEDAA001780BA /* LoadingMediaView.swift */; };
 		6BAC9BBF2A666EBE0071A41B /* TopIndicatorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */; };
@@ -160,6 +166,12 @@
 		6B9610192D46050500DEE296 /* EditViewController+BottomMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditViewController+BottomMenu.swift"; sourceTree = "<group>"; };
 		6B96101B2D46091400DEE296 /* MenuItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemCell.swift; sourceTree = "<group>"; };
 		6B96101D2D460B6C00DEE296 /* MenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItem.swift; sourceTree = "<group>"; };
+		6B96101F2D49ECA200DEE296 /* TextSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextSectionVC.swift; sourceTree = "<group>"; };
+		6B9610202D49ECA200DEE296 /* TextSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TextSectionVC.xib; sourceTree = "<group>"; };
+		6B9610232D49F1C000DEE296 /* TextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCell.swift; sourceTree = "<group>"; };
+		6B9610242D49F1C000DEE296 /* TextCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TextCell.xib; sourceTree = "<group>"; };
+		6B9610282D4A23F900DEE296 /* PlusFooterReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusFooterReusableView.swift; sourceTree = "<group>"; };
+		6B9610292D4A23F900DEE296 /* PlusFooterReusableView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PlusFooterReusableView.xib; sourceTree = "<group>"; };
 		6BA101352CE0A084001780BA /* AVAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAsset+Extension.swift"; sourceTree = "<group>"; };
 		6BA101472CFAEDAA001780BA /* LoadingMediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingMediaView.swift; sourceTree = "<group>"; };
 		6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TopIndicatorView.xib; sourceTree = "<group>"; };
@@ -275,6 +287,19 @@
 			path = Trimmer;
 			sourceTree = "<group>";
 		};
+		6B9610272D4A234D00DEE296 /* Edit Section */ = {
+			isa = PBXGroup;
+			children = (
+				6B96101F2D49ECA200DEE296 /* TextSectionVC.swift */,
+				6B9610202D49ECA200DEE296 /* TextSectionVC.xib */,
+				6B9610232D49F1C000DEE296 /* TextCell.swift */,
+				6B9610242D49F1C000DEE296 /* TextCell.xib */,
+				6B9610282D4A23F900DEE296 /* PlusFooterReusableView.swift */,
+				6B9610292D4A23F900DEE296 /* PlusFooterReusableView.xib */,
+			);
+			path = "Edit Section";
+			sourceTree = "<group>";
+		};
 		6BAC9BBD2A666E500071A41B /* CustomViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -315,6 +340,7 @@
 				6B04F5842CB916FA000C8C59 /* CropSectioVC.xib */,
 				6B6801222D1557A4002B5454 /* TrimmerSectionVC.swift */,
 				6B6801232D1557A4002B5454 /* TrimmerSectionVC.xib */,
+				6B9610272D4A234D00DEE296 /* Edit Section */,
 			);
 			path = "Edit Sections";
 			sourceTree = "<group>";
@@ -470,7 +496,10 @@
 				6B67009D2A6BCAD2006F2980 /* ProgressIndicatorView.xib in Resources */,
 				6B04F5862CB916FA000C8C59 /* CropSectioVC.xib in Resources */,
 				6BB4EE882A8F48D1006CF87C /* UsingProFeaturesAlertView.xib in Resources */,
+				6B9610222D49ECA200DEE296 /* TextSectionVC.xib in Resources */,
 				6BB4EE842A8F3881006CF87C /* BlackTransparentOverlay.xib in Resources */,
+				6B96102A2D4A23F900DEE296 /* PlusFooterReusableView.xib in Resources */,
+				6B9610262D49F1C000DEE296 /* TextCell.xib in Resources */,
 				6B7D10852BA70AE4002DD73F /* remote_config_defaults.plist in Resources */,
 				6BE9A2F52A5FC80D00FF8CB0 /* Assets.xcassets in Resources */,
 				6BAC9BBF2A666EBE0071A41B /* TopIndicatorView.xib in Resources */,
@@ -572,6 +601,7 @@
 				6B6700992A6BAE36006F2980 /* VideoHelper.swift in Sources */,
 				6B6700A82A6CFBF8006F2980 /* SKProduct+Utils.swift in Sources */,
 				6BE9A3062A61811400FF8CB0 /* PhotoCell.swift in Sources */,
+				6B9610252D49F1C000DEE296 /* TextCell.swift in Sources */,
 				6B0C7D792C88894C00063CBE /* PublishersManager.swift in Sources */,
 				6B92E3592A77A192008CB22A /* AppOpenAd.swift in Sources */,
 				6B96101A2D46050500DEE296 /* EditViewController+BottomMenu.swift in Sources */,
@@ -579,6 +609,7 @@
 				6BE9A30C2A62809D00FF8CB0 /* PHAsset+Extension.swift in Sources */,
 				6BA101362CE0A091001780BA /* AVAsset+Extension.swift in Sources */,
 				6BB4FAD92AEE416D00D00E2D /* InterstitialAd.swift in Sources */,
+				6B9610212D49ECA200DEE296 /* TextSectionVC.swift in Sources */,
 				6BB4EE862A8F38B4006CF87C /* BlackTransparentOverlay.swift in Sources */,
 				6B0C7D7B2C89E4A700063CBE /* NotificationsManager.swift in Sources */,
 				6B9610162D43C8C700DEE296 /* UILabel+Extension.swift in Sources */,
@@ -606,6 +637,7 @@
 				6B68011C2D153D44002B5454 /* AssetSelectionViewController.swift in Sources */,
 				6B68011D2D153D44002B5454 /* AVAssetTimeSelector.swift in Sources */,
 				6BA101482CFAEDAA001780BA /* LoadingMediaView.swift in Sources */,
+				6B96102B2D4A23F900DEE296 /* PlusFooterReusableView.swift in Sources */,
 				6B6801332D2D6BE0002B5454 /* SpidPlayerViewController.swift in Sources */,
 				6B92E35B2A77C72C008CB22A /* SceneDelegate.swift in Sources */,
 				6BF019532B57DB7400953AB6 /* AnalyticsManager.swift in Sources */,

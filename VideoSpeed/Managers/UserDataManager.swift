@@ -25,6 +25,8 @@ class UserDataManager: ObservableObject {
         }
     }
 
+    var textOverlayLabels: [SpidLabel] = []
+    
     @Published
     var isUsingCropFeature: Bool = false
     

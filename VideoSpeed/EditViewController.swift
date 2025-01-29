@@ -101,6 +101,7 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     var moreSectionVC: MoreSectionVC!
     var cropSectionVC: CropSectioVC!
     var trimmerSectionVC: TrimmerSectionVC!
+    var textSectionVC: TextSectionVC!
     
     var editSections: [SectionViewController] = []
     
