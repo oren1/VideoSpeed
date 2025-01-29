@@ -75,7 +75,7 @@ extension EditViewController: UICollectionViewDelegate {
         case .sound:
             addSoundSection()
         case .text:
-            print("text")
+            addTextSection()
         case .more:
             addFiletypeSection()
             
@@ -93,8 +93,8 @@ extension EditViewController: UICollectionViewDelegateFlowLayout {
       sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
       // 2
-        let paddingSpace = sectionInsets.top * 2
-        let availableHeight = collectionView.frame.height - paddingSpace
+        let heightPaddingSpace = sectionInsets.top * 2
+        let availableHeight = collectionView.frame.height - heightPaddingSpace
         let availabelWidth = collectionView.frame.width - (sectionInsets.left * CGFloat(menuItems.count + 1))
         let itemWidth = floor(availabelWidth / CGFloat(menuItems.count))
         

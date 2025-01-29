@@ -49,7 +49,7 @@ class SpidPlayerViewController: UIViewController {
         timeContainerView?.layer.cornerRadius = 4
         setTimeFormatter()
         setGestureRecognizers()
-        addLabels()
+//        addLabels()
         
         slider.setThumbImage(UIImage(), for: .normal)
                slider.setThumbImage(UIImage(), for: .highlighted)
@@ -133,7 +133,7 @@ class SpidPlayerViewController: UIViewController {
         testLabel.addGestureRecognizer(tapGestureRecognizer)
         secondLabel.addGestureRecognizer(secondTapGestureRecognizer)
         labels.append(contentsOf: [testLabel, secondLabel])
-        
+        UserDataManager.main.textOverlayLabels.append(contentsOf: [testLabel, secondLabel])
     }
     
     @objc func didTapView(_ gesture: UITapGestureRecognizer) {
