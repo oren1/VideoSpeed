@@ -31,7 +31,6 @@ class SpidPlayerViewController: UIViewController {
     private var videoState = VideoState.isPaused
     let timeFormatter = DateComponentsFormatter()
     var videoDuration = 0.0
-    var cancellable: Cancellable?
     
     var panGestureRecognizer: UIPanGestureRecognizer!
     var tapGestureRecognizer: UITapGestureRecognizer!
@@ -41,6 +40,8 @@ class SpidPlayerViewController: UIViewController {
     var secondLabel: SpidLabel!
     var selectedLabel: SpidLabel!
     var labels: [SpidLabel] = []
+    var cancellable: AnyCancellable!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,7 +50,10 @@ class SpidPlayerViewController: UIViewController {
         timeContainerView?.layer.cornerRadius = 4
         setTimeFormatter()
         setGestureRecognizers()
-//        addLabels()
+
+        cancellable = UserDataManager.main.$textOverlayLabels.sink(receiveValue: { [weak self] spidLabels in
+            self?.addLabels()
+        })
         
         slider.setThumbImage(UIImage(), for: .normal)
                slider.setThumbImage(UIImage(), for: .highlighted)
@@ -71,6 +75,10 @@ class SpidPlayerViewController: UIViewController {
         
     }
 
+    deinit {
+        cancellable = nil
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         stopPlaybackTimeChecker()
@@ -105,48 +113,72 @@ class SpidPlayerViewController: UIViewController {
     }
     
     func addLabels() {
-        let testString = "This is a test label string"
-
-        let testLabelFrame = testString.textSize(withConstrainedWidth: videoContainerView.frame.size.width, font: .boldSystemFont(ofSize: 17))
-        testLabel = SpidLabel(frame: testLabelFrame)
-//        testLabel.backgroundColor = .darkGray
-        testLabel.textColor = .white
-//        testLabel.attributedText = attributedQuote
-        testLabel.numberOfLines = 0
-        testLabel.font = UIFont.boldSystemFont(ofSize: 17)
-        testLabel.text = testString
-        testLabel.backgroundColor = .black
-        self.videoContainerView.addSubview(testLabel)
-        testLabel.center = CGPoint(x: self.videoContainerView.frame.width / 2, y: self.videoContainerView.frame.height / 2)
-        testLabel.isUserInteractionEnabled = true
-
-        secondLabel = SpidLabel(frame: CGRect(origin: CGPointZero, size: CGSize(width: 100, height: 21)))
-//        secondLabel.backgroundColor = .black
-        secondLabel.textColor = .white
-        secondLabel.text = "This is a test"
-        self.videoContainerView.addSubview(secondLabel)
-//        secondLabel.center = CGPoint(x: self.videoContainerView.frame.width / 2, y: self.videoContainerView.frame.height / 2)
-        secondLabel.isUserInteractionEnabled = true
-       
-        let secondTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapView(_:)))
+        let textOverlayLabels = UserDataManager.main.textOverlayLabels
         
-        testLabel.addGestureRecognizer(tapGestureRecognizer)
-        secondLabel.addGestureRecognizer(secondTapGestureRecognizer)
-        labels.append(contentsOf: [testLabel, secondLabel])
-        UserDataManager.main.textOverlayLabels.append(contentsOf: [testLabel, secondLabel])
+        for (index, spidLabel) in textOverlayLabels.enumerated() {
+            if spidLabel.center == .zero {
+                spidLabel.center = videoContainerView.center
+            }
+            
+            if index == (textOverlayLabels.count - 1) {
+                setSelectedLabel(spidLabel: spidLabel)
+            }
+            
+            self.videoContainerView.addSubview(spidLabel)
+
+        }
+        
+//        let testString = "This is a test label string"
+//
+//        let testLabelFrame = testString.textSize(withConstrainedWidth: videoContainerView.frame.size.width, font: .boldSystemFont(ofSize: 17))
+//        testLabel = SpidLabel(frame: testLabelFrame)
+////        testLabel.backgroundColor = .darkGray
+//        testLabel.textColor = .white
+////        testLabel.attributedText = attributedQuote
+//        testLabel.numberOfLines = 0
+//        testLabel.font = UIFont.boldSystemFont(ofSize: 17)
+//        testLabel.text = testString
+//        testLabel.backgroundColor = .black
+//        self.videoContainerView.addSubview(testLabel)
+//        testLabel.center = CGPoint(x: self.videoContainerView.frame.width / 2, y: self.videoContainerView.frame.height / 2)
+//        testLabel.isUserInteractionEnabled = true
+//
+//        secondLabel = SpidLabel(frame: CGRect(origin: CGPointZero, size: CGSize(width: 100, height: 21)))
+////        secondLabel.backgroundColor = .black
+//        secondLabel.textColor = .white
+//        secondLabel.text = "This is a test"
+//        self.videoContainerView.addSubview(secondLabel)
+////        secondLabel.center = CGPoint(x: self.videoContainerView.frame.width / 2, y: self.videoContainerView.frame.height / 2)
+//        secondLabel.isUserInteractionEnabled = true
+//       
+//        let secondTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapView(_:)))
+//        
+//        testLabel.addGestureRecognizer(tapGestureRecognizer)
+//        secondLabel.addGestureRecognizer(secondTapGestureRecognizer)
+//        labels.append(contentsOf: [testLabel, secondLabel])
+//        UserDataManager.main.textOverlayLabels.append(contentsOf: [testLabel, secondLabel])
+    }
+    
+    func setSelectedLabel(spidLabel: SpidLabel)  {
+        selectedLabel?.layer.borderWidth = 0
+        
+        spidLabel.layer.borderColor = UIColor.orange.cgColor
+        spidLabel.layer.borderWidth = 1
+        
+        selectedLabel = spidLabel
     }
     
     @objc func didTapView(_ gesture: UITapGestureRecognizer) {
         guard let tappedLabel = gesture.view as? SpidLabel else {
           return
         }
-        
-        selectedLabel?.layer.borderWidth = 0
-        
-        tappedLabel.layer.borderColor = UIColor.orange.cgColor
-        tappedLabel.layer.borderWidth = 1
-        
-        selectedLabel = tappedLabel
+        setSelectedLabel(spidLabel: tappedLabel)
+//        selectedLabel?.layer.borderWidth = 0
+//        
+//        tappedLabel.layer.borderColor = UIColor.orange.cgColor
+//        tappedLabel.layer.borderWidth = 1
+//        
+//        selectedLabel = tappedLabel
     }
     
     @objc func didRotate(_ gesture: UIRotationGestureRecognizer) {

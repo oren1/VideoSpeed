@@ -25,6 +25,7 @@ class UserDataManager: ObservableObject {
         }
     }
 
+    @Published
     var textOverlayLabels: [SpidLabel] = []
     
     @Published

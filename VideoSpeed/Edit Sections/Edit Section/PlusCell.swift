@@ -1,17 +1,17 @@
 //
-//  PlusFooterReusableView.swift
+//  PlusCell.swift
 //  VideoSpeed
 //
-//  Created by oren shalev on 29/01/2025.
+//  Created by oren shalev on 31/01/2025.
 //
 
 import UIKit
 
-class PlusFooterReusableView: UICollectionReusableView {
+class PlusCell: UICollectionViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }
-    
+
 }
