@@ -103,18 +103,8 @@ class MainViewController: UIViewController {
     
     @objc func showPurchaseViewController() {
        
-        let productIdentifier: String
-        let pricingRaw = RemoteConfig.remoteConfig().configValue(forKey: "pricing").stringValue!
-        let pricing = Pricing(rawValue: pricingRaw)
-        switch pricing {
-        case .normal:
-            productIdentifier = SpidProducts.yearlySubscription
-        default:
-            productIdentifier = SpidProducts.yearlyFifteen
-        }
-        
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
-        purchaseViewController.productIdentifier = productIdentifier
+        purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
        
         if UIDevice.current.userInterfaceIdiom == .phone {
             purchaseViewController.modalPresentationStyle = .automatic
