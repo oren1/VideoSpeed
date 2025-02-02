@@ -69,8 +69,9 @@
 		6B9610222D49ECA200DEE296 /* TextSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B9610202D49ECA200DEE296 /* TextSectionVC.xib */; };
 		6B9610252D49F1C000DEE296 /* TextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9610232D49F1C000DEE296 /* TextCell.swift */; };
 		6B9610262D49F1C000DEE296 /* TextCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B9610242D49F1C000DEE296 /* TextCell.xib */; };
-		6B96102A2D4A23F900DEE296 /* PlusFooterReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B9610292D4A23F900DEE296 /* PlusFooterReusableView.xib */; };
-		6B96102B2D4A23F900DEE296 /* PlusFooterReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9610282D4A23F900DEE296 /* PlusFooterReusableView.swift */; };
+		6B96102E2D4C9A5B00DEE296 /* PlusCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B96102D2D4C9A5B00DEE296 /* PlusCell.xib */; };
+		6B96102F2D4C9A5B00DEE296 /* PlusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B96102C2D4C9A5B00DEE296 /* PlusCell.swift */; };
+		6B9610332D4CCBCF00DEE296 /* TextEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9610322D4CCBCF00DEE296 /* TextEditViewController.swift */; };
 		6BA101362CE0A091001780BA /* AVAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA101352CE0A084001780BA /* AVAsset+Extension.swift */; };
 		6BA101482CFAEDAA001780BA /* LoadingMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA101472CFAEDAA001780BA /* LoadingMediaView.swift */; };
 		6BAC9BBF2A666EBE0071A41B /* TopIndicatorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */; };
@@ -170,8 +171,9 @@
 		6B9610202D49ECA200DEE296 /* TextSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TextSectionVC.xib; sourceTree = "<group>"; };
 		6B9610232D49F1C000DEE296 /* TextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCell.swift; sourceTree = "<group>"; };
 		6B9610242D49F1C000DEE296 /* TextCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TextCell.xib; sourceTree = "<group>"; };
-		6B9610282D4A23F900DEE296 /* PlusFooterReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusFooterReusableView.swift; sourceTree = "<group>"; };
-		6B9610292D4A23F900DEE296 /* PlusFooterReusableView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PlusFooterReusableView.xib; sourceTree = "<group>"; };
+		6B96102C2D4C9A5B00DEE296 /* PlusCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusCell.swift; sourceTree = "<group>"; };
+		6B96102D2D4C9A5B00DEE296 /* PlusCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PlusCell.xib; sourceTree = "<group>"; };
+		6B9610322D4CCBCF00DEE296 /* TextEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditViewController.swift; sourceTree = "<group>"; };
 		6BA101352CE0A084001780BA /* AVAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAsset+Extension.swift"; sourceTree = "<group>"; };
 		6BA101472CFAEDAA001780BA /* LoadingMediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingMediaView.swift; sourceTree = "<group>"; };
 		6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TopIndicatorView.xib; sourceTree = "<group>"; };
@@ -294,8 +296,8 @@
 				6B9610202D49ECA200DEE296 /* TextSectionVC.xib */,
 				6B9610232D49F1C000DEE296 /* TextCell.swift */,
 				6B9610242D49F1C000DEE296 /* TextCell.xib */,
-				6B9610282D4A23F900DEE296 /* PlusFooterReusableView.swift */,
-				6B9610292D4A23F900DEE296 /* PlusFooterReusableView.xib */,
+				6B96102C2D4C9A5B00DEE296 /* PlusCell.swift */,
+				6B96102D2D4C9A5B00DEE296 /* PlusCell.xib */,
 			);
 			path = "Edit Section";
 			sourceTree = "<group>";
@@ -408,6 +410,7 @@
 				6BA101472CFAEDAA001780BA /* LoadingMediaView.swift */,
 				6B6801302D2D6BE0002B5454 /* SpidPlayerViewController.swift */,
 				6B6801312D2D6BE0002B5454 /* SpidPlayerViewController.xib */,
+				6B9610322D4CCBCF00DEE296 /* TextEditViewController.swift */,
 				6BE9A2F12A5FC80C00FF8CB0 /* Main.storyboard */,
 				6BE9A2F42A5FC80D00FF8CB0 /* Assets.xcassets */,
 				6BE9A2F62A5FC80D00FF8CB0 /* LaunchScreen.storyboard */,
@@ -495,10 +498,10 @@
 				6BF019512B565CB800953AB6 /* SubscriptionOptionView.xib in Resources */,
 				6B67009D2A6BCAD2006F2980 /* ProgressIndicatorView.xib in Resources */,
 				6B04F5862CB916FA000C8C59 /* CropSectioVC.xib in Resources */,
+				6B96102E2D4C9A5B00DEE296 /* PlusCell.xib in Resources */,
 				6BB4EE882A8F48D1006CF87C /* UsingProFeaturesAlertView.xib in Resources */,
 				6B9610222D49ECA200DEE296 /* TextSectionVC.xib in Resources */,
 				6BB4EE842A8F3881006CF87C /* BlackTransparentOverlay.xib in Resources */,
-				6B96102A2D4A23F900DEE296 /* PlusFooterReusableView.xib in Resources */,
 				6B9610262D49F1C000DEE296 /* TextCell.xib in Resources */,
 				6B7D10852BA70AE4002DD73F /* remote_config_defaults.plist in Resources */,
 				6BE9A2F52A5FC80D00FF8CB0 /* Assets.xcassets in Resources */,
@@ -582,6 +585,7 @@
 				6BF0194F2B565CAC00953AB6 /* SubscriptionOptionView.swift in Sources */,
 				6B6700972A6ABBF6006F2980 /* IAPManager.swift in Sources */,
 				6BE9A30A2A618B2500FF8CB0 /* UIImageView+Extension.swift in Sources */,
+				6B9610332D4CCBCF00DEE296 /* TextEditViewController.swift in Sources */,
 				6B6700A42A6CDCB8006F2980 /* UserDataManager.swift in Sources */,
 				6BCEB60D2BF0C1A400010381 /* BenefitView.swift in Sources */,
 				6BB4EE8A2A8F48E2006CF87C /* UsingProFeaturesAlertView.swift in Sources */,
@@ -620,6 +624,7 @@
 				6B6700AA2A6E5FE7006F2980 /* AppStoreReviewManager.swift in Sources */,
 				6BCDCF542A67FADD00D8B656 /* SectionViewController.swift in Sources */,
 				6B6700942A6A6C13006F2980 /* PhotosHeader.swift in Sources */,
+				6B96102F2D4C9A5B00DEE296 /* PlusCell.swift in Sources */,
 				6B45B4052D01EEC80074C422 /* LoadingMediaViewModel.swift in Sources */,
 				6BCDCF512A67FAC800D8B656 /* MoreSectionVC.swift in Sources */,
 				6BCDCF4D2A67E5FA00D8B656 /* FPSSectionVC.swift in Sources */,
@@ -637,7 +642,6 @@
 				6B68011C2D153D44002B5454 /* AssetSelectionViewController.swift in Sources */,
 				6B68011D2D153D44002B5454 /* AVAssetTimeSelector.swift in Sources */,
 				6BA101482CFAEDAA001780BA /* LoadingMediaView.swift in Sources */,
-				6B96102B2D4A23F900DEE296 /* PlusFooterReusableView.swift in Sources */,
 				6B6801332D2D6BE0002B5454 /* SpidPlayerViewController.swift in Sources */,
 				6B92E35B2A77C72C008CB22A /* SceneDelegate.swift in Sources */,
 				6BF019532B57DB7400953AB6 /* AnalyticsManager.swift in Sources */,

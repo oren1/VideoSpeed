@@ -149,11 +149,13 @@ extension EditViewController {
                 await self?.reloadComposition()
             }
         }
+        // this call to view,in turn, invokes the viewDidLoad method
         let _ = trimmerSectionVC.view
     }
     
     func createTextSection() {
         textSectionVC = TextSectionVC()
+        let _ = textSectionVC.view
     }
     
     // MARK: Adding Sections

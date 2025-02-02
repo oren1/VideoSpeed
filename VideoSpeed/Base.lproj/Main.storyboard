@@ -672,6 +672,54 @@
             </objects>
             <point key="canvasLocation" x="2384.8000000000002" y="9.4452773613193415"/>
         </scene>
+        <!--Text Edit View Controller-->
+        <scene sceneID="d2F-64-koL">
+            <objects>
+                <viewController storyboardIdentifier="TextEditViewController" id="wtN-ms-Vsj" customClass="TextEditViewController" customModule="VideoSpeed" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="cky-QD-Wb2">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="sdfghfgh dsth" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="w0R-SQ-KaU">
+                                <rect key="frame" x="67.5" y="83" width="240" height="128"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="128" id="C0a-xA-gCw"/>
+                                    <constraint firstAttribute="width" constant="240" id="nPG-Bf-ptM"/>
+                                </constraints>
+                                <color key="textColor" systemColor="labelColor"/>
+                                <fontDescription key="fontDescription" name="Futura-Bold" family="Futura" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jfy-zB-4ce">
+                                <rect key="frame" x="155" y="246" width="65" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="35" id="eKb-Jr-ygx"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Done"/>
+                                <connections>
+                                    <action selector="doneButtonTapped:" destination="wtN-ms-Vsj" eventType="touchUpInside" id="5Rd-6r-1ut"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="8il-Yu-uCk"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="w0R-SQ-KaU" firstAttribute="centerX" secondItem="cky-QD-Wb2" secondAttribute="centerX" id="9rr-EE-hnC"/>
+                            <constraint firstItem="jfy-zB-4ce" firstAttribute="top" secondItem="w0R-SQ-KaU" secondAttribute="bottom" constant="35" id="L5D-ym-Cp0"/>
+                            <constraint firstItem="jfy-zB-4ce" firstAttribute="centerX" secondItem="cky-QD-Wb2" secondAttribute="centerX" id="RUh-Yb-Mg0"/>
+                            <constraint firstItem="w0R-SQ-KaU" firstAttribute="top" secondItem="8il-Yu-uCk" secondAttribute="top" constant="63" id="kVv-uK-YUx"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="textView" destination="w0R-SQ-KaU" id="ZNU-Zb-wIl"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="KYg-mv-yqY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="740" y="706.59670164917543"/>
+        </scene>
         <!--Subscription PurchaseVC-->
         <scene sceneID="RaC-DA-XjW">
             <objects>
@@ -1905,6 +1953,9 @@
         <image name="checkmark.circle.fill" catalog="system" width="128" height="123"/>
         <image name="multiply" catalog="system" width="128" height="111"/>
         <image name="timer" catalog="system" width="128" height="123"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
