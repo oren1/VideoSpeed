@@ -314,28 +314,17 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         
     }
     
-    private func add(label: SpidLabel, to layer: CALayer, videoSize: CGSize) {
+    private func add(labelView: LabelView, to layer: CALayer, videoSize: CGSize) {
         
         let scaleX = videoSize.width / spidPlayerController.videoContainerView.frame.width
         let scaleY = videoSize.height / spidPlayerController.videoContainerView.frame.height
-
-
-        let testString = "This is a test label string"
-       
-//        let someLabel = UILabel(frame: CGRect(x: label.frame.origin.x * scaleX, y: label.frame.origin.y * scaleY, width: label.frame.size.width * scaleX, height: label.frame.size.height * scaleY))
-//        
-//        someLabel.text = "sefgasrgadrgadrh dsrg"
-////        someLabel.attributedText = NSAttributedString("wefrefr")
-//        someLabel.backgroundColor = .black
-//        someLabel.layer.borderColor = UIColor.green.cgColor
-//        someLabel.layer.borderWidth = 1
-//        someLabel.textColor = .white
-//        someLabel.numberOfLines = 0
-//        someLabel.font = UIFont.boldSystemFont(ofSize: 34)
-//        someLabel.layer.displayIfNeeded()
-        let scaledLabel = label.scaledBy(scaleX)
-        scaledLabel.layer.displayIfNeeded()
-        layer.addSublayer(scaledLabel.layer)
+        
+        let labelViewCopy = labelView.copyLabelView()
+//        let scaledLabel = labelViewCopy.scaledBy(scaleX)
+//        scaledLabel.layer.displayIfNeeded()
+//        labelViewCopy.layer.displayIfNeeded()
+        layer.addSublayer(labelView.layer)
+//        layer.addSublayer(labelViewCopy.layer)
 
     }
     
@@ -489,8 +478,8 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         outputLayer.addSublayer(videoLayer)
         outputLayer.addSublayer(overlayLayer)
         
-        for label in spidPlayerController.labels {
-            add(label: label, to: overlayLayer, videoSize: videoSize)
+        for labelView in UserDataManager.main.overlayLabelViews {
+            add(labelView: labelView, to: overlayLayer, videoSize: videoSize)
         }
         
         videoComposition.animationTool = AVVideoCompositionCoreAnimationTool(
