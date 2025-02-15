@@ -688,7 +688,7 @@
                                     <constraint firstAttribute="width" constant="240" id="nPG-Bf-ptM"/>
                                 </constraints>
                                 <color key="textColor" systemColor="labelColor"/>
-                                <fontDescription key="fontDescription" name="Futura-Bold" family="Futura" pointSize="14"/>
+                                <fontDescription key="fontDescription" name="Futura-Bold" family="Futura" pointSize="13"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jfy-zB-4ce">

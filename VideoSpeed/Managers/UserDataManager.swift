@@ -29,6 +29,12 @@ class UserDataManager: ObservableObject {
     var textOverlayLabels: [SpidLabel] = []
     
     @Published
+    var overlayLabelViews: [LabelView] = []
+    
+    @Published
+    var labelViewModels: [LabelViewModel] = []
+    
+    @Published
     var isUsingCropFeature: Bool = false
     
     func isUsingTrimFeature() async -> Bool {
