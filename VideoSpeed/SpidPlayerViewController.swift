@@ -8,6 +8,8 @@
 import UIKit
 import AVFoundation
 import Combine
+import SwiftUI
+
 
 enum VideoState: Int {
     case isPlayed = 0, isPaused
@@ -45,6 +47,8 @@ class SpidPlayerViewController: UIViewController {
     var labelViewModelsCancellabel: AnyCancellable!
     var labelViews: [LabelView] = []
     var selectedLabelView: LabelView?
+    var scaleValue = 0.0
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,18 +57,10 @@ class SpidPlayerViewController: UIViewController {
         timeContainerView?.layer.cornerRadius = 4
         setTimeFormatter()
         setGestureRecognizers()
-
-        textOverlayLabelsCancellable = UserDataManager.main.$textOverlayLabels.sink(receiveValue: { [weak self] spidLabels in
-//            self?.addLabels(spidLabels)
-        })
         
         overlayLabelViewsCancellabel = UserDataManager.main.$overlayLabelViews.sink(receiveValue: { [weak self] labelViews in
             self?.addLabelViews(labelViews: labelViews)
         })
-        
-//        labelViewModelsCancellabel = UserDataManager.main.$labelViewModels.sink(receiveValue: { [weak self] labelViewModels in
-//            self?.addLabelViewsFor(moodels: labelViewModels)
-//        })
         
         slider.setThumbImage(UIImage(), for: .normal)
                slider.setThumbImage(UIImage(), for: .highlighted)
@@ -252,9 +248,10 @@ class SpidPlayerViewController: UIViewController {
         selectedLabelView.transform = selectedLabelView.transform.rotated(
           by: gesture.rotation
         )
-        selectedLabelView.rotation += gesture.rotation
         
+        selectedLabelView.viewModel.updateRotation(rotation: gesture.rotation)
         gesture.rotation = 0
+    
     }
     
     @objc func didPinch(_ gesture: UIPinchGestureRecognizer) {
@@ -264,6 +261,10 @@ class SpidPlayerViewController: UIViewController {
           x: gesture.scale,
           y: gesture.scale
         )
+        
+        selectedLabelView.viewModel.width *= gesture.scale
+        selectedLabelView.viewModel.height *= gesture.scale
+
         gesture.scale = 1
     }
     
@@ -325,7 +326,7 @@ class SpidPlayerViewController: UIViewController {
         
         view.addGestureRecognizer(panGestureRecognizer)
         view.addGestureRecognizer(pinchGestureRecognizer)
-//        view.addGestureRecognizer(rotationGestureRecognizer)
+        view.addGestureRecognizer(rotationGestureRecognizer)
     }
     
     

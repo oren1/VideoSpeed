@@ -318,14 +318,18 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         
         let scaleX = videoSize.width / spidPlayerController.videoContainerView.frame.width
         let scaleY = videoSize.height / spidPlayerController.videoContainerView.frame.height
-        
-        let labelViewCopy = labelView.copyLabelView()
-//        let scaledLabel = labelViewCopy.scaledBy(scaleX)
-//        scaledLabel.layer.displayIfNeeded()
-//        labelViewCopy.layer.displayIfNeeded()
-        layer.addSublayer(labelView.layer)
-//        layer.addSublayer(labelViewCopy.layer)
-
+      
+        labelView.layer.borderWidth = 0
+        let size = CGSize(width: labelView.viewModel.width * scaleX, height: labelView.viewModel.height * scaleY)
+        let bounds = CGRect(origin: .zero, size: size)
+        let renderer = UIGraphicsImageRenderer(size: size)
+        let image = renderer.image { ctx in
+            labelView.drawHierarchy(in: bounds, afterScreenUpdates: true)
+        }
+        let imageView = UIImageView(image: image)
+        imageView.center = CGPoint(x: labelView.center.x * scaleX, y: labelView.center.y * scaleX)
+        imageView.transform = imageView.transform.rotated(by: labelView.viewModel.rotation)
+        layer.addSublayer(imageView.layer)
     }
     
     func aspectRatioCroppedVideoRect(_ videoSize: CGSize) -> CGRect {

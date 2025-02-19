@@ -31,7 +31,7 @@ class TextSectionVC: SectionViewController {
         textCollectionView.dataSource = self
         textCollectionView.delegate = self
         
-        cancellable = UserDataManager.main.$textOverlayLabels.sink(receiveValue: { [weak self] spidLabels in
+        cancellable = UserDataManager.main.$overlayLabelViews.sink(receiveValue: { [weak self] labelViews in
             self?.textCollectionView.reloadData()
         })
         
@@ -75,12 +75,12 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
      _ collectionView: UICollectionView,
      numberOfItemsInSection section: Int
    ) -> Int {
-       return UserDataManager.main.textOverlayLabels.count + 1
+       return UserDataManager.main.overlayLabelViews.count + 1
    }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        if indexPath.row == UserDataManager.main.textOverlayLabels.count {
+        if indexPath.row == UserDataManager.main.overlayLabelViews.count {
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: plusCellIReusableIdentifier,
                for: indexPath
@@ -95,8 +95,8 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
         ) as! TextCell
 
          
-         let label = UserDataManager.main.textOverlayLabels[indexPath.row]
-         cell.textLabel.text = label.text
+         let labelView = UserDataManager.main.overlayLabelViews[indexPath.row]
+         cell.textLabel.text = labelView.viewModel.text
          cell.layer.cornerRadius = 8
 
          return cell
@@ -105,7 +105,7 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
     // MARK: Delegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // Selection of the plus button
-        if indexPath.row == UserDataManager.main.textOverlayLabels.count {
+        if indexPath.row == UserDataManager.main.overlayLabelViews.count {
             // open the TextEditViewController
             
             if let navigationController = view.window?.rootViewController as? UINavigationController {
@@ -116,7 +116,7 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
             return
         }
         
-        let label = UserDataManager.main.textOverlayLabels[indexPath.row]
+        let label = UserDataManager.main.overlayLabelViews[indexPath.row]
         
     }
     
@@ -126,7 +126,7 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
       sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
       // 2
-        let textOverlayLabels = UserDataManager.main.textOverlayLabels
+        let overlayLabelViews = UserDataManager.main.overlayLabelViews
         let heightPaddingSpace = sectionInsets.top * 2
         let availableHeight = collectionView.frame.height - heightPaddingSpace
 //        let availabelWidth = collectionView.frame.width - widthPaddingSpace
@@ -141,7 +141,7 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
       layout collectionViewLayout: UICollectionViewLayout,
       insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        let numberOfCells = UserDataManager.main.textOverlayLabels.count + 1
+        let numberOfCells = UserDataManager.main.overlayLabelViews.count + 1
         let totalCellWidth = (cellWidth * Double(numberOfCells))
         let totalSpacingWidth = sectionInsets.left * Double(numberOfCells - 1)
 

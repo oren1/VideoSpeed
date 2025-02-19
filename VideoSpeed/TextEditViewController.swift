@@ -23,9 +23,12 @@ class TextEditViewController: UIViewController, UITextViewDelegate {
             let frame = textView.text!.textSize(withConstrainedWidth: textView.frame.size.width, font: textView.font!)
             
             let labelViewModel = LabelViewModel(labelFrame: frame,
-                                                text: textView.text, textColor: textView.textColor!, backgroundColor: textView.backgroundColor!, textAlignment: textView.textAlignment)
+                                                text: textView.text,
+                                                textColor: textView.textColor!,
+                                                backgroundColor: textView.backgroundColor!,
+                                                textAlignment: textView.textAlignment)
             
-            let labelView = LabelView.instantiateWithLabelViewModel(labelViewModel)
+            var labelView = LabelView.instantiateWithLabelViewModel(labelViewModel)
             
 //            UserDataManager.main.labelViewModels.append(labelViewModel)
             UserDataManager.main.overlayLabelViews.append(labelView)
