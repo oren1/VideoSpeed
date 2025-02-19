@@ -6,14 +6,14 @@
 //
 
 import UIKit
+import AVFoundation
 
 class LabelView: UIView {
 
-    private(set) var viewModel: LabelViewModel!
+    var viewModel: LabelViewModel!
     @IBOutlet var contentView: UIView!
-//    @IBOutlet weak var label: SpidLabel!
     @IBOutlet weak var cancelButton: UIButton!
-    var rotation: CGFloat = 0.0
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -84,6 +84,15 @@ class LabelView: UIView {
     
     static func instantiateWithLabelViewModel(_ model: LabelViewModel) -> LabelView {
 
+        let labelView = LabelView(frame: CGRect(origin: .zero, size: CGSize(width: model.width, height: model.height)))
+        labelView.viewModel = model
+
+        labelView.center = .zero
+        labelView.layer.borderWidth = model.borderWidth
+        labelView.layer.borderColor = model.borderColor
+        labelView.layer.cornerRadius = 8
+        
+        
         let label = SpidLabel(frame: model.labelFrame)
         label.text = model.text
         label.textColor = model.textColor
@@ -91,20 +100,13 @@ class LabelView: UIView {
         label.numberOfLines = model.numberOfLines
         label.layer.masksToBounds = model.masksToBounds
         label.textAlignment = model.textAlignment
-
-        let labelView = LabelView(frame: CGRect(origin: .zero, size: CGSize(width: model.labelFrame.size.width + (model.labelFrame.size.width / 3), height: model.labelFrame.size.height + (model.labelFrame.size.height / 2))))
-        labelView.viewModel = model
-
-        labelView.center = .zero
-        labelView.layer.borderWidth = model.borderWidth
-        labelView.layer.borderColor = model.borderColor
-        labelView.layer.cornerRadius = 8
+        
 
         label.center = CGPoint(x: labelView.frame.size.width / 2.0, y: labelView.frame.size.height / 2.0)
         labelView.addSubview(label)
       
         let bounds = label.bounds
-        label.font = label.font.withSize(100)
+        label.font = label.font.withSize(200)
         label.bounds.size = label.intrinsicContentSize
         label.layer.cornerRadius = label.bounds.size.height / 10
         
