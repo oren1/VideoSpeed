@@ -8,7 +8,7 @@
 import UIKit
 import AVFoundation
 
-struct LabelViewModel {
+class LabelViewModel: ObservableObject {
     var width: CGFloat
     var height: CGFloat
     var labelFrame: CGRect
@@ -22,13 +22,18 @@ struct LabelViewModel {
     var borderWidth = 1.0
     var borderColor = UIColor.orange.cgColor
     var rotation: CGFloat = 0.0
-    var startTime: CMTime?
-    var endTime: CMTime?
+    var timeRange: CMTimeRange?
+    var rightHandleConstraintConstant: CGFloat?
+    var leftHandleConstraintConstant: CGFloat?
     
-    init(width: CGFloat = 0.0, height: CGFloat = 0.0, labelFrame: CGRect, text: String, textColor: UIColor, backgroundColor: UIColor, numberOfLines: Int = 0, masksToBounds: Bool = true, textAlignment: NSTextAlignment, center: CGPoint = .zero, borderWidth: Double = 1.0, borderColor: CGColor = UIColor.orange.cgColor, rotation: CGFloat = 0.0, startTime: CMTime? = nil, endTime: CMTime? = nil) {
+    @Published
+    var selected: Bool = false
+    
+    init(width: CGFloat = 0.0, height: CGFloat = 0.0, labelFrame: CGRect, text: String, textColor: UIColor, backgroundColor: UIColor, numberOfLines: Int = 0, masksToBounds: Bool = true, textAlignment: NSTextAlignment, center: CGPoint = .zero, borderWidth: Double = 1.0, borderColor: CGColor = UIColor.orange.cgColor, rotation: CGFloat = 0.0, timeRange: CMTimeRange? = nil, selected: Bool = false
+) {
        
         self.width = labelFrame.size.width + (labelFrame.size.width / 3)
-        self.height = labelFrame.size.height + (labelFrame.size.height / 2)
+        self.height = labelFrame.size.height + (labelFrame.size.height / 2) + 30
         self.labelFrame = labelFrame
         self.text = text
         self.textColor = textColor
@@ -40,11 +45,10 @@ struct LabelViewModel {
         self.borderWidth = borderWidth
         self.borderColor = borderColor
         self.rotation = rotation
-        self.startTime = startTime
-        self.endTime = endTime
+        self.timeRange = timeRange
     }
     
-    mutating func updateRotation(rotation: CGFloat) {
+    func updateRotation(rotation: CGFloat) {
         self.rotation += rotation
     }
 }

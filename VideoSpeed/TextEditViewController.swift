@@ -30,7 +30,6 @@ class TextEditViewController: UIViewController, UITextViewDelegate {
             
             var labelView = LabelView.instantiateWithLabelViewModel(labelViewModel)
             
-//            UserDataManager.main.labelViewModels.append(labelViewModel)
             UserDataManager.main.overlayLabelViews.append(labelView)
             
         }
@@ -43,6 +42,9 @@ class TextEditViewController: UIViewController, UITextViewDelegate {
         print("textView.text! \(textView.text!)")
         print("textView.attributed! \(textView.attributedText!)")
     }
+    
+    
+   
 }
 
 

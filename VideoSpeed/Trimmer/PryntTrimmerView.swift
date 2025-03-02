@@ -63,8 +63,8 @@ public protocol TrimmerViewDelegate: AnyObject {
 
     private var currentLeftConstraint: CGFloat = 0
     private var currentRightConstraint: CGFloat = 0
-    private var leftConstraint: NSLayoutConstraint?
-    private var rightConstraint: NSLayoutConstraint?
+    private(set) var leftConstraint: NSLayoutConstraint?
+    private(set) var rightConstraint: NSLayoutConstraint?
     private var positionConstraint: NSLayoutConstraint?
 
     private let handleWidth: CGFloat = 15
@@ -73,7 +73,16 @@ public protocol TrimmerViewDelegate: AnyObject {
     public var minDuration: Double = 1
 
     // MARK: - View & constraints configurations
-
+    func updateRightConstraint(constatnt: CGFloat) {
+        rightConstraint?.constant = constatnt
+        layoutIfNeeded()
+    }
+    
+    func updateLeftConstraint(constatnt: CGFloat) {
+        leftConstraint?.constant = constatnt
+        layoutIfNeeded()
+    }
+    
     override func setupSubviews() {
         super.setupSubviews()
         layer.cornerRadius = 2

@@ -7,13 +7,30 @@
 
 import UIKit
 import AVFoundation
+import Combine
 
 class LabelView: UIView {
 
-    var viewModel: LabelViewModel!
+    private var subscribers: [AnyCancellable] = []
+    
+    var viewModel: LabelViewModel! {
+        didSet {
+            viewModel.$selected.sink { [weak self] isSelected in
+                if isSelected {
+                    self?.setSelected()
+                }
+                else {
+                    self?.setUnselected()
+                }
+            }.store(in: &subscribers)
+        }
+    }
+    
     @IBOutlet var contentView: UIView!
     @IBOutlet weak var cancelButton: UIButton!
+    @IBOutlet weak var backgroundView: UIView!
     
+    @IBOutlet weak var cancelButtonTopConstraintConstant: NSLayoutConstraint!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -30,47 +47,16 @@ class LabelView: UIView {
         addSubview(contentView)
         contentView.frame = self.bounds
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        backgroundView.layer.cornerRadius = 8
+        backgroundView.layer.borderWidth = 1
+        backgroundView.layer.borderColor = UIColor.orange.cgColor
     }
 
     @IBAction func cancelButtonTapped(_ sender: Any) {
+        print("cancelButtonTapped")
+        UserDataManager.main.overlayLabelViews.removeAll(where: {$0 == self})
     }
      
-    func copyLabelView() -> LabelView {
-        let labelToCopy = subviews.first { type(of: $0) == SpidLabel.self } as! SpidLabel
-        let label = SpidLabel(frame: labelToCopy.frame)
-        label.text = labelToCopy.text
-        label.textColor = labelToCopy.textColor
-        label.backgroundColor = .green
-        label.numberOfLines = labelToCopy.numberOfLines
-        label.layer.masksToBounds = true
-        label.textAlignment = labelToCopy.textAlignment
-
-        let labelView = LabelView(frame: frame)
-
-        labelView.center = center
-        labelView.layer.borderWidth = layer.borderWidth
-        labelView.layer.borderColor = layer.borderColor
-        labelView.layer.cornerRadius = layer.cornerRadius
-
-        label.center = CGPoint(x: labelView.frame.size.width / 2.0, y: labelView.frame.size.height / 2.0)
-        labelView.addSubview(label)
-        
-       
-        
-        let bounds = label.bounds
-        label.font = label.font.withSize(100)
-        label.bounds.size = label.intrinsicContentSize
-        label.layer.cornerRadius = label.bounds.size.height / 10
-        
-        let scaleX = bounds.size.width / label.frame.size.width
-        let scaleY = bounds.size.height / label.frame.size.height
-        label.transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
-        
-        labelView.layer.displayIfNeeded()
-        label.layer.displayIfNeeded()
-
-        return labelView
-    }
     
     func scaledBy(_ scaleFactor: CGFloat) -> LabelView {
         let x = self.frame.origin.x * scaleFactor
@@ -86,12 +72,11 @@ class LabelView: UIView {
 
         let labelView = LabelView(frame: CGRect(origin: .zero, size: CGSize(width: model.width, height: model.height)))
         labelView.viewModel = model
-
-        labelView.center = .zero
-        labelView.layer.borderWidth = model.borderWidth
-        labelView.layer.borderColor = model.borderColor
-        labelView.layer.cornerRadius = 8
         
+        labelView.center = .zero
+//        labelView.layer.borderWidth = model.borderWidth
+//        labelView.layer.borderColor = model.borderColor
+//        labelView.layer.cornerRadius = 8
         
         let label = SpidLabel(frame: model.labelFrame)
         label.text = model.text
@@ -112,11 +97,25 @@ class LabelView: UIView {
         
         let scaleX = bounds.size.width / label.frame.size.width
         let scaleY = bounds.size.height / label.frame.size.height
+        
+        
         label.transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
-
 
         
         return labelView
     }
+    
+    func setSelected() {
+        self.backgroundView.layer.borderWidth = 1
+        self.backgroundView.layer.borderColor = UIColor.orange.cgColor
+        self.cancelButton.isHidden = false
+    }
+    
+    func setUnselected() {
+        self.backgroundView.layer.borderWidth = 0
+        self.backgroundView.layer.borderColor = UIColor.orange.cgColor
+        self.cancelButton.isHidden = true
+    }
+    
 }
 

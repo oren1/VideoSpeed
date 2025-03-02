@@ -300,10 +300,10 @@ class MainViewController: UIViewController {
 
 // MARK: - UIImagePickerControllerDelegate
 extension MainViewController: UIImagePickerControllerDelegate {
-    func imagePickerController(
+     func imagePickerController(
       _ picker: UIImagePickerController,
       didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
-    ) {
+    )  {
       dismiss(animated: true, completion: nil)
       
       guard
@@ -314,8 +314,31 @@ extension MainViewController: UIImagePickerControllerDelegate {
         else { return }
       
         let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
-            vc.assetUrl = url
-            self.navigationController?.pushViewController(vc, animated: true)
+        
+        let asset = AVURLAsset(url: url)
+        Task {
+            guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+                  let timeRange = try? await videoTrack.load(.timeRange),
+                  let naturalSize = try? await videoTrack.load(.naturalSize),
+                  let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return}
+         
+            let videoInfo = VideoHelper.orientation(from: preferredTransform)
+            let videoSize: CGSize
+            if videoInfo.isPortrait {
+                videoSize = CGSize(
+                    width: naturalSize.height,
+                    height: naturalSize.width)
+            } else {
+                videoSize = naturalSize
+            }
+            
+            UserDataManager.main.currentSpidAsset = SpidAsset(asset: asset,timeRange: timeRange, videoSize: videoSize)
+            vc.asset = asset
+            
+             await MainActor.run { [weak self] in
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        }
                     
     }
 
