@@ -147,6 +147,7 @@ extension EditViewController {
             Task {
                 await UserDataManager.main.currentSpidAsset.updateTimeRange(timeRange: timeRange)
                 await self?.reloadComposition()
+                await self?.textSectionVC.createTrimmerView()
             }
         }
         // this call to view,in turn, invokes the viewDidLoad method
@@ -155,6 +156,8 @@ extension EditViewController {
     
     func createTextSection() {
         textSectionVC = TextSectionVC()
+        textSectionVC.delegate = self
+
         let _ = textSectionVC.view
     }
     

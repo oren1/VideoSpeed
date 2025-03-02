@@ -29,7 +29,27 @@ class UserDataManager: ObservableObject {
     var textOverlayLabels: [SpidLabel] = []
     
     @Published
-    var overlayLabelViews: [LabelView] = []
+    var overlayLabelViews: [LabelView] = [] {
+        didSet {
+            NotificationCenter.default.post(name: Notification.Name.OverlayLabelViewsUpdated, object: nil)
+        }
+    }
+    func setSelectedLabeView(_ selectedLabelView: LabelView) {
+        for labelView in overlayLabelViews {
+            labelView.viewModel.selected = false
+            if labelView == selectedLabelView {
+                labelView.viewModel.selected = true
+                self.selectedLabelView = labelView
+            }
+        }
+        
+        NotificationCenter.default.post(name: Notification.Name.SelectedLabelViewChanged, object: nil)
+    }
+    var selectedLabelView: LabelView?
+    
+    func getSelectedLabelView() -> LabelView? {
+       UserDataManager.main.overlayLabelViews.first { $0.viewModel.selected == true }
+    }
     
     @Published
     var labelViewModels: [LabelViewModel] = []

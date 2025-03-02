@@ -9,12 +9,12 @@ import UIKit
 import AVFoundation
 import AVKit
 
-protocol TrimmerSectionViewDelegate: AnyObject {
+protocol TrimmerViewSpidDelegate: AnyObject {
     var spidPlayerController: SpidPlayerViewController! { get set }
 }
 
 // added an extension to give the 'playerViewController' variable a default implementation.
-extension TrimmerSectionViewDelegate {
+extension TrimmerViewSpidDelegate {
     var spidPlayerController: SpidPlayerViewController! {
         get { nil }
     }
@@ -24,7 +24,7 @@ typealias TimeRangeClosure = (_ timeRange: CMTimeRange) -> Void
 
 class TrimmerSectionVC: SectionViewController {
     
-    weak var delegate: TrimmerSectionViewDelegate!
+    weak var delegate: TrimmerViewSpidDelegate!
     @IBOutlet weak var trimmerView: TrimmerView!
     var playbackTimeCheckerTimer: Timer?
     var timeRangeDidChange: TimeRangeClosure?

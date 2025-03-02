@@ -22,7 +22,7 @@ enum ForceShowPurchaseScreen: Int {
     case dontForce = 0, forceShow
 }
 
-class EditViewController: UIViewController, TrimmerSectionViewDelegate {
+class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var playerController: AVPlayerViewController!
     var asset: AVAsset!
     
@@ -319,7 +319,7 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         let scaleX = videoSize.width / spidPlayerController.videoContainerView.frame.width
         let scaleY = videoSize.height / spidPlayerController.videoContainerView.frame.height
       
-        labelView.layer.borderWidth = 0
+        labelView.viewModel.selected = false
         let size = CGSize(width: labelView.viewModel.width * scaleX, height: labelView.viewModel.height * scaleY)
         let bounds = CGRect(origin: .zero, size: size)
         let renderer = UIGraphicsImageRenderer(size: size)

@@ -11,6 +11,8 @@ import Combine
 
 class TextSectionVC: SectionViewController {
     
+    weak var delegate: TrimmerViewSpidDelegate!
+
     @IBOutlet weak var textCollectionView: UICollectionView!
     @IBOutlet weak var trimmerView: TrimmerView!
     
@@ -31,15 +33,26 @@ class TextSectionVC: SectionViewController {
         textCollectionView.dataSource = self
         textCollectionView.delegate = self
         
-        cancellable = UserDataManager.main.$overlayLabelViews.sink(receiveValue: { [weak self] labelViews in
+        NotificationCenter.default.addObserver(forName: Notification.Name.OverlayLabelViewsUpdated , object: nil, queue: nil) { [weak self] notification in
+            
+            self?.setTrimmerInteractionStatus()
             self?.textCollectionView.reloadData()
-        })
+        }
+
+        NotificationCenter.default.addObserver(forName: Notification.Name.SelectedLabelViewChanged , object: nil, queue: nil) { [weak self] notification in
+            self?.updateTrimmerViewHandles()
+            self?.textCollectionView.reloadData()
+        }
         
         Task {
             await createTrimmerView()
         }
-        
        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
     }
     
     deinit {
@@ -49,17 +62,44 @@ class TextSectionVC: SectionViewController {
 
     @MainActor
     func createTrimmerView() async {
-        trimmerView.asset = await UserDataManager.main.currentSpidAsset.getAsset()
+        trimmerView.asset = self.delegate.spidPlayerController?.player.currentItem?.asset != nil ? self.delegate.spidPlayerController.player.currentItem?.asset :
+        await UserDataManager.main.currentSpidAsset.getAsset()
+        
         trimmerView.delegate = self
         trimmerView.handleColor = UIColor.white
         trimmerView.mainColor = UIColor.systemBlue
         trimmerView.maskColor = UIColor.black
         trimmerView.positionBarColor = UIColor.clear
         trimmerView.regenerateThumbnails()
+        setTrimmerInteractionStatus()
+    }
+    
+    func updateTrimmerViewHandles() {
+        guard let viewModel = UserDataManager.main.selectedLabelView?.viewModel else {
+            return
+        }
+        self.trimmerView.updateRightConstraint(constatnt: viewModel.rightHandleConstraintConstant ??  0)
+        self.trimmerView.updateLeftConstraint(constatnt: viewModel.leftHandleConstraintConstant ?? 0)
+    }
+    
+    func setTrimmerInteractionStatus() {
+        if UserDataManager.main.overlayLabelViews.count > 0 {
+            self.enableTrimmerView()
+        }
+        else {
+            self.disableTrimmerView()
+        }
+    }
+    
+    func enableTrimmerView() {
+        trimmerView.isUserInteractionEnabled = true
+        trimmerView.layer.opacity = 1
+    }
+    
+    func disableTrimmerView() {
         trimmerView.isUserInteractionEnabled = false
         trimmerView.layer.opacity = 0.4
     }
-    
 }
 
 
@@ -96,6 +136,12 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
 
          
          let labelView = UserDataManager.main.overlayLabelViews[indexPath.row]
+         if labelView.viewModel.selected {
+             cell.backgroundColor = .systemBlue
+         }
+         else {
+             cell.backgroundColor = .gray
+         }
          cell.textLabel.text = labelView.viewModel.text
          cell.layer.cornerRadius = 8
 
@@ -115,9 +161,12 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
             }
             return
         }
+
         
-        let label = UserDataManager.main.overlayLabelViews[indexPath.row]
+        let selectedLabelView = UserDataManager.main.overlayLabelViews[indexPath.row]
+        UserDataManager.main.setSelectedLabeView(selectedLabelView)
         
+        collectionView.reloadData()
     }
     
     func collectionView(
@@ -170,10 +219,26 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
 typealias Trimmer = TextSectionVC
 extension Trimmer: TrimmerViewDelegate {
     func positionBarStoppedMoving(_ playerTime: CMTime) {
-       
+        delegate?.spidPlayerController?.player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+        delegate?.spidPlayerController?.player?.play()
+        
+        guard let startTime = trimmerView.startTime, let endTime = trimmerView.endTime else {return}
+        let timeRange = CMTimeRange(start: startTime, end: endTime)
+        if let viewModel = UserDataManager.main.selectedLabelView?.viewModel {
+            viewModel.timeRange = timeRange
+            viewModel.rightHandleConstraintConstant = trimmerView.rightConstraint?.constant
+            viewModel.leftHandleConstraintConstant = trimmerView.leftConstraint?.constant
+        }
     }
 
     func didChangePositionBar(_ playerTime: CMTime) {
+        Task {
+            await MainActor.run {
+                delegate?.spidPlayerController?.player?.pause()
+            }
+            
+            await delegate?.spidPlayerController?.player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+        }
         
     }
     

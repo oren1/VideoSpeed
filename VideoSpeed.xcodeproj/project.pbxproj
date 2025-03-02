@@ -12,6 +12,7 @@
 		6B04F5892CBBAAC2000C8C59 /* CropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B04F5872CBBAAC2000C8C59 /* CropViewController.swift */; };
 		6B0C7D792C88894C00063CBE /* PublishersManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C7D782C88894C00063CBE /* PublishersManager.swift */; };
 		6B0C7D7B2C89E4A700063CBE /* NotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C7D7A2C89E4A700063CBE /* NotificationsManager.swift */; };
+		6B1CF4722D6B27B1005BB89E /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1CF4712D6B27A6005BB89E /* Notification+Extension.swift */; };
 		6B23C1DD2BF629DC001C4F24 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23C1DC2BF629DC001C4F24 /* NetworkManager.swift */; };
 		6B23C1E02BF62F11001C4F24 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23C1DF2BF62F11001C4F24 /* User.swift */; };
 		6B23C1E22BF65B7C001C4F24 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23C1E12BF65B7C001C4F24 /* Response.swift */; };
@@ -119,6 +120,7 @@
 		6B04F5872CBBAAC2000C8C59 /* CropViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropViewController.swift; sourceTree = "<group>"; };
 		6B0C7D782C88894C00063CBE /* PublishersManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishersManager.swift; sourceTree = "<group>"; };
 		6B0C7D7A2C89E4A700063CBE /* NotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsManager.swift; sourceTree = "<group>"; };
+		6B1CF4712D6B27A6005BB89E /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
 		6B23C1DC2BF629DC001C4F24 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		6B23C1DF2BF62F11001C4F24 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		6B23C1E12BF65B7C001C4F24 /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
@@ -297,7 +299,7 @@
 			path = Trimmer;
 			sourceTree = "<group>";
 		};
-		6B9610272D4A234D00DEE296 /* Edit Section */ = {
+		6B9610272D4A234D00DEE296 /* Text Edit Section */ = {
 			isa = PBXGroup;
 			children = (
 				6B96101F2D49ECA200DEE296 /* TextSectionVC.swift */,
@@ -307,7 +309,7 @@
 				6B96102C2D4C9A5B00DEE296 /* PlusCell.swift */,
 				6B96102D2D4C9A5B00DEE296 /* PlusCell.xib */,
 			);
-			path = "Edit Section";
+			path = "Text Edit Section";
 			sourceTree = "<group>";
 		};
 		6BAC9BBD2A666E500071A41B /* CustomViews */ = {
@@ -353,7 +355,7 @@
 				6B04F5842CB916FA000C8C59 /* CropSectioVC.xib */,
 				6B6801222D1557A4002B5454 /* TrimmerSectionVC.swift */,
 				6B6801232D1557A4002B5454 /* TrimmerSectionVC.xib */,
-				6B9610272D4A234D00DEE296 /* Edit Section */,
+				6B9610272D4A234D00DEE296 /* Text Edit Section */,
 			);
 			path = "Edit Sections";
 			sourceTree = "<group>";
@@ -361,6 +363,7 @@
 		6BCAF7E52A63B6800039BE15 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				6B1CF4712D6B27A6005BB89E /* Notification+Extension.swift */,
 				6BC7B52B2D5C9A9200FF1CE9 /* UIView+Extension.swift */,
 				6B9610152D43C8BD00DEE296 /* UILabel+Extension.swift */,
 				6B9610132D426AF800DEE296 /* String+Extension.swift */,
@@ -669,6 +672,7 @@
 				6B23C1E22BF65B7C001C4F24 /* Response.swift in Sources */,
 				6B6801272D17F31F002B5454 /* SpidAsset.swift in Sources */,
 				6B6700A62A6CF77E006F2980 /* PurchaseViewController.swift in Sources */,
+				6B1CF4722D6B27B1005BB89E /* Notification+Extension.swift in Sources */,
 				6B9610182D44CD8D00DEE296 /* SpidLabel.swift in Sources */,
 				6BB4EE802A8E11CA006CF87C /* CrownView.swift in Sources */,
 				6B23C1E02BF62F11001C4F24 /* User.swift in Sources */,
