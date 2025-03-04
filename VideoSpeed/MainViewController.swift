@@ -318,8 +318,21 @@ extension MainViewController: UIImagePickerControllerDelegate {
         else { return }
       
         let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
-            vc.assetUrl = url
+
+        let asset = AVURLAsset(url: url)
+        Task {
+            guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+                  let timeRange = try? await videoTrack.load(.timeRange),
+                  let naturalSize = try? await videoTrack.load(.naturalSize),
+                  let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return}
+         
+            let videoInfo = VideoHelper.orientation(from: preferredTransform)
+            
+            UserDataManager.main.currentSpidAsset = SpidAsset(asset: asset,timeRange: timeRange)
+            vc.asset = asset
             self.navigationController?.pushViewController(vc, animated: true)
+            
+        }
                     
     }
 
@@ -417,7 +430,6 @@ extension MainViewController: UICollectionViewDelegate {
         } completionHandler: { responseURL, asset in
             DispatchQueue.main.async { [weak self] in
                 self?.hideLoading()
-//                vc.assetUrl = responseURL
                 Task {
                     guard let asset = asset,
                           let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
