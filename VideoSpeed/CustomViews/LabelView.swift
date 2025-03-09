@@ -54,6 +54,7 @@ class LabelView: UIView {
 
     @IBAction func cancelButtonTapped(_ sender: Any) {
         print("cancelButtonTapped")
+        self.removeFromSuperview()
         UserDataManager.main.overlayLabelViews.removeAll(where: {$0 == self})
     }
      

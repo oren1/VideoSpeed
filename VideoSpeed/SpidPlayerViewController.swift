@@ -351,10 +351,11 @@ class SpidPlayerViewController: UIViewController {
     @IBAction func sliderValueChanged(_ slider: UISlider) {
         Task {
             let currentTime = await getTime(slider.value)
-            await MainActor.run(body: { [weak self] in self?.player.pause()})
+//            await MainActor.run(body: { [weak self] in self?.player.pause()})
             player.pause()
             await player.seek(to: currentTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
             await updateTimeLabels()
+            await updateLabelViews()
         }
     }
     
