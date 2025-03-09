@@ -41,6 +41,14 @@ class TextSectionVC: SectionViewController {
 
         NotificationCenter.default.addObserver(forName: Notification.Name.SelectedLabelViewChanged , object: nil, queue: nil) { [weak self] notification in
             self?.updateTrimmerViewHandles()
+            if let selectedLabelView = UserDataManager.main.selectedLabelView,
+               let startTime = selectedLabelView.viewModel.timeRange?.start {
+                self?.delegate.spidPlayerController.player.seek(to: startTime)
+                self?.delegate.spidPlayerController.player.play()
+            }
+            else {
+                self?.delegate.spidPlayerController.player.seek(to: .zero)
+            }
             self?.textCollectionView.reloadData()
         }
         

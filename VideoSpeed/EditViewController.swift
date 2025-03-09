@@ -182,7 +182,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     }
     
     
-    
+   
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false;
@@ -210,6 +210,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
     }
     deinit {
+        print("deinit")
+        UserDataManager.main.overlayLabelViews.removeAll()
         UserDataManager.main.usingSlider = false
     }
     
@@ -316,11 +318,13 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     
     private func add(labelView: LabelView, to layer: CALayer, videoSize: CGSize) {
         
+        labelView.isHidden = false
         let scaleX = videoSize.width / spidPlayerController.videoContainerView.frame.width
         let scaleY = videoSize.height / spidPlayerController.videoContainerView.frame.height
       
-        labelView.viewModel.selected = false
-        let size = CGSize(width: labelView.viewModel.width * scaleX, height: labelView.viewModel.height * scaleY)
+        let viewModel = labelView.viewModel!
+        viewModel.selected = false
+        let size = CGSize(width: viewModel.width * scaleX, height: viewModel.height * scaleY)
         let bounds = CGRect(origin: .zero, size: size)
         let renderer = UIGraphicsImageRenderer(size: size)
         let image = renderer.image { ctx in
@@ -329,6 +333,14 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         let imageView = UIImageView(image: image)
         imageView.center = CGPoint(x: labelView.center.x * scaleX, y: labelView.center.y * scaleX)
         imageView.transform = imageView.transform.rotated(by: labelView.viewModel.rotation)
+        
+
+        if let timeRange = viewModel.timeRange {
+            print("\(viewModel.text), start: \(timeRange.start.seconds), duration: \(timeRange.duration.seconds)")
+            imageView.layer.beginTime = timeRange.start.seconds
+            imageView.layer.duration = timeRange.duration.seconds
+        }
+        
         layer.addSublayer(imageView.layer)
     }
     
