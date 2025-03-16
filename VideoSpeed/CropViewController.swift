@@ -64,6 +64,19 @@ class CropViewController: UIViewController {
 
         ]
         NSLayoutConstraint.activate(constraints)
+        
+        for constraint in cropPickerView.constraints {
+          if let firstItem = constraint.firstItem,
+             let secondItem = constraint.secondItem,
+                type(of: firstItem) == CropView.self,
+                type(of: secondItem) == LineButton.self {
+              
+                  constraint.constant = 0
+          }
+        }
+
+        cropPickerView.layoutIfNeeded()
+        
     }
     
     func isUsingCropFeature(croppedFrame: CGRect) -> Bool {
