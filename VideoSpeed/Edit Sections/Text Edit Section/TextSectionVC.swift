@@ -80,6 +80,7 @@ class TextSectionVC: SectionViewController {
         trimmerView.positionBarColor = UIColor.clear
         trimmerView.regenerateThumbnails()
         setTrimmerInteractionStatus()
+        resetTimeRangesForLabelViews()
     }
     
     func updateTrimmerViewHandles() {
@@ -107,6 +108,14 @@ class TextSectionVC: SectionViewController {
     func disableTrimmerView() {
         trimmerView.isUserInteractionEnabled = false
         trimmerView.layer.opacity = 0.4
+    }
+    
+    
+    func resetTimeRangesForLabelViews() {
+        for labelView in UserDataManager.main.overlayLabelViews {
+            labelView.viewModel.resetTimeRange()
+
+        }
     }
 }
 
@@ -165,6 +174,8 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
             if let navigationController = view.window?.rootViewController as? UINavigationController {
                 let textEditViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TextEditViewController") as! TextEditViewController
                 textEditViewController.modalPresentationStyle = .fullScreen
+                textEditViewController.editStatus = .new
+                textEditViewController.videoContainerWidth = delegate.spidPlayerController.videoContainerView.frame.width
                 navigationController.present(textEditViewController, animated: true)
             }
             return

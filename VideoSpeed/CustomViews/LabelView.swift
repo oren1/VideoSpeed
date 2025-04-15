@@ -23,14 +23,20 @@ class LabelView: UIView {
                     self?.setUnselected()
                 }
             }.store(in: &subscribers)
+            
+            
+//            viewModel.$text.
+            
         }
     }
     
     @IBOutlet var contentView: UIView!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var backgroundView: UIView!
-    
     @IBOutlet weak var cancelButtonTopConstraintConstant: NSLayoutConstraint!
+    
+    var paddingLabel: PaddingLabel?
+
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -48,8 +54,7 @@ class LabelView: UIView {
         contentView.frame = self.bounds
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         backgroundView.layer.cornerRadius = 8
-        backgroundView.layer.borderWidth = 1
-        backgroundView.layer.borderColor = UIColor.orange.cgColor
+
     }
 
     @IBAction func cancelButtonTapped(_ sender: Any) {
@@ -69,28 +74,89 @@ class LabelView: UIView {
         return labelView
     }
     
-    static func instantiateWithLabelViewModel(_ model: LabelViewModel) -> LabelView {
+//    static func instantiateWithLabelViewModel(_ model: LabelViewModel) -> LabelView {
+//
+//        let labelView = LabelView(frame: CGRect(origin: .zero, size: CGSize(width: model.width, height: model.height)))
+//        labelView.viewModel = model
+//        
+//        labelView.center = .zero
+////        labelView.layer.borderWidth = model.borderWidth
+////        labelView.layer.borderColor = model.borderColor
+////        labelView.layer.cornerRadius = 8
+//        
+//        let label = SpidLabel(frame: model.labelFrame)
+//        label.text = model.text
+//        label.textColor = model.textColor
+//        label.backgroundColor = model.backgroundColor
+//        label.numberOfLines = model.numberOfLines
+//        label.layer.masksToBounds = model.masksToBounds
+//        label.textAlignment = model.textAlignment
+//        
+//
+//        label.center = CGPoint(x: labelView.frame.size.width / 2.0, y: labelView.frame.size.height / 2.0)
+//        labelView.addSubview(label)
+//      
+//        let bounds = label.bounds
+//        label.font = label.font.withSize(200)
+//        label.bounds.size = label.intrinsicContentSize
+//        label.layer.cornerRadius = label.bounds.size.height / 10
+//        
+//        let scaleX = bounds.size.width / label.frame.size.width
+//        let scaleY = bounds.size.height / label.frame.size.height
+//        
+//        
+//        label.transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
+//
+//        
+//        return labelView
+//    }
+    
 
-        let labelView = LabelView(frame: CGRect(origin: .zero, size: CGSize(width: model.width, height: model.height)))
-        labelView.viewModel = model
+//    static func instantiateWithLabel(_ canvasLabel: UILabel, viewModel: LabelViewModel) -> LabelView {
+//
+//        let labelView = LabelView(frame: CGRect(origin: .zero, size: canvasLabel.frame.size))
+//        labelView.viewModel = viewModel
+//        
+//        labelView.center = .zero
+//        
+//        // copy the label
+////        let label = canvasLabel.copyLabel()
+////
+////        label.center = CGPoint(x: labelView.frame.size.width / 2.0, y: labelView.frame.size.height / 2.0)
+////        labelView.addSubview(label)
+////
+////        let bounds = label.bounds
+////        label.font = label.font.withSize(200)
+////        label.bounds.size = label.intrinsicContentSize
+////        label.layer.cornerRadius = label.bounds.size.height / 10
+////        
+////        let scaleX = bounds.size.width / label.frame.size.width
+////        let scaleY = bounds.size.height / label.frame.size.height
+////        
+////        
+////        label.transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
+//
+//        let paddingLabel = PaddingLabel.instantiateWith(canvasLabel: canvasLabel, verticalPadding: 10, horizontalPadding: 10)
+//        paddingLabel.backgroundColor = .blue
+//        paddingLabel.center = CGPoint(x: labelView.frame.size.width / 2.0, y: labelView.frame.size.height / 2.0)
+//        labelView.addSubview(paddingLabel)
+//        
+//        return labelView
+//    }
+    
+    
+    static func instantiateWithPaddingLabel(_ paddingLabel: PaddingLabel, viewModel: LabelViewModel) -> LabelView {
+        let labelViewSize = CGSize(width: viewModel.width, height: viewModel.height)
+        let labelView = LabelView(frame: CGRect(origin: .zero, size: labelViewSize))
         
         labelView.center = .zero
-//        labelView.layer.borderWidth = model.borderWidth
-//        labelView.layer.borderColor = model.borderColor
-//        labelView.layer.cornerRadius = 8
         
-        let label = SpidLabel(frame: model.labelFrame)
-        label.text = model.text
-        label.textColor = model.textColor
-        label.backgroundColor = model.backgroundColor
-        label.numberOfLines = model.numberOfLines
-        label.layer.masksToBounds = model.masksToBounds
-        label.textAlignment = model.textAlignment
-        
+        // copy the PaddingLabel
+        let paddingLabel = paddingLabel.copyPaddingLabel()
+        labelView.paddingLabel = paddingLabel
+        labelView.viewModel = viewModel
 
-        label.center = CGPoint(x: labelView.frame.size.width / 2.0, y: labelView.frame.size.height / 2.0)
-        labelView.addSubview(label)
-      
+        let label = paddingLabel.label!
         let bounds = label.bounds
         label.font = label.font.withSize(200)
         label.bounds.size = label.intrinsicContentSize
@@ -101,10 +167,13 @@ class LabelView: UIView {
         
         
         label.transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
-
+        
+        paddingLabel.center = CGPoint(x: labelView.frame.size.width / 2.0, y: labelView.frame.size.height / 2.0)
+        labelView.addSubview(paddingLabel)
         
         return labelView
     }
+    
     
     func setSelected() {
         self.backgroundView.layer.borderWidth = 1
