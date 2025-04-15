@@ -181,8 +181,6 @@ class SpidPlayerViewController: UIViewController {
         selectedLabelView.viewModel.width *= gesture.scale
         selectedLabelView.viewModel.height *= gesture.scale
         
-       
-        
         gesture.scale = 1
     }
     

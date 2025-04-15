@@ -36,6 +36,7 @@ extension EditViewController {
                 await UserDataManager.main.currentSpidAsset.updateSpeed(speed: speed)
                 await self?.reloadComposition()
                 self?.spidPlayerController?.player.play()
+                await self?.textSectionVC.createTrimmerView()
             }
         }
         
