@@ -34,6 +34,28 @@ class UserDataManager: ObservableObject {
             NotificationCenter.default.post(name: Notification.Name.OverlayLabelViewsUpdated, object: nil)
         }
     }
+    
+    @Published
+    var labelViewsModels: [LabelViewModel] = [] {
+        didSet {
+            NotificationCenter.default.post(name: Notification.Name.OverlayLabelViewsUpdated, object: nil)
+        }
+    }
+    
+    func setSelectedLabeViewModel(_ selectedLabelViewModel: LabelViewModel) {
+        for viewModel in labelViewsModels {
+            viewModel.selected = false
+            if viewModel === selectedLabelViewModel {
+                viewModel.selected = true
+                self.selectedLabelViewModel = viewModel
+            }
+        }
+        
+        NotificationCenter.default.post(name: Notification.Name.SelectedLabelViewChanged, object: nil)
+    }
+    
+    var selectedLabelViewModel: LabelViewModel?
+    
     func setSelectedLabeView(_ selectedLabelView: LabelView) {
         for labelView in overlayLabelViews {
             labelView.viewModel.selected = false

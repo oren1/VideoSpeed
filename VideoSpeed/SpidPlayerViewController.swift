@@ -49,7 +49,6 @@ class SpidPlayerViewController: UIViewController {
     var selectedLabelView: LabelView?
     var scaleValue = 0.0
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         videoContainerView = UIView(frame: CGRectZero)
@@ -59,7 +58,7 @@ class SpidPlayerViewController: UIViewController {
         setGestureRecognizers()
                 
         NotificationCenter.default.addObserver(forName: Notification.Name.OverlayLabelViewsUpdated , object: nil, queue: nil) { [weak self] notification in
-            self?.addLabelViews(labelViews: UserDataManager.main.overlayLabelViews)
+            self?.addLabelViews(labelViewsModels: UserDataManager.main.labelViewsModels)
         }
         
         slider.setThumbImage(UIImage(), for: .normal)
@@ -130,14 +129,48 @@ class SpidPlayerViewController: UIViewController {
             
             self.videoContainerView.addSubview(labelView)
             
-            if labelView.center == .zero && labelViews.count - 1 == index  {
-                labelView.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height / 2)
-                UserDataManager.main.setSelectedLabeView(labelView)
+            if labelView.viewModel.center == .zero && labelViews.count - 1 == index  {
+                labelView.viewModel.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height / 2)
+               
+                UserDataManager.main.setSelectedLabeViewModel(labelView.viewModel)
+//                UserDataManager.main.setSelectedLabeView(labelView)
             }
         
         }
     }
     
+    func addLabelViews(labelViewsModels: [LabelViewModel]) {
+        // Remove all LabelView's from the screen
+        for view in videoContainerView.subviews {
+            if view is LabelView {
+                view.removeFromSuperview()
+            }
+        }
+        for (index, viewModel) in labelViewsModels.enumerated() {
+           // Create a new LabelView for every viewModel and add it to the screen
+            let labelView = LabelView.instantiateWithViewModel(viewModel)
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapView(_:)))
+            labelView.addGestureRecognizer(tapGestureRecognizer)
+            
+            if labelView.viewModel.center == .zero && labelViewsModels.count - 1 == index  {
+                labelView.viewModel.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height / 2)
+               
+                UserDataManager.main.setSelectedLabeViewModel(labelView.viewModel)
+            }
+            
+            let scale = viewModel.fullScale
+            let rotation = viewModel.fullRotation
+            
+
+            self.videoContainerView.addSubview(labelView)
+            
+            labelView.transform = labelView.transform.scaledBy(x: scale, y: scale)
+            labelView.transform = labelView.transform.rotated(by: rotation)
+        }
+        
+    }
+    
+   
     
     func setSelectedLabelView(labelView: LabelView) {
         
@@ -153,33 +186,32 @@ class SpidPlayerViewController: UIViewController {
           return
         }
        
-        UserDataManager.main.setSelectedLabeView(labelView)
+        UserDataManager.main.setSelectedLabeViewModel(labelView.viewModel)
+//        UserDataManager.main.setSelectedLabeView(labelView)
 //        setSelectedLabelView(labelView: labelView)
     }
     
     @objc func didRotate(_ gesture: UIRotationGestureRecognizer) {
 
-        guard let selectedLabelView = UserDataManager.main.selectedLabelView else {return}
-        selectedLabelView.transform = selectedLabelView.transform.rotated(
-          by: gesture.rotation
-        )
-        
-        selectedLabelView.viewModel.updateRotation(rotation: gesture.rotation)
+        guard let selectedLabelViewModel = UserDataManager.main.selectedLabelViewModel else {return}
+//        selectedLabelView.transform = selectedLabelView.transform.rotated(
+//          by: gesture.rotation
+//        )
+//        fullRotation += gesture.rotation
+        selectedLabelViewModel.rotation = gesture.rotation
+        selectedLabelViewModel.fullRotation += gesture.rotation
+//        selectedLabelView.viewModel.updateRotation(rotation: gesture.rotation)
         gesture.rotation = 0
     
     }
     
     @objc func didPinch(_ gesture: UIPinchGestureRecognizer) {
 
-        guard let selectedLabelView = UserDataManager.main.selectedLabelView else {return}
-        selectedLabelView.transform = selectedLabelView.transform.scaledBy(
-          x: gesture.scale,
-          y: gesture.scale
-        )
-       
-        selectedLabelView.cancelButton.transform = selectedLabelView.cancelButton.transform.scaledBy(x: 1/gesture.scale, y: 1/gesture.scale)
-        selectedLabelView.viewModel.width *= gesture.scale
-        selectedLabelView.viewModel.height *= gesture.scale
+        guard let selectedLabelViewModel = UserDataManager.main.selectedLabelViewModel else {return}
+
+        selectedLabelViewModel.scale = gesture.scale
+        selectedLabelViewModel.width *= gesture.scale
+        selectedLabelViewModel.height *= gesture.scale
         
         gesture.scale = 1
     }
@@ -189,13 +221,12 @@ class SpidPlayerViewController: UIViewController {
     @objc func didPanLabel(_ gesture: UIPanGestureRecognizer) {
          let translation = gesture.translation(in: self.videoContainerView)
         
-        guard let selectedLabelView = UserDataManager.main.selectedLabelView else { return }
+        guard let selectedLabelViewModel = UserDataManager.main.selectedLabelViewModel else { return }
           let center = CGPoint(
-            x: selectedLabelView.center.x + translation.x,
-            y: selectedLabelView.center.y + translation.y
+            x: selectedLabelViewModel.center.x + translation.x,
+            y: selectedLabelViewModel.center.y + translation.y
           )
-          selectedLabelView.center = center
-          
+          selectedLabelViewModel.center = center
           gesture.setTranslation(.zero, in: view)
     }
     
@@ -317,18 +348,18 @@ class SpidPlayerViewController: UIViewController {
     func updateLabelViews() async {
         let videoCurrentTime =  playerLayer.player!.currentTime()
 
-        for labelView in UserDataManager.main.overlayLabelViews {
+        for labelViewModel in UserDataManager.main.labelViewsModels {
             
-            if let timeRange = labelView.viewModel.timeRange {
+            if let timeRange = labelViewModel.timeRange {
                 if timeRange.containsTime(videoCurrentTime) {
-                    labelView.isHidden = false
+                    labelViewModel.isHidden = false
                     continue
                 }
-                labelView.isHidden = true
+                labelViewModel.isHidden = true
 
             }
             else {
-                labelView.isHidden = false
+                labelViewModel.isHidden = false
             }
             
         }

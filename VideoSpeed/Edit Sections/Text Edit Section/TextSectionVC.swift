@@ -41,8 +41,8 @@ class TextSectionVC: SectionViewController {
 
         NotificationCenter.default.addObserver(forName: Notification.Name.SelectedLabelViewChanged , object: nil, queue: nil) { [weak self] notification in
             self?.updateTrimmerViewHandles()
-            if let selectedLabelView = UserDataManager.main.selectedLabelView,
-               let startTime = selectedLabelView.viewModel.timeRange?.start {
+            if let selectedLabelViewModel = UserDataManager.main.selectedLabelViewModel,
+               let startTime = selectedLabelViewModel.timeRange?.start {
                 self?.delegate.spidPlayerController.player.seek(to: startTime)
                 self?.delegate.spidPlayerController.player.play()
             }
@@ -84,7 +84,7 @@ class TextSectionVC: SectionViewController {
     }
     
     func updateTrimmerViewHandles() {
-        guard let viewModel = UserDataManager.main.selectedLabelView?.viewModel else {
+        guard let viewModel = UserDataManager.main.selectedLabelViewModel else {
             return
         }
         self.trimmerView.updateRightConstraint(constatnt: viewModel.rightHandleConstraintConstant ??  0)
@@ -92,7 +92,7 @@ class TextSectionVC: SectionViewController {
     }
     
     func setTrimmerInteractionStatus() {
-        if UserDataManager.main.overlayLabelViews.count > 0 {
+        if UserDataManager.main.labelViewsModels.count > 0 {
             self.enableTrimmerView()
         }
         else {
@@ -117,6 +117,16 @@ class TextSectionVC: SectionViewController {
 
         }
     }
+    
+    func openTextEditViewController(editStatus: EditStatus, labelViewModel: LabelViewModel? = nil) {
+        if let navigationController = view.window?.rootViewController as? UINavigationController {
+            let textEditViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TextEditViewController") as! TextEditViewController
+            textEditViewController.modalPresentationStyle = .fullScreen
+            textEditViewController.editStatus = editStatus
+            textEditViewController.videoContainerWidth = delegate.spidPlayerController.videoContainerView.frame.width
+            navigationController.present(textEditViewController, animated: true)
+        }
+    }
 }
 
 
@@ -132,12 +142,12 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
      _ collectionView: UICollectionView,
      numberOfItemsInSection section: Int
    ) -> Int {
-       return UserDataManager.main.overlayLabelViews.count + 1
+       return UserDataManager.main.labelViewsModels.count + 1
    }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        if indexPath.row == UserDataManager.main.overlayLabelViews.count {
+        if indexPath.row == UserDataManager.main.labelViewsModels.count {
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: plusCellIReusableIdentifier,
                for: indexPath
@@ -152,14 +162,14 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
         ) as! TextCell
 
          
-         let labelView = UserDataManager.main.overlayLabelViews[indexPath.row]
-         if labelView.viewModel.selected {
+        let labelViewModel = UserDataManager.main.labelViewsModels[indexPath.row]
+         if labelViewModel.selected {
              cell.backgroundColor = .systemBlue
          }
          else {
              cell.backgroundColor = .gray
          }
-         cell.textLabel.text = labelView.viewModel.text
+         cell.textLabel.text = labelViewModel.text
          cell.layer.cornerRadius = 8
 
          return cell
@@ -168,22 +178,20 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
     // MARK: Delegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // Selection of the plus button
-        if indexPath.row == UserDataManager.main.overlayLabelViews.count {
+        if indexPath.row == UserDataManager.main.labelViewsModels.count {
             // open the TextEditViewController
-            
-            if let navigationController = view.window?.rootViewController as? UINavigationController {
-                let textEditViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "TextEditViewController") as! TextEditViewController
-                textEditViewController.modalPresentationStyle = .fullScreen
-                textEditViewController.editStatus = .new
-                textEditViewController.videoContainerWidth = delegate.spidPlayerController.videoContainerView.frame.width
-                navigationController.present(textEditViewController, animated: true)
-            }
+            openTextEditViewController(editStatus: .new)
             return
         }
 
         
-        let selectedLabelView = UserDataManager.main.overlayLabelViews[indexPath.row]
-        UserDataManager.main.setSelectedLabeView(selectedLabelView)
+        let selectedLabelViewModel = UserDataManager.main.labelViewsModels[indexPath.row]
+        if UserDataManager.main.selectedLabelViewModel === selectedLabelViewModel {
+            openTextEditViewController(editStatus: .editing, labelViewModel: selectedLabelViewModel)
+        }
+        else {
+            UserDataManager.main.setSelectedLabeViewModel(selectedLabelViewModel)
+        }
         
         collectionView.reloadData()
     }
@@ -194,7 +202,7 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
       sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
       // 2
-        let overlayLabelViews = UserDataManager.main.overlayLabelViews
+//        let _ = UserDataManager.main.overlayLabelViews
         let heightPaddingSpace = sectionInsets.top * 2
         let availableHeight = collectionView.frame.height - heightPaddingSpace
 //        let availabelWidth = collectionView.frame.width - widthPaddingSpace
@@ -209,7 +217,7 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
       layout collectionViewLayout: UICollectionViewLayout,
       insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        let numberOfCells = UserDataManager.main.overlayLabelViews.count + 1
+        let numberOfCells = UserDataManager.main.labelViewsModels.count + 1
         let totalCellWidth = (cellWidth * Double(numberOfCells))
         let totalSpacingWidth = sectionInsets.left * Double(numberOfCells - 1)
 
@@ -243,7 +251,7 @@ extension Trimmer: TrimmerViewDelegate {
         
         guard let startTime = trimmerView.startTime, let endTime = trimmerView.endTime else {return}
         let timeRange = CMTimeRange(start: startTime, end: endTime)
-        if let viewModel = UserDataManager.main.selectedLabelView?.viewModel {
+        if let viewModel = UserDataManager.main.selectedLabelViewModel {
             viewModel.timeRange = timeRange
             viewModel.rightHandleConstraintConstant = trimmerView.rightConstraint?.constant
             viewModel.leftHandleConstraintConstant = trimmerView.leftConstraint?.constant

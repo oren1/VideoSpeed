@@ -209,9 +209,11 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         super.viewWillDisappear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
     }
+    
     deinit {
         print("deinit")
-        UserDataManager.main.overlayLabelViews.removeAll()
+        UserDataManager.main.labelViewsModels.removeAll()
+        UserDataManager.main.selectedLabelViewModel = nil
         UserDataManager.main.usingSlider = false
     }
     
@@ -315,6 +317,43 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         return (composition,videoComposition)
         
     }
+    
+    func addLabelViews(to layer: CALayer, videoSize: CGSize)  {
+       
+        let scaleX = videoSize.width / spidPlayerController.videoContainerView.frame.width
+        let scaleY = videoSize.height / spidPlayerController.videoContainerView.frame.height
+        
+        let labelViews = spidPlayerController.videoContainerView.subviews.compactMap { $0 is LabelView ? $0 as? LabelView : nil }
+        
+        for labelView in labelViews {
+            let viewModel = labelView.viewModel!
+            viewModel.selected = false
+            labelView.isHidden = false
+//            viewModel.isHidden = false
+            
+            let size = CGSize(width: viewModel.width * scaleX, height: viewModel.height * scaleY)
+            let bounds = CGRect(origin: .zero, size: size)
+            let renderer = UIGraphicsImageRenderer(size: size)
+            let image = renderer.image { ctx in
+                labelView.drawHierarchy(in: bounds, afterScreenUpdates: true)
+            }
+            let imageView = UIImageView(image: image)
+            imageView.center = CGPoint(x: labelView.center.x * scaleX, y: labelView.center.y * scaleX)
+            imageView.transform = imageView.transform.rotated(by: viewModel.fullRotation)
+            
+            if let timeRange = viewModel.timeRange {
+                print("\(viewModel.text), start: \(timeRange.start.seconds), duration: \(timeRange.duration.seconds)")
+                imageView.layer.beginTime = timeRange.start.seconds
+                imageView.layer.duration = timeRange.duration.seconds
+            }
+            
+        
+            
+            layer.addSublayer(imageView.layer)
+        }
+        
+    }
+    
     
     private func add(labelView: LabelView, to layer: CALayer, videoSize: CGSize) {
         
@@ -474,11 +513,11 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         Task {
            await exportVideo()
-
         }
     }
     
     @objc func exportVideo() async {
+        spidPlayerController.player.pause()
         let theComposition = composition.copy() as! AVComposition
 //        let videoComposition = videoComposition.copy() as! AVVideoComposition
         
@@ -494,9 +533,11 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         outputLayer.addSublayer(videoLayer)
         outputLayer.addSublayer(overlayLayer)
         
-        for labelView in UserDataManager.main.overlayLabelViews {
-            add(labelView: labelView, to: overlayLayer, videoSize: videoSize)
-        }
+//        for labelView in UserDataManager.main.overlayLabelViews {
+//            add(labelView: labelView, to: overlayLayer, videoSize: videoSize)
+//        }
+        
+        addLabelViews(to: overlayLayer, videoSize: videoSize)
         
         videoComposition.animationTool = AVVideoCompositionCoreAnimationTool(
           postProcessingAsVideoLayer: videoLayer,

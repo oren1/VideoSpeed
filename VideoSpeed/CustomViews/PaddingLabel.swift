@@ -14,6 +14,27 @@ class PaddingLabel: UIView{
     var horizontalPadding: Double!
     var verticalPadding: Double!
     
+    var text: String {
+        set {
+            label.text = newValue
+        }
+        get { label.text! }
+    }
+    
+    var textColor: UIColor {
+        set {
+            label.textColor = newValue
+        }
+        get { label.textColor }
+    }
+    
+    var textAlignment: NSTextAlignment {
+        set {
+            label.textAlignment = newValue
+        }
+        get { label.textAlignment }
+    }
+    
     init(text: String!, verticalPadding: Double, horizontalPadding: Double) {
         let font = UIFont.systemFont(ofSize: 18)
         let textSize = text.textSize(withConstrainedWidth: 500, font: font).size
@@ -21,6 +42,8 @@ class PaddingLabel: UIView{
         
         super.init(frame: CGRect(origin: .zero, size: viewSize))
         self.backgroundColor = .green
+        self.layer.cornerRadius = frame.width / 10
+        self.autoresizingMask =  [.flexibleWidth, .flexibleHeight]
         self.horizontalPadding = horizontalPadding
         self.verticalPadding = verticalPadding
         
@@ -28,11 +51,9 @@ class PaddingLabel: UIView{
         self.addSubview(label)
         label.center = CGPoint(x: self.frame.width / 2.0, y: self.frame.height / 2.0)
         label.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        label.text = text
         label.numberOfLines = 0
-        label.backgroundColor = .clear
-        label.textColor = .white
-        
+        label.adjustsFontSizeToFitWidth = true
+        self.text = text
     }
     
     
@@ -43,7 +64,7 @@ class PaddingLabel: UIView{
     
     func copyPaddingLabel() -> PaddingLabel {
         let view = PaddingLabel(text: self.label.text, verticalPadding: self.verticalPadding, horizontalPadding: self.horizontalPadding)
-        
+        view.autoresizingMask =  [.flexibleWidth, .flexibleHeight]
         view.layer.cornerRadius = self.frame.width / 10
         
         label.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -78,6 +99,7 @@ class PaddingLabel: UIView{
     }
     
     
+    // MARK: UI Updates
     var heightConstraint: NSLayoutConstraint? {
         get {
             return constraints.first(where: {
@@ -95,4 +117,5 @@ class PaddingLabel: UIView{
         }
         set { setNeedsLayout() }
     }
+    
 }

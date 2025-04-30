@@ -24,9 +24,54 @@ class LabelView: UIView {
                 }
             }.store(in: &subscribers)
             
+            viewModel?.$text
+                .dropFirst()
+                .receive(on: DispatchQueue.main)
+                .sink(receiveValue: { [weak self] text in
+                    guard let self = self else { return }
+                    paddingLabel?.text = text
+                    let font = UIFont.systemFont(ofSize: 18)
+                    let newTextSize = text.textSize(withConstrainedWidth: 500, font: font)
+                    viewModel.labelFrame = newTextSize
+                    self.frame.size = CGSize(width: self.viewModel.width, height: self.viewModel.height)
+                })
+                .store(in: &subscribers)
             
-//            viewModel.$text.
+            viewModel.$center
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] center in
+                    self?.center = center
+                }.store(in: &subscribers)
             
+            viewModel.$scale
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] scale in
+                    guard let self = self else { return }
+                    transform = transform.scaledBy(
+                        x: scale,
+                        y: scale
+                    )
+                 cancelButton.transform = cancelButton.transform.scaledBy(x: 1/scale, y: 1/scale)
+                 viewModel.fullScale *= scale
+                }.store(in: &subscribers)
+        
+            viewModel.$rotation
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] rotation in
+                    guard let self = self else { return }
+                   
+                    transform = transform.rotated(
+                        by: rotation
+                    )
+    
+                }.store(in: &subscribers)
+            
+            viewModel.$isHidden
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] isHidden in
+                    self?.isHidden = isHidden
+                }
+                .store(in: &subscribers)
         }
     }
     
@@ -60,7 +105,7 @@ class LabelView: UIView {
     @IBAction func cancelButtonTapped(_ sender: Any) {
         print("cancelButtonTapped")
         self.removeFromSuperview()
-        UserDataManager.main.overlayLabelViews.removeAll(where: {$0 == self})
+        UserDataManager.main.labelViewsModels.removeAll(where: {$0 === self.viewModel})
     }
      
     
@@ -74,88 +119,53 @@ class LabelView: UIView {
         return labelView
     }
     
-//    static func instantiateWithLabelViewModel(_ model: LabelViewModel) -> LabelView {
-//
-//        let labelView = LabelView(frame: CGRect(origin: .zero, size: CGSize(width: model.width, height: model.height)))
-//        labelView.viewModel = model
-//        
-//        labelView.center = .zero
-////        labelView.layer.borderWidth = model.borderWidth
-////        labelView.layer.borderColor = model.borderColor
-////        labelView.layer.cornerRadius = 8
-//        
-//        let label = SpidLabel(frame: model.labelFrame)
-//        label.text = model.text
-//        label.textColor = model.textColor
-//        label.backgroundColor = model.backgroundColor
-//        label.numberOfLines = model.numberOfLines
-//        label.layer.masksToBounds = model.masksToBounds
-//        label.textAlignment = model.textAlignment
-//        
-//
-//        label.center = CGPoint(x: labelView.frame.size.width / 2.0, y: labelView.frame.size.height / 2.0)
-//        labelView.addSubview(label)
-//      
-//        let bounds = label.bounds
-//        label.font = label.font.withSize(200)
-//        label.bounds.size = label.intrinsicContentSize
-//        label.layer.cornerRadius = label.bounds.size.height / 10
-//        
-//        let scaleX = bounds.size.width / label.frame.size.width
-//        let scaleY = bounds.size.height / label.frame.size.height
-//        
-//        
-//        label.transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
-//
-//        
-//        return labelView
-//    }
+    static func instantiateWithViewModel(_ viewModel: LabelViewModel) -> LabelView {
+        
+        let paddingLabel = PaddingLabel(text: viewModel.text, verticalPadding: 12, horizontalPadding: 12)
+        paddingLabel.textColor = viewModel.textColor
+        paddingLabel.backgroundColor = viewModel.backgroundColor
+        paddingLabel.textAlignment = viewModel.textAlignment
     
-
-//    static func instantiateWithLabel(_ canvasLabel: UILabel, viewModel: LabelViewModel) -> LabelView {
-//
-//        let labelView = LabelView(frame: CGRect(origin: .zero, size: canvasLabel.frame.size))
-//        labelView.viewModel = viewModel
-//        
-//        labelView.center = .zero
-//        
-//        // copy the label
-////        let label = canvasLabel.copyLabel()
-////
-////        label.center = CGPoint(x: labelView.frame.size.width / 2.0, y: labelView.frame.size.height / 2.0)
-////        labelView.addSubview(label)
-////
-////        let bounds = label.bounds
-////        label.font = label.font.withSize(200)
-////        label.bounds.size = label.intrinsicContentSize
-////        label.layer.cornerRadius = label.bounds.size.height / 10
-////        
-////        let scaleX = bounds.size.width / label.frame.size.width
-////        let scaleY = bounds.size.height / label.frame.size.height
-////        
-////        
-////        label.transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
-//
-//        let paddingLabel = PaddingLabel.instantiateWith(canvasLabel: canvasLabel, verticalPadding: 10, horizontalPadding: 10)
-//        paddingLabel.backgroundColor = .blue
-//        paddingLabel.center = CGPoint(x: labelView.frame.size.width / 2.0, y: labelView.frame.size.height / 2.0)
-//        labelView.addSubview(paddingLabel)
-//        
-//        return labelView
-//    }
-    
+        let labelViewSize = CGSize(width: paddingLabel.frame.width + LabelViewExtraWidth, height: paddingLabel.frame.height + LabelViewExtraHeight)
+        let labelView = LabelView(frame: CGRect(origin: .zero, size: labelViewSize))
+        
+        labelView.paddingLabel = paddingLabel
+        labelView.viewModel = viewModel
+        labelView.center = viewModel.center
+        
+        let label = paddingLabel.label!
+        let bounds = label.bounds
+        label.font = label.font.withSize(200)
+        label.bounds.size = label.intrinsicContentSize
+        label.layer.cornerRadius = label.bounds.size.height / 10
+        
+        let scaleX = bounds.size.width / label.frame.size.width
+        let scaleY = bounds.size.height / label.frame.size.height
+        
+        
+        label.transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
+        
+        paddingLabel.center = CGPoint(x: labelView.frame.size.width / 2.0, y: labelView.frame.size.height / 2.0)
+        
+        labelView.addSubview(paddingLabel)
+        
+        return labelView
+    }
     
     static func instantiateWithPaddingLabel(_ paddingLabel: PaddingLabel, viewModel: LabelViewModel) -> LabelView {
         let labelViewSize = CGSize(width: viewModel.width, height: viewModel.height)
         let labelView = LabelView(frame: CGRect(origin: .zero, size: labelViewSize))
         
-        labelView.center = .zero
+        
         
         // copy the PaddingLabel
         let paddingLabel = paddingLabel.copyPaddingLabel()
         labelView.paddingLabel = paddingLabel
         labelView.viewModel = viewModel
-
+        viewModel.center = .zero
+//        labelView.center = .zero
+        
+        
         let label = paddingLabel.label!
         let bounds = label.bounds
         label.font = label.font.withSize(200)
