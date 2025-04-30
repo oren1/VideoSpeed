@@ -10,6 +10,9 @@
 		6B04F5852CB916FA000C8C59 /* CropSectioVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B04F5832CB916FA000C8C59 /* CropSectioVC.swift */; };
 		6B04F5862CB916FA000C8C59 /* CropSectioVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B04F5842CB916FA000C8C59 /* CropSectioVC.xib */; };
 		6B04F5892CBBAAC2000C8C59 /* CropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B04F5872CBBAAC2000C8C59 /* CropViewController.swift */; };
+		6B09449B2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B09449A2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift */; };
+		6B09449D2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B09449C2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift */; };
+		6B09449F2DC0A900009FBFB2 /* TextEditMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B09449E2DC0A900009FBFB2 /* TextEditMenuItem.swift */; };
 		6B0C7D792C88894C00063CBE /* PublishersManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C7D782C88894C00063CBE /* PublishersManager.swift */; };
 		6B0C7D7B2C89E4A700063CBE /* NotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C7D7A2C89E4A700063CBE /* NotificationsManager.swift */; };
 		6B1CF4722D6B27B1005BB89E /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1CF4712D6B27A6005BB89E /* Notification+Extension.swift */; };
@@ -120,6 +123,9 @@
 		6B04F5832CB916FA000C8C59 /* CropSectioVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropSectioVC.swift; sourceTree = "<group>"; };
 		6B04F5842CB916FA000C8C59 /* CropSectioVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CropSectioVC.xib; sourceTree = "<group>"; };
 		6B04F5872CBBAAC2000C8C59 /* CropViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropViewController.swift; sourceTree = "<group>"; };
+		6B09449A2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextEditViewController+CollectionViewDelegate.swift"; sourceTree = "<group>"; };
+		6B09449C2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditMenuItemCVCell.swift; sourceTree = "<group>"; };
+		6B09449E2DC0A900009FBFB2 /* TextEditMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditMenuItem.swift; sourceTree = "<group>"; };
 		6B0C7D782C88894C00063CBE /* PublishersManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishersManager.swift; sourceTree = "<group>"; };
 		6B0C7D7A2C89E4A700063CBE /* NotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsManager.swift; sourceTree = "<group>"; };
 		6B1CF4712D6B27A6005BB89E /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
@@ -261,6 +267,7 @@
 				6B45B4042D01EEC80074C422 /* LoadingMediaViewModel.swift */,
 				6B6801262D17F31F002B5454 /* SpidAsset.swift */,
 				6B9610172D44CD8D00DEE296 /* SpidLabel.swift */,
+				6B09449E2DC0A900009FBFB2 /* TextEditMenuItem.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -432,6 +439,8 @@
 				6B6801302D2D6BE0002B5454 /* SpidPlayerViewController.swift */,
 				6B6801312D2D6BE0002B5454 /* SpidPlayerViewController.xib */,
 				6B9610322D4CCBCF00DEE296 /* TextEditViewController.swift */,
+				6B09449A2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift */,
+				6B09449C2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift */,
 				6BE9A2F12A5FC80C00FF8CB0 /* Main.storyboard */,
 				6BE9A2F42A5FC80D00FF8CB0 /* Assets.xcassets */,
 				6BE9A2F62A5FC80D00FF8CB0 /* LaunchScreen.storyboard */,
@@ -663,9 +672,11 @@
 				6B6801182D153D44002B5454 /* HandlerView.swift in Sources */,
 				6B96101E2D460B7100DEE296 /* MenuItem.swift in Sources */,
 				6B6801192D153D44002B5454 /* AssetVideoScrollView.swift in Sources */,
+				6B09449D2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift in Sources */,
 				6B68011A2D153D44002B5454 /* AVPlayer+isPlaying.swift in Sources */,
 				6B68011B2D153D44002B5454 /* PryntTrimmerView.swift in Sources */,
 				6B68011C2D153D44002B5454 /* AssetSelectionViewController.swift in Sources */,
+				6B09449B2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift in Sources */,
 				6BC7B5282D586D8D00FF1CE9 /* LabelViewModel.swift in Sources */,
 				6B68011D2D153D44002B5454 /* AVAssetTimeSelector.swift in Sources */,
 				6BA101482CFAEDAA001780BA /* LoadingMediaView.swift in Sources */,
@@ -679,6 +690,7 @@
 				6BE9A3042A6116EF00FF8CB0 /* MainViewController.swift in Sources */,
 				6B23C1E22BF65B7C001C4F24 /* Response.swift in Sources */,
 				6B6801272D17F31F002B5454 /* SpidAsset.swift in Sources */,
+				6B09449F2DC0A900009FBFB2 /* TextEditMenuItem.swift in Sources */,
 				6B6700A62A6CF77E006F2980 /* PurchaseViewController.swift in Sources */,
 				6B1CF4722D6B27B1005BB89E /* Notification+Extension.swift in Sources */,
 				6B9610182D44CD8D00DEE296 /* SpidLabel.swift in Sources */,
