@@ -16,7 +16,6 @@ class LabelViewModel: ObservableObject {
     var height: CGFloat
     var numberOfLines = 0
     var masksToBounds = true
-    var textAlignment: NSTextAlignment
     var borderWidth = 1.0
     var borderColor = UIColor.orange.cgColor
     var fullRotation: CGFloat = 0.0
@@ -55,6 +54,16 @@ class LabelViewModel: ObservableObject {
     
     @Published
     var isHidden: Bool = false
+    
+    @Published
+    var font: UIFont = UIFont.systemFont(ofSize: 18)
+    
+    @Published
+    var fontSize: CGFloat = 18
+    
+    @Published
+    var textAlignment: NSTextAlignment
+
     
     init(width: CGFloat = 0.0, height: CGFloat = 0.0, labelFrame: CGRect, text: String, textColor: UIColor, backgroundColor: UIColor, numberOfLines: Int = 0, masksToBounds: Bool = true, textAlignment: NSTextAlignment, center: CGPoint = .zero, borderWidth: Double = 1.0, borderColor: CGColor = UIColor.orange.cgColor, rotation: CGFloat = 0.0, timeRange: CMTimeRange? = nil, selected: Bool = false
 ) {

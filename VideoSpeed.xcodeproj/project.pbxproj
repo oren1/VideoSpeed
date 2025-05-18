@@ -13,6 +13,13 @@
 		6B09449B2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B09449A2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift */; };
 		6B09449D2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B09449C2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift */; };
 		6B09449F2DC0A900009FBFB2 /* TextEditMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B09449E2DC0A900009FBFB2 /* TextEditMenuItem.swift */; };
+		6B0944A32DC219D7009FBFB2 /* ColorEditSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B0944A22DC219D7009FBFB2 /* ColorEditSectionVC.xib */; };
+		6B0944A42DC219D7009FBFB2 /* ColorEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0944A12DC219D7009FBFB2 /* ColorEditSectionVC.swift */; };
+		6B0944A72DC34830009FBFB2 /* ColorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0944A52DC34830009FBFB2 /* ColorCollectionViewCell.swift */; };
+		6B0944A82DC34830009FBFB2 /* ColorCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B0944A62DC34830009FBFB2 /* ColorCollectionViewCell.xib */; };
+		6B0944AA2DC36794009FBFB2 /* SpidColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0944A92DC36794009FBFB2 /* SpidColor.swift */; };
+		6B0944AF2DC49366009FBFB2 /* ClearColorCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0944AD2DC49366009FBFB2 /* ClearColorCVCell.swift */; };
+		6B0944B02DC49366009FBFB2 /* ClearColorCVCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B0944AE2DC49366009FBFB2 /* ClearColorCVCell.xib */; };
 		6B0C7D792C88894C00063CBE /* PublishersManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C7D782C88894C00063CBE /* PublishersManager.swift */; };
 		6B0C7D7B2C89E4A700063CBE /* NotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C7D7A2C89E4A700063CBE /* NotificationsManager.swift */; };
 		6B1CF4722D6B27B1005BB89E /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1CF4712D6B27A6005BB89E /* Notification+Extension.swift */; };
@@ -80,6 +87,11 @@
 		6BA101482CFAEDAA001780BA /* LoadingMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA101472CFAEDAA001780BA /* LoadingMediaView.swift */; };
 		6BAC9BBF2A666EBE0071A41B /* TopIndicatorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */; };
 		6BAC9BC12A666EEA0071A41B /* TopIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAC9BC02A666EEA0071A41B /* TopIndicatorView.swift */; };
+		6BAFED7F2DD0638300AF13E1 /* FontEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED7D2DD0638300AF13E1 /* FontEditSectionVC.swift */; };
+		6BAFED802DD0638300AF13E1 /* FontEditSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BAFED7E2DD0638300AF13E1 /* FontEditSectionVC.xib */; };
+		6BAFED822DD063FB00AF13E1 /* SpidFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED812DD063FB00AF13E1 /* SpidFont.swift */; };
+		6BAFED842DD841AE00AF13E1 /* AlignmentEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED832DD841AE00AF13E1 /* AlignmentEditSectionVC.swift */; };
+		6BAFED862DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED852DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift */; };
 		6BB4EE7E2A8E1109006CF87C /* CrownView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BB4EE7D2A8E1109006CF87C /* CrownView.xib */; };
 		6BB4EE802A8E11CA006CF87C /* CrownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB4EE7F2A8E11CA006CF87C /* CrownView.swift */; };
 		6BB4EE822A8F31EA006CF87C /* UsingProFeaturesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB4EE812A8F31EA006CF87C /* UsingProFeaturesViewController.swift */; };
@@ -126,6 +138,13 @@
 		6B09449A2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextEditViewController+CollectionViewDelegate.swift"; sourceTree = "<group>"; };
 		6B09449C2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditMenuItemCVCell.swift; sourceTree = "<group>"; };
 		6B09449E2DC0A900009FBFB2 /* TextEditMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditMenuItem.swift; sourceTree = "<group>"; };
+		6B0944A12DC219D7009FBFB2 /* ColorEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorEditSectionVC.swift; sourceTree = "<group>"; };
+		6B0944A22DC219D7009FBFB2 /* ColorEditSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ColorEditSectionVC.xib; sourceTree = "<group>"; };
+		6B0944A52DC34830009FBFB2 /* ColorCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCollectionViewCell.swift; sourceTree = "<group>"; };
+		6B0944A62DC34830009FBFB2 /* ColorCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ColorCollectionViewCell.xib; sourceTree = "<group>"; };
+		6B0944A92DC36794009FBFB2 /* SpidColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidColor.swift; sourceTree = "<group>"; };
+		6B0944AD2DC49366009FBFB2 /* ClearColorCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearColorCVCell.swift; sourceTree = "<group>"; };
+		6B0944AE2DC49366009FBFB2 /* ClearColorCVCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ClearColorCVCell.xib; sourceTree = "<group>"; };
 		6B0C7D782C88894C00063CBE /* PublishersManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishersManager.swift; sourceTree = "<group>"; };
 		6B0C7D7A2C89E4A700063CBE /* NotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsManager.swift; sourceTree = "<group>"; };
 		6B1CF4712D6B27A6005BB89E /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
@@ -192,6 +211,11 @@
 		6BA101472CFAEDAA001780BA /* LoadingMediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingMediaView.swift; sourceTree = "<group>"; };
 		6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TopIndicatorView.xib; sourceTree = "<group>"; };
 		6BAC9BC02A666EEA0071A41B /* TopIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopIndicatorView.swift; sourceTree = "<group>"; };
+		6BAFED7D2DD0638300AF13E1 /* FontEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontEditSectionVC.swift; sourceTree = "<group>"; };
+		6BAFED7E2DD0638300AF13E1 /* FontEditSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FontEditSectionVC.xib; sourceTree = "<group>"; };
+		6BAFED812DD063FB00AF13E1 /* SpidFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidFont.swift; sourceTree = "<group>"; };
+		6BAFED832DD841AE00AF13E1 /* AlignmentEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlignmentEditSectionVC.swift; sourceTree = "<group>"; };
+		6BAFED852DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSizeEditSectionVC.swift; sourceTree = "<group>"; };
 		6BB4EE7D2A8E1109006CF87C /* CrownView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CrownView.xib; sourceTree = "<group>"; };
 		6BB4EE7F2A8E11CA006CF87C /* CrownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrownView.swift; sourceTree = "<group>"; };
 		6BB4EE812A8F31EA006CF87C /* UsingProFeaturesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsingProFeaturesViewController.swift; sourceTree = "<group>"; };
@@ -258,6 +282,23 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		6B0944A02DC21953009FBFB2 /* Text Edit Sections */ = {
+			isa = PBXGroup;
+			children = (
+				6B0944A12DC219D7009FBFB2 /* ColorEditSectionVC.swift */,
+				6B0944A22DC219D7009FBFB2 /* ColorEditSectionVC.xib */,
+				6B0944A52DC34830009FBFB2 /* ColorCollectionViewCell.swift */,
+				6B0944A62DC34830009FBFB2 /* ColorCollectionViewCell.xib */,
+				6B0944AD2DC49366009FBFB2 /* ClearColorCVCell.swift */,
+				6B0944AE2DC49366009FBFB2 /* ClearColorCVCell.xib */,
+				6BAFED7D2DD0638300AF13E1 /* FontEditSectionVC.swift */,
+				6BAFED7E2DD0638300AF13E1 /* FontEditSectionVC.xib */,
+				6BAFED832DD841AE00AF13E1 /* AlignmentEditSectionVC.swift */,
+				6BAFED852DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift */,
+			);
+			path = "Text Edit Sections";
+			sourceTree = "<group>";
+		};
 		6B23C1DE2BF62EF8001C4F24 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
@@ -268,6 +309,8 @@
 				6B6801262D17F31F002B5454 /* SpidAsset.swift */,
 				6B9610172D44CD8D00DEE296 /* SpidLabel.swift */,
 				6B09449E2DC0A900009FBFB2 /* TextEditMenuItem.swift */,
+				6B0944A92DC36794009FBFB2 /* SpidColor.swift */,
+				6BAFED812DD063FB00AF13E1 /* SpidFont.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -452,6 +495,7 @@
 				6BAC9BBD2A666E500071A41B /* CustomViews */,
 				6BCAF7E52A63B6800039BE15 /* Utils */,
 				6BCAF7E42A63B6360039BE15 /* Edit Sections */,
+				6B0944A02DC21953009FBFB2 /* Text Edit Sections */,
 				6B6801172D153D44002B5454 /* Trimmer */,
 			);
 			path = VideoSpeed;
@@ -528,15 +572,19 @@
 				6BF019512B565CB800953AB6 /* SubscriptionOptionView.xib in Resources */,
 				6B67009D2A6BCAD2006F2980 /* ProgressIndicatorView.xib in Resources */,
 				6B04F5862CB916FA000C8C59 /* CropSectioVC.xib in Resources */,
+				6BAFED802DD0638300AF13E1 /* FontEditSectionVC.xib in Resources */,
 				6B96102E2D4C9A5B00DEE296 /* PlusCell.xib in Resources */,
 				6BB4EE882A8F48D1006CF87C /* UsingProFeaturesAlertView.xib in Resources */,
 				6B9610222D49ECA200DEE296 /* TextSectionVC.xib in Resources */,
+				6B0944B02DC49366009FBFB2 /* ClearColorCVCell.xib in Resources */,
+				6B0944A32DC219D7009FBFB2 /* ColorEditSectionVC.xib in Resources */,
 				6BB4EE842A8F3881006CF87C /* BlackTransparentOverlay.xib in Resources */,
 				6B9610262D49F1C000DEE296 /* TextCell.xib in Resources */,
 				6B7D10852BA70AE4002DD73F /* remote_config_defaults.plist in Resources */,
 				6BE9A2F52A5FC80D00FF8CB0 /* Assets.xcassets in Resources */,
 				6BAC9BBF2A666EBE0071A41B /* TopIndicatorView.xib in Resources */,
 				6B71AAF32AC431A000C06619 /* GoogleService-Info.plist in Resources */,
+				6B0944A82DC34830009FBFB2 /* ColorCollectionViewCell.xib in Resources */,
 				6BCDCF522A67FAC800D8B656 /* MoreSectionVC.xib in Resources */,
 				6B6801252D1557A4002B5454 /* TrimmerSectionVC.xib in Resources */,
 				6BE9A2F32A5FC80C00FF8CB0 /* Main.storyboard in Resources */,
@@ -613,6 +661,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B0944A72DC34830009FBFB2 /* ColorCollectionViewCell.swift in Sources */,
 				6BF0194F2B565CAC00953AB6 /* SubscriptionOptionView.swift in Sources */,
 				6B6700972A6ABBF6006F2980 /* IAPManager.swift in Sources */,
 				6BE9A30A2A618B2500FF8CB0 /* UIImageView+Extension.swift in Sources */,
@@ -625,6 +674,7 @@
 				6BE9A2F02A5FC80C00FF8CB0 /* EditViewController.swift in Sources */,
 				6B92E3672A7E2F3C008CB22A /* PhotoLibraryUsageDisabledView.swift in Sources */,
 				6B04F5852CB916FA000C8C59 /* CropSectioVC.swift in Sources */,
+				6BAFED822DD063FB00AF13E1 /* SpidFont.swift in Sources */,
 				6B6700A22A6CD981006F2980 /* SplashViewController.swift in Sources */,
 				6B51C1FA2A7233A50013ABAD /* LoadingView.swift in Sources */,
 				6B923FA62C2EA38F00CD1381 /* WeeklySubscriptionVC.swift in Sources */,
@@ -653,10 +703,12 @@
 				6B9610162D43C8C700DEE296 /* SpidLabel+Extension.swift in Sources */,
 				6B923FA82C2EA3A800CD1381 /* MonthlySubscriptionVC.swift in Sources */,
 				6B6801242D1557A4002B5454 /* TrimmerSectionVC.swift in Sources */,
+				6B0944AF2DC49366009FBFB2 /* ClearColorCVCell.swift in Sources */,
 				6B23C1DD2BF629DC001C4F24 /* NetworkManager.swift in Sources */,
 				6BE9A2EC2A5FC80C00FF8CB0 /* AppDelegate.swift in Sources */,
 				6B6700AA2A6E5FE7006F2980 /* AppStoreReviewManager.swift in Sources */,
 				6BCDCF542A67FADD00D8B656 /* SectionViewController.swift in Sources */,
+				6B0944AA2DC36794009FBFB2 /* SpidColor.swift in Sources */,
 				6B6700942A6A6C13006F2980 /* PhotosHeader.swift in Sources */,
 				6B96102F2D4C9A5B00DEE296 /* PlusCell.swift in Sources */,
 				6B45B4052D01EEC80074C422 /* LoadingMediaViewModel.swift in Sources */,
@@ -667,13 +719,16 @@
 				6B45B4072D01F1590074C422 /* AssetRotator.swift in Sources */,
 				6B68012B2D1FD9FA002B5454 /* EditViewController+EditSections.swift in Sources */,
 				6B6700AE2A6E608C006F2980 /* UIApplication+Utils.swift in Sources */,
+				6BAFED862DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift in Sources */,
 				6B7D10832BA6EF5B002DD73F /* YearlySubscriptionPurchaseVC.swift in Sources */,
 				6B59549A2B5EA93100483047 /* TransactionObserver.swift in Sources */,
 				6B6801182D153D44002B5454 /* HandlerView.swift in Sources */,
 				6B96101E2D460B7100DEE296 /* MenuItem.swift in Sources */,
+				6B0944A42DC219D7009FBFB2 /* ColorEditSectionVC.swift in Sources */,
 				6B6801192D153D44002B5454 /* AssetVideoScrollView.swift in Sources */,
 				6B09449D2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift in Sources */,
 				6B68011A2D153D44002B5454 /* AVPlayer+isPlaying.swift in Sources */,
+				6BAFED842DD841AE00AF13E1 /* AlignmentEditSectionVC.swift in Sources */,
 				6B68011B2D153D44002B5454 /* PryntTrimmerView.swift in Sources */,
 				6B68011C2D153D44002B5454 /* AssetSelectionViewController.swift in Sources */,
 				6B09449B2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift in Sources */,
@@ -694,6 +749,7 @@
 				6B6700A62A6CF77E006F2980 /* PurchaseViewController.swift in Sources */,
 				6B1CF4722D6B27B1005BB89E /* Notification+Extension.swift in Sources */,
 				6B9610182D44CD8D00DEE296 /* SpidLabel.swift in Sources */,
+				6BAFED7F2DD0638300AF13E1 /* FontEditSectionVC.swift in Sources */,
 				6BB4EE802A8E11CA006CF87C /* CrownView.swift in Sources */,
 				6B23C1E02BF62F11001C4F24 /* User.swift in Sources */,
 			);

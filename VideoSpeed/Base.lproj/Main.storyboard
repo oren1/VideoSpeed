@@ -728,7 +728,7 @@
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tiltle Color" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gmL-5R-O77">
                                                     <rect key="frame" x="33" y="36" width="62" height="15"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="12"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -770,7 +770,7 @@
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="8il-Yu-uCk"/>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="0.13730409020000001" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="WMk-Vp-dDt" firstAttribute="top" secondItem="dI6-V2-XOQ" secondAttribute="bottom" id="6Q1-yd-qAU"/>
                             <constraint firstItem="8il-Yu-uCk" firstAttribute="trailing" secondItem="dI6-V2-XOQ" secondAttribute="trailing" id="8kf-ym-XYT"/>

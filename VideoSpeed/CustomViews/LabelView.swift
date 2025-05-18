@@ -121,11 +121,12 @@ class LabelView: UIView {
     
     static func instantiateWithViewModel(_ viewModel: LabelViewModel) -> LabelView {
         
-        let paddingLabel = PaddingLabel(text: viewModel.text, verticalPadding: 12, horizontalPadding: 12)
+        let paddingLabel = PaddingLabel(text: viewModel.text, font: viewModel.font, verticalPadding: 12, horizontalPadding: 12)
         paddingLabel.textColor = viewModel.textColor
         paddingLabel.backgroundColor = viewModel.backgroundColor
         paddingLabel.textAlignment = viewModel.textAlignment
-    
+        paddingLabel.font = viewModel.font
+        
         let labelViewSize = CGSize(width: paddingLabel.frame.width + LabelViewExtraWidth, height: paddingLabel.frame.height + LabelViewExtraHeight)
         let labelView = LabelView(frame: CGRect(origin: .zero, size: labelViewSize))
         
