@@ -12,7 +12,7 @@ enum EditStatus {
     case new, editing
 }
 
-class TextEditViewController: UIViewController, UITextViewDelegate {
+class TextEditViewController: UIViewController {
 
     @IBOutlet weak var label: UILabel!
     @IBOutlet weak var editContainerView: UIView!
@@ -31,7 +31,7 @@ class TextEditViewController: UIViewController, UITextViewDelegate {
     let textEditMenuItems = [
         TextEditMenuItem(identifier: .textColor,
                          selectedImage: UIImage(systemName: "paintbrush.pointed"),
-                         normalImage: UIImage(systemName: "paintbrush.pointed"), selected: false),
+                         normalImage: UIImage(systemName: "paintbrush.pointed"), selected: true),
         TextEditMenuItem(identifier: .bgColor,
                          selectedImage: UIImage(systemName: "square"),
                          normalImage: UIImage(systemName: "square"), selected: false),
@@ -48,7 +48,14 @@ class TextEditViewController: UIViewController, UITextViewDelegate {
     ]
     
     private var subscribers: [AnyCancellable] = []
-
+    var textColorEditSectionVC: ColorEditSectionVC!
+    var bgColorEditSectionVC: ColorEditSectionVC!
+    var fontEditSectionVC: FontEditSectionVC!
+    var alignmentEditSection: AlignmentEditSectionVC!
+    var fontSizeEditSection: FontSizeEditSectionVC!
+    
+    var selectedEditSection: UIViewController?
+    
     override func viewDidLoad() {
 
         super.viewDidLoad()
@@ -61,6 +68,8 @@ class TextEditViewController: UIViewController, UITextViewDelegate {
         addPlaceHolderToTextView()
         addPaddingLabelToTop()
         
+        createEditSections()
+       
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillShow),
@@ -71,6 +80,10 @@ class TextEditViewController: UIViewController, UITextViewDelegate {
         view.layoutIfNeeded()
     }
 
+    
+    override func viewDidAppear(_ animated: Bool) {
+        textView.becomeFirstResponder()
+    }
     
     @IBAction func doneButtonTapped(_ sender: Any) {
         if !textView.text!.isEmpty {
@@ -88,17 +101,7 @@ class TextEditViewController: UIViewController, UITextViewDelegate {
     
     
    
-    func textViewDidEndEditing(_ textView: UITextView) {
-        placeHolderLabel.isHidden = !textView.text.isEmpty
-    }
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        placeHolderLabel.isHidden = true
-    }
-    
-    func textViewDidChange(_ textView: UITextView) {
-        placeHolderLabel.isHidden = !textView.text.isEmpty
-        labelViewModel?.text = textView.text
-    }
+   
     
     // MARK: UI
     func addPlaceHolderToTextView() {
@@ -130,7 +133,17 @@ class TextEditViewController: UIViewController, UITextViewDelegate {
             textView.text = labelViewModel.text
         }
         
+        labelViewModel.$textColor
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] textColor in
+                self?.paddingLabel.textColor = textColor
+            }.store(in: &subscribers)
         
+        labelViewModel.$backgroundColor
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] backgroundColor in
+                self?.paddingLabel.backgroundColor = backgroundColor
+            }.store(in: &subscribers)
         
         labelViewModel?.$text
             .dropFirst()
@@ -138,7 +151,7 @@ class TextEditViewController: UIViewController, UITextViewDelegate {
             .sink(receiveValue: { [weak self] text in
                 guard let self = self else { return }
                 paddingLabel.text = text
-                let font = UIFont.systemFont(ofSize: 18)
+                let font = labelViewModel.font
                 let newTextSize = textView.text.textSize(withConstrainedWidth: 500, font: font)
                 labelViewModel.labelFrame = newTextSize
                 paddingLabel.widthConstraint?.constant = newTextSize.width + paddingLabel.horizontalPadding
@@ -146,6 +159,44 @@ class TextEditViewController: UIViewController, UITextViewDelegate {
                 labelViewModel.width = newTextSize.width + paddingLabel.horizontalPadding + LabelViewExtraWidth
                 labelViewModel.height = newTextSize.height + paddingLabel.verticalPadding + LabelViewExtraHeight
             })
+            .store(in: &subscribers)
+        
+        labelViewModel.$font
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] font in
+                guard let self = self else { return }
+                self.paddingLabel.font = font
+                let newTextSize = textView.text.textSize(withConstrainedWidth: 500, font: font)
+                labelViewModel.labelFrame = newTextSize
+                paddingLabel.widthConstraint?.constant = newTextSize.width + paddingLabel.horizontalPadding
+                paddingLabel.heightConstraint?.constant = newTextSize.height + paddingLabel.verticalPadding
+                labelViewModel.width = newTextSize.width + paddingLabel.horizontalPadding + LabelViewExtraWidth
+                labelViewModel.height = newTextSize.height + paddingLabel.verticalPadding + LabelViewExtraHeight
+            }
+            .store(in: &subscribers)
+        
+        labelViewModel.$textAlignment
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] textAlignment in
+                self?.paddingLabel.textAlignment = textAlignment
+            }
+            .store(in: &subscribers)
+        
+        
+        labelViewModel.$fontSize
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] fontSize in
+                guard let self = self else { return }
+                self.paddingLabel.fontSize = fontSize
+                let font = labelViewModel.font.withSize(fontSize)
+                labelViewModel.font = font
+                let newTextSize = textView.text.textSize(withConstrainedWidth: 500, font: font)
+                labelViewModel.labelFrame = newTextSize
+                paddingLabel.widthConstraint?.constant = newTextSize.width + paddingLabel.horizontalPadding
+                paddingLabel.heightConstraint?.constant = newTextSize.height + paddingLabel.verticalPadding
+                labelViewModel.width = newTextSize.width + paddingLabel.horizontalPadding + LabelViewExtraWidth
+                labelViewModel.height = newTextSize.height + paddingLabel.verticalPadding + LabelViewExtraHeight
+            }
             .store(in: &subscribers)
         
         view.addSubview(paddingLabel)
@@ -171,3 +222,98 @@ class TextEditViewController: UIViewController, UITextViewDelegate {
     }
 }
 
+fileprivate typealias EditSections = TextEditViewController
+extension EditSections {
+   
+    // MARK: Creation
+    private func createEditSections() {
+        createTextColorEditSection()
+        createBGColorEditSection()
+        createFontEditSection()
+        createAlignmentEditSection()
+        createFontSizeEditSection()
+        
+        addSection(sectionVC: textColorEditSectionVC)
+    }
+    
+    func createTextColorEditSection()  {
+        textColorEditSectionVC = ColorEditSectionVC()
+        textColorEditSectionVC.didSelectColor = { [weak self] textColor in
+            self?.labelViewModel?.textColor = textColor
+        }
+    }
+    
+    func createBGColorEditSection()  {
+        bgColorEditSectionVC = ColorEditSectionVC()
+        bgColorEditSectionVC.didSelectColor = { [weak self] backgroundColor in
+            self?.labelViewModel?.backgroundColor = backgroundColor
+        }
+    }
+    
+    
+    func createFontEditSection() {
+        fontEditSectionVC = FontEditSectionVC()
+        fontEditSectionVC.didSelectFont = { [weak self] font in
+            self?.labelViewModel.font = font
+        }
+    }
+    
+    func createAlignmentEditSection() {
+        alignmentEditSection = AlignmentEditSectionVC()
+        alignmentEditSection.didSelectAlignment = { [weak self] textAlignment in
+            self?.labelViewModel.textAlignment = textAlignment
+        }
+    }
+    
+    func createFontSizeEditSection() {
+        fontSizeEditSection = FontSizeEditSectionVC()
+        fontSizeEditSection.onFontSizeChange = { [weak self] fontSize in
+            self?.labelViewModel.fontSize = CGFloat(fontSize)
+        }
+    }
+    
+    // MARK: Adding & Removing
+    func addSection(sectionVC: UIViewController) {
+        addChild(sectionVC)
+        editContainerView.addSubview(sectionVC.view)
+        sectionVC.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        let constraints = [
+            sectionVC.view.topAnchor.constraint(equalTo: editContainerView.topAnchor),
+            sectionVC.view.leftAnchor.constraint(equalTo: editContainerView.leftAnchor),
+            sectionVC.view.rightAnchor.constraint(equalTo: editContainerView.rightAnchor),
+            sectionVC.view.bottomAnchor.constraint(equalTo: editContainerView.bottomAnchor),
+        ]
+        NSLayoutConstraint.activate(constraints)
+        
+        sectionVC.didMove(toParent: self)
+        
+        selectedEditSection = sectionVC
+    }
+    
+    func removeEditSection(sectionVC: UIViewController) {
+        sectionVC.willMove(toParent: nil)
+        sectionVC.view.removeFromSuperview()
+        sectionVC.removeFromParent()
+    }
+}
+
+
+fileprivate typealias TextView = TextEditViewController
+extension TextView: UITextViewDelegate {
+    func textViewDidEndEditing(_ textView: UITextView) {
+        placeHolderLabel.isHidden = !textView.text.isEmpty
+    }
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        placeHolderLabel.isHidden = true
+        
+        let selectedMenuItem = textEditMenuItems.first(where: { $0.selected })
+        selectedMenuItem?.selected = false
+        editOptionsCollectionView.reloadData()
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        placeHolderLabel.isHidden = !textView.text.isEmpty
+        labelViewModel?.text = textView.text
+    }
+}

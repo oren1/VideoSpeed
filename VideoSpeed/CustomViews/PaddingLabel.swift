@@ -35,8 +35,26 @@ class PaddingLabel: UIView{
         get { label.textAlignment }
     }
     
-    init(text: String!, verticalPadding: Double, horizontalPadding: Double) {
-        let font = UIFont.systemFont(ofSize: 18)
+    var font: UIFont {
+        set {
+            label.font = newValue
+        }
+        get { label.font }
+    }
+    
+    var fontSize: CGFloat {
+        set {
+            label.font = label.font.withSize(newValue)
+        }
+        get { label.font.pointSize }
+    }
+    
+    init(text: String!,
+         font: UIFont = UIFont.systemFont(ofSize: 18),
+         verticalPadding: Double,
+         horizontalPadding: Double) {
+        
+        let font = font
         let textSize = text.textSize(withConstrainedWidth: 500, font: font).size
         let viewSize = CGSize(width: textSize.width + horizontalPadding, height: textSize.height + verticalPadding)
         

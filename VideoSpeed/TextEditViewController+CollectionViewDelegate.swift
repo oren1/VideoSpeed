@@ -10,9 +10,30 @@ import UIKit
 
 extension TextEditViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
+        textView.resignFirstResponder()
+        
+        selectedEditSection?.remove()
+
         let menuItem = textEditMenuItems[indexPath.row]
         textEditMenuItems.forEach({ $0.selected = false })
         menuItem.selected = true
+       
+        
+        
+        switch menuItem.identifier {
+        case .textColor:
+            addSection(sectionVC: textColorEditSectionVC)
+        case .bgColor:
+            addSection(sectionVC: bgColorEditSectionVC)
+        case .font:
+            addSection(sectionVC: fontEditSectionVC)
+        case .alignment:
+            addSection(sectionVC: alignmentEditSection)
+        case .size:
+            addSection(sectionVC: fontSizeEditSection)
+        }
+        
         collectionView.reloadData()
     }
 }
@@ -39,22 +60,16 @@ extension TextEditViewController: UICollectionViewDataSource {
 
         cell.label.text = menuItem.identifier.rawValue
         cell.layer.cornerRadius = 6
-        cell.layer.borderWidth = 2
         
         if menuItem.selected {
             cell.imageView.image = menuItem.selectedImage
-            cell.layer.borderColor = UIColor.white.cgColor
-//            cell.backgroundColor = .white
-//            cell.imageView.tintColor = .black
-//            cell.label.textColor = . black
+            cell.imageView.tintColor = UIColor.systemBlue
+            cell.label.textColor = UIColor.systemBlue
         }
         else {
             cell.imageView.image = menuItem.normalImage
-            cell.layer.borderColor = UIColor.clear.cgColor
-
-//            cell.backgroundColor = .clear
-//            cell.imageView.tintColor = .white
-//            cell.label.textColor = . white
+            cell.imageView.tintColor = UIColor.white
+            cell.label.textColor = UIColor.white
         }
 
      return cell
