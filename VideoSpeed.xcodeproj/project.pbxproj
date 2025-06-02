@@ -92,6 +92,10 @@
 		6BAFED822DD063FB00AF13E1 /* SpidFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED812DD063FB00AF13E1 /* SpidFont.swift */; };
 		6BAFED842DD841AE00AF13E1 /* AlignmentEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED832DD841AE00AF13E1 /* AlignmentEditSectionVC.swift */; };
 		6BAFED862DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED852DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift */; };
+		6BAFED882DDD87EE00AF13E1 /* VerticalLabelsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED872DDD87EE00AF13E1 /* VerticalLabelsView.swift */; };
+		6BAFED8A2DDDC1EF00AF13E1 /* BGStyleEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED892DDDC1EF00AF13E1 /* BGStyleEditSectionVC.swift */; };
+		6BAFED952DECAD2500AF13E1 /* StrokeColorEditSection.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BAFED942DECAD2500AF13E1 /* StrokeColorEditSection.xib */; };
+		6BAFED962DECAD2500AF13E1 /* StrokeColorEditSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED932DECAD2500AF13E1 /* StrokeColorEditSection.swift */; };
 		6BB4EE7E2A8E1109006CF87C /* CrownView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BB4EE7D2A8E1109006CF87C /* CrownView.xib */; };
 		6BB4EE802A8E11CA006CF87C /* CrownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB4EE7F2A8E11CA006CF87C /* CrownView.swift */; };
 		6BB4EE822A8F31EA006CF87C /* UsingProFeaturesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB4EE812A8F31EA006CF87C /* UsingProFeaturesViewController.swift */; };
@@ -216,6 +220,10 @@
 		6BAFED812DD063FB00AF13E1 /* SpidFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidFont.swift; sourceTree = "<group>"; };
 		6BAFED832DD841AE00AF13E1 /* AlignmentEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlignmentEditSectionVC.swift; sourceTree = "<group>"; };
 		6BAFED852DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSizeEditSectionVC.swift; sourceTree = "<group>"; };
+		6BAFED872DDD87EE00AF13E1 /* VerticalLabelsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalLabelsView.swift; sourceTree = "<group>"; };
+		6BAFED892DDDC1EF00AF13E1 /* BGStyleEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGStyleEditSectionVC.swift; sourceTree = "<group>"; };
+		6BAFED932DECAD2500AF13E1 /* StrokeColorEditSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeColorEditSection.swift; sourceTree = "<group>"; };
+		6BAFED942DECAD2500AF13E1 /* StrokeColorEditSection.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StrokeColorEditSection.xib; sourceTree = "<group>"; };
 		6BB4EE7D2A8E1109006CF87C /* CrownView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CrownView.xib; sourceTree = "<group>"; };
 		6BB4EE7F2A8E11CA006CF87C /* CrownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrownView.swift; sourceTree = "<group>"; };
 		6BB4EE812A8F31EA006CF87C /* UsingProFeaturesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsingProFeaturesViewController.swift; sourceTree = "<group>"; };
@@ -295,6 +303,9 @@
 				6BAFED7E2DD0638300AF13E1 /* FontEditSectionVC.xib */,
 				6BAFED832DD841AE00AF13E1 /* AlignmentEditSectionVC.swift */,
 				6BAFED852DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift */,
+				6BAFED892DDDC1EF00AF13E1 /* BGStyleEditSectionVC.swift */,
+				6BAFED932DECAD2500AF13E1 /* StrokeColorEditSection.swift */,
+				6BAFED942DECAD2500AF13E1 /* StrokeColorEditSection.xib */,
 			);
 			path = "Text Edit Sections";
 			sourceTree = "<group>";
@@ -390,6 +401,7 @@
 				6BC7B5232D537C1200FF1CE9 /* LabelView.swift */,
 				6BC7B5252D537C2900FF1CE9 /* LabelView.xib */,
 				6BD0718B2DAA574A00D6744D /* PaddingLabel.swift */,
+				6BAFED872DDD87EE00AF13E1 /* VerticalLabelsView.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -568,6 +580,7 @@
 				6BE9A3022A5FD5A000FF8CB0 /* climbing.mov in Resources */,
 				6B6801322D2D6BE0002B5454 /* SpidPlayerViewController.xib in Resources */,
 				6BCDCF4E2A67E5FA00D8B656 /* FPSSectionVC.xib in Resources */,
+				6BAFED952DECAD2500AF13E1 /* StrokeColorEditSection.xib in Resources */,
 				6BCAF7ED2A63C5100039BE15 /* SpeedSectionVC.xib in Resources */,
 				6BF019512B565CB800953AB6 /* SubscriptionOptionView.xib in Resources */,
 				6B67009D2A6BCAD2006F2980 /* ProgressIndicatorView.xib in Resources */,
@@ -698,6 +711,7 @@
 				6BB4FAD92AEE416D00D00E2D /* InterstitialAd.swift in Sources */,
 				6B9610212D49ECA200DEE296 /* TextSectionVC.swift in Sources */,
 				6BB4EE862A8F38B4006CF87C /* BlackTransparentOverlay.swift in Sources */,
+				6BAFED962DECAD2500AF13E1 /* StrokeColorEditSection.swift in Sources */,
 				6B0C7D7B2C89E4A700063CBE /* NotificationsManager.swift in Sources */,
 				6BD0718C2DAA574A00D6744D /* PaddingLabel.swift in Sources */,
 				6B9610162D43C8C700DEE296 /* SpidLabel+Extension.swift in Sources */,
@@ -712,6 +726,7 @@
 				6B6700942A6A6C13006F2980 /* PhotosHeader.swift in Sources */,
 				6B96102F2D4C9A5B00DEE296 /* PlusCell.swift in Sources */,
 				6B45B4052D01EEC80074C422 /* LoadingMediaViewModel.swift in Sources */,
+				6BAFED8A2DDDC1EF00AF13E1 /* BGStyleEditSectionVC.swift in Sources */,
 				6BC7B5242D537C1200FF1CE9 /* LabelView.swift in Sources */,
 				6BCDCF512A67FAC800D8B656 /* MoreSectionVC.swift in Sources */,
 				6BCDCF4D2A67E5FA00D8B656 /* FPSSectionVC.swift in Sources */,
@@ -720,6 +735,7 @@
 				6B68012B2D1FD9FA002B5454 /* EditViewController+EditSections.swift in Sources */,
 				6B6700AE2A6E608C006F2980 /* UIApplication+Utils.swift in Sources */,
 				6BAFED862DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift in Sources */,
+				6BAFED882DDD87EE00AF13E1 /* VerticalLabelsView.swift in Sources */,
 				6B7D10832BA6EF5B002DD73F /* YearlySubscriptionPurchaseVC.swift in Sources */,
 				6B59549A2B5EA93100483047 /* TransactionObserver.swift in Sources */,
 				6B6801182D153D44002B5454 /* HandlerView.swift in Sources */,

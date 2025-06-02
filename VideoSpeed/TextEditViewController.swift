@@ -25,16 +25,22 @@ class TextEditViewController: UIViewController {
     var paddingLabel: PaddingLabel!
     var editStatus: EditStatus!
     var labelViewModel: LabelViewModel!
-    let minimumItemWidth = 64.0
+    let minimumItemWidth = 67.0
     private(set) var sectionInsets = UIEdgeInsets(top: 2, left: 4, bottom: 2, right: 4)
     let textEditMenuItemReuseIdentifier = "TextEditMenuItem"
     let textEditMenuItems = [
         TextEditMenuItem(identifier: .textColor,
                          selectedImage: UIImage(systemName: "paintbrush.pointed"),
                          normalImage: UIImage(systemName: "paintbrush.pointed"), selected: true),
+        TextEditMenuItem(identifier: .strokeColor,
+                         selectedImage: UIImage(systemName: "lineweight"),
+                         normalImage: UIImage(systemName: "lineweight"), selected: false),
         TextEditMenuItem(identifier: .bgColor,
                          selectedImage: UIImage(systemName: "square"),
                          normalImage: UIImage(systemName: "square"), selected: false),
+        TextEditMenuItem(identifier: .bgStyle,
+                         selectedImage: UIImage(systemName: "align.horizontal.center.fill"),
+                         normalImage: UIImage(systemName: "align.horizontal.center.fill"), selected: false),
         TextEditMenuItem(identifier: .font,
                          selectedImage: UIImage(systemName: "florinsign"),
                          normalImage: UIImage(systemName: "florinsign"), selected: false),
@@ -43,7 +49,8 @@ class TextEditViewController: UIViewController {
                          normalImage: UIImage(systemName: "text.aligncenter"), selected: false),
         TextEditMenuItem(identifier: .size,
                          selectedImage: UIImage(systemName: "textformat.size.larger"),
-                         normalImage: UIImage(systemName: "textformat.size.larger"), selected: false)
+                         normalImage: UIImage(systemName: "textformat.size.larger"), selected: false),
+        
         
     ]
     
@@ -53,8 +60,11 @@ class TextEditViewController: UIViewController {
     var fontEditSectionVC: FontEditSectionVC!
     var alignmentEditSection: AlignmentEditSectionVC!
     var fontSizeEditSection: FontSizeEditSectionVC!
+    var bgStyleEditSection: BGStyleEditSectionVC!
+    var strokeColorEditSection: StrokeColorEditSectionVC!
     
     var selectedEditSection: UIViewController?
+    var verticalLabelsView: VerticalLabelsView!
     
     override func viewDidLoad() {
 
@@ -82,7 +92,10 @@ class TextEditViewController: UIViewController {
 
     
     override func viewDidAppear(_ animated: Bool) {
-        textView.becomeFirstResponder()
+//        textView.becomeFirstResponder()
+
+//        paddingLabel.isHidden = true
+
     }
     
     @IBAction func doneButtonTapped(_ sender: Any) {
@@ -130,19 +143,31 @@ class TextEditViewController: UIViewController {
             paddingLabel.textColor = labelViewModel.textColor
             paddingLabel.backgroundColor = labelViewModel.backgroundColor
             paddingLabel.textAlignment = labelViewModel.textAlignment
+            paddingLabel.strokeColor = labelViewModel.strokeColor
+            paddingLabel.strokeWidth = labelViewModel.strokeWidth
             textView.text = labelViewModel.text
         }
         
         labelViewModel.$textColor
             .receive(on: DispatchQueue.main)
             .sink { [weak self] textColor in
-                self?.paddingLabel.textColor = textColor
+                guard let self = self else {return}
+                
+                paddingLabel.textColor = textColor
+                if labelViewModel.backgroundStyle == .fragmented {
+                    createVerticalLabelsView(labelViewModel!)
+                }
             }.store(in: &subscribers)
         
         labelViewModel.$backgroundColor
             .receive(on: DispatchQueue.main)
             .sink { [weak self] backgroundColor in
-                self?.paddingLabel.backgroundColor = backgroundColor
+                guard let self = self else {return}
+                
+                paddingLabel.backgroundColor = backgroundColor
+                if labelViewModel.backgroundStyle == .fragmented {
+                    createVerticalLabelsView(labelViewModel!)
+                }
             }.store(in: &subscribers)
         
         labelViewModel?.$text
@@ -158,6 +183,10 @@ class TextEditViewController: UIViewController {
                 paddingLabel.heightConstraint?.constant = newTextSize.height + paddingLabel.verticalPadding
                 labelViewModel.width = newTextSize.width + paddingLabel.horizontalPadding + LabelViewExtraWidth
                 labelViewModel.height = newTextSize.height + paddingLabel.verticalPadding + LabelViewExtraHeight
+                
+                if labelViewModel.backgroundStyle == .fragmented {
+                    createVerticalLabelsView(labelViewModel!)
+                }
             })
             .store(in: &subscribers)
         
@@ -172,13 +201,22 @@ class TextEditViewController: UIViewController {
                 paddingLabel.heightConstraint?.constant = newTextSize.height + paddingLabel.verticalPadding
                 labelViewModel.width = newTextSize.width + paddingLabel.horizontalPadding + LabelViewExtraWidth
                 labelViewModel.height = newTextSize.height + paddingLabel.verticalPadding + LabelViewExtraHeight
+                
+                if labelViewModel.backgroundStyle == .fragmented {
+                    createVerticalLabelsView(labelViewModel!)
+                }
             }
             .store(in: &subscribers)
         
         labelViewModel.$textAlignment
             .receive(on: DispatchQueue.main)
             .sink { [weak self] textAlignment in
-                self?.paddingLabel.textAlignment = textAlignment
+                guard let self = self else { return }
+
+                paddingLabel.textAlignment = textAlignment
+                if labelViewModel.backgroundStyle == .fragmented {
+                    createVerticalLabelsView(labelViewModel!)
+                }
             }
             .store(in: &subscribers)
         
@@ -187,6 +225,7 @@ class TextEditViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] fontSize in
                 guard let self = self else { return }
+                
                 self.paddingLabel.fontSize = fontSize
                 let font = labelViewModel.font.withSize(fontSize)
                 labelViewModel.font = font
@@ -196,6 +235,49 @@ class TextEditViewController: UIViewController {
                 paddingLabel.heightConstraint?.constant = newTextSize.height + paddingLabel.verticalPadding
                 labelViewModel.width = newTextSize.width + paddingLabel.horizontalPadding + LabelViewExtraWidth
                 labelViewModel.height = newTextSize.height + paddingLabel.verticalPadding + LabelViewExtraHeight
+                
+                if labelViewModel.backgroundStyle == .fragmented {
+                    createVerticalLabelsView(labelViewModel!)
+                }
+            }
+            .store(in: &subscribers)
+        
+        labelViewModel.$backgroundStyle
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] bgStyle in
+                guard let self = self else {return}
+                
+                switch bgStyle {
+                case .full:
+                    paddingLabel.isHidden = false
+                    verticalLabelsView?.removeFromSuperview()
+                    verticalLabelsView = nil
+                case .fragmented:
+                    paddingLabel.isHidden = true
+                    createVerticalLabelsView(labelViewModel!)
+                }
+                
+            }.store(in: &subscribers)
+        
+        labelViewModel.$strokeColor
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] strokColor in
+                guard let self = self else {return}
+                paddingLabel.strokeColor = strokColor
+                if labelViewModel.backgroundStyle == .fragmented {
+                    createVerticalLabelsView(labelViewModel!)
+                }
+            }
+            .store(in: &subscribers)
+        
+        labelViewModel.$strokeWidth
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] strokeWidth in
+                guard let self = self else {return}
+                paddingLabel.strokeWidth = strokeWidth
+                if labelViewModel.backgroundStyle == .fragmented {
+                    createVerticalLabelsView(labelViewModel!)
+                }
             }
             .store(in: &subscribers)
         
@@ -209,6 +291,14 @@ class TextEditViewController: UIViewController {
         ]
         
         NSLayoutConstraint.activate(constraints)
+        
+        if labelViewModel.backgroundStyle == .fragmented {
+            paddingLabel.isHidden = true
+        }
+        else {
+            paddingLabel.isHidden = false
+        }
+        
     }
     
     
@@ -219,6 +309,60 @@ class TextEditViewController: UIViewController {
             editContainerViewHeightConstraint.constant = keyboardRectangle.height
             view.layoutIfNeeded()
         }
+    }
+    
+    
+    func getLinesOfText(_ text: String, font: UIFont, width: CGFloat) -> [String] {
+        let textStorage = NSTextStorage(string: text)
+        let layoutManager = NSLayoutManager()
+        let textContainer = NSTextContainer(size: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude))
+        textContainer.lineFragmentPadding = 0
+        layoutManager.addTextContainer(textContainer)
+        textStorage.addLayoutManager(layoutManager)
+
+        var lines: [String] = []
+        var index = 0
+
+        while index < layoutManager.numberOfGlyphs {
+            var lineRange = NSRange(location: 0, length: 0)
+            let rect = layoutManager.lineFragmentRect(forGlyphAt: index, effectiveRange: &lineRange)
+
+            // Convert glyph range to character range
+            let charRange = layoutManager.characterRange(forGlyphRange: lineRange, actualGlyphRange: nil)
+            if let substringRange = Range(charRange, in: text) {
+                let lineString = String(text[substringRange])
+                
+                // Remove any \n characters
+                let cleanedLine = lineString.replacingOccurrences(of: "\n", with: "")
+                lines.append(cleanedLine)
+            }
+
+            index = NSMaxRange(lineRange)
+        }
+
+        return lines
+    }
+    
+    
+    func createVerticalLabelsView(_ viewModel: LabelViewModel ) {
+        verticalLabelsView?.removeFromSuperview()
+        verticalLabelsView = nil
+        var textLines = String.getLinesOfText(textView.text, font: labelViewModel.font, width: .greatestFiniteMagnitude)
+        if textLines.count == 0 {
+            textLines = ["Enter Text"]
+        }
+        verticalLabelsView = VerticalLabelsView(strings: textLines, viewModel: viewModel)
+        
+        verticalLabelsView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(verticalLabelsView)
+        verticalLabelsView.translatesAutoresizingMaskIntoConstraints = false
+        let constraints = [
+            verticalLabelsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50),
+            verticalLabelsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        ]
+        
+        
+        NSLayoutConstraint.activate(constraints)
     }
 }
 
@@ -232,6 +376,8 @@ extension EditSections {
         createFontEditSection()
         createAlignmentEditSection()
         createFontSizeEditSection()
+        createBGStyleEditSection()
+        createStrokeColorEditSection()
         
         addSection(sectionVC: textColorEditSectionVC)
     }
@@ -272,6 +418,23 @@ extension EditSections {
         }
     }
     
+    func createBGStyleEditSection() {
+        bgStyleEditSection = BGStyleEditSectionVC()
+        bgStyleEditSection.didSelectBGStyle = { [weak self] bgStyle in
+            self?.labelViewModel.backgroundStyle = bgStyle
+        }
+    }
+    
+    func createStrokeColorEditSection()  {
+        strokeColorEditSection = StrokeColorEditSectionVC(nibName: "StrokeColorEditSection", bundle: nil)
+        strokeColorEditSection.didSelectColor = { [weak self] strokeColor in
+            self?.labelViewModel.strokeColor = strokeColor
+        }
+        strokeColorEditSection.didSelectStroke = { [weak self] strokeWidth in
+            self?.labelViewModel.strokeWidth = strokeWidth
+        }
+    }
+    
     // MARK: Adding & Removing
     func addSection(sectionVC: UIViewController) {
         addChild(sectionVC)
@@ -305,8 +468,8 @@ extension TextView: UITextViewDelegate {
         placeHolderLabel.isHidden = !textView.text.isEmpty
     }
     func textViewDidBeginEditing(_ textView: UITextView) {
-        placeHolderLabel.isHidden = true
-        
+        labelViewModel?.text = textView.text.isEmpty ? "Enter Text" : textView.text
+
         let selectedMenuItem = textEditMenuItems.first(where: { $0.selected })
         selectedMenuItem?.selected = false
         editOptionsCollectionView.reloadData()
@@ -315,5 +478,134 @@ extension TextView: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         placeHolderLabel.isHidden = !textView.text.isEmpty
         labelViewModel?.text = textView.text
+        
+        if labelViewModel?.backgroundStyle == .fragmented {
+            createVerticalLabelsView(labelViewModel)
+        }
+
+    }
+    
+    
+}
+
+
+class RoundedHighlightLabel: UILabel {
+    var highlightRanges: [NSRange] = []
+
+    override func drawText(in rect: CGRect) {
+        guard let context = UIGraphicsGetCurrentContext(), let text = self.text else {
+            super.drawText(in: rect)
+            return
+        }
+
+        // Draw the text normally
+        super.drawText(in: rect)
+
+        // Set the fill color for the highlight
+        UIColor.yellow.setFill()
+
+        // Loop over all highlight ranges
+        for range in highlightRanges {
+            // Get bounding rect for the range
+            if let boundingRects = self.boundingRects(for: range) {
+                for rect in boundingRects {
+                    let path = UIBezierPath(roundedRect: rect.insetBy(dx: -2, dy: -2), cornerRadius: 8)
+                    path.fill()
+                }
+            }
+        }
+    }
+
+    func boundingRects(for range: NSRange) -> [CGRect]? {
+        guard let attributedText = attributedText else { return nil }
+
+        let textStorage = NSTextStorage(attributedString: attributedText)
+        let layoutManager = NSLayoutManager()
+        let textContainer = NSTextContainer(size: self.bounds.size)
+
+        textStorage.addLayoutManager(layoutManager)
+        layoutManager.addTextContainer(textContainer)
+
+        var glyphRange = NSRange()
+        layoutManager.characterRange(forGlyphRange: range, actualGlyphRange: &glyphRange)
+        var rects: [CGRect] = []
+
+        layoutManager.enumerateEnclosingRects(forGlyphRange: glyphRange, withinSelectedGlyphRange: glyphRange, in: textContainer) { rect, _ in
+            // Convert rect to view's coordinate system
+            let convertedRect = rect.offsetBy(dx: self.bounds.origin.x, dy: self.bounds.origin.y)
+            rects.append(convertedRect)
+        }
+        return rects
+    }
+}
+
+
+
+class RoundedLinesLabel: UILabel {
+    var cornerRadius: CGFloat = 8
+    
+    override func drawText(in rect: CGRect) {
+        guard let text = self.text, let font = self.font else {
+            super.drawText(in: rect)
+            return
+        }
+        
+        // Prepare for custom drawing
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineBreakMode = self.lineBreakMode
+        paragraphStyle.alignment = self.textAlignment
+
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .paragraphStyle: paragraphStyle
+        ]
+        let attrString = NSAttributedString(string: text, attributes: attributes)
+
+        // Prepare text storage and layout manager
+        let textStorage = NSTextStorage(attributedString: attrString)
+        let layoutManager = NSLayoutManager()
+        textStorage.addLayoutManager(layoutManager)
+
+        let textContainerSize = CGSize(width: self.bounds.width, height: CGFloat.greatestFiniteMagnitude)
+
+        let textContainer = NSTextContainer(size: textContainerSize)
+        textContainer.lineFragmentPadding = 0
+        layoutManager.addTextContainer(textContainer)
+
+        // Loop through each line
+        var index = 0
+        while index < layoutManager.numberOfGlyphs {
+            var lineRange = NSRange(location: 0, length: 0)
+            let lineRect = layoutManager.lineFragmentRect(forGlyphAt: index, effectiveRange: &lineRange)
+
+            // Convert glyph range to character range
+            let charRange = layoutManager.characterRange(forGlyphRange: lineRange, actualGlyphRange: nil)
+            let startIndex = text.index(text.startIndex, offsetBy: charRange.location)
+            let endIndex = text.index(startIndex, offsetBy: charRange.length)
+            let lineText = String(text[startIndex..<endIndex])
+            
+            // Draw the background rounded rect
+            let rects = layoutManager.boundingRects(forGlyphRange: lineRange, in: textContainer)
+            for rect in rects {
+                let path = UIBezierPath(roundedRect: rect.insetBy(dx: -4, dy: -2), cornerRadius: cornerRadius) // inset for padding
+                UIColor.lightGray.setFill()
+                path.fill()
+            }
+            index = NSMaxRange(lineRange)
+        }
+        
+        // Call super to draw the actual text
+        super.drawText(in: rect)
+    }
+}
+
+// Extension for NSLayoutManager to get bounding rects
+extension NSLayoutManager {
+    func boundingRects(forGlyphRange glyphRange: NSRange, in textContainer: NSTextContainer) -> [CGRect] {
+        var rects: [CGRect] = []
+        self.enumerateEnclosingRects(forGlyphRange: glyphRange, withinSelectedGlyphRange: glyphRange, in: textContainer) { rect, _ in
+            rects.append(rect)
+        }
+        return rects
     }
 }

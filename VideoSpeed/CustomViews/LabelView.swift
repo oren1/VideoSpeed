@@ -121,12 +121,60 @@ class LabelView: UIView {
     
     static func instantiateWithViewModel(_ viewModel: LabelViewModel) -> LabelView {
         
+        if viewModel.backgroundStyle == .fragmented {
+            let fontSize = 200.0
+            let strings = String.getLinesOfText(viewModel.text, font: viewModel.font, width: .greatestFiniteMagnitude)
+            let rawLineHeight = viewModel.font.withSize(fontSize).lineHeight
+//            let lineHeight =  rawLineHeight + PaddedLabel.padding.top + PaddedLabel.padding.bottom
+            let lineHeight =  rawLineHeight + (rawLineHeight * 0.1)
+            let textSize = viewModel.text.textSize(withConstrainedWidth: .greatestFiniteMagnitude, font: viewModel.font.withSize(fontSize)).size
+            let verticalLabelsViewHeight = CGFloat(strings.count) * lineHeight
+//            let verticalLabelsViewWidth = textSize.width + PaddedLabel.padding.right + PaddedLabel.padding.left
+            let verticalLabelsViewWidth = textSize.width + (textSize.width * 0.1)
+            let verticalLabelsView = VerticalLabelsView(strings: strings, viewModel: viewModel, font: viewModel.font.withSize(fontSize))
+            verticalLabelsView.frame = CGRect(origin: .zero, size: CGSize(width: verticalLabelsViewWidth, height: verticalLabelsViewHeight))
+            let scale = viewModel.fontSize / fontSize
+            verticalLabelsView.transform = CGAffineTransform(scaleX: scale, y: scale)
+//            print("vertical labels view intrinsic size \(verticalLabelsView.intrinsicContentSize)")
+            let labelViewSize = CGSize(width: verticalLabelsView.frame.width + LabelViewExtraWidth, height: verticalLabelsView.frame.height + LabelViewExtraHeight)
+            let labelView = LabelView(frame: CGRect(origin: .zero, size: labelViewSize))
+           
+//            verticalLabelsView.setNeedsLayout()
+//            verticalLabelsView.layoutIfNeeded()
+//            // 1. Create an image from 'VerticalLabelsView' instance
+//            if let image = verticalLabelsView.captureAsImage(scaleFactor: 30) {
+//                // 2. Create a UIImageView
+//                let imageView = UIImageView()
+//                imageView.image = image
+//                imageView.contentMode = .scaleToFill
+//                imageView.frame = CGRect(origin: .zero, size: CGSize(width: verticalLabelsViewWidth, height: verticalLabelsViewHeight))
+//                imageView.center = CGPoint(x: labelView.frame.size.width / 2.0, y: labelView.frame.size.height / 2.0)
+//                labelView.addSubview(imageView)
+//                labelView.viewModel = viewModel
+//
+//                return labelView
+//            }
+            
+            // 3. Add the imageView to the screen instead of the vertic
+            
+            verticalLabelsView.center = CGPoint(x: labelView.frame.size.width / 2.0, y: labelView.frame.size.height / 2.0)
+            
+            labelView.viewModel = viewModel
+            labelView.addSubview(verticalLabelsView)
+            
+            return labelView
+        }
+        
+        // Create PaddingLabel to add to the LabelView
         let paddingLabel = PaddingLabel(text: viewModel.text, font: viewModel.font, verticalPadding: 12, horizontalPadding: 12)
         paddingLabel.textColor = viewModel.textColor
         paddingLabel.backgroundColor = viewModel.backgroundColor
         paddingLabel.textAlignment = viewModel.textAlignment
         paddingLabel.font = viewModel.font
+        paddingLabel.strokeColor = viewModel.strokeColor
+        paddingLabel.strokeWidth = viewModel.strokeWidth
         
+        // Create size for the LabelView, adding an extra width and height
         let labelViewSize = CGSize(width: paddingLabel.frame.width + LabelViewExtraWidth, height: paddingLabel.frame.height + LabelViewExtraHeight)
         let labelView = LabelView(frame: CGRect(origin: .zero, size: labelViewSize))
         

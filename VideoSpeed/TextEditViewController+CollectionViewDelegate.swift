@@ -32,8 +32,12 @@ extension TextEditViewController: UICollectionViewDelegate {
             addSection(sectionVC: alignmentEditSection)
         case .size:
             addSection(sectionVC: fontSizeEditSection)
+        case .bgStyle:
+            addSection(sectionVC: bgStyleEditSection)
+        case .strokeColor:
+            addSection(sectionVC: strokeColorEditSection)
         }
-        
+
         collectionView.reloadData()
     }
 }
