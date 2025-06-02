@@ -9,14 +9,17 @@ import Foundation
 import UIKit
 
 class PaddingLabel: UIView{
-    
     var label: UILabel!
     var horizontalPadding: Double!
     var verticalPadding: Double!
     
     var text: String {
         set {
-            label.text = newValue
+            let attributes: [NSAttributedString.Key: Any] = [
+                .strokeColor: strokeColor,
+                .strokeWidth: strokeWidth // Negative means stroke + fill
+            ]
+            label.attributedText =  NSAttributedString(string: newValue, attributes: attributes)
         }
         get { label.text! }
     }
@@ -49,6 +52,33 @@ class PaddingLabel: UIView{
         get { label.font.pointSize }
     }
     
+    var numberOfLines: Int {
+        get{ label.numberOfLines }
+        set { label.numberOfLines = newValue }
+    }
+    
+    var strokeColor: UIColor {
+        didSet {
+            let attributes: [NSAttributedString.Key: Any] = [
+                .strokeColor: strokeColor,
+                .strokeWidth: strokeWidth // Negative means stroke + fill
+            ]
+            label.attributedText =  NSAttributedString(string: text, attributes: attributes)
+         }
+    }
+    
+    var strokeWidth: CGFloat {
+        didSet {
+            let attributes: [NSAttributedString.Key: Any] = [
+                .strokeColor: strokeColor,
+                .strokeWidth: strokeWidth // Negative means stroke + fill
+            ]
+            label.attributedText =  NSAttributedString(string: text, attributes: attributes)
+        }
+    }
+    
+    
+    
     init(text: String!,
          font: UIFont = UIFont.systemFont(ofSize: 18),
          verticalPadding: Double,
@@ -57,6 +87,9 @@ class PaddingLabel: UIView{
         let font = font
         let textSize = text.textSize(withConstrainedWidth: 500, font: font).size
         let viewSize = CGSize(width: textSize.width + horizontalPadding, height: textSize.height + verticalPadding)
+        strokeColor = .clear
+        strokeWidth = -3
+        
         
         super.init(frame: CGRect(origin: .zero, size: viewSize))
         self.backgroundColor = .green
@@ -71,6 +104,8 @@ class PaddingLabel: UIView{
         label.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         label.numberOfLines = 0
         label.adjustsFontSizeToFitWidth = true
+        
+
         self.text = text
     }
     

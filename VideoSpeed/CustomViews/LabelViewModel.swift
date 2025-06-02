@@ -11,6 +11,10 @@ import AVFoundation
 let LabelViewExtraWidth = 24.0
 let LabelViewExtraHeight = 24.0
 
+enum BackgroundStyle {
+    case full, fragmented
+}
+
 class LabelViewModel: ObservableObject {
     var width: CGFloat
     var height: CGFloat
@@ -24,10 +28,7 @@ class LabelViewModel: ObservableObject {
     var leftHandleConstraintConstant: CGFloat?
     var fullScale: CGFloat = 1
     var labelFrame: CGRect {
-        didSet {
-//            width = labelFrame.width +  + LabelViewExtraWidth
-//            height = labelFrame.height + LabelViewExtraHeight
-        }
+        didSet {}
     }
 
     
@@ -64,12 +65,23 @@ class LabelViewModel: ObservableObject {
     @Published
     var textAlignment: NSTextAlignment
 
+    @Published
+    var backgroundStyle: BackgroundStyle = .fragmented
+    
+    @Published
+    var strokeColor: UIColor = .clear
+    
+    @Published
+    var strokeWidth: CGFloat = 0
+    
     
     init(width: CGFloat = 0.0, height: CGFloat = 0.0, labelFrame: CGRect, text: String, textColor: UIColor, backgroundColor: UIColor, numberOfLines: Int = 0, masksToBounds: Bool = true, textAlignment: NSTextAlignment, center: CGPoint = .zero, borderWidth: Double = 1.0, borderColor: CGColor = UIColor.orange.cgColor, rotation: CGFloat = 0.0, timeRange: CMTimeRange? = nil, selected: Bool = false
 ) {
        
         self.width = labelFrame.size.width + LabelViewExtraWidth
         self.height = labelFrame.size.height + LabelViewExtraHeight
+//        self.width = labelFrame.size.width
+//        self.height = labelFrame.size.height
         self.labelFrame = labelFrame
         self.text = text
         self.textColor = textColor
@@ -82,6 +94,7 @@ class LabelViewModel: ObservableObject {
         self.borderColor = borderColor
         self.rotation = rotation
         self.timeRange = timeRange
+        
     }
     
 //    func updateRotation(rotation: CGFloat) {

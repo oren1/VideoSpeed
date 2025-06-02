@@ -14,6 +14,8 @@ enum TextEditMenuItemIdentifier: String, CaseIterable {
     case font = "Font"
     case alignment = "Alignment"
     case size = "Size"
+    case bgStyle = "BG Style"
+    case strokeColor = "Stroke Color"
 }
 
 class TextEditMenuItem {
