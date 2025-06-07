@@ -13,6 +13,10 @@ import FirebaseRemoteConfig
 import SwiftUI
 import RevenueCat
 
+enum Pricing: String {
+    case normal = "normal"
+    case higher = "higher"
+}
 
 class MainViewController: UIViewController {
     
@@ -314,7 +318,7 @@ extension MainViewController: UIImagePickerControllerDelegate {
         else { return }
       
         let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
-        
+
         let asset = AVURLAsset(url: url)
         Task {
             guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
@@ -338,6 +342,7 @@ extension MainViewController: UIImagePickerControllerDelegate {
              await MainActor.run { [weak self] in
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
+
         }
                     
     }
@@ -436,7 +441,6 @@ extension MainViewController: UICollectionViewDelegate {
         } completionHandler: { responseURL, asset in
             DispatchQueue.main.async { [weak self] in
                 self?.hideLoading()
-//                vc.assetUrl = responseURL
                 Task {
                     guard let asset = asset,
                           let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
