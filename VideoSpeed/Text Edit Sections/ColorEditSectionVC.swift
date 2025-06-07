@@ -79,7 +79,12 @@ extension ColorEditSectionVC: UICollectionViewDelegate {
         spidColor.isSelected = true
         selectedColor = spidColor.color
         
-        self.didSelectColor?(spidColor.color.withAlphaComponent(alpha))
+        if spidColor.color == .clear {
+            self.didSelectColor?(spidColor.color)
+        }
+        else {
+            self.didSelectColor?(spidColor.color.withAlphaComponent(alpha))
+        }
         
         collectionView.reloadData()
     }

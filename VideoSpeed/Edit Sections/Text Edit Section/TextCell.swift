@@ -10,6 +10,7 @@ import UIKit
 class TextCell: UICollectionViewCell {
 
     @IBOutlet weak var textLabel: UILabel!
+    @IBOutlet weak var editIndicatorImageView: UIImageView!
     override func awakeFromNib() {
         super.awakeFromNib()
     }

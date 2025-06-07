@@ -73,6 +73,21 @@ class UserDataManager: ObservableObject {
        UserDataManager.main.overlayLabelViews.first { $0.viewModel.selected == true }
     }
     
+    var freeFonts: [String] = [
+        "TimesNewRomanPSMT",
+        "HelveticaNeue",
+        "CourierNewPSMT",
+    ]
+    
+    func usingProFont() -> Bool {
+        let proFont = labelViewsModels.first(where: { [weak self] labelView in
+            guard let self = self else {return false}
+            return !freeFonts.contains(labelView.font.fontName)
+        })
+        if proFont != nil {return true}
+        return false
+    }
+    
     @Published
     var labelViewModels: [LabelViewModel] = []
     

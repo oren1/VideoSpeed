@@ -27,6 +27,8 @@ class VerticalLabelsView: UIView {
     init(strings: [String], viewModel: LabelViewModel, font: UIFont? = nil) {
         self.viewModel = viewModel
         super.init(frame: .zero)
+//        let size = self.viewModel.getVerticalLabelsViewSizeWith(fontSize: viewModel.fontSize)
+//        super.init(frame: CGRect(origin: .zero, size: size))
         setupView()
         addLabels(for: strings, font: font)
         
@@ -66,6 +68,9 @@ class VerticalLabelsView: UIView {
                 labelHeight = labelHeight + (labelHeight * 0.1)
                 label.layer.cornerRadius =  labelHeight * 0.1
             }
+            if font?.pointSize == 200 {
+                label.padding = UIEdgeInsets(top: 14, left: 40, bottom: 14, right: 40)
+            }
             label.layer.borderWidth = 0
             label.layer.borderColor = nil
             label.layer.masksToBounds = true
@@ -85,7 +90,8 @@ class VerticalLabelsView: UIView {
             
             label.attributedText = NSAttributedString(string: string, attributes: attributes)
 
-            
+            label.sizeToFit()
+
             
             stackView.addArrangedSubview(label)
         }
@@ -100,34 +106,50 @@ class VerticalLabelsView: UIView {
 
 
 class PaddedLabel: UILabel {
-
-    var horizontalPaddingRatio: CGFloat = 0.05
-    var verticalPaddingRatio: CGFloat = 0.05
-
-    var currentPadding: UIEdgeInsets = .zero
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        // Update the padding based on current size
-        let horizontal = bounds.width * horizontalPaddingRatio
-        let vertical = bounds.height * verticalPaddingRatio
-        currentPadding = UIEdgeInsets(top: vertical, left: horizontal, bottom: vertical, right: horizontal)
-
-        invalidateIntrinsicContentSize()
-        setNeedsDisplay()
-    }
-
+    var padding = UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6)
+    
     override func drawText(in rect: CGRect) {
-        super.drawText(in: rect.inset(by: currentPadding))
+        let insetRect = rect.inset(by: padding)
+        super.drawText(in: insetRect)
     }
-
+    
     override var intrinsicContentSize: CGSize {
-        let baseSize = super.intrinsicContentSize
-        return CGSize(
-            width: baseSize.width + currentPadding.left + currentPadding.right,
-            height: baseSize.height + currentPadding.top + currentPadding.bottom
-        )
+        let size = super.intrinsicContentSize
+        let paddedWidth = size.width + padding.left + padding.right
+        let paddedHeight = size.height + padding.top + padding.bottom
+        return CGSize(width: paddedWidth, height: paddedHeight)
     }
 }
+
+//class PaddedLabel: UILabel {
+//
+//    var horizontalPaddingRatio: CGFloat = 0.05
+//    var verticalPaddingRatio: CGFloat = 0.05
+//
+//    var currentPadding: UIEdgeInsets = .zero
+//
+//    override func layoutSubviews() {
+//        super.layoutSubviews()
+//
+//        // Update the padding based on current size
+//        let horizontal = bounds.width * horizontalPaddingRatio
+//        let vertical = bounds.height * verticalPaddingRatio
+//        currentPadding = UIEdgeInsets(top: vertical, left: horizontal, bottom: vertical, right: horizontal)
+//
+//        invalidateIntrinsicContentSize()
+//        setNeedsDisplay()
+//    }
+//
+//    override func drawText(in rect: CGRect) {
+//        super.drawText(in: rect.inset(by: currentPadding))
+//    }
+//
+//    override var intrinsicContentSize: CGSize {
+//        let baseSize = super.intrinsicContentSize
+//        return CGSize(
+//            width: baseSize.width + currentPadding.left + currentPadding.right,
+//            height: baseSize.height + currentPadding.top + currentPadding.bottom
+//        )
+//    }
+//}
 

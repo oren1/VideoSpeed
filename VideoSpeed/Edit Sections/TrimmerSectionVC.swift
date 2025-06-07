@@ -11,6 +11,7 @@ import AVKit
 
 protocol TrimmerViewSpidDelegate: AnyObject {
     var spidPlayerController: SpidPlayerViewController! { get set }
+    func getCurrentFrameImage() async -> UIImage?
 }
 
 // added an extension to give the 'playerViewController' variable a default implementation.
@@ -39,16 +40,14 @@ class TrimmerSectionVC: SectionViewController {
             trimmerView.mainColor = UIColor.systemBlue
             trimmerView.maskColor = UIColor.black
             trimmerView.positionBarColor = UIColor.clear
-            trimmerView.regenerateThumbnails()
+            let frame = CGRect(origin: .zero, size: CGSize(width: UIScreen.main.bounds.width - 60, height: UIScreen.main.bounds.height))
+            trimmerView.regenerateThumbnails(frame: frame)
             // 1. create a new PlayerItem with the original video asset
             let originalAsset = await UserDataManager.main.currentSpidAsset.getOriginalAsset()
             playerItem = AVPlayerItem(asset: originalAsset)
         }
     }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
+
     
     func startPlaybackTimeChecker() {
 

@@ -58,8 +58,16 @@ class TextSectionVC: SectionViewController {
        
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+////        trimmerView.isHidden = true
+//    }
+//    override func viewDidLayoutSubviews() {
+//        trimmerView.regenerateThumbnails()
+//    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
     }
     
@@ -78,7 +86,9 @@ class TextSectionVC: SectionViewController {
         trimmerView.mainColor = UIColor.systemBlue
         trimmerView.maskColor = UIColor.black
         trimmerView.positionBarColor = UIColor.clear
-        trimmerView.regenerateThumbnails()
+        let frame = CGRect(origin: .zero, size: CGSize(width: UIScreen.main.bounds.width - 60, height: UIScreen.main.bounds.height))
+        trimmerView.regenerateThumbnails(frame: frame)
+//        trimmerView.regenerateThumbnails()
         setTrimmerInteractionStatus()
         resetTimeRangesForLabelViews()
     }
@@ -124,7 +134,12 @@ class TextSectionVC: SectionViewController {
             textEditViewController.modalPresentationStyle = .fullScreen
             textEditViewController.editStatus = editStatus
             textEditViewController.videoContainerWidth = delegate.spidPlayerController.videoContainerView.frame.width
-            navigationController.present(textEditViewController, animated: true)
+            textEditViewController.videoContainerHeight = delegate.spidPlayerController.videoContainerView.frame.height
+            Task {
+                textEditViewController.currentFrameImage = await delegate.getCurrentFrameImage()
+                navigationController.present(textEditViewController, animated: true)
+            }
+            
         }
     }
 }
@@ -165,11 +180,14 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
         let labelViewModel = UserDataManager.main.labelViewsModels[indexPath.row]
          if labelViewModel.selected {
              cell.backgroundColor = .systemBlue
+             cell.editIndicatorImageView.isHidden = false
          }
          else {
              cell.backgroundColor = .gray
+             cell.editIndicatorImageView.isHidden = true
          }
          cell.textLabel.text = labelViewModel.text
+        
          cell.layer.cornerRadius = 8
 
          return cell

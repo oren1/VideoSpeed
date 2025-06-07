@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23094" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23084"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -27,7 +27,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="eU1-Xg-5Sg">
-                    <rect key="frame" x="16" y="454" width="363" height="30"/>
+                    <rect key="frame" x="29" y="454" width="335" height="30"/>
                     <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="29" id="YcU-KH-ohy"/>
@@ -98,8 +98,8 @@
                 <constraint firstItem="1dV-Ju-JP0" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="3D3-GO-Udo"/>
                 <constraint firstItem="Drf-jK-7pp" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="MeA-J0-ez0"/>
                 <constraint firstItem="Drf-jK-7pp" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="S2G-Pf-HLw"/>
-                <constraint firstAttribute="trailing" secondItem="eU1-Xg-5Sg" secondAttribute="trailing" constant="16" id="SV4-j9-yqJ"/>
-                <constraint firstItem="eU1-Xg-5Sg" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="18" id="YSM-Lj-rc1"/>
+                <constraint firstAttribute="trailing" secondItem="eU1-Xg-5Sg" secondAttribute="trailing" constant="31" id="SV4-j9-yqJ"/>
+                <constraint firstItem="eU1-Xg-5Sg" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="31" id="YSM-Lj-rc1"/>
                 <constraint firstItem="Drf-jK-7pp" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="aHT-ox-KRI"/>
                 <constraint firstItem="eU1-Xg-5Sg" firstAttribute="top" secondItem="1dV-Ju-JP0" secondAttribute="bottom" id="stA-q9-UBI"/>
                 <constraint firstItem="1dV-Ju-JP0" firstAttribute="top" secondItem="Drf-jK-7pp" secondAttribute="bottom" id="wbT-vj-XB8"/>

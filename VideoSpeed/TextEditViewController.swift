@@ -19,16 +19,25 @@ class TextEditViewController: UIViewController {
     @IBOutlet weak var editOptionsCollectionView: UICollectionView!
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var editContainerViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var imageViewWidthConstraint: NSLayoutConstraint!
+    @IBOutlet weak var visualEffectViewWidthConstraint: NSLayoutConstraint!
     var testLabel: UILabel!
     var placeHolderLabel = UILabel()
     var videoContainerWidth: CGFloat = 0
+    var videoContainerHeight: CGFloat = 0
     var paddingLabel: PaddingLabel!
     var editStatus: EditStatus!
     var labelViewModel: LabelViewModel!
     let minimumItemWidth = 67.0
+    var currentFrameImage: UIImage?
+    var apppliedKeyBoardHeight: Bool = false
     private(set) var sectionInsets = UIEdgeInsets(top: 2, left: 4, bottom: 2, right: 4)
     let textEditMenuItemReuseIdentifier = "TextEditMenuItem"
     let textEditMenuItems = [
+        TextEditMenuItem(identifier: .font,
+                         selectedImage: UIImage(systemName: "florinsign"),
+                         normalImage: UIImage(systemName: "florinsign"), selected: false),
         TextEditMenuItem(identifier: .textColor,
                          selectedImage: UIImage(systemName: "paintbrush.pointed"),
                          normalImage: UIImage(systemName: "paintbrush.pointed"), selected: true),
@@ -41,9 +50,6 @@ class TextEditViewController: UIViewController {
         TextEditMenuItem(identifier: .bgStyle,
                          selectedImage: UIImage(systemName: "align.horizontal.center.fill"),
                          normalImage: UIImage(systemName: "align.horizontal.center.fill"), selected: false),
-        TextEditMenuItem(identifier: .font,
-                         selectedImage: UIImage(systemName: "florinsign"),
-                         normalImage: UIImage(systemName: "florinsign"), selected: false),
         TextEditMenuItem(identifier: .alignment,
                          selectedImage: UIImage(systemName: "text.aligncenter"),
                          normalImage: UIImage(systemName: "text.aligncenter"), selected: false),
@@ -80,6 +86,16 @@ class TextEditViewController: UIViewController {
         
         createEditSections()
        
+        imageView.image = currentFrameImage
+        imageViewWidthConstraint.constant = videoContainerWidth
+        
+        let blurEffect = UIBlurEffect(style: .dark)
+        let blurredEffectView = UIVisualEffectView(effect: blurEffect)
+        blurredEffectView.frame = imageView.bounds
+        blurredEffectView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+        imageView.addSubview(blurredEffectView)
+    
+        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillShow),
@@ -88,6 +104,8 @@ class TextEditViewController: UIViewController {
         )
         
         view.layoutIfNeeded()
+        
+        textView.becomeFirstResponder()
     }
 
     
@@ -102,7 +120,6 @@ class TextEditViewController: UIViewController {
         if !textView.text!.isEmpty {
             if editStatus == .new {
                 UserDataManager.main.labelViewsModels.append(labelViewModel)
-                
             }
             else if editStatus == .editing {
                 NotificationCenter.default.post(name: Notification.Name.OverlayLabelViewsUpdated, object: nil)
@@ -134,7 +151,7 @@ class TextEditViewController: UIViewController {
             labelViewModel = LabelViewModel(labelFrame: paddingLabel.frame,
                                             text: paddingLabel.text,
                                             textColor: UIColor.white,
-                                            backgroundColor: UIColor.green,
+                                            backgroundColor: .clear,
                                             textAlignment: .center)
         }
         else if editStatus == .editing {
@@ -178,7 +195,7 @@ class TextEditViewController: UIViewController {
                 paddingLabel.text = text
                 let font = labelViewModel.font
                 let newTextSize = textView.text.textSize(withConstrainedWidth: 500, font: font)
-                labelViewModel.labelFrame = newTextSize
+//                labelViewModel.labelFrame = newTextSize
                 paddingLabel.widthConstraint?.constant = newTextSize.width + paddingLabel.horizontalPadding
                 paddingLabel.heightConstraint?.constant = newTextSize.height + paddingLabel.verticalPadding
                 labelViewModel.width = newTextSize.width + paddingLabel.horizontalPadding + LabelViewExtraWidth
@@ -194,9 +211,11 @@ class TextEditViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] font in
                 guard let self = self else { return }
-                self.paddingLabel.font = font
-                let newTextSize = textView.text.textSize(withConstrainedWidth: 500, font: font)
-                labelViewModel.labelFrame = newTextSize
+                // Applying the fontSize that the user selected
+                let fontWithSize = font.withSize(labelViewModel.fontSize)
+                self.paddingLabel.font = fontWithSize
+                let newTextSize = textView.text.textSize(withConstrainedWidth: 500, font: fontWithSize)
+//                labelViewModel.labelFrame = newTextSize
                 paddingLabel.widthConstraint?.constant = newTextSize.width + paddingLabel.horizontalPadding
                 paddingLabel.heightConstraint?.constant = newTextSize.height + paddingLabel.verticalPadding
                 labelViewModel.width = newTextSize.width + paddingLabel.horizontalPadding + LabelViewExtraWidth
@@ -306,8 +325,10 @@ class TextEditViewController: UIViewController {
     @objc func keyboardWillShow(_ notification: Notification) {
         if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             let keyboardRectangle = keyboardFrame.cgRectValue
-            editContainerViewHeightConstraint.constant = keyboardRectangle.height
-            view.layoutIfNeeded()
+            if keyboardRectangle.height > editContainerViewHeightConstraint.constant {
+                editContainerViewHeightConstraint.constant = keyboardRectangle.height
+                view.layoutIfNeeded()
+            }
         }
     }
     
@@ -345,8 +366,8 @@ class TextEditViewController: UIViewController {
     
     
     func createVerticalLabelsView(_ viewModel: LabelViewModel ) {
-        verticalLabelsView?.removeFromSuperview()
-        verticalLabelsView = nil
+        let prev = verticalLabelsView
+        
         var textLines = String.getLinesOfText(textView.text, font: labelViewModel.font, width: .greatestFiniteMagnitude)
         if textLines.count == 0 {
             textLines = ["Enter Text"]
@@ -354,8 +375,10 @@ class TextEditViewController: UIViewController {
         verticalLabelsView = VerticalLabelsView(strings: textLines, viewModel: viewModel)
         
         verticalLabelsView.translatesAutoresizingMaskIntoConstraints = false
+        verticalLabelsView.setNeedsLayout()
+        verticalLabelsView.layoutIfNeeded()
+                
         view.addSubview(verticalLabelsView)
-        verticalLabelsView.translatesAutoresizingMaskIntoConstraints = false
         let constraints = [
             verticalLabelsView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50),
             verticalLabelsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -363,6 +386,8 @@ class TextEditViewController: UIViewController {
         
         
         NSLayoutConstraint.activate(constraints)
+        
+        prev?.removeFromSuperview()
     }
 }
 
@@ -468,7 +493,7 @@ extension TextView: UITextViewDelegate {
         placeHolderLabel.isHidden = !textView.text.isEmpty
     }
     func textViewDidBeginEditing(_ textView: UITextView) {
-        labelViewModel?.text = textView.text.isEmpty ? "Enter Text" : textView.text
+//        labelViewModel?.text = textView.text.isEmpty ? "Enter Text" : textView.text
 
         let selectedMenuItem = textEditMenuItems.first(where: { $0.selected })
         selectedMenuItem?.selected = false

@@ -126,11 +126,14 @@ class LabelView: UIView {
             let strings = String.getLinesOfText(viewModel.text, font: viewModel.font, width: .greatestFiniteMagnitude)
             let rawLineHeight = viewModel.font.withSize(fontSize).lineHeight
 //            let lineHeight =  rawLineHeight + PaddedLabel.padding.top + PaddedLabel.padding.bottom
-            let lineHeight =  rawLineHeight + (rawLineHeight * 0.1)
+//            let lineHeight =  rawLineHeight + (rawLineHeight * 0.1)
+            let lineHeight =  rawLineHeight + 28
             let textSize = viewModel.text.textSize(withConstrainedWidth: .greatestFiniteMagnitude, font: viewModel.font.withSize(fontSize)).size
             let verticalLabelsViewHeight = CGFloat(strings.count) * lineHeight
 //            let verticalLabelsViewWidth = textSize.width + PaddedLabel.padding.right + PaddedLabel.padding.left
-            let verticalLabelsViewWidth = textSize.width + (textSize.width * 0.1)
+//            let verticalLabelsViewWidth = textSize.width + (textSize.width * 0.1)
+            let verticalLabelsViewWidth = textSize.width + 80
+
             let verticalLabelsView = VerticalLabelsView(strings: strings, viewModel: viewModel, font: viewModel.font.withSize(fontSize))
             verticalLabelsView.frame = CGRect(origin: .zero, size: CGSize(width: verticalLabelsViewWidth, height: verticalLabelsViewHeight))
             let scale = viewModel.fontSize / fontSize
