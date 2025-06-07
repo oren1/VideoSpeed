@@ -81,7 +81,8 @@ class FontEditSectionVC: UIViewController, UICollectionViewDelegate, UICollectio
 
         // Prioritized font names (PostScript names)
         let prioritizedFontNames: [String] = [
-            ".SFUIText", // System font (San Francisco)
+            "TimesNewRomanPSMT",
+//            ".SFUIText", // System font (San Francisco)
             "HelveticaNeue",
             "CourierNewPSMT",
             "HelveticaNeue-Bold",
@@ -92,7 +93,6 @@ class FontEditSectionVC: UIViewController, UICollectionViewDelegate, UICollectio
             "Futura-CondensedMedium",
             "Georgia",
             "Georgia-Bold",
-            "TimesNewRomanPSMT",
             "TimesNewRomanPS-BoldMT",
             "Menlo-Regular",
             "Menlo-Bold",
@@ -133,7 +133,7 @@ class FontEditSectionVC: UIViewController, UICollectionViewDelegate, UICollectio
                 "Futura-CondensedMedium": "CoretoneNarrow",
                 "Georgia": "Classicread",
                 "Georgia-Bold": "ClassicreadBold",
-                "TimesNewRomanPSMT": "Royalprint",
+                "TimesNewRomanPSMT": "SYSTEM",
                 "TimesNewRomanPS-BoldMT": "RoyalprintBold",
                 "Menlo-Regular": "Codeblock",
                 "Menlo-Bold": "CodeblockBold",
@@ -163,7 +163,7 @@ class FontEditSectionVC: UIViewController, UICollectionViewDelegate, UICollectio
                 "Optima-Bold": "OptixBold",
                 "TrebuchetMS": "Novabridge",
                 "Verdana": "Clearsans",
-                ".SFUIText": "SYSTEM"
+//                ".SFUIText": "SYSTEM"
             ]
 
 

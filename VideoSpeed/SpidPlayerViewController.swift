@@ -86,6 +86,7 @@ class SpidPlayerViewController: UIViewController {
         textOverlayLabelsCancellable = nil
         overlayLabelViewsCancellabel = nil
         labelViewModelsCancellabel = nil
+        NotificationCenter.default.removeObserver(self)
     }
     
     override func viewWillDisappear(_ animated: Bool) {

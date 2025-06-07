@@ -58,9 +58,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     let menuItems: [MenuItem] = [MenuItem(id: .speed , title: "SPEED", imageName: "timer"),
                                  MenuItem(id: .trim , title: "TRIM", imageName: "timeline.selection"),
                                  MenuItem(id: .crop , title: "CROP", imageName: "crop"),
+                                 MenuItem(id: .text , title: "TEXT", imageName: "textformat.alt"),
                                  MenuItem(id: .fps , title: "FPS", imageName: "square.stack.3d.down.right.fill"),
                                  MenuItem(id: .sound , title: "SOUND", imageName: "speaker.wave.2"),
-                                 MenuItem(id: .text , title: "TEXT", imageName: "textformat.alt"),
                                  MenuItem(id: .more , title: "MORE", imageName: "ellipsis")
     ]
     
@@ -138,6 +138,10 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
         
         NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
+                
+        NotificationCenter.default.addObserver(self, selector: #selector(labelViewsUpdated), name: Notification.Name.OverlayLabelViewsUpdated, object: nil)
+
+        
         isUsingCropFeatureSubscriber = UserDataManager.main.$isUsingCropFeature.sink(receiveValue: { [weak self] isUsingCropFeature in
             self?.showProButtonIfNeeded()
         })
@@ -186,32 +190,19 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false;
-
-//        let forceShow = RemoteConfig.remoteConfig().configValue(forKey: "forceShow").numberValue.boolValue
-//        
-//        if forceShow && SpidProducts.store.userPurchasedProVersion() == nil {
-//            if let lastApearanceOfPurchaseScreen = UserDataManager.main.lastApearanceOfPurchaseScreen {
-//                let now = Date().timeIntervalSince1970
-//                if lastApearanceOfPurchaseScreen + (60 * 60 * 24) < now {
-//                    forceShowPurchaseScreen()
-//                }
-//                return
-//            }
-//            else {
-//                let now = Date().timeIntervalSince1970
-//                UserDataManager.main.lastApearanceOfPurchaseScreen = now
-//            }
-//        }
         
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
+        spidPlayerController.player.pause()
     }
     
     deinit {
         print("deinit")
+        NotificationCenter.default.removeObserver(self)
+        isUsingCropFeatureSubscriber = nil
         UserDataManager.main.labelViewsModels.removeAll()
         UserDataManager.main.selectedLabelViewModel = nil
         UserDataManager.main.usingSlider = false
@@ -890,7 +881,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                                                soundOn: soundOn,
                                                fps: fps,
                                                fileType: fileType,
-                                               usingCropFeature: UserDataManager.main.isUsingCropFeature)
+                                               usingProFont: UserDataManager.main.usingProFont())
         usingProFeaturesAlertView.layer.opacity = 0
         self.navigationController!.view.addSubview(usingProFeaturesAlertView)
         usingProFeaturesAlertView.translatesAutoresizingMaskIntoConstraints = false
@@ -925,6 +916,40 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     func hideProFeatureAlert() {
         self.hideBlackTransparentOverlay()
         self.hideUsingProFeaturesAlertView()
+    }
+    
+    func getCurrentFrameImage() async -> UIImage? {
+        guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+              let naturalSize = try? await videoTrack.load(.naturalSize),
+              let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return nil}
+        
+        
+        let videoInfo = VideoHelper.orientation(from: preferredTransform)
+        let videoSize: CGSize
+        
+        if videoInfo.isPortrait {
+            videoSize = CGSize(
+                width: naturalSize.height,
+                height: naturalSize.width)
+        } else {
+            videoSize = naturalSize
+        }
+        
+        let videoAspectRatio = videoSize.width / videoSize.height
+        
+        //         Sometimes the portrait video is saved in landscape, so this is a fix that rotates the generated image back to it's
+        //         portrait original intended presentation
+        
+        let currentTime = spidPlayerController.player.currentTime()
+        if videoInfo.isPortrait {
+            var templateImage = await generateTemplateImage(asset: asset, time: currentTime)
+            templateImage = UIImage(cgImage: templateImage.cgImage!, scale: templateImage.scale, orientation: .right)
+            return templateImage
+        }
+        else {
+            var templateImage = await generateTemplateImage(asset: asset, time: currentTime)
+            return templateImage
+        }
     }
     
     // MARK: - Custom Logic
@@ -1006,9 +1031,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         if await UserDataManager.main.isUsingTrimFeature() { AnalyticsManager.trimUsedOnExportEvent()}
     }
     
-    func generateTemplateImage(asset: AVAsset) async -> UIImage {
+    func generateTemplateImage(asset: AVAsset, time: CMTime? = nil) async -> UIImage {
         let generator = AVAssetImageGenerator(asset: asset)
-        let time = CMTime(seconds: 0.0, preferredTimescale: 600)
+        let time = time != nil ? time! : CMTime(seconds: 0.0, preferredTimescale: 600)
         let times = [NSValue(time: time)]
         
         return await withCheckedContinuation { continuation in
@@ -1020,7 +1045,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             }
             
         }
-        
     }
     
     func rotateVideoForCropFeature() async {
@@ -1054,11 +1078,16 @@ extension NotificationObservers {
         showProButtonIfNeeded()
     }
     
+    @objc func labelViewsUpdated() {
+        showProButtonIfNeeded()
+    }
+    
     func usingProFeatures() -> Bool {
             if UserDataManager.main.usingSlider ||
                 fps != 30 ||
                 !soundOn ||
-                fileType == .mp4 {
+                fileType == .mp4 ||
+                UserDataManager.main.usingProFont() {
                 
                 return true
             }

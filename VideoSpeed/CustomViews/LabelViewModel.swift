@@ -57,7 +57,7 @@ class LabelViewModel: ObservableObject {
     var isHidden: Bool = false
     
     @Published
-    var font: UIFont = UIFont.systemFont(ofSize: 18)
+    var font: UIFont = UIFont(name: ".SFUIText", size: 18)!
     
     @Published
     var fontSize: CGFloat = 18
@@ -75,8 +75,7 @@ class LabelViewModel: ObservableObject {
     var strokeWidth: CGFloat = 0
     
     
-    init(width: CGFloat = 0.0, height: CGFloat = 0.0, labelFrame: CGRect, text: String, textColor: UIColor, backgroundColor: UIColor, numberOfLines: Int = 0, masksToBounds: Bool = true, textAlignment: NSTextAlignment, center: CGPoint = .zero, borderWidth: Double = 1.0, borderColor: CGColor = UIColor.orange.cgColor, rotation: CGFloat = 0.0, timeRange: CMTimeRange? = nil, selected: Bool = false
-) {
+    init(width: CGFloat = 0.0, height: CGFloat = 0.0, labelFrame: CGRect, text: String, textColor: UIColor, backgroundColor: UIColor, numberOfLines: Int = 0, masksToBounds: Bool = true, textAlignment: NSTextAlignment, center: CGPoint = .zero, borderWidth: Double = 1.0, borderColor: CGColor = UIColor.orange.cgColor, rotation: CGFloat = 0.0, timeRange: CMTimeRange? = nil, selected: Bool = false) {
        
         self.width = labelFrame.size.width + LabelViewExtraWidth
         self.height = labelFrame.size.height + LabelViewExtraHeight
@@ -94,7 +93,6 @@ class LabelViewModel: ObservableObject {
         self.borderColor = borderColor
         self.rotation = rotation
         self.timeRange = timeRange
-        
     }
     
 //    func updateRotation(rotation: CGFloat) {
@@ -131,5 +129,16 @@ class LabelViewModel: ObservableObject {
         self.timeRange = nil
         self.rightHandleConstraintConstant = nil
         self.leftHandleConstraintConstant = nil
+    }
+    
+    func getVerticalLabelsViewSizeWith(fontSize: CGFloat) -> CGSize {
+        let strings = String.getLinesOfText(text, font: font, width: .greatestFiniteMagnitude)
+        let rawLineHeight = font.withSize(fontSize).lineHeight
+        let lineHeight =  rawLineHeight + (rawLineHeight * 0.1)
+        let textSize = text.textSize(withConstrainedWidth: .greatestFiniteMagnitude, font: font.withSize(fontSize)).size
+        let verticalLabelsViewHeight = CGFloat(strings.count) * lineHeight
+        let verticalLabelsViewWidth = textSize.width + (textSize.width * 0.1)
+        
+        return CGSize(width: verticalLabelsViewWidth, height: verticalLabelsViewHeight)
     }
 }

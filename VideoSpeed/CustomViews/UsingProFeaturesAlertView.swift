@@ -24,13 +24,13 @@ class UsingProFeaturesAlertView: UIView {
     @IBOutlet weak var fpsView: UIView!
     @IBOutlet weak var soundOffView: UIView!
     @IBOutlet weak var sliderPrecisionView: UIView!
+    @IBOutlet weak var proFontView: UIView!
     
-    @IBOutlet weak var cropView: UIView!
     @IBOutlet weak var sliderPrecisionViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var soundOffViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var fpsViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var videoFormatViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var cropViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var proFontViewHeightConstraint: NSLayoutConstraint!
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -46,7 +46,7 @@ class UsingProFeaturesAlertView: UIView {
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
     
-    func updateStatus(usingSlider: Bool, soundOn: Bool, fps: Int32, fileType: AVFileType, usingCropFeature: Bool) {
+    func updateStatus(usingSlider: Bool, soundOn: Bool, fps: Int32, fileType: AVFileType, usingProFont: Bool) {
         
 //        let isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
 
@@ -62,8 +62,8 @@ class UsingProFeaturesAlertView: UIView {
         videoFormatViewHeightConstraint.constant = 0
         mp4View.isHidden = true
 
-        cropViewHeightConstraint.constant = 0
-        cropView.isHidden = true
+        proFontViewHeightConstraint.constant = 0
+        proFontView.isHidden = true
         
         if usingSlider {
             sliderPrecisionViewHeightConstraint.constant = 24
@@ -81,10 +81,11 @@ class UsingProFeaturesAlertView: UIView {
             videoFormatViewHeightConstraint.constant = 24
             mp4View.isHidden = false
         }
-//        if usingCropFeature && !isCropFeatureFree {
-//            cropViewHeightConstraint.constant = 24
-//            cropView.isHidden = false
-//        }
+        
+        if usingProFont {
+            proFontViewHeightConstraint.constant = 24
+            proFontView.isHidden = false
+        }
         
     }
     

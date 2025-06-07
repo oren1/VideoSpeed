@@ -37,9 +37,9 @@ public class AVAssetTimeSelector: UIView, UIScrollViewDelegate {
         constrainAssetPreview()
     }
 
-    public func regenerateThumbnails() {
+    public func regenerateThumbnails(frame: CGRect? = nil) {
         if let asset = asset {
-            assetPreview.regenerateThumbnails(for: asset)
+            assetPreview.regenerateThumbnails(for: asset, frame: frame)
         }
     }
 

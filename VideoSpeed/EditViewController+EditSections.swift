@@ -143,6 +143,9 @@ extension EditViewController {
     
     func createTrimmerSection() {
         trimmerSectionVC = TrimmerSectionVC()
+//        trimmerSectionVC.view.frame = dashboardContainerView.bounds
+//        trimmerSectionVC.view.setNeedsLayout()
+//        trimmerSectionVC.view.layoutIfNeeded()
         trimmerSectionVC.delegate = self
         trimmerSectionVC.timeRangeDidChange = { [weak self] timeRange in
             Task {
@@ -157,6 +160,8 @@ extension EditViewController {
     
     func createTextSection() {
         textSectionVC = TextSectionVC()
+        textSectionVC.view.frame = dashboardContainerView.bounds
+
         textSectionVC.delegate = self
 
         let _ = textSectionVC.view
