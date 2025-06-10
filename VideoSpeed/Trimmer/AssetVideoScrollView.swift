@@ -4,7 +4,7 @@ import UIKit
 class AssetVideoScrollView: UIScrollView {
 
     private var widthConstraint: NSLayoutConstraint?
-
+    var images: [CGImage]?
     let contentView = UIView()
     public var maxDuration: Double = 15
     private var generator: AVAssetImageGenerator?
@@ -44,11 +44,14 @@ class AssetVideoScrollView: UIScrollView {
     }
 
     internal func regenerateThumbnails(for asset: AVAsset, frame: CGRect? = nil) {
+        // Calculating the thumbnail size by taking the frame height of the assetPreview as the height,
+        // and width by multiplyng the height by the aspect ratio of the real asset video track
         guard let thumbnailSize = getThumbnailFrameSize(from: asset), thumbnailSize.width != 0 else {
             print("Could not calculate the thumbnail size.")
             return
         }
 
+        
         generator?.cancelAllCGImageGeneration()
         removeFormerThumbnails()
         let newContentSize = setContentSize(for: asset, frame: frame)
@@ -60,6 +63,25 @@ class AssetVideoScrollView: UIScrollView {
         generateImages(for: asset, at: timesForThumbnail, with: thumbnailSize, visibleThumnails: visibleThumbnailsCount)
     }
 
+    internal func addThumbnails(for asset: AVAsset) {
+        // Calculating the thumbnail size by taking the frame height of the assetPreview as the height,
+        // and width by multiplyng the height by the aspect ratio of the real asset video track
+        guard let thumbnailSize = getThumbnailFrameSize(from: asset), thumbnailSize.width != 0 else {
+            print("Could not calculate the thumbnail size.")
+            return
+        }
+
+        removeFormerThumbnails()
+        
+        if let images =  images {
+            addThumbnailViews(images.count, size: thumbnailSize)
+
+            for (index, cgImage) in images.enumerated() {
+              displayImage(cgImage, at: index)
+           }
+        }
+    }
+    
     private func getThumbnailFrameSize(from asset: AVAsset) -> CGSize? {
         guard let track = asset.tracks(withMediaType: AVMediaType.video).first else { return nil}
 
@@ -101,14 +123,17 @@ class AssetVideoScrollView: UIScrollView {
 
             let viewEndX = CGFloat(index) * size.width + size.width
 
-            if viewEndX > contentView.frame.width {
-                thumbnailView.frame.size = CGSize(width: size.width + (contentView.frame.width - viewEndX), height: size.height)
-                thumbnailView.contentMode = .scaleAspectFill
-            } else {
-                thumbnailView.frame.size = size
-                thumbnailView.contentMode = .scaleAspectFit
-            }
+//            if viewEndX > contentView.frame.width {
+//                thumbnailView.frame.size = CGSize(width: size.width + (contentView.frame.width - viewEndX), height: size.height)
+//                thumbnailView.contentMode = .scaleAspectFill
+//            } else {
+//                thumbnailView.frame.size = size
+//                thumbnailView.contentMode = .scaleAspectFit
+//            }
 
+            thumbnailView.frame.size = size
+            thumbnailView.contentMode = .scaleAspectFit
+            
             thumbnailView.frame.origin = CGPoint(x: CGFloat(index) * size.width, y: 0)
             thumbnailView.tag = index
             contentView.addSubview(thumbnailView)
@@ -127,6 +152,7 @@ class AssetVideoScrollView: UIScrollView {
     }
 
     private func generateImages(for asset: AVAsset, at times: [NSValue], with maximumSize: CGSize, visibleThumnails: Int) {
+        
         generator = AVAssetImageGenerator(asset: asset)
         generator?.appliesPreferredTrackTransform = true
 

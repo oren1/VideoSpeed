@@ -179,10 +179,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             }
         }
         
-        //        segmentedControl.setTitleTextAttributes([.font: UIFont.boldSystemFont(ofSize: 14), .foregroundColor: UIColor.white], for: .normal)
-        //
-        //        segmentedControl.setTitleTextAttributes([.font: UIFont.boldSystemFont(ofSize: 14), .foregroundColor: UIColor.black], for: .selected)
-        
     }
     
     

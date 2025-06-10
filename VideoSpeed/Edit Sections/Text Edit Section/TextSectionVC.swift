@@ -86,9 +86,8 @@ class TextSectionVC: SectionViewController {
         trimmerView.mainColor = UIColor.systemBlue
         trimmerView.maskColor = UIColor.black
         trimmerView.positionBarColor = UIColor.clear
-        let frame = CGRect(origin: .zero, size: CGSize(width: UIScreen.main.bounds.width - 60, height: UIScreen.main.bounds.height))
-        trimmerView.regenerateThumbnails(frame: frame)
-//        trimmerView.regenerateThumbnails()
+        await trimmerView.preGenerateImagesWith(trimmerHeight: 52)
+        trimmerView.regenerateThumbnails()
         setTrimmerInteractionStatus()
         resetTimeRangesForLabelViews()
     }
