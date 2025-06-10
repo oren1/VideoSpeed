@@ -40,8 +40,8 @@ class TrimmerSectionVC: SectionViewController {
             trimmerView.mainColor = UIColor.systemBlue
             trimmerView.maskColor = UIColor.black
             trimmerView.positionBarColor = UIColor.clear
-            let frame = CGRect(origin: .zero, size: CGSize(width: UIScreen.main.bounds.width - 60, height: UIScreen.main.bounds.height))
-            trimmerView.regenerateThumbnails(frame: frame)
+            await trimmerView.preGenerateImagesWith(trimmerHeight: 60)
+            trimmerView.regenerateThumbnails()
             // 1. create a new PlayerItem with the original video asset
             let originalAsset = await UserDataManager.main.currentSpidAsset.getOriginalAsset()
             playerItem = AVPlayerItem(asset: originalAsset)

@@ -1381,8 +1381,8 @@
                                             <constraint firstAttribute="height" constant="25" id="ncn-ie-ZmU"/>
                                         </constraints>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Crop" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BEk-ik-3N2">
-                                        <rect key="frame" x="48" y="6.5" width="39.5" height="21.5"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="All Fonts" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BEk-ik-3N2">
+                                        <rect key="frame" x="48" y="6.5" width="69.5" height="21.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
@@ -1438,9 +1438,6 @@
                     </view>
                     <connections>
                         <outlet property="backButton" destination="LtC-by-6ci" id="swd-87-bZB"/>
-                        <outlet property="cropView" destination="pz5-if-P5p" id="rGA-G5-HxY"/>
-                        <outlet property="cropViewBottomHeightConstraint" destination="MPJ-Sf-8SE" id="Ti5-Mp-COR"/>
-                        <outlet property="cropViewHeightConstraint" destination="UWu-jr-oLa" id="ZQW-F8-Vcv"/>
                         <outlet property="priceLabel" destination="pai-Lg-raa" id="33x-NY-PWS"/>
                     </connections>
                 </viewController>

@@ -44,4 +44,5 @@ actor SpidAsset {
     func videoDuration() -> Double {
         self.timeRange.duration.seconds / Double(speed)
     }
+    
 }
