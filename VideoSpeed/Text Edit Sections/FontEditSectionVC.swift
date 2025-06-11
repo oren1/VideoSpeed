@@ -247,7 +247,12 @@ class FontCell: UICollectionViewCell {
         fontLabel.font = spidFont.font
 
         tagLabel.text = tagText.uppercased()
-        tagLabel.isHidden = !isPro
+        if SpidProducts.store.userPurchasedProVersion() != nil {
+            tagLabel.isHidden = true
+        }
+        else {
+            tagLabel.isHidden = !isPro
+        }
     }
 }
 
