@@ -9,13 +9,14 @@ import UIKit
 import AVFoundation
 import AVKit
 
-protocol TrimmerSectionViewDelegate: AnyObject {
-    var playerController: AVPlayerViewController! { get set }
+protocol TrimmerViewSpidDelegate: AnyObject {
+    var spidPlayerController: SpidPlayerViewController! { get set }
+    func getCurrentFrameImage() async -> UIImage?
 }
 
 // added an extension to give the 'playerViewController' variable a default implementation.
-extension TrimmerSectionViewDelegate {
-    var playerController: AVPlayerViewController! {
+extension TrimmerViewSpidDelegate {
+    var spidPlayerController: SpidPlayerViewController! {
         get { nil }
     }
 }
@@ -24,7 +25,7 @@ typealias TimeRangeClosure = (_ timeRange: CMTimeRange) -> Void
 
 class TrimmerSectionVC: SectionViewController {
     
-    weak var delegate: TrimmerSectionViewDelegate!
+    weak var delegate: TrimmerViewSpidDelegate!
     @IBOutlet weak var trimmerView: TrimmerView!
     var playbackTimeCheckerTimer: Timer?
     var timeRangeDidChange: TimeRangeClosure?
@@ -39,16 +40,14 @@ class TrimmerSectionVC: SectionViewController {
             trimmerView.mainColor = UIColor.systemBlue
             trimmerView.maskColor = UIColor.black
             trimmerView.positionBarColor = UIColor.clear
+            await trimmerView.preGenerateImagesWith(trimmerHeight: 60)
             trimmerView.regenerateThumbnails()
             // 1. create a new PlayerItem with the original video asset
             let originalAsset = await UserDataManager.main.currentSpidAsset.getOriginalAsset()
             playerItem = AVPlayerItem(asset: originalAsset)
         }
     }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
+
     
     func startPlaybackTimeChecker() {
 
@@ -68,7 +67,7 @@ class TrimmerSectionVC: SectionViewController {
 
         guard let startTime = trimmerView.startTime,
               let endTime = trimmerView.endTime,
-              let player = delegate?.playerController?.player else {
+              let player = delegate?.spidPlayerController?.player else {
             return
         }
 
@@ -84,8 +83,8 @@ class TrimmerSectionVC: SectionViewController {
 
 extension TrimmerSectionVC: TrimmerViewDelegate {
     func positionBarStoppedMoving(_ playerTime: CMTime) {
-        delegate?.playerController?.player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-        delegate?.playerController?.player?.play()
+        delegate?.spidPlayerController?.player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+        delegate?.spidPlayerController?.player?.play()
         
         guard let startTime = trimmerView.startTime, let endTime = trimmerView.endTime else {return}
         
@@ -96,13 +95,12 @@ extension TrimmerSectionVC: TrimmerViewDelegate {
     func didChangePositionBar(_ playerTime: CMTime) {
         Task {
             await MainActor.run {
-                delegate?.playerController?.player?.pause()
+                delegate?.spidPlayerController?.player?.pause()
             }
             // 2. Set the playerController's player with the new PlayerItem
-            delegate?.playerController?.player?.replaceCurrentItem(with: playerItem!)
-            await delegate?.playerController?.player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+            delegate?.spidPlayerController?.player?.replaceCurrentItem(with: playerItem!)
+            await delegate?.spidPlayerController?.player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         }
-        
         
     }
     

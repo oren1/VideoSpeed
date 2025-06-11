@@ -22,7 +22,7 @@ enum ForceShowPurchaseScreen: Int {
     case dontForce = 0, forceShow
 }
 
-class EditViewController: UIViewController, TrimmerSectionViewDelegate {
+class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var playerController: AVPlayerViewController!
     var asset: AVAsset!
     
@@ -33,6 +33,7 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     var fileType: AVFileType = .mov
     var soundOn: Bool! = true
     var assetUrl: URL!
+    var videoSize: CGSize!
     var compositionOriginalDuration: CMTime!
     var compositionVideoTrack: AVMutableCompositionTrack!
     var exportSession: AVAssetExportSession?
@@ -47,8 +48,22 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     var isUsingCropFeatureSubscriber: AnyCancellable?
     var isCropFeatureFree: Bool!
     var currentShownSection: SectionViewController!
+    var spidPlayerController: SpidPlayerViewController!
+    var selectedMenuItem: MenuItem!
     
     @IBOutlet weak var segmentedControl: UISegmentedControl!
+    private(set) var sectionInsets = UIEdgeInsets(top: 2, left: 4, bottom: 2, right: 4)
+    @IBOutlet weak var bottomMenuCollectionView: UICollectionView!
+    let menuItemReuseIdentifier = "MenuItem"
+    let menuItems: [MenuItem] = [MenuItem(id: .speed , title: "SPEED", imageName: "timer"),
+                                 MenuItem(id: .trim , title: "TRIM", imageName: "timeline.selection"),
+                                 MenuItem(id: .crop , title: "CROP", imageName: "crop"),
+                                 MenuItem(id: .text , title: "TEXT", imageName: "textformat.alt"),
+                                 MenuItem(id: .fps , title: "FPS", imageName: "square.stack.3d.down.right.fill"),
+                                 MenuItem(id: .sound , title: "SOUND", imageName: "speaker.wave.2"),
+                                 MenuItem(id: .more , title: "MORE", imageName: "ellipsis")
+    ]
+    
     lazy var progressIndicatorView: ProgressIndicatorView = {
         progressIndicatorView = ProgressIndicatorView()
         return progressIndicatorView
@@ -86,6 +101,7 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     var moreSectionVC: MoreSectionVC!
     var cropSectionVC: CropSectioVC!
     var trimmerSectionVC: TrimmerSectionVC!
+    var textSectionVC: TextSectionVC!
     
     var editSections: [SectionViewController] = []
     
@@ -95,17 +111,22 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        segmentedControl.setTitle("SPEED", forSegmentAt: 0)
-        segmentedControl.setTitle("TRIM", forSegmentAt: 1)
-        segmentedControl.setTitle("CROP", forSegmentAt: 2)
-        segmentedControl.setTitle("FPS", forSegmentAt: 3)
-        segmentedControl.setTitle("SOUND", forSegmentAt: 4)
-        segmentedControl.insertSegment(withTitle: "MORE", at: 5, animated: false)
         
+//        segmentedControl.setTitle("SPEED", forSegmentAt: 0)
+//        segmentedControl.setTitle("TRIM", forSegmentAt: 1)
+//        segmentedControl.setTitle("CROP", forSegmentAt: 2)
+//        segmentedControl.setTitle("FPS", forSegmentAt: 3)
+//        segmentedControl.setTitle("SOUND", forSegmentAt: 4)
+//        segmentedControl.insertSegment(withTitle: "MORE", at: 5, animated: false)
+//        
+//        
+//        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 14)], for: .selected)
+//        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
+//                                                 .font: UIFont.boldSystemFont(ofSize: 14)], for: .normal)
+        selectedMenuItem = menuItems.first
         
-        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 14)], for: .selected)
-        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
-                                                 .font: UIFont.boldSystemFont(ofSize: 14)], for: .normal)
+        bottomMenuCollectionView.delegate = self
+        bottomMenuCollectionView.dataSource = self
         
         setNavigationItems()
         proButton = createProButton()
@@ -117,6 +138,10 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
         
         NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
+                
+        NotificationCenter.default.addObserver(self, selector: #selector(labelViewsUpdated), name: Notification.Name.OverlayLabelViewsUpdated, object: nil)
+
+        
         isUsingCropFeatureSubscriber = UserDataManager.main.$isUsingCropFeature.sink(receiveValue: { [weak self] isUsingCropFeature in
             self?.showProButtonIfNeeded()
         })
@@ -140,9 +165,13 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
             
             let player = AVPlayer(playerItem: playerItem)
             
-            playerController = AVPlayerViewController()
-            playerController.player = player
-            addPlayerToTop()
+            // playerController = AVPlayerViewController()
+            // playerController.player = player
+            // addPlayerToTop()
+
+            spidPlayerController = SpidPlayerViewController()
+            spidPlayerController.player = player
+            addSpidPlayerTop()
             loopVideo()
             
             Task {
@@ -150,41 +179,28 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
             }
         }
         
-        //        segmentedControl.setTitleTextAttributes([.font: UIFont.boldSystemFont(ofSize: 14), .foregroundColor: UIColor.white], for: .normal)
-        //
-        //        segmentedControl.setTitleTextAttributes([.font: UIFont.boldSystemFont(ofSize: 14), .foregroundColor: UIColor.black], for: .selected)
-        
     }
     
     
-    
+   
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false;
-
-//        let forceShow = RemoteConfig.remoteConfig().configValue(forKey: "forceShow").numberValue.boolValue
-//        
-//        if forceShow && SpidProducts.store.userPurchasedProVersion() == nil {
-//            if let lastApearanceOfPurchaseScreen = UserDataManager.main.lastApearanceOfPurchaseScreen {
-//                let now = Date().timeIntervalSince1970
-//                if lastApearanceOfPurchaseScreen + (60 * 60 * 24) < now {
-//                    forceShowPurchaseScreen()
-//                }
-//                return
-//            }
-//            else {
-//                let now = Date().timeIntervalSince1970
-//                UserDataManager.main.lastApearanceOfPurchaseScreen = now
-//            }
-//        }
         
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
+        spidPlayerController.player.pause()
     }
+    
     deinit {
+        print("deinit")
+        NotificationCenter.default.removeObserver(self)
+        isUsingCropFeatureSubscriber = nil
+        UserDataManager.main.labelViewsModels.removeAll()
+        UserDataManager.main.selectedLabelViewModel = nil
         UserDataManager.main.usingSlider = false
     }
     
@@ -272,12 +288,15 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         
         instruction.layerInstructions = [layerInstruction]
         
+       
         
         let videoComposition = AVMutableVideoComposition()
         videoComposition.instructions = [instruction]
         videoComposition.frameDuration = CMTimeMake(value: 1, timescale: fps)
         videoComposition.renderSize = croppedVideoRect.size
-        
+//        videoComposition.animationTool = AVVideoCompositionCoreAnimationTool(
+//          postProcessingAsVideoLayer: videoLayer,
+//          in: outputLayer)
         //                videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
         //                videoComposition.renderSize = CGSize(width: naturalSize.width, height: naturalSize.height)
         //        videoComposition.customVideoCompositorClass = CustomVideoCompositor.self
@@ -286,6 +305,77 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         
     }
     
+    func addLabelViews(to layer: CALayer, videoSize: CGSize)  {
+       
+        let scaleX = videoSize.width / spidPlayerController.videoContainerView.frame.width
+        let scaleY = videoSize.height / spidPlayerController.videoContainerView.frame.height
+        
+        let labelViews = spidPlayerController.videoContainerView.subviews.compactMap { $0 is LabelView ? $0 as? LabelView : nil }
+        
+        for labelView in labelViews {
+            let viewModel = labelView.viewModel!
+            viewModel.selected = false
+            labelView.isHidden = false
+            
+            // The original labelView size before any transform applied
+            let originalSize = labelView.bounds.size
+            
+            // The labelView size after applying the user scale transform
+            
+            let labelViewScaledSize = CGSize(width: originalSize.width * viewModel.fullScale, height: originalSize.height * viewModel.fullScale)
+            
+            // The size needed for rendering the labelView in the video actual size
+            let size = CGSize(width: labelViewScaledSize.width * scaleX, height: labelViewScaledSize.height * scaleY)
+            let bounds = CGRect(origin: .zero, size: size)
+            let renderer = UIGraphicsImageRenderer(size: size)
+            let image = renderer.image { ctx in
+                labelView.drawHierarchy(in: bounds, afterScreenUpdates: true)
+            }
+            let imageView = UIImageView(image: image)
+            imageView.center = CGPoint(x: labelView.center.x * scaleX, y: labelView.center.y * scaleX)
+            imageView.transform = imageView.transform.rotated(by: viewModel.fullRotation)
+            
+            if let timeRange = viewModel.timeRange {
+                print("\(viewModel.text), start: \(timeRange.start.seconds), duration: \(timeRange.duration.seconds)")
+                imageView.layer.beginTime = timeRange.start.seconds
+                imageView.layer.duration = timeRange.duration.seconds
+            }
+            
+        
+            
+            layer.addSublayer(imageView.layer)
+        }
+        
+    }
+    
+    
+    private func add(labelView: LabelView, to layer: CALayer, videoSize: CGSize) {
+        
+        labelView.isHidden = false
+        let scaleX = videoSize.width / spidPlayerController.videoContainerView.frame.width
+        let scaleY = videoSize.height / spidPlayerController.videoContainerView.frame.height
+      
+        let viewModel = labelView.viewModel!
+        viewModel.selected = false
+        let size = CGSize(width: viewModel.width * scaleX, height: viewModel.height * scaleY)
+        let bounds = CGRect(origin: .zero, size: size)
+        let renderer = UIGraphicsImageRenderer(size: size)
+        let image = renderer.image { ctx in
+            labelView.drawHierarchy(in: bounds, afterScreenUpdates: true)
+        }
+        let imageView = UIImageView(image: image)
+        imageView.center = CGPoint(x: labelView.center.x * scaleX, y: labelView.center.y * scaleX)
+        imageView.transform = imageView.transform.rotated(by: labelView.viewModel.rotation)
+        
+
+        if let timeRange = viewModel.timeRange {
+            print("\(viewModel.text), start: \(timeRange.start.seconds), duration: \(timeRange.duration.seconds)")
+            imageView.layer.beginTime = timeRange.start.seconds
+            imageView.layer.duration = timeRange.duration.seconds
+        }
+        
+        layer.addSublayer(imageView.layer)
+    }
     
     func aspectRatioCroppedVideoRect(_ videoSize: CGSize) -> CGRect {
         guard let videoRect = cropViewController.videoRect else
@@ -320,7 +410,7 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         let playerItem = AVPlayerItem(asset: compositionCopy)
         playerItem.audioTimePitchAlgorithm = .spectral
         playerItem.videoComposition = videoCompositionCopy
-        playerController.player?.replaceCurrentItem(with: playerItem)
+        spidPlayerController.player?.replaceCurrentItem(with: playerItem)
     }
     
     
@@ -403,7 +493,10 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
                 UserDataManager.main.userBenefitStatus == .entitled else {
             
             if !usingProFeatures() {
-                return self.exportVideo()
+                Task {
+                    await self.exportVideo()
+                }
+                return
             }
             else {
                 // show alert for purchase
@@ -412,12 +505,37 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
             }
         }
         
-        exportVideo()
+        Task {
+           await exportVideo()
+        }
     }
     
-    @objc func exportVideo() {
+    @objc func exportVideo() async {
+        spidPlayerController.player.pause()
         let theComposition = composition.copy() as! AVComposition
-        let videoComposition = videoComposition.copy() as! AVVideoComposition
+//        let videoComposition = videoComposition.copy() as! AVVideoComposition
+        
+        let videoSize = await UserDataManager.main.currentSpidAsset.videoSize
+        let videoLayer = CALayer()
+        videoLayer.frame = CGRect(origin: .zero, size: videoSize)
+        videoLayer.isGeometryFlipped = true
+        let overlayLayer = CALayer()
+        overlayLayer.frame = CGRect(origin: .zero, size: videoSize)
+        overlayLayer.isGeometryFlipped = true
+        let outputLayer = CALayer()
+        outputLayer.frame = CGRect(origin: .zero, size: videoSize)
+        outputLayer.addSublayer(videoLayer)
+        outputLayer.addSublayer(overlayLayer)
+        
+//        for labelView in UserDataManager.main.overlayLabelViews {
+//            add(labelView: labelView, to: overlayLayer, videoSize: videoSize)
+//        }
+        
+        addLabelViews(to: overlayLayer, videoSize: videoSize)
+        
+        videoComposition.animationTool = AVVideoCompositionCoreAnimationTool(
+          postProcessingAsVideoLayer: videoLayer,
+          in: outputLayer)
         
         guard let exportSession = AVAssetExportSession(
             asset: theComposition,
@@ -513,6 +631,27 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         // tell the childviewcontroller it's contained in it's parent
         playerController.didMove(toParent: self)
         self.playerController.player?.play()
+    }
+    
+    func addSpidPlayerTop() {
+        //add as a childviewcontroller
+//        let spidPlayerViewController = SpidPlayerViewController()
+        addChild(spidPlayerController)
+        
+        // Add the child's View as a subview
+        self.view.addSubview(spidPlayerController.view)
+        
+        spidPlayerController.view.translatesAutoresizingMaskIntoConstraints = false
+        let constraints = [
+            spidPlayerController.view.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            spidPlayerController.view.leftAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leftAnchor),
+            spidPlayerController.view.rightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.rightAnchor),
+            spidPlayerController.view.bottomAnchor.constraint(equalTo: self.dashboardContainerView.topAnchor),
+        ]
+        NSLayoutConstraint.activate(constraints)
+        
+        // tell the childviewcontroller it's contained in it's parent
+        spidPlayerController.didMove(toParent: self)
     }
     
     @MainActor
@@ -738,7 +877,7 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
                                                soundOn: soundOn,
                                                fps: fps,
                                                fileType: fileType,
-                                               usingCropFeature: UserDataManager.main.isUsingCropFeature)
+                                               usingProFont: UserDataManager.main.usingProFont())
         usingProFeaturesAlertView.layer.opacity = 0
         self.navigationController!.view.addSubview(usingProFeaturesAlertView)
         usingProFeaturesAlertView.translatesAutoresizingMaskIntoConstraints = false
@@ -773,6 +912,40 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     func hideProFeatureAlert() {
         self.hideBlackTransparentOverlay()
         self.hideUsingProFeaturesAlertView()
+    }
+    
+    func getCurrentFrameImage() async -> UIImage? {
+        guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+              let naturalSize = try? await videoTrack.load(.naturalSize),
+              let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return nil}
+        
+        
+        let videoInfo = VideoHelper.orientation(from: preferredTransform)
+        let videoSize: CGSize
+        
+        if videoInfo.isPortrait {
+            videoSize = CGSize(
+                width: naturalSize.height,
+                height: naturalSize.width)
+        } else {
+            videoSize = naturalSize
+        }
+        
+        let videoAspectRatio = videoSize.width / videoSize.height
+        
+        //         Sometimes the portrait video is saved in landscape, so this is a fix that rotates the generated image back to it's
+        //         portrait original intended presentation
+        
+        let currentTime = spidPlayerController.player.currentTime()
+        if videoInfo.isPortrait {
+            var templateImage = await generateTemplateImage(asset: asset, time: currentTime)
+            templateImage = UIImage(cgImage: templateImage.cgImage!, scale: templateImage.scale, orientation: .right)
+            return templateImage
+        }
+        else {
+            var templateImage = await generateTemplateImage(asset: asset, time: currentTime)
+            return templateImage
+        }
     }
     
     // MARK: - Custom Logic
@@ -839,8 +1012,9 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
     
     func loopVideo() {
         NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { [weak self] notification in
-            self?.playerController.player?.seek(to: .zero)
-            self?.playerController.player?.play()
+            
+            self?.spidPlayerController.player?.seek(to: .zero)
+            self?.spidPlayerController.player?.play()
         }
     }
     
@@ -853,9 +1027,9 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
         if await UserDataManager.main.isUsingTrimFeature() { AnalyticsManager.trimUsedOnExportEvent()}
     }
     
-    func generateTemplateImage(asset: AVAsset) async -> UIImage {
+    func generateTemplateImage(asset: AVAsset, time: CMTime? = nil) async -> UIImage {
         let generator = AVAssetImageGenerator(asset: asset)
-        let time = CMTime(seconds: 0.0, preferredTimescale: 600)
+        let time = time != nil ? time! : CMTime(seconds: 0.0, preferredTimescale: 600)
         let times = [NSValue(time: time)]
         
         return await withCheckedContinuation { continuation in
@@ -867,7 +1041,6 @@ class EditViewController: UIViewController, TrimmerSectionViewDelegate {
             }
             
         }
-        
     }
     
     func rotateVideoForCropFeature() async {
@@ -901,11 +1074,16 @@ extension NotificationObservers {
         showProButtonIfNeeded()
     }
     
+    @objc func labelViewsUpdated() {
+        showProButtonIfNeeded()
+    }
+    
     func usingProFeatures() -> Bool {
             if UserDataManager.main.usingSlider ||
                 fps != 30 ||
                 !soundOn ||
-                fileType == .mp4 {
+                fileType == .mp4 ||
+                UserDataManager.main.usingProFont() {
                 
                 return true
             }

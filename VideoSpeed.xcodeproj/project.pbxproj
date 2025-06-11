@@ -10,8 +10,19 @@
 		6B04F5852CB916FA000C8C59 /* CropSectioVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B04F5832CB916FA000C8C59 /* CropSectioVC.swift */; };
 		6B04F5862CB916FA000C8C59 /* CropSectioVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B04F5842CB916FA000C8C59 /* CropSectioVC.xib */; };
 		6B04F5892CBBAAC2000C8C59 /* CropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B04F5872CBBAAC2000C8C59 /* CropViewController.swift */; };
+		6B09449B2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B09449A2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift */; };
+		6B09449D2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B09449C2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift */; };
+		6B09449F2DC0A900009FBFB2 /* TextEditMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B09449E2DC0A900009FBFB2 /* TextEditMenuItem.swift */; };
+		6B0944A32DC219D7009FBFB2 /* ColorEditSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B0944A22DC219D7009FBFB2 /* ColorEditSectionVC.xib */; };
+		6B0944A42DC219D7009FBFB2 /* ColorEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0944A12DC219D7009FBFB2 /* ColorEditSectionVC.swift */; };
+		6B0944A72DC34830009FBFB2 /* ColorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0944A52DC34830009FBFB2 /* ColorCollectionViewCell.swift */; };
+		6B0944A82DC34830009FBFB2 /* ColorCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B0944A62DC34830009FBFB2 /* ColorCollectionViewCell.xib */; };
+		6B0944AA2DC36794009FBFB2 /* SpidColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0944A92DC36794009FBFB2 /* SpidColor.swift */; };
+		6B0944AF2DC49366009FBFB2 /* ClearColorCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0944AD2DC49366009FBFB2 /* ClearColorCVCell.swift */; };
+		6B0944B02DC49366009FBFB2 /* ClearColorCVCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B0944AE2DC49366009FBFB2 /* ClearColorCVCell.xib */; };
 		6B0C7D792C88894C00063CBE /* PublishersManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C7D782C88894C00063CBE /* PublishersManager.swift */; };
 		6B0C7D7B2C89E4A700063CBE /* NotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C7D7A2C89E4A700063CBE /* NotificationsManager.swift */; };
+		6B1CF4722D6B27B1005BB89E /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1CF4712D6B27A6005BB89E /* Notification+Extension.swift */; };
 		6B23C1DD2BF629DC001C4F24 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23C1DC2BF629DC001C4F24 /* NetworkManager.swift */; };
 		6B23C1E02BF62F11001C4F24 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23C1DF2BF62F11001C4F24 /* User.swift */; };
 		6B23C1E22BF65B7C001C4F24 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23C1E12BF65B7C001C4F24 /* Response.swift */; };
@@ -44,6 +55,8 @@
 		6B6801252D1557A4002B5454 /* TrimmerSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B6801232D1557A4002B5454 /* TrimmerSectionVC.xib */; };
 		6B6801272D17F31F002B5454 /* SpidAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6801262D17F31F002B5454 /* SpidAsset.swift */; };
 		6B68012B2D1FD9FA002B5454 /* EditViewController+EditSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B68012A2D1FD9F0002B5454 /* EditViewController+EditSections.swift */; };
+		6B6801322D2D6BE0002B5454 /* SpidPlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B6801312D2D6BE0002B5454 /* SpidPlayerViewController.xib */; };
+		6B6801332D2D6BE0002B5454 /* SpidPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6801302D2D6BE0002B5454 /* SpidPlayerViewController.swift */; };
 		6B71AAC42A9098A000C06619 /* SoundSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */; };
 		6B71AAC52A9098A000C06619 /* SoundSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B71AAC32A9098A000C06619 /* SoundSectionVC.xib */; };
 		6B71AAEB2AAA321300C06619 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B71AAEA2AAA321300C06619 /* UIViewController+Extension.swift */; };
@@ -57,10 +70,32 @@
 		6B92E35D2A7933C3008CB22A /* SuccessMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B92E35C2A7933C3008CB22A /* SuccessMessageViewController.swift */; };
 		6B92E3672A7E2F3C008CB22A /* PhotoLibraryUsageDisabledView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B92E3662A7E2F3C008CB22A /* PhotoLibraryUsageDisabledView.swift */; };
 		6B92E3692A7E2F5E008CB22A /* PhotoLibraryUsageDisabledView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B92E3682A7E2F5E008CB22A /* PhotoLibraryUsageDisabledView.xib */; };
+		6B9610142D426B0300DEE296 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9610132D426AF800DEE296 /* String+Extension.swift */; };
+		6B9610162D43C8C700DEE296 /* SpidLabel+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9610152D43C8BD00DEE296 /* SpidLabel+Extension.swift */; };
+		6B9610182D44CD8D00DEE296 /* SpidLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9610172D44CD8D00DEE296 /* SpidLabel.swift */; };
+		6B96101A2D46050500DEE296 /* EditViewController+BottomMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9610192D46050500DEE296 /* EditViewController+BottomMenu.swift */; };
+		6B96101C2D46091400DEE296 /* MenuItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B96101B2D46091400DEE296 /* MenuItemCell.swift */; };
+		6B96101E2D460B7100DEE296 /* MenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B96101D2D460B6C00DEE296 /* MenuItem.swift */; };
+		6B9610212D49ECA200DEE296 /* TextSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B96101F2D49ECA200DEE296 /* TextSectionVC.swift */; };
+		6B9610222D49ECA200DEE296 /* TextSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B9610202D49ECA200DEE296 /* TextSectionVC.xib */; };
+		6B9610252D49F1C000DEE296 /* TextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9610232D49F1C000DEE296 /* TextCell.swift */; };
+		6B9610262D49F1C000DEE296 /* TextCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B9610242D49F1C000DEE296 /* TextCell.xib */; };
+		6B96102E2D4C9A5B00DEE296 /* PlusCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B96102D2D4C9A5B00DEE296 /* PlusCell.xib */; };
+		6B96102F2D4C9A5B00DEE296 /* PlusCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B96102C2D4C9A5B00DEE296 /* PlusCell.swift */; };
+		6B9610332D4CCBCF00DEE296 /* TextEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9610322D4CCBCF00DEE296 /* TextEditViewController.swift */; };
 		6BA101362CE0A091001780BA /* AVAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA101352CE0A084001780BA /* AVAsset+Extension.swift */; };
 		6BA101482CFAEDAA001780BA /* LoadingMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA101472CFAEDAA001780BA /* LoadingMediaView.swift */; };
 		6BAC9BBF2A666EBE0071A41B /* TopIndicatorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */; };
 		6BAC9BC12A666EEA0071A41B /* TopIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAC9BC02A666EEA0071A41B /* TopIndicatorView.swift */; };
+		6BAFED7F2DD0638300AF13E1 /* FontEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED7D2DD0638300AF13E1 /* FontEditSectionVC.swift */; };
+		6BAFED802DD0638300AF13E1 /* FontEditSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BAFED7E2DD0638300AF13E1 /* FontEditSectionVC.xib */; };
+		6BAFED822DD063FB00AF13E1 /* SpidFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED812DD063FB00AF13E1 /* SpidFont.swift */; };
+		6BAFED842DD841AE00AF13E1 /* AlignmentEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED832DD841AE00AF13E1 /* AlignmentEditSectionVC.swift */; };
+		6BAFED862DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED852DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift */; };
+		6BAFED882DDD87EE00AF13E1 /* VerticalLabelsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED872DDD87EE00AF13E1 /* VerticalLabelsView.swift */; };
+		6BAFED8A2DDDC1EF00AF13E1 /* BGStyleEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED892DDDC1EF00AF13E1 /* BGStyleEditSectionVC.swift */; };
+		6BAFED952DECAD2500AF13E1 /* StrokeColorEditSection.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BAFED942DECAD2500AF13E1 /* StrokeColorEditSection.xib */; };
+		6BAFED962DECAD2500AF13E1 /* StrokeColorEditSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED932DECAD2500AF13E1 /* StrokeColorEditSection.swift */; };
 		6BB4EE7E2A8E1109006CF87C /* CrownView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BB4EE7D2A8E1109006CF87C /* CrownView.xib */; };
 		6BB4EE802A8E11CA006CF87C /* CrownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB4EE7F2A8E11CA006CF87C /* CrownView.swift */; };
 		6BB4EE822A8F31EA006CF87C /* UsingProFeaturesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB4EE812A8F31EA006CF87C /* UsingProFeaturesViewController.swift */; };
@@ -69,6 +104,11 @@
 		6BB4EE882A8F48D1006CF87C /* UsingProFeaturesAlertView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BB4EE872A8F48D1006CF87C /* UsingProFeaturesAlertView.xib */; };
 		6BB4EE8A2A8F48E2006CF87C /* UsingProFeaturesAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB4EE892A8F48E2006CF87C /* UsingProFeaturesAlertView.swift */; };
 		6BB4FAD92AEE416D00D00E2D /* InterstitialAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB4FAD82AEE416D00D00E2D /* InterstitialAd.swift */; };
+		6BB566E72DF7E4E0008B9108 /* TrimmerAssetsGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB566E62DF7E4E0008B9108 /* TrimmerAssetsGenerator.swift */; };
+		6BC7B5242D537C1200FF1CE9 /* LabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC7B5232D537C1200FF1CE9 /* LabelView.swift */; };
+		6BC7B5262D537C2900FF1CE9 /* LabelView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BC7B5252D537C2900FF1CE9 /* LabelView.xib */; };
+		6BC7B5282D586D8D00FF1CE9 /* LabelViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC7B5272D586D8100FF1CE9 /* LabelViewModel.swift */; };
+		6BC7B52C2D5C9AA100FF1CE9 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC7B52B2D5C9A9200FF1CE9 /* UIView+Extension.swift */; };
 		6BCAF7EC2A63C5100039BE15 /* SpeedSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCAF7EA2A63C5100039BE15 /* SpeedSectionVC.swift */; };
 		6BCAF7ED2A63C5100039BE15 /* SpeedSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BCAF7EB2A63C5100039BE15 /* SpeedSectionVC.xib */; };
 		6BCDCF4D2A67E5FA00D8B656 /* FPSSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCDCF4B2A67E5FA00D8B656 /* FPSSectionVC.swift */; };
@@ -78,6 +118,8 @@
 		6BCDCF542A67FADD00D8B656 /* SectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCDCF532A67FADD00D8B656 /* SectionViewController.swift */; };
 		6BCEB60D2BF0C1A400010381 /* BenefitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCEB60C2BF0C1A400010381 /* BenefitView.swift */; };
 		6BCEB6112BF0C5CB00010381 /* ActivityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCEB6102BF0C5CB00010381 /* ActivityViewController.swift */; };
+		6BD071882DA23A0000D6744D /* UILabel+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD071872DA239F600D6744D /* UILabel+Extension.swift */; };
+		6BD0718C2DAA574A00D6744D /* PaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD0718B2DAA574A00D6744D /* PaddingLabel.swift */; };
 		6BE9A2EC2A5FC80C00FF8CB0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A2EB2A5FC80C00FF8CB0 /* AppDelegate.swift */; };
 		6BE9A2F02A5FC80C00FF8CB0 /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A2EF2A5FC80C00FF8CB0 /* EditViewController.swift */; };
 		6BE9A2F32A5FC80C00FF8CB0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6BE9A2F12A5FC80C00FF8CB0 /* Main.storyboard */; };
@@ -98,8 +140,19 @@
 		6B04F5832CB916FA000C8C59 /* CropSectioVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropSectioVC.swift; sourceTree = "<group>"; };
 		6B04F5842CB916FA000C8C59 /* CropSectioVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CropSectioVC.xib; sourceTree = "<group>"; };
 		6B04F5872CBBAAC2000C8C59 /* CropViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropViewController.swift; sourceTree = "<group>"; };
+		6B09449A2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextEditViewController+CollectionViewDelegate.swift"; sourceTree = "<group>"; };
+		6B09449C2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditMenuItemCVCell.swift; sourceTree = "<group>"; };
+		6B09449E2DC0A900009FBFB2 /* TextEditMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditMenuItem.swift; sourceTree = "<group>"; };
+		6B0944A12DC219D7009FBFB2 /* ColorEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorEditSectionVC.swift; sourceTree = "<group>"; };
+		6B0944A22DC219D7009FBFB2 /* ColorEditSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ColorEditSectionVC.xib; sourceTree = "<group>"; };
+		6B0944A52DC34830009FBFB2 /* ColorCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCollectionViewCell.swift; sourceTree = "<group>"; };
+		6B0944A62DC34830009FBFB2 /* ColorCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ColorCollectionViewCell.xib; sourceTree = "<group>"; };
+		6B0944A92DC36794009FBFB2 /* SpidColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidColor.swift; sourceTree = "<group>"; };
+		6B0944AD2DC49366009FBFB2 /* ClearColorCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearColorCVCell.swift; sourceTree = "<group>"; };
+		6B0944AE2DC49366009FBFB2 /* ClearColorCVCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ClearColorCVCell.xib; sourceTree = "<group>"; };
 		6B0C7D782C88894C00063CBE /* PublishersManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishersManager.swift; sourceTree = "<group>"; };
 		6B0C7D7A2C89E4A700063CBE /* NotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsManager.swift; sourceTree = "<group>"; };
+		6B1CF4712D6B27A6005BB89E /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
 		6B23C1DC2BF629DC001C4F24 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		6B23C1DF2BF62F11001C4F24 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		6B23C1E12BF65B7C001C4F24 /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
@@ -132,6 +185,8 @@
 		6B6801232D1557A4002B5454 /* TrimmerSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TrimmerSectionVC.xib; sourceTree = "<group>"; };
 		6B6801262D17F31F002B5454 /* SpidAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidAsset.swift; sourceTree = "<group>"; };
 		6B68012A2D1FD9F0002B5454 /* EditViewController+EditSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditViewController+EditSections.swift"; sourceTree = "<group>"; };
+		6B6801302D2D6BE0002B5454 /* SpidPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidPlayerViewController.swift; sourceTree = "<group>"; };
+		6B6801312D2D6BE0002B5454 /* SpidPlayerViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SpidPlayerViewController.xib; sourceTree = "<group>"; };
 		6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSectionVC.swift; sourceTree = "<group>"; };
 		6B71AAC32A9098A000C06619 /* SoundSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SoundSectionVC.xib; sourceTree = "<group>"; };
 		6B71AAEA2AAA321300C06619 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
@@ -144,10 +199,32 @@
 		6B92E35C2A7933C3008CB22A /* SuccessMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessMessageViewController.swift; sourceTree = "<group>"; };
 		6B92E3662A7E2F3C008CB22A /* PhotoLibraryUsageDisabledView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryUsageDisabledView.swift; sourceTree = "<group>"; };
 		6B92E3682A7E2F5E008CB22A /* PhotoLibraryUsageDisabledView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhotoLibraryUsageDisabledView.xib; sourceTree = "<group>"; };
+		6B9610132D426AF800DEE296 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
+		6B9610152D43C8BD00DEE296 /* SpidLabel+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpidLabel+Extension.swift"; sourceTree = "<group>"; };
+		6B9610172D44CD8D00DEE296 /* SpidLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidLabel.swift; sourceTree = "<group>"; };
+		6B9610192D46050500DEE296 /* EditViewController+BottomMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditViewController+BottomMenu.swift"; sourceTree = "<group>"; };
+		6B96101B2D46091400DEE296 /* MenuItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemCell.swift; sourceTree = "<group>"; };
+		6B96101D2D460B6C00DEE296 /* MenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItem.swift; sourceTree = "<group>"; };
+		6B96101F2D49ECA200DEE296 /* TextSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextSectionVC.swift; sourceTree = "<group>"; };
+		6B9610202D49ECA200DEE296 /* TextSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TextSectionVC.xib; sourceTree = "<group>"; };
+		6B9610232D49F1C000DEE296 /* TextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCell.swift; sourceTree = "<group>"; };
+		6B9610242D49F1C000DEE296 /* TextCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TextCell.xib; sourceTree = "<group>"; };
+		6B96102C2D4C9A5B00DEE296 /* PlusCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusCell.swift; sourceTree = "<group>"; };
+		6B96102D2D4C9A5B00DEE296 /* PlusCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PlusCell.xib; sourceTree = "<group>"; };
+		6B9610322D4CCBCF00DEE296 /* TextEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditViewController.swift; sourceTree = "<group>"; };
 		6BA101352CE0A084001780BA /* AVAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAsset+Extension.swift"; sourceTree = "<group>"; };
 		6BA101472CFAEDAA001780BA /* LoadingMediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingMediaView.swift; sourceTree = "<group>"; };
 		6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TopIndicatorView.xib; sourceTree = "<group>"; };
 		6BAC9BC02A666EEA0071A41B /* TopIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopIndicatorView.swift; sourceTree = "<group>"; };
+		6BAFED7D2DD0638300AF13E1 /* FontEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontEditSectionVC.swift; sourceTree = "<group>"; };
+		6BAFED7E2DD0638300AF13E1 /* FontEditSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FontEditSectionVC.xib; sourceTree = "<group>"; };
+		6BAFED812DD063FB00AF13E1 /* SpidFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidFont.swift; sourceTree = "<group>"; };
+		6BAFED832DD841AE00AF13E1 /* AlignmentEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlignmentEditSectionVC.swift; sourceTree = "<group>"; };
+		6BAFED852DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSizeEditSectionVC.swift; sourceTree = "<group>"; };
+		6BAFED872DDD87EE00AF13E1 /* VerticalLabelsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalLabelsView.swift; sourceTree = "<group>"; };
+		6BAFED892DDDC1EF00AF13E1 /* BGStyleEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGStyleEditSectionVC.swift; sourceTree = "<group>"; };
+		6BAFED932DECAD2500AF13E1 /* StrokeColorEditSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeColorEditSection.swift; sourceTree = "<group>"; };
+		6BAFED942DECAD2500AF13E1 /* StrokeColorEditSection.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StrokeColorEditSection.xib; sourceTree = "<group>"; };
 		6BB4EE7D2A8E1109006CF87C /* CrownView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CrownView.xib; sourceTree = "<group>"; };
 		6BB4EE7F2A8E11CA006CF87C /* CrownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrownView.swift; sourceTree = "<group>"; };
 		6BB4EE812A8F31EA006CF87C /* UsingProFeaturesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsingProFeaturesViewController.swift; sourceTree = "<group>"; };
@@ -156,6 +233,11 @@
 		6BB4EE872A8F48D1006CF87C /* UsingProFeaturesAlertView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UsingProFeaturesAlertView.xib; sourceTree = "<group>"; };
 		6BB4EE892A8F48E2006CF87C /* UsingProFeaturesAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsingProFeaturesAlertView.swift; sourceTree = "<group>"; };
 		6BB4FAD82AEE416D00D00E2D /* InterstitialAd.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InterstitialAd.swift; sourceTree = "<group>"; };
+		6BB566E62DF7E4E0008B9108 /* TrimmerAssetsGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrimmerAssetsGenerator.swift; sourceTree = "<group>"; };
+		6BC7B5232D537C1200FF1CE9 /* LabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelView.swift; sourceTree = "<group>"; };
+		6BC7B5252D537C2900FF1CE9 /* LabelView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LabelView.xib; sourceTree = "<group>"; };
+		6BC7B5272D586D8100FF1CE9 /* LabelViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelViewModel.swift; sourceTree = "<group>"; };
+		6BC7B52B2D5C9A9200FF1CE9 /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		6BCAF7EA2A63C5100039BE15 /* SpeedSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedSectionVC.swift; sourceTree = "<group>"; };
 		6BCAF7EB2A63C5100039BE15 /* SpeedSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SpeedSectionVC.xib; sourceTree = "<group>"; };
 		6BCDCF4B2A67E5FA00D8B656 /* FPSSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FPSSectionVC.swift; sourceTree = "<group>"; };
@@ -165,6 +247,8 @@
 		6BCDCF532A67FADD00D8B656 /* SectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionViewController.swift; sourceTree = "<group>"; };
 		6BCEB60C2BF0C1A400010381 /* BenefitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BenefitView.swift; sourceTree = "<group>"; };
 		6BCEB6102BF0C5CB00010381 /* ActivityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityViewController.swift; sourceTree = "<group>"; };
+		6BD071872DA239F600D6744D /* UILabel+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Extension.swift"; sourceTree = "<group>"; };
+		6BD0718B2DAA574A00D6744D /* PaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingLabel.swift; sourceTree = "<group>"; };
 		6BE9A2E82A5FC80C00FF8CB0 /* VideoSpeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoSpeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BE9A2EB2A5FC80C00FF8CB0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6BE9A2ED2A5FC80C00FF8CB0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -208,13 +292,38 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		6B0944A02DC21953009FBFB2 /* Text Edit Sections */ = {
+			isa = PBXGroup;
+			children = (
+				6B0944A12DC219D7009FBFB2 /* ColorEditSectionVC.swift */,
+				6B0944A22DC219D7009FBFB2 /* ColorEditSectionVC.xib */,
+				6B0944A52DC34830009FBFB2 /* ColorCollectionViewCell.swift */,
+				6B0944A62DC34830009FBFB2 /* ColorCollectionViewCell.xib */,
+				6B0944AD2DC49366009FBFB2 /* ClearColorCVCell.swift */,
+				6B0944AE2DC49366009FBFB2 /* ClearColorCVCell.xib */,
+				6BAFED7D2DD0638300AF13E1 /* FontEditSectionVC.swift */,
+				6BAFED7E2DD0638300AF13E1 /* FontEditSectionVC.xib */,
+				6BAFED832DD841AE00AF13E1 /* AlignmentEditSectionVC.swift */,
+				6BAFED852DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift */,
+				6BAFED892DDDC1EF00AF13E1 /* BGStyleEditSectionVC.swift */,
+				6BAFED932DECAD2500AF13E1 /* StrokeColorEditSection.swift */,
+				6BAFED942DECAD2500AF13E1 /* StrokeColorEditSection.xib */,
+			);
+			path = "Text Edit Sections";
+			sourceTree = "<group>";
+		};
 		6B23C1DE2BF62EF8001C4F24 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
+				6B96101D2D460B6C00DEE296 /* MenuItem.swift */,
 				6B23C1DF2BF62F11001C4F24 /* User.swift */,
 				6B23C1E12BF65B7C001C4F24 /* Response.swift */,
 				6B45B4042D01EEC80074C422 /* LoadingMediaViewModel.swift */,
 				6B6801262D17F31F002B5454 /* SpidAsset.swift */,
+				6B9610172D44CD8D00DEE296 /* SpidLabel.swift */,
+				6B09449E2DC0A900009FBFB2 /* TextEditMenuItem.swift */,
+				6B0944A92DC36794009FBFB2 /* SpidColor.swift */,
+				6BAFED812DD063FB00AF13E1 /* SpidFont.swift */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -257,6 +366,19 @@
 			path = Trimmer;
 			sourceTree = "<group>";
 		};
+		6B9610272D4A234D00DEE296 /* Text Edit Section */ = {
+			isa = PBXGroup;
+			children = (
+				6B96101F2D49ECA200DEE296 /* TextSectionVC.swift */,
+				6B9610202D49ECA200DEE296 /* TextSectionVC.xib */,
+				6B9610232D49F1C000DEE296 /* TextCell.swift */,
+				6B9610242D49F1C000DEE296 /* TextCell.xib */,
+				6B96102C2D4C9A5B00DEE296 /* PlusCell.swift */,
+				6B96102D2D4C9A5B00DEE296 /* PlusCell.xib */,
+			);
+			path = "Text Edit Section";
+			sourceTree = "<group>";
+		};
 		6BAC9BBD2A666E500071A41B /* CustomViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -277,6 +399,11 @@
 				6BB4EE892A8F48E2006CF87C /* UsingProFeaturesAlertView.swift */,
 				6BF0194E2B565CAC00953AB6 /* SubscriptionOptionView.swift */,
 				6BF019502B565CB800953AB6 /* SubscriptionOptionView.xib */,
+				6BC7B5272D586D8100FF1CE9 /* LabelViewModel.swift */,
+				6BC7B5232D537C1200FF1CE9 /* LabelView.swift */,
+				6BC7B5252D537C2900FF1CE9 /* LabelView.xib */,
+				6BD0718B2DAA574A00D6744D /* PaddingLabel.swift */,
+				6BAFED872DDD87EE00AF13E1 /* VerticalLabelsView.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -297,6 +424,7 @@
 				6B04F5842CB916FA000C8C59 /* CropSectioVC.xib */,
 				6B6801222D1557A4002B5454 /* TrimmerSectionVC.swift */,
 				6B6801232D1557A4002B5454 /* TrimmerSectionVC.xib */,
+				6B9610272D4A234D00DEE296 /* Text Edit Section */,
 			);
 			path = "Edit Sections";
 			sourceTree = "<group>";
@@ -304,6 +432,11 @@
 		6BCAF7E52A63B6800039BE15 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				6BD071872DA239F600D6744D /* UILabel+Extension.swift */,
+				6B1CF4712D6B27A6005BB89E /* Notification+Extension.swift */,
+				6BC7B52B2D5C9A9200FF1CE9 /* UIView+Extension.swift */,
+				6B9610152D43C8BD00DEE296 /* SpidLabel+Extension.swift */,
+				6B9610132D426AF800DEE296 /* String+Extension.swift */,
 				6B45B4062D01F1500074C422 /* AssetRotator.swift */,
 				6BA101352CE0A084001780BA /* AVAsset+Extension.swift */,
 				6BE9A3092A618B2500FF8CB0 /* UIImageView+Extension.swift */,
@@ -314,6 +447,7 @@
 				6B6700AD2A6E608C006F2980 /* UIApplication+Utils.swift */,
 				6B71AAEA2AAA321300C06619 /* UIViewController+Extension.swift */,
 				6B5954992B5EA93100483047 /* TransactionObserver.swift */,
+				6BB566E62DF7E4E0008B9108 /* TrimmerAssetsGenerator.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -344,6 +478,7 @@
 				6BE9A2ED2A5FC80C00FF8CB0 /* SceneDelegate.swift */,
 				6BE9A2EF2A5FC80C00FF8CB0 /* EditViewController.swift */,
 				6B68012A2D1FD9F0002B5454 /* EditViewController+EditSections.swift */,
+				6B9610192D46050500DEE296 /* EditViewController+BottomMenu.swift */,
 				6BE9A3032A6116EF00FF8CB0 /* MainViewController.swift */,
 				6B92E35C2A7933C3008CB22A /* SuccessMessageViewController.swift */,
 				6BB4EE812A8F31EA006CF87C /* UsingProFeaturesViewController.swift */,
@@ -354,10 +489,16 @@
 				6B3EF4672B4BF6460017C380 /* SubscriptionPurchaseVC.swift */,
 				6B6700A12A6CD981006F2980 /* SplashViewController.swift */,
 				6BE9A3052A61811400FF8CB0 /* PhotoCell.swift */,
+				6B96101B2D46091400DEE296 /* MenuItemCell.swift */,
 				6BCEB60C2BF0C1A400010381 /* BenefitView.swift */,
 				6BCEB6102BF0C5CB00010381 /* ActivityViewController.swift */,
 				6B04F5872CBBAAC2000C8C59 /* CropViewController.swift */,
 				6BA101472CFAEDAA001780BA /* LoadingMediaView.swift */,
+				6B6801302D2D6BE0002B5454 /* SpidPlayerViewController.swift */,
+				6B6801312D2D6BE0002B5454 /* SpidPlayerViewController.xib */,
+				6B9610322D4CCBCF00DEE296 /* TextEditViewController.swift */,
+				6B09449A2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift */,
+				6B09449C2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift */,
 				6BE9A2F12A5FC80C00FF8CB0 /* Main.storyboard */,
 				6BE9A2F42A5FC80D00FF8CB0 /* Assets.xcassets */,
 				6BE9A2F62A5FC80D00FF8CB0 /* LaunchScreen.storyboard */,
@@ -369,6 +510,7 @@
 				6BAC9BBD2A666E500071A41B /* CustomViews */,
 				6BCAF7E52A63B6800039BE15 /* Utils */,
 				6BCAF7E42A63B6360039BE15 /* Edit Sections */,
+				6B0944A02DC21953009FBFB2 /* Text Edit Sections */,
 				6B6801172D153D44002B5454 /* Trimmer */,
 			);
 			path = VideoSpeed;
@@ -439,20 +581,30 @@
 				6B92E3692A7E2F5E008CB22A /* PhotoLibraryUsageDisabledView.xib in Resources */,
 				6BE9A2F82A5FC80D00FF8CB0 /* LaunchScreen.storyboard in Resources */,
 				6BE9A3022A5FD5A000FF8CB0 /* climbing.mov in Resources */,
+				6B6801322D2D6BE0002B5454 /* SpidPlayerViewController.xib in Resources */,
 				6BCDCF4E2A67E5FA00D8B656 /* FPSSectionVC.xib in Resources */,
+				6BAFED952DECAD2500AF13E1 /* StrokeColorEditSection.xib in Resources */,
 				6BCAF7ED2A63C5100039BE15 /* SpeedSectionVC.xib in Resources */,
 				6BF019512B565CB800953AB6 /* SubscriptionOptionView.xib in Resources */,
 				6B67009D2A6BCAD2006F2980 /* ProgressIndicatorView.xib in Resources */,
 				6B04F5862CB916FA000C8C59 /* CropSectioVC.xib in Resources */,
+				6BAFED802DD0638300AF13E1 /* FontEditSectionVC.xib in Resources */,
+				6B96102E2D4C9A5B00DEE296 /* PlusCell.xib in Resources */,
 				6BB4EE882A8F48D1006CF87C /* UsingProFeaturesAlertView.xib in Resources */,
+				6B9610222D49ECA200DEE296 /* TextSectionVC.xib in Resources */,
+				6B0944B02DC49366009FBFB2 /* ClearColorCVCell.xib in Resources */,
+				6B0944A32DC219D7009FBFB2 /* ColorEditSectionVC.xib in Resources */,
 				6BB4EE842A8F3881006CF87C /* BlackTransparentOverlay.xib in Resources */,
+				6B9610262D49F1C000DEE296 /* TextCell.xib in Resources */,
 				6B7D10852BA70AE4002DD73F /* remote_config_defaults.plist in Resources */,
 				6BE9A2F52A5FC80D00FF8CB0 /* Assets.xcassets in Resources */,
 				6BAC9BBF2A666EBE0071A41B /* TopIndicatorView.xib in Resources */,
 				6B71AAF32AC431A000C06619 /* GoogleService-Info.plist in Resources */,
+				6B0944A82DC34830009FBFB2 /* ColorCollectionViewCell.xib in Resources */,
 				6BCDCF522A67FAC800D8B656 /* MoreSectionVC.xib in Resources */,
 				6B6801252D1557A4002B5454 /* TrimmerSectionVC.xib in Resources */,
 				6BE9A2F32A5FC80C00FF8CB0 /* Main.storyboard in Resources */,
+				6BC7B5262D537C2900FF1CE9 /* LabelView.xib in Resources */,
 				6BB4EE7E2A8E1109006CF87C /* CrownView.xib in Resources */,
 				6B51C1FC2A7233B80013ABAD /* LoadingView.xib in Resources */,
 				6B71AAC52A9098A000C06619 /* SoundSectionVC.xib in Resources */,
@@ -525,9 +677,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B0944A72DC34830009FBFB2 /* ColorCollectionViewCell.swift in Sources */,
 				6BF0194F2B565CAC00953AB6 /* SubscriptionOptionView.swift in Sources */,
 				6B6700972A6ABBF6006F2980 /* IAPManager.swift in Sources */,
 				6BE9A30A2A618B2500FF8CB0 /* UIImageView+Extension.swift in Sources */,
+				6B9610332D4CCBCF00DEE296 /* TextEditViewController.swift in Sources */,
 				6B6700A42A6CDCB8006F2980 /* UserDataManager.swift in Sources */,
 				6BCEB60D2BF0C1A400010381 /* BenefitView.swift in Sources */,
 				6BB4EE8A2A8F48E2006CF87C /* UsingProFeaturesAlertView.swift in Sources */,
@@ -536,6 +690,7 @@
 				6BE9A2F02A5FC80C00FF8CB0 /* EditViewController.swift in Sources */,
 				6B92E3672A7E2F3C008CB22A /* PhotoLibraryUsageDisabledView.swift in Sources */,
 				6B04F5852CB916FA000C8C59 /* CropSectioVC.swift in Sources */,
+				6BAFED822DD063FB00AF13E1 /* SpidFont.swift in Sources */,
 				6B6700A22A6CD981006F2980 /* SplashViewController.swift in Sources */,
 				6B51C1FA2A7233A50013ABAD /* LoadingView.swift in Sources */,
 				6B923FA62C2EA38F00CD1381 /* WeeklySubscriptionVC.swift in Sources */,
@@ -546,46 +701,75 @@
 				6BCEB6112BF0C5CB00010381 /* ActivityViewController.swift in Sources */,
 				6B6700992A6BAE36006F2980 /* VideoHelper.swift in Sources */,
 				6B6700A82A6CFBF8006F2980 /* SKProduct+Utils.swift in Sources */,
+				6BC7B52C2D5C9AA100FF1CE9 /* UIView+Extension.swift in Sources */,
 				6BE9A3062A61811400FF8CB0 /* PhotoCell.swift in Sources */,
+				6B9610252D49F1C000DEE296 /* TextCell.swift in Sources */,
 				6B0C7D792C88894C00063CBE /* PublishersManager.swift in Sources */,
 				6B92E3592A77A192008CB22A /* AppOpenAd.swift in Sources */,
+				6B96101A2D46050500DEE296 /* EditViewController+BottomMenu.swift in Sources */,
 				6BB4EE822A8F31EA006CF87C /* UsingProFeaturesViewController.swift in Sources */,
 				6BE9A30C2A62809D00FF8CB0 /* PHAsset+Extension.swift in Sources */,
 				6BA101362CE0A091001780BA /* AVAsset+Extension.swift in Sources */,
+				6BD071882DA23A0000D6744D /* UILabel+Extension.swift in Sources */,
 				6BB4FAD92AEE416D00D00E2D /* InterstitialAd.swift in Sources */,
+				6B9610212D49ECA200DEE296 /* TextSectionVC.swift in Sources */,
 				6BB4EE862A8F38B4006CF87C /* BlackTransparentOverlay.swift in Sources */,
+				6BAFED962DECAD2500AF13E1 /* StrokeColorEditSection.swift in Sources */,
 				6B0C7D7B2C89E4A700063CBE /* NotificationsManager.swift in Sources */,
+				6BD0718C2DAA574A00D6744D /* PaddingLabel.swift in Sources */,
+				6B9610162D43C8C700DEE296 /* SpidLabel+Extension.swift in Sources */,
 				6B923FA82C2EA3A800CD1381 /* MonthlySubscriptionVC.swift in Sources */,
 				6B6801242D1557A4002B5454 /* TrimmerSectionVC.swift in Sources */,
+				6B0944AF2DC49366009FBFB2 /* ClearColorCVCell.swift in Sources */,
 				6B23C1DD2BF629DC001C4F24 /* NetworkManager.swift in Sources */,
 				6BE9A2EC2A5FC80C00FF8CB0 /* AppDelegate.swift in Sources */,
 				6B6700AA2A6E5FE7006F2980 /* AppStoreReviewManager.swift in Sources */,
 				6BCDCF542A67FADD00D8B656 /* SectionViewController.swift in Sources */,
+				6B0944AA2DC36794009FBFB2 /* SpidColor.swift in Sources */,
 				6B6700942A6A6C13006F2980 /* PhotosHeader.swift in Sources */,
+				6B96102F2D4C9A5B00DEE296 /* PlusCell.swift in Sources */,
 				6B45B4052D01EEC80074C422 /* LoadingMediaViewModel.swift in Sources */,
+				6BAFED8A2DDDC1EF00AF13E1 /* BGStyleEditSectionVC.swift in Sources */,
+				6BC7B5242D537C1200FF1CE9 /* LabelView.swift in Sources */,
 				6BCDCF512A67FAC800D8B656 /* MoreSectionVC.swift in Sources */,
 				6BCDCF4D2A67E5FA00D8B656 /* FPSSectionVC.swift in Sources */,
 				6BAC9BC12A666EEA0071A41B /* TopIndicatorView.swift in Sources */,
 				6B45B4072D01F1590074C422 /* AssetRotator.swift in Sources */,
 				6B68012B2D1FD9FA002B5454 /* EditViewController+EditSections.swift in Sources */,
 				6B6700AE2A6E608C006F2980 /* UIApplication+Utils.swift in Sources */,
+				6BAFED862DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift in Sources */,
+				6BAFED882DDD87EE00AF13E1 /* VerticalLabelsView.swift in Sources */,
 				6B7D10832BA6EF5B002DD73F /* YearlySubscriptionPurchaseVC.swift in Sources */,
 				6B59549A2B5EA93100483047 /* TransactionObserver.swift in Sources */,
 				6B6801182D153D44002B5454 /* HandlerView.swift in Sources */,
+				6B96101E2D460B7100DEE296 /* MenuItem.swift in Sources */,
+				6B0944A42DC219D7009FBFB2 /* ColorEditSectionVC.swift in Sources */,
 				6B6801192D153D44002B5454 /* AssetVideoScrollView.swift in Sources */,
+				6B09449D2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift in Sources */,
 				6B68011A2D153D44002B5454 /* AVPlayer+isPlaying.swift in Sources */,
+				6BAFED842DD841AE00AF13E1 /* AlignmentEditSectionVC.swift in Sources */,
 				6B68011B2D153D44002B5454 /* PryntTrimmerView.swift in Sources */,
 				6B68011C2D153D44002B5454 /* AssetSelectionViewController.swift in Sources */,
+				6B09449B2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift in Sources */,
+				6BC7B5282D586D8D00FF1CE9 /* LabelViewModel.swift in Sources */,
 				6B68011D2D153D44002B5454 /* AVAssetTimeSelector.swift in Sources */,
 				6BA101482CFAEDAA001780BA /* LoadingMediaView.swift in Sources */,
+				6B6801332D2D6BE0002B5454 /* SpidPlayerViewController.swift in Sources */,
 				6B92E35B2A77C72C008CB22A /* SceneDelegate.swift in Sources */,
 				6BF019532B57DB7400953AB6 /* AnalyticsManager.swift in Sources */,
 				6BCAF7EC2A63C5100039BE15 /* SpeedSectionVC.swift in Sources */,
 				6B6700AC2A6E6032006F2980 /* Consts.swift in Sources */,
+				6B96101C2D46091400DEE296 /* MenuItemCell.swift in Sources */,
+				6B9610142D426B0300DEE296 /* String+Extension.swift in Sources */,
+				6BB566E72DF7E4E0008B9108 /* TrimmerAssetsGenerator.swift in Sources */,
 				6BE9A3042A6116EF00FF8CB0 /* MainViewController.swift in Sources */,
 				6B23C1E22BF65B7C001C4F24 /* Response.swift in Sources */,
 				6B6801272D17F31F002B5454 /* SpidAsset.swift in Sources */,
+				6B09449F2DC0A900009FBFB2 /* TextEditMenuItem.swift in Sources */,
 				6B6700A62A6CF77E006F2980 /* PurchaseViewController.swift in Sources */,
+				6B1CF4722D6B27B1005BB89E /* Notification+Extension.swift in Sources */,
+				6B9610182D44CD8D00DEE296 /* SpidLabel.swift in Sources */,
+				6BAFED7F2DD0638300AF13E1 /* FontEditSectionVC.swift in Sources */,
 				6BB4EE802A8E11CA006CF87C /* CrownView.swift in Sources */,
 				6B23C1E02BF62F11001C4F24 /* User.swift in Sources */,
 			);

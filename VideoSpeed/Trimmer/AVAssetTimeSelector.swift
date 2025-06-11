@@ -37,9 +37,19 @@ public class AVAssetTimeSelector: UIView, UIScrollViewDelegate {
         constrainAssetPreview()
     }
 
-    public func regenerateThumbnails() {
+    public func preGenerateImagesWith(trimmerHeight: CGFloat) async {
         if let asset = asset {
-            assetPreview.regenerateThumbnails(for: asset)
+            let trimmerAssetGenerator = TrimmerAssetsGenerator(asset: asset,
+                                                               trimmerWidth: UIScreen.main.bounds.width - 70,
+                                                               trimmerHeight: trimmerHeight)
+            assetPreview.images = await trimmerAssetGenerator.generateThumbnailImages()
+        }
+    }
+    
+    public func regenerateThumbnails(frame: CGRect? = nil) {
+        if let asset = asset {
+            assetPreview.addThumbnails(for: asset)
+//            assetPreview.regenerateThumbnails(for: asset, frame: frame)
         }
     }
 
@@ -61,7 +71,8 @@ public class AVAssetTimeSelector: UIView, UIScrollViewDelegate {
 
     func assetDidChange(newAsset: AVAsset?) {
         if let asset = newAsset {
-            assetPreview.regenerateThumbnails(for: asset)
+            assetPreview.addThumbnails(for: asset)
+//            assetPreview.regenerateThumbnails(for: asset)
         }
     }
 

@@ -304,10 +304,10 @@ class MainViewController: UIViewController {
 
 // MARK: - UIImagePickerControllerDelegate
 extension MainViewController: UIImagePickerControllerDelegate {
-    func imagePickerController(
+     func imagePickerController(
       _ picker: UIImagePickerController,
       didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
-    ) {
+    )  {
       dismiss(animated: true, completion: nil)
       
       guard
@@ -327,11 +327,22 @@ extension MainViewController: UIImagePickerControllerDelegate {
                   let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return}
          
             let videoInfo = VideoHelper.orientation(from: preferredTransform)
+            let videoSize: CGSize
+            if videoInfo.isPortrait {
+                videoSize = CGSize(
+                    width: naturalSize.height,
+                    height: naturalSize.width)
+            } else {
+                videoSize = naturalSize
+            }
             
-            UserDataManager.main.currentSpidAsset = SpidAsset(asset: asset,timeRange: timeRange)
+            UserDataManager.main.currentSpidAsset = SpidAsset(asset: asset,timeRange: timeRange, videoSize: videoSize)
             vc.asset = asset
-            self.navigationController?.pushViewController(vc, animated: true)
             
+             await MainActor.run { [weak self] in
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+
         }
                     
     }
@@ -433,9 +444,21 @@ extension MainViewController: UICollectionViewDelegate {
                 Task {
                     guard let asset = asset,
                           let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
-                          let timeRange = try? await videoTrack.load(.timeRange) else {return}
+                          let timeRange = try? await videoTrack.load(.timeRange),
+                          let naturalSize = try? await videoTrack.load(.naturalSize),
+                          let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return}
+                 
+                    let videoInfo = VideoHelper.orientation(from: preferredTransform)
+                    let videoSize: CGSize
+                    if videoInfo.isPortrait {
+                        videoSize = CGSize(
+                            width: naturalSize.height,
+                            height: naturalSize.width)
+                    } else {
+                        videoSize = naturalSize
+                    }
                     
-                    UserDataManager.main.currentSpidAsset = SpidAsset(asset: asset,timeRange: timeRange)
+                    UserDataManager.main.currentSpidAsset = SpidAsset(asset: asset,timeRange: timeRange, videoSize: videoSize)
                     vc.asset = asset
                     
                     self?.navigationController?.pushViewController(vc, animated: true)
