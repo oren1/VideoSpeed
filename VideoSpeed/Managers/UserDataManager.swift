@@ -26,6 +26,72 @@ class UserDataManager: ObservableObject {
     }
 
     @Published
+    var textOverlayLabels: [SpidLabel] = []
+    
+    @Published
+    var overlayLabelViews: [LabelView] = [] {
+        didSet {
+            NotificationCenter.default.post(name: Notification.Name.OverlayLabelViewsUpdated, object: nil)
+        }
+    }
+    
+    @Published
+    var labelViewsModels: [LabelViewModel] = [] {
+        didSet {
+            NotificationCenter.default.post(name: Notification.Name.OverlayLabelViewsUpdated, object: nil)
+        }
+    }
+    
+    func setSelectedLabeViewModel(_ selectedLabelViewModel: LabelViewModel) {
+        for viewModel in labelViewsModels {
+            viewModel.selected = false
+            if viewModel === selectedLabelViewModel {
+                viewModel.selected = true
+                self.selectedLabelViewModel = viewModel
+            }
+        }
+        
+        NotificationCenter.default.post(name: Notification.Name.SelectedLabelViewChanged, object: nil)
+    }
+    
+    var selectedLabelViewModel: LabelViewModel?
+    
+    func setSelectedLabeView(_ selectedLabelView: LabelView) {
+        for labelView in overlayLabelViews {
+            labelView.viewModel.selected = false
+            if labelView == selectedLabelView {
+                labelView.viewModel.selected = true
+                self.selectedLabelView = labelView
+            }
+        }
+        
+        NotificationCenter.default.post(name: Notification.Name.SelectedLabelViewChanged, object: nil)
+    }
+    var selectedLabelView: LabelView?
+    
+    func getSelectedLabelView() -> LabelView? {
+       UserDataManager.main.overlayLabelViews.first { $0.viewModel.selected == true }
+    }
+    
+    var freeFonts: [String] = [
+        "TimesNewRomanPSMT",
+        "HelveticaNeue",
+        "CourierNewPSMT",
+    ]
+    
+    func usingProFont() -> Bool {
+        let proFont = labelViewsModels.first(where: { [weak self] labelView in
+            guard let self = self else {return false}
+            return !freeFonts.contains(labelView.font.fontName)
+        })
+        if proFont != nil {return true}
+        return false
+    }
+    
+    @Published
+    var labelViewModels: [LabelViewModel] = []
+    
+    @Published
     var isUsingCropFeature: Bool = false
     
     func isUsingTrimFeature() async -> Bool {

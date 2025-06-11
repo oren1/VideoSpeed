@@ -17,6 +17,7 @@ extension EditViewController {
         createSoundSection()
         createFiletypeSection()
         createTrimmerSection()
+        createTextSection()
     }
     
     // MARK: Creating Sections
@@ -32,7 +33,10 @@ extension EditViewController {
             self?.speedLabel.text = "\(speed)x"
             
             Task {
+                await UserDataManager.main.currentSpidAsset.updateSpeed(speed: speed)
                 await self?.reloadComposition()
+                self?.spidPlayerController?.player.play()
+                await self?.textSectionVC.createTrimmerView()
             }
         }
         
@@ -143,13 +147,22 @@ extension EditViewController {
         trimmerSectionVC.timeRangeDidChange = { [weak self] timeRange in
             Task {
                 await UserDataManager.main.currentSpidAsset.updateTimeRange(timeRange: timeRange)
-//                print("using trim: ", await  UserDataManager.main.isUsingTrimFeature())
                 await self?.reloadComposition()
+                await self?.textSectionVC.createTrimmerView()
             }
         }
+        // this call to view,in turn, invokes the viewDidLoad method
         let _ = trimmerSectionVC.view
     }
     
+    func createTextSection() {
+        textSectionVC = TextSectionVC()
+        textSectionVC.view.frame = dashboardContainerView.bounds
+
+        textSectionVC.delegate = self
+
+        let _ = textSectionVC.view
+    }
     
     // MARK: Adding Sections
     func addSpeedSection() {
@@ -182,5 +195,8 @@ extension EditViewController {
         addSection(sectionVC: trimmerSectionVC)
         currentShownSection = trimmerSectionVC
     }
-    
+    func addTextSection() {
+        addSection(sectionVC: textSectionVC)
+        currentShownSection = textSectionVC
+    }
 }
