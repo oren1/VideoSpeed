@@ -17,7 +17,7 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
     var adDidDismis = false
     var requestsDidFinish = false
     var error: Error?
-    let amountOfRequests: Float = 4
+    let amountOfRequests: Float = 3
     
     @IBOutlet weak var progressView: UIProgressView!
     
@@ -37,14 +37,14 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
             downloadGroup.leave()
         }
         
-        Task {
-            downloadGroup.enter()
-            if let benefitStatus = try? await NetworkManager.shared.getUserBenefitStatus() {
-                UserDataManager.main.userBenefitStatus = benefitStatus
-                increaseProgress()
-                downloadGroup.leave()
-            }
-        }
+//        Task {
+//            downloadGroup.enter()
+//            if let benefitStatus = try? await NetworkManager.shared.getUserBenefitStatus() {
+//                UserDataManager.main.userBenefitStatus = benefitStatus
+//                increaseProgress()
+//                downloadGroup.leave()
+//            }
+//        }
         
         downloadGroup.enter()
         SpidProducts.store.requestProducts { [weak self] success, products in
