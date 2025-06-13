@@ -12,6 +12,7 @@ import FirebaseInstallations
 import FirebaseRemoteConfig
 import RevenueCat
 import AppTrackingTransparency
+import FirebaseCrashlytics
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {

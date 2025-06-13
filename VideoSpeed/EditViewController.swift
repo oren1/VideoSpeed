@@ -135,7 +135,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         addSpeedSection()
         
         
-        isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
+//        isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
         
         NotificationCenter.default.addObserver(self, selector: #selector(usingSliderChanged), name: Notification.Name("usingSliderChanged"), object: nil)
                 
@@ -218,6 +218,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     }
     
     func createCompositionWith(asset: AVAsset, speed: Float, fps: Int32, soundOn: Bool) async -> (composition: AVMutableComposition, videoComposition: AVMutableVideoComposition)? {
+        
+
         let composition = AVMutableComposition(urlAssetInitializationOptions: nil)
 
         let compositionVideoTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: 1)!
@@ -251,7 +253,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         self.compositionOriginalDuration = compositionOriginalDuration
         let newDuration = Int64(compositionOriginalDuration.seconds / Double(speed))
         composition.scaleTimeRange(CMTimeRange(start: .zero, duration: compositionOriginalDuration), toDuration: CMTime(value: newDuration, timescale: 1))
-        
+
         compositionVideoTrack.preferredTransform = preferredTransform
         
         let videoInfo = VideoHelper.orientation(from: preferredTransform)
@@ -952,7 +954,19 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     func showPurchaseViewController() {
         
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
-        purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+        
+        // A/B Test for yearly price of $19.99 or $9.99
+        let pricingRaw = RemoteConfig.remoteConfig().configValue(forKey: "pricing").stringValue!
+        let pricing = Pricing(rawValue: pricingRaw)
+        switch pricing {
+        case .normal:
+            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+        case .higher:
+            purchaseViewController.productIdentifier = SpidProducts.yearlyTwenty
+        default:
+            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+        }
+        
         purchaseViewController.onDismiss = { [weak self] in
             if let _ = SpidProducts.store.userPurchasedProVersion() {
                 self?.hideProButton()
