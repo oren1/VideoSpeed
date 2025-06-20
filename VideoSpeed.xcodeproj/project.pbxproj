@@ -31,6 +31,9 @@
 		6B45B4072D01F1590074C422 /* AssetRotator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B45B4062D01F1500074C422 /* AssetRotator.swift */; };
 		6B51C1FA2A7233A50013ABAD /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B51C1F92A7233A50013ABAD /* LoadingView.swift */; };
 		6B51C1FC2A7233B80013ABAD /* LoadingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B51C1FB2A7233B80013ABAD /* LoadingView.xib */; };
+		6B55F3042DFD57C200259275 /* AVMutableComposition+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B55F3032DFD57C200259275 /* AVMutableComposition+Extension.swift */; };
+		6B55F3062E013FFB00259275 /* CMTimeRange+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B55F3052E013FFB00259275 /* CMTimeRange+Extension.swift */; };
+		6B55F3082E01446100259275 /* CMTime+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B55F3072E01446100259275 /* CMTime+Extension.swift */; };
 		6B59549A2B5EA93100483047 /* TransactionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5954992B5EA93100483047 /* TransactionObserver.swift */; };
 		6B6700942A6A6C13006F2980 /* PhotosHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6700932A6A6C13006F2980 /* PhotosHeader.swift */; };
 		6B6700972A6ABBF6006F2980 /* IAPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6700962A6ABBF6006F2980 /* IAPManager.swift */; };
@@ -57,6 +60,7 @@
 		6B68012B2D1FD9FA002B5454 /* EditViewController+EditSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B68012A2D1FD9F0002B5454 /* EditViewController+EditSections.swift */; };
 		6B6801322D2D6BE0002B5454 /* SpidPlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B6801312D2D6BE0002B5454 /* SpidPlayerViewController.xib */; };
 		6B6801332D2D6BE0002B5454 /* SpidPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6801302D2D6BE0002B5454 /* SpidPlayerViewController.swift */; };
+		6B6E266C2E03E0AD004F736B /* CGSize+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */; };
 		6B71AAC42A9098A000C06619 /* SoundSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */; };
 		6B71AAC52A9098A000C06619 /* SoundSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B71AAC32A9098A000C06619 /* SoundSectionVC.xib */; };
 		6B71AAEB2AAA321300C06619 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B71AAEA2AAA321300C06619 /* UIViewController+Extension.swift */; };
@@ -161,6 +165,9 @@
 		6B45B4062D01F1500074C422 /* AssetRotator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetRotator.swift; sourceTree = "<group>"; };
 		6B51C1F92A7233A50013ABAD /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		6B51C1FB2A7233B80013ABAD /* LoadingView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoadingView.xib; sourceTree = "<group>"; };
+		6B55F3032DFD57C200259275 /* AVMutableComposition+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVMutableComposition+Extension.swift"; sourceTree = "<group>"; };
+		6B55F3052E013FFB00259275 /* CMTimeRange+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMTimeRange+Extension.swift"; sourceTree = "<group>"; };
+		6B55F3072E01446100259275 /* CMTime+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMTime+Extension.swift"; sourceTree = "<group>"; };
 		6B5954992B5EA93100483047 /* TransactionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionObserver.swift; sourceTree = "<group>"; };
 		6B6700932A6A6C13006F2980 /* PhotosHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosHeader.swift; sourceTree = "<group>"; };
 		6B6700962A6ABBF6006F2980 /* IAPManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPManager.swift; sourceTree = "<group>"; };
@@ -187,6 +194,7 @@
 		6B68012A2D1FD9F0002B5454 /* EditViewController+EditSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditViewController+EditSections.swift"; sourceTree = "<group>"; };
 		6B6801302D2D6BE0002B5454 /* SpidPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidPlayerViewController.swift; sourceTree = "<group>"; };
 		6B6801312D2D6BE0002B5454 /* SpidPlayerViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SpidPlayerViewController.xib; sourceTree = "<group>"; };
+		6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGSize+Extension.swift"; sourceTree = "<group>"; };
 		6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSectionVC.swift; sourceTree = "<group>"; };
 		6B71AAC32A9098A000C06619 /* SoundSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SoundSectionVC.xib; sourceTree = "<group>"; };
 		6B71AAEA2AAA321300C06619 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
@@ -448,6 +456,10 @@
 				6B71AAEA2AAA321300C06619 /* UIViewController+Extension.swift */,
 				6B5954992B5EA93100483047 /* TransactionObserver.swift */,
 				6BB566E62DF7E4E0008B9108 /* TrimmerAssetsGenerator.swift */,
+				6B55F3032DFD57C200259275 /* AVMutableComposition+Extension.swift */,
+				6B55F3052E013FFB00259275 /* CMTimeRange+Extension.swift */,
+				6B55F3072E01446100259275 /* CMTime+Extension.swift */,
+				6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -691,6 +703,7 @@
 				6B92E3672A7E2F3C008CB22A /* PhotoLibraryUsageDisabledView.swift in Sources */,
 				6B04F5852CB916FA000C8C59 /* CropSectioVC.swift in Sources */,
 				6BAFED822DD063FB00AF13E1 /* SpidFont.swift in Sources */,
+				6B55F3082E01446100259275 /* CMTime+Extension.swift in Sources */,
 				6B6700A22A6CD981006F2980 /* SplashViewController.swift in Sources */,
 				6B51C1FA2A7233A50013ABAD /* LoadingView.swift in Sources */,
 				6B923FA62C2EA38F00CD1381 /* WeeklySubscriptionVC.swift in Sources */,
@@ -726,6 +739,7 @@
 				6B6700AA2A6E5FE7006F2980 /* AppStoreReviewManager.swift in Sources */,
 				6BCDCF542A67FADD00D8B656 /* SectionViewController.swift in Sources */,
 				6B0944AA2DC36794009FBFB2 /* SpidColor.swift in Sources */,
+				6B6E266C2E03E0AD004F736B /* CGSize+Extension.swift in Sources */,
 				6B6700942A6A6C13006F2980 /* PhotosHeader.swift in Sources */,
 				6B96102F2D4C9A5B00DEE296 /* PlusCell.swift in Sources */,
 				6B45B4052D01EEC80074C422 /* LoadingMediaViewModel.swift in Sources */,
@@ -749,6 +763,7 @@
 				6B68011A2D153D44002B5454 /* AVPlayer+isPlaying.swift in Sources */,
 				6BAFED842DD841AE00AF13E1 /* AlignmentEditSectionVC.swift in Sources */,
 				6B68011B2D153D44002B5454 /* PryntTrimmerView.swift in Sources */,
+				6B55F3062E013FFB00259275 /* CMTimeRange+Extension.swift in Sources */,
 				6B68011C2D153D44002B5454 /* AssetSelectionViewController.swift in Sources */,
 				6B09449B2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift in Sources */,
 				6BC7B5282D586D8D00FF1CE9 /* LabelViewModel.swift in Sources */,
@@ -769,6 +784,7 @@
 				6B6700A62A6CF77E006F2980 /* PurchaseViewController.swift in Sources */,
 				6B1CF4722D6B27B1005BB89E /* Notification+Extension.swift in Sources */,
 				6B9610182D44CD8D00DEE296 /* SpidLabel.swift in Sources */,
+				6B55F3042DFD57C200259275 /* AVMutableComposition+Extension.swift in Sources */,
 				6BAFED7F2DD0638300AF13E1 /* FontEditSectionVC.swift in Sources */,
 				6BB4EE802A8E11CA006CF87C /* CrownView.swift in Sources */,
 				6B23C1E02BF62F11001C4F24 /* User.swift in Sources */,

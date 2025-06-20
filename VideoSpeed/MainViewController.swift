@@ -428,26 +428,34 @@ extension MainViewController: UICollectionViewDataSource {
 extension MainViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
-        let video = videos![indexPath.row]
+        let video1 = videos![indexPath.row]
+        let video2 = videos![indexPath.row + 1]
         
-        video.getAVAssetUrl { [weak self] progress, error, stop, info in
-            DispatchQueue.main.async {
-                let loadingView = self?.view.viewWithTag(loadinViewTag)
-                if loadingView == nil && progress != 1 {
-                    self?.showLoading()
-                }
-                print("progress \(progress)")
-            }
-        } completionHandler: { responseURL, asset in
-            DispatchQueue.main.async { [weak self] in
-                self?.hideLoading()
-                Task {
-                    guard let asset = asset,
-                          let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
-                          let timeRange = try? await videoTrack.load(.timeRange),
-                          let naturalSize = try? await videoTrack.load(.naturalSize),
-                          let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return}
-                 
+        let videos = [video1, video2]
+        
+        // Create the loading view and add it to the view
+        showLoading()
+        var progress: Double = 0.0
+        // Create a closure that updates the progress every time an AVAsset finishes loading
+        let updateProgress = { [weak self] in
+            guard let self = self else { return }
+            progress += 1 / Double(videos.count)
+            print("progress \(progress)")
+        }
+        
+        Task {
+            //1. Iterate the assets selected
+            for phAsset in videos {
+                   // 2. get the AVAsset object from the PHAsset
+                   let avAsset = await phAsset.getAVAsset(completion: updateProgress)
+                
+                   // 3. create SpidAsset from the AVAsset
+                    guard let asset = avAsset,
+                    let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+                    let timeRange = try? await videoTrack.load(.timeRange),
+                    let naturalSize = try? await videoTrack.load(.naturalSize),
+                    let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return}
+               
                     let videoInfo = VideoHelper.orientation(from: preferredTransform)
                     let videoSize: CGSize
                     if videoInfo.isPortrait {
@@ -457,15 +465,58 @@ extension MainViewController: UICollectionViewDelegate {
                     } else {
                         videoSize = naturalSize
                     }
-                    
-                    UserDataManager.main.currentSpidAsset = SpidAsset(asset: asset,timeRange: timeRange, videoSize: videoSize)
-                    vc.asset = asset
-                    
-                    self?.navigationController?.pushViewController(vc, animated: true)
-
-                }
+               
+                    let spidAsset = SpidAsset(asset: asset,timeRange: timeRange, videoSize: videoSize)
+                
+                    // 4. add the spidAsset to the UserDataManager's spidAssets array
+                    UserDataManager.main.spidAssets.append(spidAsset)
             }
+            
+            Task {@MainActor [weak self] in
+                UserDataManager.main.currentSpidAsset = UserDataManager.main.spidAssets.first
+                vc.asset = await UserDataManager.main.currentSpidAsset.getAsset()
+                self?.hideLoading()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+               
         }
+        
+//        video.getAVAssetUrl { [weak self] progress, error, stop, info in
+//            DispatchQueue.main.async {
+//                let loadingView = self?.view.viewWithTag(loadinViewTag)
+//                if loadingView == nil && progress != 1 {
+//                    self?.showLoading()
+//                }
+//                print("progress \(progress)")
+//            }
+//        } completionHandler: { responseURL, asset in
+//            DispatchQueue.main.async { [weak self] in
+//                self?.hideLoading()
+//                Task {
+//                    guard let asset = asset,
+//                          let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+//                          let timeRange = try? await videoTrack.load(.timeRange),
+//                          let naturalSize = try? await videoTrack.load(.naturalSize),
+//                          let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return}
+//                 
+//                    let videoInfo = VideoHelper.orientation(from: preferredTransform)
+//                    let videoSize: CGSize
+//                    if videoInfo.isPortrait {
+//                        videoSize = CGSize(
+//                            width: naturalSize.height,
+//                            height: naturalSize.width)
+//                    } else {
+//                        videoSize = naturalSize
+//                    }
+//                    
+//                    UserDataManager.main.currentSpidAsset = SpidAsset(asset: asset,timeRange: timeRange, videoSize: videoSize)
+//                    vc.asset = asset
+//                    
+//                    self?.navigationController?.pushViewController(vc, animated: true)
+//
+//                }
+//            }
+//        }
     }
 }
 
