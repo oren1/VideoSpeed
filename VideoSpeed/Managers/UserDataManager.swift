@@ -18,6 +18,7 @@ class UserDataManager: ObservableObject {
     var subscriptionProducts: [Product]!
    
     var currentSpidAsset: SpidAsset!
+    var spidAssets: [SpidAsset] = []
     
     var usingSlider: Bool = false {
         didSet {

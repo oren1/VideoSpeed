@@ -149,7 +149,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         Task {
             await createCropViewController()
             let asset = await UserDataManager.main.currentSpidAsset.getAsset()
-            guard let (composition, videoComposition) = await createCompositionWith(asset: asset, speed: speed, fps: fps, soundOn: soundOn) else {
+            guard let (composition, videoComposition) = await createCompositionWith(asset1: asset, speed1: speed, fps: fps, soundOn1: soundOn) else {
                 return showNoTracksError()
             }
             self.composition = composition
@@ -174,9 +174,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             addSpidPlayerTop()
             loopVideo()
             
-            Task {
-                await rotateVideoForCropFeature()
-            }
+//            Task {
+//                await rotateVideoForCropFeature()
+//            }
         }
         
     }
@@ -202,6 +202,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         UserDataManager.main.labelViewsModels.removeAll()
         UserDataManager.main.selectedLabelViewModel = nil
         UserDataManager.main.usingSlider = false
+        UserDataManager.main.spidAssets = []
     }
     
     func createProButton() -> UIButton {
@@ -217,93 +218,122 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         return proButton
     }
     
-    func createCompositionWith(asset: AVAsset, speed: Float, fps: Int32, soundOn: Bool) async -> (composition: AVMutableComposition, videoComposition: AVMutableVideoComposition)? {
-        
-
-        let composition = AVMutableComposition(urlAssetInitializationOptions: nil)
-
-        let compositionVideoTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: 1)!
-        let timeRange = await UserDataManager.main.currentSpidAsset.timeRange
-        
-        if let audioTracks = try? await asset.loadTracks(withMediaType: .audio),
-           soundOn && audioTracks.count > 0 {
-            let audioTrack = audioTracks[0]
-            let compositionAudioTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: 2)!
-            let audioDuration = try! await asset.load(.duration)
+    func createCompositionWith(asset1: AVAsset, speed1: Float, fps: Int32, soundOn1: Bool) async -> (composition: AVMutableComposition, videoComposition: AVMutableVideoComposition)? {
             
-            try? compositionAudioTrack.insertTimeRange(timeRange,
-                                                       of: audioTrack,
-                                                       at: CMTime.invalid)
-        }
+        guard let spidAsset = UserDataManager.main.currentSpidAsset else {return nil}
         
-        
-        guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
-              let videoDuration = try? await asset.load(.duration),
-              let naturalSize = try? await videoTrack.load(.naturalSize),
-              let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return nil}
-        
-        
-        try? compositionVideoTrack.insertTimeRange(timeRange,
-                                                   of: videoTrack,
-                                                   at: CMTime.invalid)
-        
-        
-        
-        guard let compositionOriginalDuration = try? await composition.load(.duration) else {return nil}
-        self.compositionOriginalDuration = compositionOriginalDuration
-        let newDuration = Int64(compositionOriginalDuration.seconds / Double(speed))
-        composition.scaleTimeRange(CMTimeRange(start: .zero, duration: compositionOriginalDuration), toDuration: CMTime(value: newDuration, timescale: 1))
+        //1. Declare the compositions array to hold the compositions representing the assets with their settings applied
+//        var compositions: [AVMutableComposition] = []
+        // 1. Create the main composition that combines all of the single video compositions
+        let mainComposition = AVMutableComposition(urlAssetInitializationOptions: nil)
+        // 2. Add video track and audio track to the main composition
+//        let compositionAudioTrack = mainComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: 2)!
 
-        compositionVideoTrack.preferredTransform = preferredTransform
+        let videoComposition = AVMutableVideoComposition()
+        var renderSize: CGSize = .zero
+        let newScale: CMTimeScale = 600
+        var startTime: CMTime = .zero.converted(toScale: newScale)
         
-        let videoInfo = VideoHelper.orientation(from: preferredTransform)
-        print("videoInfo.orientation \(videoInfo.orientation)")
+        // map the spidAssets to an array of AVMutableCompositions
+        for (index, spidAsset) in UserDataManager.main.spidAssets.enumerated() {
+            let (asset, timeRange, speed, soundOn) = await (spidAsset.getAsset(), spidAsset.timeRange, spidAsset.speed, spidAsset.soundOn)
+
+            let compositionVideoTrack = mainComposition.addMutableTrack(withMediaType: .video, preferredTrackID: CMPersistentTrackID(index))!
+            
+            if let audioTracks = try? await asset.loadTracks(withMediaType: .audio),
+               soundOn && audioTracks.count > 0 {
+                let audioTrack = audioTracks[0]
+                let compositionAudioTrack = mainComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: 2)!
+                let audioDuration = try! await asset.load(.duration)
+                
+                try? compositionAudioTrack.insertTimeRange(timeRange,
+                                                           of: audioTrack,
+                                                           at: startTime)
+            }
+            
+            
+            guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+                  let videoDuration = try? await asset.load(.duration),
+                  let naturalSize = try? await videoTrack.load(.naturalSize),
+                  let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return nil}
+            
+            
+            try? compositionVideoTrack.insertTimeRange(timeRange,
+                                                       of: videoTrack,
+                                                       at: startTime)
+            
+            
+            let currentTrackDuration = timeRange.duration
+            let newDuration = Int64(currentTrackDuration.seconds / Double(speed))
+            compositionVideoTrack.preferredTransform = preferredTransform
+            
+            mainComposition.scaleTimeRange(CMTimeRange(start: startTime, duration: currentTrackDuration), toDuration: CMTime(value: newDuration, timescale: 1))
+            
+            let videoInfo = VideoHelper.orientation(from: preferredTransform)
+            print("videoInfo.orientation \(videoInfo.orientation)")
+            
+            let videoSize: CGSize
+            
+            if videoInfo.isPortrait {
+                videoSize = CGSize(
+                    width: naturalSize.height,
+                    height: naturalSize.width)
+            } else {
+                videoSize = naturalSize
+            }
+            
+            if index == 0 {
+                renderSize = videoSize
+            }
+            print("videoSize \(index): \(videoSize)")
+            
+            let croppedVideoRect = aspectRatioCroppedVideoRect(videoSize)
+            
+            let instruction = AVMutableVideoCompositionInstruction()
+            let instructionDuration = compositionVideoTrack.timeRange.duration
+            instruction.timeRange = CMTimeRange(
+                start: startTime,
+                duration: instructionDuration).convertTimeRange(toScale: newScale)
+
+            let layerInstruction = await compositionLayerInstruction(
+                for: compositionVideoTrack,
+                assetTrack: videoTrack,
+                videoSize: videoSize,
+                isPortrait: videoInfo.isPortrait,
+                cropRect: croppedVideoRect,
+                renderSize: renderSize)
+            
+            
+            instruction.layerInstructions = [layerInstruction]
+            videoComposition.instructions.append(instruction)
+            
+            // setting the start time for the the next video,
+            // which is the end time of the entire composition built until now
+            startTime = mainComposition.duration.converted(toScale: newScale)
+        }
+       
+      
         
+        let videoTrack = mainComposition.tracks.first!
+        let videoInfo = VideoHelper.orientation(from: videoTrack.preferredTransform)
         let videoSize: CGSize
-        
         if videoInfo.isPortrait {
             videoSize = CGSize(
-                width: naturalSize.height,
-                height: naturalSize.width)
+                width: videoTrack.naturalSize.height,
+                height: videoTrack.naturalSize.width)
         } else {
-            videoSize = naturalSize
+            videoSize = videoTrack.naturalSize
         }
-        
-        print("naturalSize", naturalSize)
-        print("videoSize \(videoSize)")
-        
-        let croppedVideoRect = aspectRatioCroppedVideoRect(videoSize)
-        
-        let instruction = AVMutableVideoCompositionInstruction()
-        instruction.timeRange = CMTimeRange(
-            start: .zero,
-            duration: composition.duration)
-        
-        // If the user is not using crop feature then use the regular 'compositionLayerInstruction'
-        
-        let layerInstruction = await compositionLayerInstruction(
-            for: compositionVideoTrack,
-            assetTrack: videoTrack,
-            videoSize: videoSize,
-            isPortrait: videoInfo.isPortrait,
-            cropRect: croppedVideoRect)
-        
-        instruction.layerInstructions = [layerInstruction]
-        
-       
-        
-        let videoComposition = AVMutableVideoComposition()
-        videoComposition.instructions = [instruction]
+//        videoComposition.instructions = [instruction]
         videoComposition.frameDuration = CMTimeMake(value: 1, timescale: fps)
-        videoComposition.renderSize = croppedVideoRect.size
-//        videoComposition.animationTool = AVVideoCompositionCoreAnimationTool(
-//          postProcessingAsVideoLayer: videoLayer,
-//          in: outputLayer)
+//        videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
+        videoComposition.renderSize = renderSize
+
+//        videoComposition.renderSize = croppedVideoRect.size
         //                videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
         //                videoComposition.renderSize = CGSize(width: naturalSize.width, height: naturalSize.height)
-        //        videoComposition.customVideoCompositorClass = CustomVideoCompositor.self
         
-        return (composition,videoComposition)
+        return (mainComposition,videoComposition)
         
     }
     
@@ -401,7 +431,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     @MainActor
     func reloadComposition() async {
         let asset = await UserDataManager.main.currentSpidAsset.getAsset()
-        guard let (composition, videoComposition) = await createCompositionWith(asset: asset, speed: speed, fps: fps, soundOn: soundOn) else {
+        guard let (composition, videoComposition) = await createCompositionWith(asset1: asset, speed1: speed, fps: fps, soundOn1: soundOn) else {
             return showNoTracksError()
         }
         self.composition = composition
@@ -529,9 +559,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         outputLayer.addSublayer(videoLayer)
         outputLayer.addSublayer(overlayLayer)
         
-//        for labelView in UserDataManager.main.overlayLabelViews {
-//            add(labelView: labelView, to: overlayLayer, videoSize: videoSize)
-//        }
         
         addLabelViews(to: overlayLayer, videoSize: videoSize)
         
@@ -701,24 +728,60 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         loadingMediaVC = nil
     }
     
-    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool, cropRect: CGRect) async -> AVMutableVideoCompositionLayerInstruction {
+    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool, cropRect: CGRect, renderSize: CGSize) async -> AVMutableVideoCompositionLayerInstruction {
         let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
         
-        let transform = try! await assetTrack.load(.preferredTransform)
-        
+        var transform = try! await assetTrack.load(.preferredTransform)
+
+        let scale: Double
+        switch renderSize.orientation() {
+        case .portrait:
+            scale = renderSize.width / videoSize.width
+        case .landscape:
+            scale = renderSize.height / videoSize.height
+        }
+       
+
         if isPortrait {
             var newTransform = CGAffineTransform(translationX: 0, y: 0)
             newTransform = newTransform.rotated(by: CGFloat(90 * Double.pi / 180))
-            newTransform = newTransform.translatedBy(x: 0, y: -videoSize.width)
-            instruction.setTransform(newTransform, at: .zero)
+            newTransform = newTransform.translatedBy(x: 0, y: -videoSize.width * scale)
             
+            if renderSize.orientation() ==  videoSize.orientation() {
+                newTransform = newTransform.scaledBy(x: scale, y: scale)
+            }
+            else if renderSize.orientation() == .portrait && videoSize.orientation() == .landscape {
+                // the transform is done on the original pixels so in order to move the landscape video
+                // to the middle i need to use the scaled height for the calculation
+                let renderSizeHeightScaled = renderSize.height / scale
+                newTransform = newTransform.scaledBy(x: scale, y: scale)
+                newTransform = newTransform.translatedBy(x: renderSizeHeightScaled / 2 - (videoSize.height / 2), y: 0)
+            }
+            else if renderSize.orientation() == .landscape && videoSize.orientation() == .portrait {
+                let renderSizeWidthScaled = renderSize.width / scale
+                newTransform = newTransform.scaledBy(x: scale, y: scale)
+                newTransform = newTransform.translatedBy(x: 0, y: -(renderSizeWidthScaled / 2) + (videoSize.width / 2))
+            }
+            instruction.setTransform(newTransform, at: .zero)
         }
-        else {
-            instruction.setCropRectangle(CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.size.width, height: cropRect.size.height), at: .zero)
+        else { // the video orientation is up
+            if renderSize.orientation() ==  videoSize.orientation() {
+                transform = transform.scaledBy(x: scale, y: scale)
+            }
+            else if renderSize.orientation() == .portrait && videoSize.orientation() == .landscape {
+                // the transform is done on the original pixels so in order to move the landscape video
+                // to the middle i need to use the scaled height for the calculation
+                let renderSizeHeightScaled = renderSize.height / scale
+                transform = transform.scaledBy(x: scale, y: scale)
+                transform = transform.translatedBy(x: 0, y: renderSizeHeightScaled / 2 - (videoSize.height / 2))
+            }
+            else if renderSize.orientation() == .landscape && videoSize.orientation() == .portrait {
+                let renderSizeWidthScaled = renderSize.width / scale
+                transform = transform.scaledBy(x: scale, y: scale)
+                transform = transform.translatedBy(x: renderSizeWidthScaled / 2 - (videoSize.width / 2), y: 0)
+            }
             
-            let newTransform = transform.translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
-            instruction.setTransform(newTransform, at: .zero)
-            
+            instruction.setTransform(transform, at: .zero)
         }
         
         return instruction
@@ -1058,14 +1121,14 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     }
     
     func rotateVideoForCropFeature() async {
-        // Creat AssetRotator instance and listen to progress changes and done rotating chenges
+        // Create AssetRotator instance and listen to progress changes and done rotating changes
         assetRotator = AssetRotator(asset: asset)
         assetRotateProgressSubscription = assetRotator?.$progress.sink { [weak self] progress in
             self?.loadingMediaViewModel.progress = progress
         }
         let rotatedAsset = await assetRotator!.rotateVideoToIntendedOrientation()
         await UserDataManager.main.currentSpidAsset.updateRotatedAsset(rotatedAsset: rotatedAsset)
-        // I don't want the video to reload after the rotated asset is ready, because it can case a bug
+        // I don't want the video to reload after the rotated asset is ready, because it can cause a bug
         // that the video reloads in the middle of playing.
         // if the 'LoadingMediaView' is shown when the rotation finished it means that the user pressed 'done' cropping.
         // so if the LoadingMediaView shown, remove it and reload the composition

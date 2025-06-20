@@ -109,7 +109,8 @@ extension EditViewController {
             self?.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
             self?.showProButtonIfNeeded()
             Task {
-                await self?.reloadComposition()
+               await UserDataManager.main.currentSpidAsset.updateSound(soundOn: soundOn)
+               await self?.reloadComposition()
             }
         }
         soundSectionVC.userNeedsToPurchase = {[weak self] in

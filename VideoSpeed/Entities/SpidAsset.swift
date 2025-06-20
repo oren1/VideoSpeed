@@ -15,11 +15,14 @@ actor SpidAsset {
     var timeRange: CMTimeRange
     var videoSize: CGSize
     var speed: Float = 1
+    var soundOn: Bool = true
+    var composition: AVMutableComposition
     
     init(asset: AVAsset, timeRange: CMTimeRange, videoSize: CGSize) {
         self.asset = asset
         self.timeRange = timeRange
         self.videoSize = videoSize
+        self.composition = AVMutableComposition(urlAssetInitializationOptions: nil)
     }
     
     func getOriginalAsset() -> AVAsset {
@@ -45,4 +48,31 @@ actor SpidAsset {
         self.timeRange.duration.seconds / Double(speed)
     }
     
+    func updateSound(soundOn: Bool)  {
+        self.soundOn = soundOn
+    }
+    
+    
+    
+    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool, cropRect: CGRect) async -> AVMutableVideoCompositionLayerInstruction {
+        let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
+        
+        let transform = try! await assetTrack.load(.preferredTransform)
+        
+        if isPortrait {
+            var newTransform = CGAffineTransform(translationX: 0, y: 0)
+            newTransform = newTransform.rotated(by: CGFloat(90 * Double.pi / 180))
+            newTransform = newTransform.translatedBy(x: 0, y: -videoSize.width)
+            instruction.setTransform(newTransform, at: .zero)
+            
+        }
+        else {
+            instruction.setCropRectangle(CGRect(x: cropRect.origin.x, y: cropRect.origin.y, width: cropRect.size.width, height: cropRect.size.height), at: .zero)
+            
+            let newTransform = transform.translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
+            instruction.setTransform(newTransform, at: .zero)
+        }
+        
+        return instruction
+    }
 }
