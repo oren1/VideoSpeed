@@ -50,6 +50,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var currentShownSection: SectionViewController!
     var spidPlayerController: SpidPlayerViewController!
     var selectedMenuItem: MenuItem!
+    var videosStartTimes: [CMTime] = [.zero]
     
     @IBOutlet weak var videosContainerView: UIView!
     @IBOutlet weak var videosCollectionView: UICollectionView!
@@ -126,6 +127,14 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
 //                                                 .font: UIFont.boldSystemFont(ofSize: 14)], for: .normal)
         videosMenuDelegate = VideosMenuDelegate()
+        videosMenuDelegate.didSelectVideo = { [weak self] spidAsset in
+            guard let self = self else { return }
+            let index = UserDataManager.main.spidAssets.firstIndex(where: { $0 === spidAsset})
+            let startTime = videosStartTimes[index!]
+            spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+            print("start time: \(startTime)")
+            
+        }
         selectedMenuItem = menuItems.first
         videosCollectionView.delegate = videosMenuDelegate
         videosCollectionView.dataSource = videosMenuDelegate
@@ -238,11 +247,12 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         var renderSize: CGSize = .zero
         let newScale: CMTimeScale = 600
         var startTime: CMTime = .zero.converted(toScale: newScale)
-        
+        videosStartTimes = []
         // map the spidAssets to an array of AVMutableCompositions
         for (index, spidAsset) in UserDataManager.main.spidAssets.enumerated() {
             let (asset, timeRange, speed, soundOn) = await (spidAsset.getAsset(), spidAsset.timeRange.convertTimeRange(toScale: newScale), spidAsset.speed, spidAsset.soundOn)
 
+            videosStartTimes.append(startTime)
             let compositionVideoTrack = mainComposition.addMutableTrack(withMediaType: .video, preferredTrackID: CMPersistentTrackID(index))!
             
             if let audioTracks = try? await asset.loadTracks(withMediaType: .audio),

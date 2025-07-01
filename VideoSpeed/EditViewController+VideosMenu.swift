@@ -8,7 +8,12 @@
 import Foundation
 import UIKit
 
+typealias VideoSelectionClosure = (SpidAsset) -> Void
+
 class VideosMenuDelegate: NSObject {
+    
+    var didSelectVideo: VideoSelectionClosure?
+    
     override init() {
         super.init()
     }
@@ -39,11 +44,14 @@ extension VideosMenuDelegate: UICollectionViewDataSource {
 
       
       let spidAsset = UserDataManager.main.spidAssets[indexPath.row]
-         cell.backgroundColor = .green
-//      cell.layer.cornerRadius = 8
-         Task {@MainActor in
-             cell.imageView.image = UIImage(cgImage: await spidAsset.thumbnailImage)
+         if spidAsset === UserDataManager.main.currentSpidAsset {
+             cell.layer.borderColor = UIColor.white.cgColor
+             cell.layer.borderWidth = 2
          }
+         else {
+             cell.layer.borderWidth = 0
+         }
+        cell.imageView.image = UIImage(cgImage: spidAsset.thumbnailImage)
 
       return cell
     }
@@ -51,6 +59,10 @@ extension VideosMenuDelegate: UICollectionViewDataSource {
 
 extension VideosMenuDelegate: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let spidAsset = UserDataManager.main.spidAssets[indexPath.row]
+        UserDataManager.main.currentSpidAsset = spidAsset
+        collectionView.reloadData()
+        didSelectVideo?(spidAsset)
     }
 }
 
@@ -80,12 +92,12 @@ extension VideosMenuDelegate: UICollectionViewDelegateFlowLayout {
         let cellWidth = availableHeight
         let numberOfItems = CGFloat(UserDataManager.main.spidAssets.count)
         let numberOfSeperators = numberOfItems - 1
-        let contentWidth = (cellWidth * numberOfItems) - (sectionInsets.left * numberOfSeperators)
+        let contentWidth = (cellWidth * numberOfItems) + (sectionInsets.left * numberOfSeperators)
         if contentWidth > collectionView.frame.width {
             return sectionInsets
         }
         else {
-            let horizontalPadding = (collectionView.frame.width - (sectionInsets.left * 2) - contentWidth) / 2
+            let horizontalPadding = (collectionView.frame.width - contentWidth) / 2
             let sectionInsets = UIEdgeInsets(top: 2, left: horizontalPadding, bottom: 2, right: horizontalPadding)
             return sectionInsets
         }
