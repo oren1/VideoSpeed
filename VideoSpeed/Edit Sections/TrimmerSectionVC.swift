@@ -23,6 +23,8 @@ extension TrimmerViewSpidDelegate {
 
 typealias TimeRangeClosure = (_ timeRange: CMTimeRange) -> Void
 
+fileprivate let trimmerHeight = 60.0
+
 class TrimmerSectionVC: SectionViewController {
     
     weak var delegate: TrimmerViewSpidDelegate!
@@ -35,16 +37,25 @@ class TrimmerSectionVC: SectionViewController {
         super.viewDidLoad()
         Task {
             trimmerView.asset = await UserDataManager.main.currentSpidAsset.getAsset()
+//            trimmerView.asset = delegate.spidPlayerController.player.currentItem?.asset
             trimmerView.delegate = self
             trimmerView.handleColor = UIColor.white
             trimmerView.mainColor = UIColor.systemBlue
             trimmerView.maskColor = UIColor.black
             trimmerView.positionBarColor = UIColor.clear
-            await trimmerView.preGenerateImagesWith(trimmerHeight: 60)
+            await trimmerView.preGenerateImagesWith(trimmerHeight: trimmerHeight)
             trimmerView.regenerateThumbnails()
+//            trimmerView.assetPreview.images = []
             // 1. create a new PlayerItem with the original video asset
             let originalAsset = await UserDataManager.main.currentSpidAsset.getOriginalAsset()
             playerItem = AVPlayerItem(asset: originalAsset)
+            
+//            delegate.spidPlayerController.player.currentItem?.observe(\.asset, changeHandler: { playerItem, change in
+//                print("change: \(change)")
+//            })
+//            taylor.observe(\Person.name, options: .new) { person, change in
+//                print("I'm now called \(person.name)")
+//            }
         }
     }
 
@@ -79,6 +90,7 @@ class TrimmerSectionVC: SectionViewController {
             trimmerView.seek(to: startTime)
         }
     }
+    
 }
 
 extension TrimmerSectionVC: TrimmerViewDelegate {

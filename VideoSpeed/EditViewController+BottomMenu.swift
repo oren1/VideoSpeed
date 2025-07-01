@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-let minimumItemWidth = 64.0
+fileprivate let minimumItemWidth = 64.0
 
 extension EditViewController: UICollectionViewDataSource {
      func numberOfSections(in collectionView: UICollectionView) -> Int {

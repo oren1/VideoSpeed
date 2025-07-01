@@ -21,7 +21,9 @@ public class AVAssetTimeSelector: UIView, UIScrollViewDelegate {
             assetDidChange(newAsset: asset)
         }
     }
-
+    
+    public var videoComposition: AVVideoComposition?
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupSubviews()
@@ -37,9 +39,17 @@ public class AVAssetTimeSelector: UIView, UIScrollViewDelegate {
         constrainAssetPreview()
     }
 
+    func recreateThunmbnailsFor(asset: AVAsset, videoComposition: AVVideoComposition? = nil, trimmerHeight: CGFloat) async {
+        self.asset = asset
+        self.videoComposition = videoComposition
+        await preGenerateImagesWith(trimmerHeight: trimmerHeight)
+        assetPreview.addThumbnails(for: asset)
+    }
+    
     public func preGenerateImagesWith(trimmerHeight: CGFloat) async {
         if let asset = asset {
             let trimmerAssetGenerator = TrimmerAssetsGenerator(asset: asset,
+                                                               videoComposition: videoComposition,
                                                                trimmerWidth: UIScreen.main.bounds.width - 70,
                                                                trimmerHeight: trimmerHeight)
             assetPreview.images = await trimmerAssetGenerator.generateThumbnailImages()

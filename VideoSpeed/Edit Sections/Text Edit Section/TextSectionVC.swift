@@ -9,6 +9,8 @@ import UIKit
 import AVFoundation
 import Combine
 
+
+
 class TextSectionVC: SectionViewController {
     
     weak var delegate: TrimmerViewSpidDelegate!
@@ -21,7 +23,8 @@ class TextSectionVC: SectionViewController {
     let cellWidth = 84.0
     private var sectionInsets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
     private var cancellable: AnyCancellable?
-    
+    fileprivate let trimmerHeight = 52.0
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -78,16 +81,16 @@ class TextSectionVC: SectionViewController {
 
     @MainActor
     func createTrimmerView() async {
-        trimmerView.asset = self.delegate.spidPlayerController?.player.currentItem?.asset != nil ? self.delegate.spidPlayerController.player.currentItem?.asset :
-        await UserDataManager.main.currentSpidAsset.getAsset()
+//        trimmerView.asset = self.delegate.spidPlayerController?.player.currentItem?.asset != nil ? self.delegate.spidPlayerController.player.currentItem?.asset :
+//        await UserDataManager.main.currentSpidAsset.getAsset()
         
         trimmerView.delegate = self
         trimmerView.handleColor = UIColor.white
         trimmerView.mainColor = UIColor.systemBlue
         trimmerView.maskColor = UIColor.black
         trimmerView.positionBarColor = UIColor.clear
-        await trimmerView.preGenerateImagesWith(trimmerHeight: 52)
-        trimmerView.regenerateThumbnails()
+//        await trimmerView.preGenerateImagesWith(trimmerHeight: 52)
+//        trimmerView.regenerateThumbnails()
         setTrimmerInteractionStatus()
         resetTimeRangesForLabelViews()
     }
@@ -140,6 +143,12 @@ class TextSectionVC: SectionViewController {
             }
             
         }
+    }
+    
+    func recreateThumbnailsFor(asset: AVAsset, videoComposition: AVVideoComposition? = nil) async {
+        await trimmerView.recreateThunmbnailsFor(asset: asset,
+                                                 videoComposition: videoComposition,
+                                                 trimmerHeight: trimmerHeight)
     }
 }
 

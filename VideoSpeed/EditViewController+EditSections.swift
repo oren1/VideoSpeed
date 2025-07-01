@@ -152,6 +152,7 @@ extension EditViewController {
                 await self?.textSectionVC.createTrimmerView()
             }
         }
+    
         // this call to view,in turn, invokes the viewDidLoad method
         let _ = trimmerSectionVC.view
     }

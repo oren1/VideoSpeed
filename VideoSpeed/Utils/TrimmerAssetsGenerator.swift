@@ -15,11 +15,12 @@ class TrimmerAssetsGenerator {
     let asset: AVAsset
     let generator: AVAssetImageGenerator
     
-    init(asset: AVAsset, trimmerWidth: CGFloat, trimmerHeight: CGFloat) {
+    init(asset: AVAsset, videoComposition: AVVideoComposition? = nil, trimmerWidth: CGFloat, trimmerHeight: CGFloat) {
         self.trimmerWidth = trimmerWidth
         self.trimmerHeight = trimmerHeight
         self.asset = asset
         generator = AVAssetImageGenerator(asset: asset)
+        generator.videoComposition = videoComposition
         generator.appliesPreferredTrackTransform = true
        
     }
@@ -30,6 +31,7 @@ class TrimmerAssetsGenerator {
         let scaledSize = await CGSize(width: thumbnailSize.width * UIScreen.main.scale, height: thumbnailSize.height * UIScreen.main.scale)
         generator.maximumSize = scaledSize
         let visibleThumbnailsCount = Int(ceil(trimmerWidth / thumbnailSize.width))
+        print("visibleThumbnailsCount: \(visibleThumbnailsCount)")
         let thumbnailTimes = getThumbnailTimes(numberOfThumbnails: visibleThumbnailsCount)
         
         let images = await generateImagesFor(times: thumbnailTimes)
@@ -61,10 +63,17 @@ class TrimmerAssetsGenerator {
         guard let track = asset.tracks(withMediaType: AVMediaType.video).first else { return nil}
 
         let assetSize = track.naturalSize.applying(track.preferredTransform)
-
-        let ratio = assetSize.width / assetSize.height
+        let ratio: CGFloat
+        if assetSize.orientation() == .landscape {
+            ratio = 3/4
+        }
+        else {
+            ratio = assetSize.width / assetSize.height
+        }
         let width = trimmerHeight * ratio
+//        return CGSize(width: abs(width), height: abs(trimmerHeight))
         return CGSize(width: abs(width), height: abs(trimmerHeight))
+
     }
     
     
