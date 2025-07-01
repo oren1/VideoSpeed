@@ -51,6 +51,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var spidPlayerController: SpidPlayerViewController!
     var selectedMenuItem: MenuItem!
     
+    @IBOutlet weak var videosContainerView: UIView!
+    @IBOutlet weak var videosCollectionView: UICollectionView!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     private(set) var sectionInsets = UIEdgeInsets(top: 2, left: 4, bottom: 2, right: 4)
     @IBOutlet weak var bottomMenuCollectionView: UICollectionView!
@@ -104,7 +106,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var textSectionVC: TextSectionVC!
     
     var editSections: [SectionViewController] = []
-    
+    var videosMenuDelegate: VideosMenuDelegate!
     @IBOutlet weak var dashboardContainerView: UIView!
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -123,8 +125,10 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 14)], for: .selected)
 //        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
 //                                                 .font: UIFont.boldSystemFont(ofSize: 14)], for: .normal)
+        videosMenuDelegate = VideosMenuDelegate()
         selectedMenuItem = menuItems.first
-        
+        videosCollectionView.delegate = videosMenuDelegate
+        videosCollectionView.dataSource = videosMenuDelegate
         bottomMenuCollectionView.delegate = self
         bottomMenuCollectionView.dataSource = self
         
@@ -174,9 +178,10 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             addSpidPlayerTop()
             loopVideo()
             
-//            Task {
+            Task {
+                await textSectionVC.recreateThumbnailsFor(asset: compositionCopy, videoComposition: videoCompositionCopy)
 //                await rotateVideoForCropFeature()
-//            }
+            }
         }
         
     }
@@ -236,14 +241,14 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         // map the spidAssets to an array of AVMutableCompositions
         for (index, spidAsset) in UserDataManager.main.spidAssets.enumerated() {
-            let (asset, timeRange, speed, soundOn) = await (spidAsset.getAsset(), spidAsset.timeRange, spidAsset.speed, spidAsset.soundOn)
+            let (asset, timeRange, speed, soundOn) = await (spidAsset.getAsset(), spidAsset.timeRange.convertTimeRange(toScale: newScale), spidAsset.speed, spidAsset.soundOn)
 
             let compositionVideoTrack = mainComposition.addMutableTrack(withMediaType: .video, preferredTrackID: CMPersistentTrackID(index))!
             
             if let audioTracks = try? await asset.loadTracks(withMediaType: .audio),
                soundOn && audioTracks.count > 0 {
                 let audioTrack = audioTracks[0]
-                let compositionAudioTrack = mainComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: 2)!
+                let compositionAudioTrack = mainComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: CMPersistentTrackID(index))!
                 let audioDuration = try! await asset.load(.duration)
                 
                 try? compositionAudioTrack.insertTimeRange(timeRange,
@@ -257,17 +262,17 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                   let naturalSize = try? await videoTrack.load(.naturalSize),
                   let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return nil}
             
-            
             try? compositionVideoTrack.insertTimeRange(timeRange,
                                                        of: videoTrack,
                                                        at: startTime)
             
             
             let currentTrackDuration = timeRange.duration
-            let newDuration = Int64(currentTrackDuration.seconds / Double(speed))
+            let newDurationInSeconds = Int64(currentTrackDuration.seconds / Double(speed))
+            let newDuration = CMTime(value: newDurationInSeconds, timescale: 1).converted(toScale: newScale)
             compositionVideoTrack.preferredTransform = preferredTransform
             
-            mainComposition.scaleTimeRange(CMTimeRange(start: startTime, duration: currentTrackDuration), toDuration: CMTime(value: newDuration, timescale: 1))
+            mainComposition.scaleTimeRange(CMTimeRange(start: startTime, duration: currentTrackDuration), toDuration: newDuration)
             
             let videoInfo = VideoHelper.orientation(from: preferredTransform)
             print("videoInfo.orientation \(videoInfo.orientation)")
@@ -285,12 +290,11 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             if index == 0 {
                 renderSize = videoSize
             }
-            print("videoSize \(index): \(videoSize)")
             
             let croppedVideoRect = aspectRatioCroppedVideoRect(videoSize)
             
             let instruction = AVMutableVideoCompositionInstruction()
-            let instructionDuration = compositionVideoTrack.timeRange.duration
+            let instructionDuration = newDuration
             instruction.timeRange = CMTimeRange(
                 start: startTime,
                 duration: instructionDuration).convertTimeRange(toScale: newScale)
@@ -439,10 +443,13 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         let compositionCopy = self.composition.copy() as! AVComposition
         let videoCompositionCopy = self.videoComposition.copy() as! AVVideoComposition
         
+        
         let playerItem = AVPlayerItem(asset: compositionCopy)
         playerItem.audioTimePitchAlgorithm = .spectral
         playerItem.videoComposition = videoCompositionCopy
         spidPlayerController.player?.replaceCurrentItem(with: playerItem)
+        
+        await textSectionVC.recreateThumbnailsFor(asset: compositionCopy, videoComposition: videoCompositionCopy)
     }
     
     
@@ -675,7 +682,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             spidPlayerController.view.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
             spidPlayerController.view.leftAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leftAnchor),
             spidPlayerController.view.rightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.rightAnchor),
-            spidPlayerController.view.bottomAnchor.constraint(equalTo: self.dashboardContainerView.topAnchor),
+            spidPlayerController.view.bottomAnchor.constraint(equalTo: self.videosContainerView.topAnchor),
         ]
         NSLayoutConstraint.activate(constraints)
         
@@ -750,13 +757,13 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             if renderSize.orientation() ==  videoSize.orientation() {
                 newTransform = newTransform.scaledBy(x: scale, y: scale)
             }
-            else if renderSize.orientation() == .portrait && videoSize.orientation() == .landscape {
-                // the transform is done on the original pixels so in order to move the landscape video
-                // to the middle i need to use the scaled height for the calculation
-                let renderSizeHeightScaled = renderSize.height / scale
-                newTransform = newTransform.scaledBy(x: scale, y: scale)
-                newTransform = newTransform.translatedBy(x: renderSizeHeightScaled / 2 - (videoSize.height / 2), y: 0)
-            }
+//            else if renderSize.orientation() == .portrait && videoSize.orientation() == .landscape {
+//                // the transform is done on the original pixels so in order to move the landscape video
+//                // to the middle i need to use the scaled height for the calculation
+//                let renderSizeHeightScaled = renderSize.height / scale
+//                newTransform = newTransform.scaledBy(x: scale, y: scale)
+//                newTransform = newTransform.translatedBy(x: renderSizeHeightScaled / 2 - (videoSize.height / 2), y: 0)
+//            }
             else if renderSize.orientation() == .landscape && videoSize.orientation() == .portrait {
                 let renderSizeWidthScaled = renderSize.width / scale
                 newTransform = newTransform.scaledBy(x: scale, y: scale)

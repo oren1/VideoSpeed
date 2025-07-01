@@ -66,7 +66,7 @@ class AssetVideoScrollView: UIScrollView {
     internal func addThumbnails(for asset: AVAsset) {
         // Calculating the thumbnail size by taking the frame height of the assetPreview as the height,
         // and width by multiplyng the height by the aspect ratio of the real asset video track
-        guard let thumbnailSize = getThumbnailFrameSize(from: asset), thumbnailSize.width != 0 else {
+        guard let thumbnailSize = getThumbnailSizeFor(asset: asset), thumbnailSize.width != 0 else {
             print("Could not calculate the thumbnail size.")
             return
         }
@@ -80,6 +80,23 @@ class AssetVideoScrollView: UIScrollView {
               displayImage(cgImage, at: index)
            }
         }
+    }
+    
+    private func getThumbnailSizeFor(asset: AVAsset) -> CGSize? {
+        guard let track = asset.tracks(withMediaType: AVMediaType.video).first else { return nil}
+
+        let assetSize = track.naturalSize.applying(track.preferredTransform)
+        let ratio: CGFloat
+        let height = frame.height
+        if assetSize.orientation() == .landscape {
+            ratio = 3/4
+        }
+        else {
+            ratio = assetSize.width / assetSize.height
+        }
+        let width = height * ratio
+        return CGSize(width: abs(width), height: abs(height))
+
     }
     
     private func getThumbnailFrameSize(from asset: AVAsset) -> CGSize? {
