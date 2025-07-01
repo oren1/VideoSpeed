@@ -16,7 +16,7 @@ actor SpidAsset {
     var videoSize: CGSize
     var speed: Float = 1
     var soundOn: Bool = true
-    var thumbnailImage: CGImage
+    let thumbnailImage: CGImage
     
     init(asset: AVAsset, timeRange: CMTimeRange, videoSize: CGSize, thumnbnailImage: CGImage) {
         self.asset = asset
