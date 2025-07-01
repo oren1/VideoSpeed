@@ -947,7 +947,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenSSL/lib",
 				);
-				MARKETING_VERSION = 4.4.0;
+				MARKETING_VERSION = 4.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -995,7 +995,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenSSL/lib",
 				);
-				MARKETING_VERSION = 4.4.0;
+				MARKETING_VERSION = 4.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
