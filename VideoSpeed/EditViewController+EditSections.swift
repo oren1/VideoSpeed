@@ -31,12 +31,14 @@ extension EditViewController {
         speedSectionVC.speedDidChange = { [weak self] (speed: Float) -> () in
             self?.speed = speed
             self?.speedLabel.text = "\(speed)x"
-            
+            guard let self = self else { return }
             Task {
                 await UserDataManager.main.currentSpidAsset.updateSpeed(speed: speed)
-                await self?.reloadComposition()
-                self?.spidPlayerController?.player.play()
-                await self?.textSectionVC.createTrimmerView()
+                await self.reloadComposition()
+                let startTime = self.getStartTimeForCurrentSpidAsset()
+                await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+                self.spidPlayerController?.player.play()
+                await self.textSectionVC.createTrimmerView()
             }
         }
         

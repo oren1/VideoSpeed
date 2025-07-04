@@ -29,7 +29,7 @@ class SpidPlayerViewController: UIViewController {
     var playerLayer: AVPlayerLayer!
     var aspectRatio: CGFloat = 3/4
     var playbackTimeCheckerTimer: Timer?
-    private var videoState = VideoState.isPaused
+    private(set) var videoState = VideoState.isPaused
     let timeFormatter = DateComponentsFormatter()
     var videoDuration = 0.0
     
@@ -298,18 +298,21 @@ class SpidPlayerViewController: UIViewController {
         Task {
             await updateTimeLabels()
             await updateLabelViews()
-            let currentTime = player.currentTime().seconds
-//            print("current time: \(currentTime)")
-            let sliderValue = await getSliderValue(currentTime)
-
-            await MainActor.run {
-                slider.value = sliderValue
-            }
+            let currentTime = player.currentTime()
+            
+            await updateSliderFor(time: currentTime)
             
         }
         
     }
     
+    func updateSliderFor(time: CMTime) async {
+        let sliderValue = await getSliderValue(time.seconds)
+
+        await MainActor.run {
+            slider.value = sliderValue
+        }
+    }
     
     // MARK: Custom Logic
     func setTimeFormatter() {

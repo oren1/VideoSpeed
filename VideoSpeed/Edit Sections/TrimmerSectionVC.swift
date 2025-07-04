@@ -35,6 +35,9 @@ class TrimmerSectionVC: SectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(videoSelectionChanged), name: Notification.Name.VideoSelectionChanged, object: nil)
+        
         Task {
             trimmerView.asset = await UserDataManager.main.currentSpidAsset.getAsset()
 //            trimmerView.asset = delegate.spidPlayerController.player.currentItem?.asset
@@ -43,7 +46,8 @@ class TrimmerSectionVC: SectionViewController {
             trimmerView.mainColor = UIColor.systemBlue
             trimmerView.maskColor = UIColor.black
             trimmerView.positionBarColor = UIColor.clear
-            await trimmerView.preGenerateImagesWith(trimmerHeight: trimmerHeight)
+            let thumbnailImages = await trimmerView.preGenerateImagesWith(trimmerHeight: trimmerHeight)
+            await UserDataManager.main.currentSpidAsset.updateThumbnailImages(images: thumbnailImages)
             trimmerView.regenerateThumbnails()
 //            trimmerView.assetPreview.images = []
             // 1. create a new PlayerItem with the original video asset
@@ -57,8 +61,26 @@ class TrimmerSectionVC: SectionViewController {
 //                print("I'm now called \(person.name)")
 //            }
         }
+       
+
     }
 
+    @objc func videoSelectionChanged() {
+        Task {
+            // 1. Does the current spidAsset has thumbnail images already generated
+            if let thumbnailImages = await UserDataManager.main.currentSpidAsset.thumbnailImages {
+                trimmerView.replaceTo(thumbnailImages: thumbnailImages)
+            }
+            else {
+                trimmerView.asset = await UserDataManager.main.currentSpidAsset.getAsset()
+                trimmerView.generateThumbnails { thumbnailImages in
+                    Task {
+                        await UserDataManager.main.currentSpidAsset.updateThumbnailImages(images: thumbnailImages)
+                    }
+                }
+            }
+        }
+    }
     
     func startPlaybackTimeChecker() {
 

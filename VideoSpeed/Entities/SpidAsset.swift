@@ -17,6 +17,7 @@ actor SpidAsset {
     var speed: Float = 1
     var soundOn: Bool = true
     let thumbnailImage: CGImage
+    var thumbnailImages: [CGImage]?
     
     init(asset: AVAsset, timeRange: CMTimeRange, videoSize: CGSize, thumnbnailImage: CGImage) {
         self.asset = asset
@@ -52,7 +53,9 @@ actor SpidAsset {
         self.soundOn = soundOn
     }
     
-    
+    func updateThumbnailImages(images: [CGImage]?) {
+        self.thumbnailImages = images
+    }
     
 //    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool, cropRect: CGRect) async -> AVMutableVideoCompositionLayerInstruction {
 //        let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)

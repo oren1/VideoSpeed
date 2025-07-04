@@ -132,8 +132,20 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             let index = UserDataManager.main.spidAssets.firstIndex(where: { $0 === spidAsset})
             let startTime = videosStartTimes[index!]
             spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-            print("start time: \(startTime)")
             
+            /* when the video is playing, there is a timer function that runs every 0.1 seconds
+                and part of what it does is update the slider "@objc func onPlaybackTimeChecker()".
+                when the video is paused, the slider will not update  because this method is not running.
+                so i update it here to the starting time of the selected video in case the video is paused.
+             */
+            if spidPlayerController?.videoState == .isPaused {
+                Task {@MainActor [weak self] in
+                    await self?.spidPlayerController?.updateSliderFor(time: startTime)
+                }
+            }
+            
+            NotificationCenter.default.post(name: Notification.Name.VideoSelectionChanged, object: nil)
+
         }
         selectedMenuItem = menuItems.first
         videosCollectionView.delegate = videosMenuDelegate
@@ -458,8 +470,10 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         playerItem.audioTimePitchAlgorithm = .spectral
         playerItem.videoComposition = videoCompositionCopy
         spidPlayerController.player?.replaceCurrentItem(with: playerItem)
-        
-        await textSectionVC.recreateThumbnailsFor(asset: compositionCopy, videoComposition: videoCompositionCopy)
+            
+        Task {
+            await textSectionVC.recreateThumbnailsFor(asset: compositionCopy, videoComposition: videoCompositionCopy)
+        }
     }
     
     
@@ -1158,6 +1172,13 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         assetRotator = nil
         
+    }
+    
+    func getStartTimeForCurrentSpidAsset() -> CMTime {
+        let currentSpidAsset = UserDataManager.main.currentSpidAsset
+        let index = UserDataManager.main.spidAssets.firstIndex(where: { $0 === currentSpidAsset})
+        let startTime = videosStartTimes[index!]
+        return startTime
     }
     
 }
