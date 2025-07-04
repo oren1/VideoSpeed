@@ -42,18 +42,20 @@ public class AVAssetTimeSelector: UIView, UIScrollViewDelegate {
     func recreateThunmbnailsFor(asset: AVAsset, videoComposition: AVVideoComposition? = nil, trimmerHeight: CGFloat) async {
         self.asset = asset
         self.videoComposition = videoComposition
-        await preGenerateImagesWith(trimmerHeight: trimmerHeight)
+        let _ = await preGenerateImagesWith(trimmerHeight: trimmerHeight)
         assetPreview.addThumbnails(for: asset)
     }
     
-    public func preGenerateImagesWith(trimmerHeight: CGFloat) async {
+    public func preGenerateImagesWith(trimmerHeight: CGFloat) async -> [CGImage]?  {
         if let asset = asset {
             let trimmerAssetGenerator = TrimmerAssetsGenerator(asset: asset,
                                                                videoComposition: videoComposition,
                                                                trimmerWidth: UIScreen.main.bounds.width - 70,
                                                                trimmerHeight: trimmerHeight)
             assetPreview.images = await trimmerAssetGenerator.generateThumbnailImages()
+            return assetPreview.images
         }
+        return nil
     }
     
     public func regenerateThumbnails(frame: CGRect? = nil) {
@@ -63,6 +65,19 @@ public class AVAssetTimeSelector: UIView, UIScrollViewDelegate {
         }
     }
 
+    func replaceTo(thumbnailImages: [CGImage]) {
+        if let asset = asset {
+            assetPreview.images = thumbnailImages
+            assetPreview.addThumbnails(for: asset)
+        }
+    }
+    
+    func generateThumbnails(completion: @escaping ([CGImage]) -> Void) {
+        if let asset = asset {
+            assetPreview.regenerateThumbnails(for: asset, completion: completion)
+        }
+    }
+    
     // MARK: - Asset Preview
 
     func setupAssetPreview() {
