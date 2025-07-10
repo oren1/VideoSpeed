@@ -19,15 +19,14 @@ class SoundSectionVC: SectionViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(videoSelectionChanged), name: Notification.Name.VideoSelectionChanged, object: nil)
+        
         setBorderAndRadius(button: onButton)
         setBorderAndRadius(button: offButton)
         
         setSelectedButton(button: onButton)
-        
-//        sub = PublishersManager.main.resetSelectionsPublisher.sink(receiveValue: { [weak self]  notification in
-//            guard let self = self else {return}
-//            onButtonTapped(onButton)
-//        })
+    
     }
 
     func updateSoundSelection(soundOn: Bool) {
@@ -52,4 +51,13 @@ class SoundSectionVC: SectionViewController {
             soundStateChanged?(soundOn)
     }
 
+    
+    @objc private func videoSelectionChanged() {
+        Task { @MainActor in
+            if let soundOn = await UserDataManager.main.currentSpidAsset?.soundOn {
+                updateSoundSelection(soundOn: soundOn)
+            }
+        }
+       
+    }
 }

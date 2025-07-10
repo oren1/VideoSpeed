@@ -124,9 +124,8 @@ class TextSectionVC: SectionViewController {
     
     
     func resetTimeRangesForLabelViews() {
-        for labelView in UserDataManager.main.overlayLabelViews {
-            labelView.viewModel.resetTimeRange()
-
+        for viewModel in UserDataManager.main.labelViewsModels {
+            viewModel.resetTimeRange()
         }
     }
     

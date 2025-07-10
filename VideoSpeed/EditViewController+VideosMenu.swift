@@ -13,6 +13,8 @@ typealias VideoSelectionClosure = (SpidAsset) -> Void
 class VideosMenuDelegate: NSObject {
     
     var didSelectVideo: VideoSelectionClosure?
+    var itemDidDrop: ((Int) -> Void)?
+    var selectedMenuItem: MenuItem!
     
     override init() {
         super.init()
@@ -44,7 +46,9 @@ extension VideosMenuDelegate: UICollectionViewDataSource {
 
       
       let spidAsset = UserDataManager.main.spidAssets[indexPath.row]
-         if spidAsset === UserDataManager.main.currentSpidAsset {
+         if spidAsset === UserDataManager.main.currentSpidAsset &&
+                selectedMenuItem.id != .fps &&
+                selectedMenuItem.id != .more {
              cell.layer.borderColor = UIColor.white.cgColor
              cell.layer.borderWidth = 2
          }
@@ -110,6 +114,50 @@ extension VideosMenuDelegate: UICollectionViewDelegateFlowLayout {
       minimumLineSpacingForSectionAt section: Int
     ) -> CGFloat {
       return sectionInsets.left
+    }
+}
+
+
+extension VideosMenuDelegate: UICollectionViewDragDelegate, UICollectionViewDropDelegate {
+    // MARK: - Drag Delegate
+    func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        let spidAsset = UserDataManager.main.spidAssets[indexPath.row]
+        let itemProvider = NSItemProvider()
+        let dragItem = UIDragItem(itemProvider: itemProvider)
+        dragItem.localObject = spidAsset
+        return [dragItem]
+    }
+
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
+        
+        if session.localDragSession != nil {
+            // Drag within the app - allow move
+            return UICollectionViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+        } else {
+            // Dragging from outside the app - copy
+            return UICollectionViewDropProposal(operation: .copy, intent: .insertAtDestinationIndexPath)
+        }
+    }
+
+    // MARK: - Drop Delegate
+    func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
+        guard let destinationIndexPath = coordinator.destinationIndexPath else { return }
+
+        coordinator.items.forEach { dropItem in
+            if let sourceIndexPath = dropItem.sourceIndexPath,
+               let spidAsset = dropItem.dragItem.localObject as? SpidAsset {
+                // Update data source
+                UserDataManager.main.spidAssets.remove(at: sourceIndexPath.item)
+                UserDataManager.main.spidAssets.insert(spidAsset, at: destinationIndexPath.item)
+                
+                collectionView.performBatchUpdates {
+                    collectionView.deleteItems(at: [sourceIndexPath])
+                    collectionView.insertItems(at: [destinationIndexPath])
+                }
+                coordinator.drop(dropItem.dragItem, toItemAt: destinationIndexPath)
+                itemDidDrop?(destinationIndexPath.row)
+            }
+        }
     }
 }
 
