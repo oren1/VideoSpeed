@@ -147,9 +147,29 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             NotificationCenter.default.post(name: Notification.Name.VideoSelectionChanged, object: nil)
 
         }
+        
+        videosMenuDelegate.itemDidDrop = { [weak self] index in
+            guard let self = self else{ return }
+        
+            Task {
+                await self.reloadComposition()
+                let startTime = self.videosStartTimes[index]
+                await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+                if self.spidPlayerController?.videoState == .isPaused {
+                    Task {@MainActor [weak self] in
+                        await self?.spidPlayerController?.updateSliderFor(time: startTime)
+                    }
+                }
+            }
+        }
         selectedMenuItem = menuItems.first
+        videosMenuDelegate.selectedMenuItem = selectedMenuItem
         videosCollectionView.delegate = videosMenuDelegate
         videosCollectionView.dataSource = videosMenuDelegate
+        videosCollectionView.dragDelegate = videosMenuDelegate
+        videosCollectionView.dropDelegate = videosMenuDelegate
+        videosCollectionView.dragInteractionEnabled = true
+
         bottomMenuCollectionView.delegate = self
         bottomMenuCollectionView.dataSource = self
         
@@ -500,13 +520,18 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         soundButton.setImage(UIImage(systemName: "volume.2.fill"), for: .normal)
         soundButton.addTarget(self, action: #selector(soundButtonTapped), for: .touchUpInside)
         
-        let speedItem = UIBarButtonItem(customView: speedLabel)
+//        let speedItem = UIBarButtonItem(customView: speedLabel)
         let fpsItem = UIBarButtonItem(customView: fpsLabel)
         let fileTypeItem = UIBarButtonItem(customView: fileTypeLabel)
-        let soundItem = UIBarButtonItem(customView: soundButton)
+//        let soundItem = UIBarButtonItem(customView: soundButton)
         
         
-        navigationItem.rightBarButtonItems = [exportButton, soundItem, fileTypeItem, fpsItem, speedItem]
+        navigationItem.rightBarButtonItems = [exportButton,
+//                                              soundItem,
+                                              fileTypeItem,
+                                              fpsItem,
+//                                              speedItem
+        ]
     }
     
     @objc func soundButtonTapped() {
@@ -520,6 +545,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             showProButtonIfNeeded()
             Task {
                 await self.reloadComposition()
+                let startTime = self.getStartTimeForCurrentSpidAsset()
+                await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
             }
             
             return
@@ -532,6 +559,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         Task {
             await self.reloadComposition()
+            let startTime = self.getStartTimeForCurrentSpidAsset()
+            await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         }
         
     }
@@ -1042,6 +1071,19 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             var templateImage = await generateTemplateImage(asset: asset, time: currentTime)
             return templateImage
         }
+    }
+    
+    func showEntireVideoEditIndication() {
+        videosCollectionView.layer.borderWidth = 1
+        videosCollectionView.layer.borderColor = UIColor.white.cgColor
+        videosContainerView.isUserInteractionEnabled = false
+        videosContainerView.layer.opacity = 0.7
+    }
+    
+    func showSingleVideoEditIndication() {
+        videosCollectionView.layer.borderWidth = 0
+        videosContainerView.isUserInteractionEnabled = true
+        videosContainerView.layer.opacity = 1
     }
     
     // MARK: - Custom Logic

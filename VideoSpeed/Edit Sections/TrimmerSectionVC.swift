@@ -65,10 +65,16 @@ class TrimmerSectionVC: SectionViewController {
 
     }
 
-    @objc func videoSelectionChanged() {
+     @objc private func videoSelectionChanged() {
         Task {
+            /* Replace the current PlayerItem with a new PlayerItem that is loaded with the current
+                selected SpidAsset's video */
+            let originalAsset = await UserDataManager.main.currentSpidAsset.getOriginalAsset()
+            playerItem = AVPlayerItem(asset: originalAsset)
+            
             // 1. Does the current spidAsset has thumbnail images already generated
             if let thumbnailImages = await UserDataManager.main.currentSpidAsset.thumbnailImages {
+                trimmerView.asset = originalAsset
                 trimmerView.replaceTo(thumbnailImages: thumbnailImages)
             }
             else {
@@ -79,6 +85,13 @@ class TrimmerSectionVC: SectionViewController {
                     }
                 }
             }
+            
+            if let rightConstraintConstant = await UserDataManager.main.currentSpidAsset.rightHandleConstraintConstant,
+               let leftConstraintConstant = await UserDataManager.main.currentSpidAsset.leftHandleConstraintConstant {
+                trimmerView.updateRightConstraint(constatnt: rightConstraintConstant)
+                trimmerView.updateLeftConstraint(constatnt: leftConstraintConstant)
+            }
+            
         }
     }
     
@@ -121,9 +134,14 @@ extension TrimmerSectionVC: TrimmerViewDelegate {
         delegate?.spidPlayerController?.player?.play()
         
         guard let startTime = trimmerView.startTime, let endTime = trimmerView.endTime else {return}
-        
-        let timeRange = CMTimeRange(start: startTime, end: endTime)
-        timeRangeDidChange?(timeRange)
+        Task { @MainActor in
+            let timeRange = CMTimeRange(start: startTime, end: endTime)
+            let currentSpidAsset = UserDataManager.main.currentSpidAsset
+            await currentSpidAsset?.updateRightHandleConstraintConstant(constant: trimmerView.rightConstraint!.constant)
+            await currentSpidAsset?.updateLeftHandleConstraintConstant(constant: trimmerView.leftConstraint!.constant)
+            timeRangeDidChange?(timeRange)
+
+        }
     }
 
     func didChangePositionBar(_ playerTime: CMTime) {

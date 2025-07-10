@@ -106,13 +106,16 @@ extension EditViewController {
     func createSoundSection()  {
         soundSectionVC = SoundSectionVC()
         soundSectionVC.soundStateChanged = {[weak self] (soundOn: Bool) in
-            self?.soundOn = soundOn
+            guard let self = self else { return }
+            self.soundOn = soundOn
             let imageName = soundOn ? "volume.2.fill" : "volume.slash"
-            self?.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
-            self?.showProButtonIfNeeded()
+            self.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
+            self.showProButtonIfNeeded()
             Task {
                await UserDataManager.main.currentSpidAsset.updateSound(soundOn: soundOn)
-               await self?.reloadComposition()
+               await self.reloadComposition()
+               let startTime = self.getStartTimeForCurrentSpidAsset()
+               await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
             }
         }
         soundSectionVC.userNeedsToPurchase = {[weak self] in
@@ -148,10 +151,13 @@ extension EditViewController {
         trimmerSectionVC = TrimmerSectionVC()
         trimmerSectionVC.delegate = self
         trimmerSectionVC.timeRangeDidChange = { [weak self] timeRange in
+            guard let self = self else { return }
             Task {
                 await UserDataManager.main.currentSpidAsset.updateTimeRange(timeRange: timeRange)
-                await self?.reloadComposition()
-                await self?.textSectionVC.createTrimmerView()
+                await self.reloadComposition()
+                await self.textSectionVC.createTrimmerView()
+                let startTime = self.getStartTimeForCurrentSpidAsset()
+                await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
             }
         }
     
