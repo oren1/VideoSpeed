@@ -68,22 +68,41 @@ extension EditViewController {
                      The crop will work only for assets that their orientation is the intended orientation
                      of the video
                      */
-                    
-//                    guard let _ = self.rotatedAsset else
-                    if await !UserDataManager.main.currentSpidAsset.assetHasBeenRotated
+                
+                    //                    guard let _ = self.rotatedAsset else
+                    let currentSpidAsset = UserDataManager.main.currentSpidAsset!
+                    if await !currentSpidAsset.assetHasBeenRotated
                     {
                         // 1. Show a loading view until the asset has been rotated
                         self.loadingMediaVC = UIHostingController(rootView: LoadingMediaView(loadingMediaViewModel: self.loadingMediaViewModel))
                         self.loadingMediaVC!.view.backgroundColor = .clear
                         self.loadingMediaVC!.view.frame = self.navigationController!.view.bounds
                         self.navigationController!.view.addSubview(self.loadingMediaVC!.view)
-                        return
+                        
+                        let asset = await currentSpidAsset.getOriginalAsset()
+                        // Start rotating the asset
+                        let assetRotator = AssetRotator(asset: asset)
+                        self.assetRotateProgressSubscription = assetRotator.$progress
+                            .receive(on: DispatchQueue.main)
+                            .sink { progress in
+                                /* Update the loadingMediaViewModel's progress variable so that the 'loadingMediaVC'
+                                 will be rendered with the new progress. */
+                                print("progress: \(progress)")
+                                self.loadingMediaViewModel.progress = progress
+                            }
+                        let rotatedAsset = await assetRotator.rotateVideoToIntendedOrientation()
+                        await currentSpidAsset.updateRotatedAsset(rotatedAsset: rotatedAsset)
+                        self.loadingMediaVC?.remove()
                     }
                     
                     await self.reloadComposition()
                     self.removeCropVCFromTop()
                 }
             }
+        }
+        
+        cropSectionVC.closeTapped = { [weak self] in
+            self?.removeCropVCFromTop()
         }
     }
     
