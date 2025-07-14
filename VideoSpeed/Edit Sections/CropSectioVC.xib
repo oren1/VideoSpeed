@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -27,15 +27,29 @@
                         <action selector="cropButtonTapped:" destination="-1" eventType="touchUpInside" id="ozz-HB-nh1"/>
                     </connections>
                 </button>
+                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SEL-YD-Gor">
+                    <rect key="frame" x="337" y="10" width="50" height="35"/>
+                    <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain" image="xmark.circle" catalog="system"/>
+                    <connections>
+                        <action selector="closeButtonTapped:" destination="-1" eventType="touchUpInside" id="oC9-tA-PHe"/>
+                    </connections>
+                </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
+                <constraint firstAttribute="trailing" secondItem="SEL-YD-Gor" secondAttribute="trailing" constant="6" id="4rE-ZL-BUf"/>
                 <constraint firstItem="fxq-fD-21o" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="DfB-zi-zNL"/>
                 <constraint firstItem="fxq-fD-21o" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="Dv0-9E-L9Y"/>
+                <constraint firstItem="SEL-YD-Gor" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="10" id="xoS-kb-09s"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="-16.030534351145036" y="-214.08450704225353"/>
         </view>
     </objects>
+    <resources>
+        <image name="xmark.circle" catalog="system" width="128" height="123"/>
+    </resources>
 </document>

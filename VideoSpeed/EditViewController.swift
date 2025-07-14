@@ -144,6 +144,23 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 }
             }
             
+          
+
+            if selectedMenuItem.id == .crop {
+                Task {@MainActor in
+                    let oldCropVC = self.cropViewController
+                    await self.createCropViewController()
+                    self.addCropViewControllerToTop()
+                    oldCropVC?.remove()
+                }
+               
+            }
+            else {
+                // recreates the CropViewController with the current selected asset
+                Task {@MainActor in
+                    await self.createCropViewController()
+                }
+            }
             NotificationCenter.default.post(name: Notification.Name.VideoSelectionChanged, object: nil)
 
         }
@@ -762,7 +779,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             cropViewController.view.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
             cropViewController.view.leftAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leftAnchor),
             cropViewController.view.rightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.rightAnchor),
-            cropViewController.view.bottomAnchor.constraint(equalTo: self.dashboardContainerView.topAnchor),
+            cropViewController.view.bottomAnchor.constraint(equalTo: self.videosContainerView.topAnchor),
         ]
         NSLayoutConstraint.activate(constraints)
         
@@ -920,7 +937,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     
     func createCropViewController() async {
         cropViewController = CropViewController()
-        guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+        let asset = await UserDataManager.main.currentSpidAsset.getOriginalAsset()
+        guard let  videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
               let naturalSize = try? await videoTrack.load(.naturalSize),
               let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return}
         
@@ -937,7 +955,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         }
         
         cropViewController.videoAspectRatio = videoSize.width / videoSize.height
-        
+        cropViewController.startingRect = await UserDataManager.main.currentSpidAsset.videoRect
         //         Sometimes the portrait video is saved in landscape, so this is a fix that rotates the generated image back to it's
         //         portrait original intended presentation
         

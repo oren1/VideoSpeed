@@ -28,6 +28,7 @@ actor SpidAsset {
     var thumbnailImages: [CGImage]?
     var rightHandleConstraintConstant: CGFloat?
     var leftHandleConstraintConstant: CGFloat?
+    var videoRect: CGRect = .zero
     
     private enum CodingKeys: String, CodingKey {
            case id
@@ -90,6 +91,10 @@ actor SpidAsset {
     
     func updateLeftHandleConstraintConstant(constant: CGFloat) {
         self.leftHandleConstraintConstant = constant
+    }
+    
+    func updateVideoRect(_ videoRect: CGRect) {
+        self.videoRect = videoRect
     }
     
 //    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool, cropRect: CGRect) async -> AVMutableVideoCompositionLayerInstruction {
