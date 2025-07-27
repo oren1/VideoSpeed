@@ -23,7 +23,7 @@ class CropViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
             view.backgroundColor = .black
-
+            cropPickerView = CropPickerView()
             cropPickerView.image = templateImage
             cropPickerView.backgroundColor = .blue
             cropPickerView.scrollMinimumZoomScale = 1
