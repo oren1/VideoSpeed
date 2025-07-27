@@ -60,7 +60,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     let menuItemReuseIdentifier = "MenuItem"
     let menuItems: [MenuItem] = [MenuItem(id: .speed , title: "SPEED", imageName: "timer"),
                                  MenuItem(id: .trim , title: "TRIM", imageName: "timeline.selection"),
-                                 MenuItem(id: .crop , title: "CROP", imageName: "crop"),
+//                                 MenuItem(id: .crop , title: "CROP", imageName: "crop"),
                                  MenuItem(id: .text , title: "TEXT", imageName: "textformat.alt"),
                                  MenuItem(id: .fps , title: "FPS", imageName: "square.stack.3d.down.right.fill"),
                                  MenuItem(id: .sound , title: "SOUND", imageName: "speaker.wave.2"),
@@ -1015,33 +1015,34 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         blackTransparentOverlay.removeFromSuperview()
     }
     
-    func showUsingProFeaturesAlertView() {
-        usingProFeaturesAlertView.updateStatus(usingSlider: UserDataManager.main.usingSlider,
-                                               soundOn: soundOn,
-                                               fps: fps,
-                                               fileType: fileType,
-                                               usingProFont: UserDataManager.main.usingProFont())
-        usingProFeaturesAlertView.layer.opacity = 0
-        self.navigationController!.view.addSubview(usingProFeaturesAlertView)
-        usingProFeaturesAlertView.translatesAutoresizingMaskIntoConstraints = false
-        usingProFeaturesAlertView.onCancel = { [weak self] in
-            self?.hideProFeatureAlert()
-        }
-        usingProFeaturesAlertView.onContinue = { [weak self] in
-            self?.showPurchaseViewController()
-            self?.hideProFeatureAlert()
-        }
-        let constraints = [
-            usingProFeaturesAlertView.heightAnchor.constraint(equalToConstant: 350),
-            usingProFeaturesAlertView.widthAnchor.constraint(equalToConstant: 340),
-            usingProFeaturesAlertView.centerXAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerXAnchor),
-            usingProFeaturesAlertView.centerYAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerYAnchor)
-        ]
-        NSLayoutConstraint.activate(constraints)
-        UIView.animate(withDuration: 0.2) { [weak self] in
-            self?.usingProFeaturesAlertView.layer.opacity = 1
-        }
-        
+    func showUsingProFeaturesAlertView()  {
+            usingProFeaturesAlertView.updateStatus(usingSlider: UserDataManager.main.usingSlider,
+                                                   soundOff: UserDataManager.main.soundOff,
+                                                   fps: fps,
+                                                   fileType: fileType,
+                                                   usingProFont: UserDataManager.main.usingProFont(),
+                                                   mergeVideos: UserDataManager.main.usingMergeFeature())
+            
+            usingProFeaturesAlertView.layer.opacity = 0
+            self.navigationController!.view.addSubview(usingProFeaturesAlertView)
+            usingProFeaturesAlertView.translatesAutoresizingMaskIntoConstraints = false
+            usingProFeaturesAlertView.onCancel = { [weak self] in
+                self?.hideProFeatureAlert()
+            }
+            usingProFeaturesAlertView.onContinue = { [weak self] in
+                self?.showPurchaseViewController()
+                self?.hideProFeatureAlert()
+            }
+            let constraints = [
+                usingProFeaturesAlertView.heightAnchor.constraint(equalToConstant: 350),
+                usingProFeaturesAlertView.widthAnchor.constraint(equalToConstant: 340),
+                usingProFeaturesAlertView.centerXAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerXAnchor),
+                usingProFeaturesAlertView.centerYAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerYAnchor)
+            ]
+            NSLayoutConstraint.activate(constraints)
+            UIView.animate(withDuration: 0.2) { [weak self] in
+                self?.usingProFeaturesAlertView.layer.opacity = 1
+            }
     }
     func hideUsingProFeaturesAlertView() {
         usingProFeaturesAlertView.removeFromSuperview()
@@ -1095,7 +1096,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         videosCollectionView.layer.borderWidth = 1
         videosCollectionView.layer.borderColor = UIColor.white.cgColor
         videosContainerView.isUserInteractionEnabled = false
-        videosContainerView.layer.opacity = 0.7
+        videosContainerView.layer.opacity = 0.8
     }
     
     func showSingleVideoEditIndication() {
@@ -1167,15 +1168,15 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     }
     
     func showProButtonIfNeeded() {
-        guard SpidProducts.store.userPurchasedProVersion() == nil &&
-                UserDataManager.main.userBenefitStatus != .entitled else {return}
-        
-        if self.usingProFeatures() {
-            self.showProButton()
-        }
-        else {
-            self.hideProButton()
-        }
+//        guard SpidProducts.store.userPurchasedProVersion() == nil &&
+//                UserDataManager.main.userBenefitStatus != .entitled else {return}
+//        
+//        if self.usingProFeatures() {
+//            self.showProButton()
+//        }
+//        else {
+//            self.hideProButton()
+//        }
     }
     
     func loopVideo() {
@@ -1256,9 +1257,10 @@ extension NotificationObservers {
     func usingProFeatures() -> Bool {
             if UserDataManager.main.usingSlider ||
                 fps != 30 ||
-                !soundOn ||
+                UserDataManager.main.soundOff ||
                 fileType == .mp4 ||
-                UserDataManager.main.usingProFont() {
+                UserDataManager.main.usingProFont() ||
+                UserDataManager.main.usingMergeFeature() {
                 
                 return true
             }

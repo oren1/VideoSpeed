@@ -129,12 +129,16 @@ extension EditViewController {
             self.soundOn = soundOn
             let imageName = soundOn ? "volume.2.fill" : "volume.slash"
             self.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
-            self.showProButtonIfNeeded()
             Task {
                await UserDataManager.main.currentSpidAsset.updateSound(soundOn: soundOn)
+               UserDataManager.main.soundOff = await UserDataManager.main.soundOff()
                await self.reloadComposition()
                let startTime = self.getStartTimeForCurrentSpidAsset()
                await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+                
+                Task{@MainActor in
+                    self.showProButtonIfNeeded()
+                }
             }
         }
         soundSectionVC.userNeedsToPurchase = {[weak self] in

@@ -48,7 +48,8 @@ extension VideosMenuDelegate: UICollectionViewDataSource {
       let spidAsset = UserDataManager.main.spidAssets[indexPath.row]
          if spidAsset === UserDataManager.main.currentSpidAsset &&
                 selectedMenuItem.id != .fps &&
-                selectedMenuItem.id != .more {
+                selectedMenuItem.id != .more &&
+                selectedMenuItem.id != .text {
              cell.layer.borderColor = UIColor.white.cgColor
              cell.layer.borderWidth = 2
          }

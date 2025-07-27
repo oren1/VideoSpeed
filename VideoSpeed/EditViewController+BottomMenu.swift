@@ -83,7 +83,8 @@ extension EditViewController: UICollectionViewDelegate {
         
         videosMenuDelegate.selectedMenuItem = selectedMenuItem
         if selectedMenuItem.id == .fps ||
-            selectedMenuItem.id == .more {
+            selectedMenuItem.id == .more ||
+            selectedMenuItem.id == .text {
             showEntireVideoEditIndication()
         }
         else {
