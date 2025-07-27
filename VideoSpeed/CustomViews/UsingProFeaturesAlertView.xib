@@ -16,6 +16,8 @@
                 <outlet property="continueButton" destination="5Rq-u6-r42" id="kSf-TS-RwE"/>
                 <outlet property="fpsView" destination="OgW-AD-Col" id="cLM-8j-xTX"/>
                 <outlet property="fpsViewHeightConstraint" destination="bYD-FC-JVD" id="0rz-di-7Kl"/>
+                <outlet property="mergeVideosView" destination="5AE-4l-0yL" id="MjP-fS-3xs"/>
+                <outlet property="mergeVideosViewHeightConstraint" destination="Rws-tQ-JwO" id="vXz-xq-erq"/>
                 <outlet property="mp4View" destination="S5L-Ha-uGw" id="43d-Je-Yq5"/>
                 <outlet property="proFontView" destination="9Uc-fx-vlQ" id="3qg-Da-Bmy"/>
                 <outlet property="proFontViewHeightConstraint" destination="rYa-xG-8Ab" id="U9Z-H4-bGQ"/>
@@ -206,6 +208,34 @@
                         <constraint firstAttribute="height" constant="24" id="rYa-xG-8Ab"/>
                     </constraints>
                 </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5AE-4l-0yL">
+                    <rect key="frame" x="50" y="231" width="240" height="24"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="rectangle.split.2x1.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="2Ch-u4-oWV">
+                            <rect key="frame" x="0.0" y="1.3333333333333215" width="24" height="21.666666666666671"/>
+                            <color key="tintColor" red="0.02287416104" green="0.023331644259999999" blue="0.023331644259999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="24" id="80Z-ip-43a"/>
+                                <constraint firstAttribute="height" constant="24.666666666666675" id="Nfe-Wd-ZaW"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Merge Videos" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f0s-II-bgz">
+                            <rect key="frame" x="32" y="4.6666666666666572" width="83" height="15"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstItem="2Ch-u4-oWV" firstAttribute="leading" secondItem="5AE-4l-0yL" secondAttribute="leading" id="Cnt-sz-iAy"/>
+                        <constraint firstAttribute="height" constant="24" id="Rws-tQ-JwO"/>
+                        <constraint firstItem="f0s-II-bgz" firstAttribute="leading" secondItem="2Ch-u4-oWV" secondAttribute="trailing" constant="8" id="U8a-To-4XR"/>
+                        <constraint firstAttribute="width" constant="240" id="XoR-tg-f9W"/>
+                        <constraint firstItem="2Ch-u4-oWV" firstAttribute="centerY" secondItem="5AE-4l-0yL" secondAttribute="centerY" id="fOh-1F-O0G"/>
+                        <constraint firstItem="f0s-II-bgz" firstAttribute="centerY" secondItem="5AE-4l-0yL" secondAttribute="centerY" id="rgc-hN-a7U"/>
+                    </constraints>
+                </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -223,9 +253,11 @@
                 <constraint firstAttribute="bottom" secondItem="5Rq-u6-r42" secondAttribute="bottom" constant="24" id="WvB-3N-Eb8"/>
                 <constraint firstItem="eKL-tf-25K" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="Y5R-Hd-Rss"/>
                 <constraint firstItem="c2f-cp-a8D" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="4" id="ZLa-p3-MOV"/>
+                <constraint firstItem="5AE-4l-0yL" firstAttribute="top" secondItem="9Uc-fx-vlQ" secondAttribute="bottom" constant="4" id="bjq-jX-jyG"/>
                 <constraint firstItem="hMX-UY-dQX" firstAttribute="top" secondItem="eKL-tf-25K" secondAttribute="bottom" constant="4" id="cKx-J6-PpI"/>
                 <constraint firstItem="5Rq-u6-r42" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="24" id="daz-YU-Ap9"/>
                 <constraint firstItem="c2f-cp-a8D" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="4" id="fNw-Ac-8Dt"/>
+                <constraint firstItem="5AE-4l-0yL" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="p0o-hI-hYs"/>
                 <constraint firstItem="hMX-UY-dQX" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="pgk-Ch-NJm"/>
             </constraints>
             <nil key="simulatedBottomBarMetrics"/>
@@ -235,6 +267,7 @@
     </objects>
     <resources>
         <image name="multiply" catalog="system" width="128" height="111"/>
+        <image name="rectangle.split.2x1.fill" catalog="system" width="128" height="93"/>
         <image name="slider.horizontal.2.square.on.square" catalog="system" width="128" height="116"/>
         <image name="speaker.slash.fill" catalog="system" width="115" height="128"/>
         <image name="square.dashed.inset.filled" catalog="system" width="128" height="114"/>
@@ -244,7 +277,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemCyanColor">
-            <color red="0.1960784314" green="0.67843137249999996" blue="0.90196078430000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.19607843137254902" green="0.67843137254901964" blue="0.90196078431372551" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

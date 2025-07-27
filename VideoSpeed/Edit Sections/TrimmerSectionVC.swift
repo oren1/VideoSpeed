@@ -23,6 +23,8 @@ extension TrimmerViewSpidDelegate {
 
 typealias TimeRangeClosure = (_ timeRange: CMTimeRange) -> Void
 
+fileprivate let trimmerHeight = 60.0
+
 class TrimmerSectionVC: SectionViewController {
     
     weak var delegate: TrimmerViewSpidDelegate!
@@ -33,21 +35,65 @@ class TrimmerSectionVC: SectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(videoSelectionChanged), name: Notification.Name.VideoSelectionChanged, object: nil)
+        
         Task {
             trimmerView.asset = await UserDataManager.main.currentSpidAsset.getAsset()
+//            trimmerView.asset = delegate.spidPlayerController.player.currentItem?.asset
             trimmerView.delegate = self
             trimmerView.handleColor = UIColor.white
             trimmerView.mainColor = UIColor.systemBlue
             trimmerView.maskColor = UIColor.black
             trimmerView.positionBarColor = UIColor.clear
-            await trimmerView.preGenerateImagesWith(trimmerHeight: 60)
+            let thumbnailImages = await trimmerView.preGenerateImagesWith(trimmerHeight: trimmerHeight)
+            await UserDataManager.main.currentSpidAsset.updateThumbnailImages(images: thumbnailImages)
             trimmerView.regenerateThumbnails()
+//            trimmerView.assetPreview.images = []
             // 1. create a new PlayerItem with the original video asset
             let originalAsset = await UserDataManager.main.currentSpidAsset.getOriginalAsset()
             playerItem = AVPlayerItem(asset: originalAsset)
+            
+//            delegate.spidPlayerController.player.currentItem?.observe(\.asset, changeHandler: { playerItem, change in
+//                print("change: \(change)")
+//            })
+//            taylor.observe(\Person.name, options: .new) { person, change in
+//                print("I'm now called \(person.name)")
+//            }
         }
+       
+
     }
 
+     @objc private func videoSelectionChanged() {
+        Task {
+            /* Replace the current PlayerItem with a new PlayerItem that is loaded with the current
+                selected SpidAsset's video */
+            let originalAsset = await UserDataManager.main.currentSpidAsset.getOriginalAsset()
+            playerItem = AVPlayerItem(asset: originalAsset)
+            
+            // 1. Does the current spidAsset has thumbnail images already generated
+            if let thumbnailImages = await UserDataManager.main.currentSpidAsset.thumbnailImages {
+                trimmerView.asset = originalAsset
+                trimmerView.replaceTo(thumbnailImages: thumbnailImages)
+            }
+            else {
+                trimmerView.asset = await UserDataManager.main.currentSpidAsset.getAsset()
+                trimmerView.generateThumbnails { thumbnailImages in
+                    Task {
+                        await UserDataManager.main.currentSpidAsset.updateThumbnailImages(images: thumbnailImages)
+                    }
+                }
+            }
+            
+            if let rightConstraintConstant = await UserDataManager.main.currentSpidAsset.rightHandleConstraintConstant,
+               let leftConstraintConstant = await UserDataManager.main.currentSpidAsset.leftHandleConstraintConstant {
+                trimmerView.updateRightConstraint(constatnt: rightConstraintConstant)
+                trimmerView.updateLeftConstraint(constatnt: leftConstraintConstant)
+            }
+            
+        }
+    }
     
     func startPlaybackTimeChecker() {
 
@@ -79,6 +125,7 @@ class TrimmerSectionVC: SectionViewController {
             trimmerView.seek(to: startTime)
         }
     }
+    
 }
 
 extension TrimmerSectionVC: TrimmerViewDelegate {
@@ -87,9 +134,14 @@ extension TrimmerSectionVC: TrimmerViewDelegate {
         delegate?.spidPlayerController?.player?.play()
         
         guard let startTime = trimmerView.startTime, let endTime = trimmerView.endTime else {return}
-        
-        let timeRange = CMTimeRange(start: startTime, end: endTime)
-        timeRangeDidChange?(timeRange)
+        Task { @MainActor in
+            let timeRange = CMTimeRange(start: startTime, end: endTime)
+            let currentSpidAsset = UserDataManager.main.currentSpidAsset
+            await currentSpidAsset?.updateRightHandleConstraintConstant(constant: trimmerView.rightConstraint!.constant)
+            await currentSpidAsset?.updateLeftHandleConstraintConstant(constant: trimmerView.leftConstraint!.constant)
+            timeRangeDidChange?(timeRange)
+
+        }
     }
 
     func didChangePositionBar(_ playerTime: CMTime) {

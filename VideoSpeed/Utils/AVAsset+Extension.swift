@@ -9,6 +9,21 @@ import AVFoundation
 
 extension AVAsset {
     
+    func generateThumbnailImage() async -> CGImage? {
+        let generator = AVAssetImageGenerator(asset: self)
+        generator.appliesPreferredTrackTransform = true
+        
+        return await withCheckedContinuation { continuation in
+           
+            let nsValue = NSValue(time: .zero)
+            
+            generator.generateCGImagesAsynchronously(forTimes: [nsValue]) { _, cgImage, _, result, error in
+                    continuation.resume(returning: cgImage)
+            }
+        }
+       
+    }
+    
     func rotateVideoToIntendedOrientation() async -> AVAsset {
         // Check if the video is shown in the intended orientation
         

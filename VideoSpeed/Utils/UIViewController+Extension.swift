@@ -31,7 +31,6 @@ extension UIViewController {
     
     func showLoading() {
         let loadingView = LoadingView()
-//        loadingView.layer.opacity = opacity ?? 1
         loadingView.tag = loadinViewTag
         disablePresentaionDismiss()
         loadingView.activityIndicator.startAnimating()

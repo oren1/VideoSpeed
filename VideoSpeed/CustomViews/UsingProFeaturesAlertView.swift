@@ -25,13 +25,15 @@ class UsingProFeaturesAlertView: UIView {
     @IBOutlet weak var soundOffView: UIView!
     @IBOutlet weak var sliderPrecisionView: UIView!
     @IBOutlet weak var proFontView: UIView!
+    @IBOutlet weak var mergeVideosView: UIView!
     
     @IBOutlet weak var sliderPrecisionViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var soundOffViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var fpsViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var videoFormatViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var proFontViewHeightConstraint: NSLayoutConstraint!
-    
+    @IBOutlet weak var mergeVideosViewHeightConstraint: NSLayoutConstraint!
+   
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         commonInit()
@@ -46,7 +48,7 @@ class UsingProFeaturesAlertView: UIView {
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
     
-    func updateStatus(usingSlider: Bool, soundOn: Bool, fps: Int32, fileType: AVFileType, usingProFont: Bool) {
+    func updateStatus(usingSlider: Bool, soundOff: Bool, fps: Int32, fileType: AVFileType, usingProFont: Bool, mergeVideos: Bool) {
         
 //        let isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
 
@@ -65,11 +67,14 @@ class UsingProFeaturesAlertView: UIView {
         proFontViewHeightConstraint.constant = 0
         proFontView.isHidden = true
         
+        mergeVideosViewHeightConstraint.constant = 0
+        mergeVideosView.isHidden = true
+        
         if usingSlider {
             sliderPrecisionViewHeightConstraint.constant = 24
             sliderPrecisionView.isHidden = false
         }
-        if !soundOn {
+        if soundOff {
             soundOffViewHeightConstraint.constant = 24
             soundOffView.isHidden = false
         }
@@ -87,6 +92,10 @@ class UsingProFeaturesAlertView: UIView {
             proFontView.isHidden = false
         }
         
+        if mergeVideos {
+            mergeVideosViewHeightConstraint.constant = 24
+            mergeVideosView.isHidden = false
+        }
     }
     
     @IBAction func cancelButtonTapped(_ sender: Any) {
