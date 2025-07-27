@@ -19,7 +19,7 @@ class UserDataManager: ObservableObject {
    
     var currentSpidAsset: SpidAsset!
     var spidAssets: [SpidAsset] = []
-    
+    func usingMergeFeature() -> Bool { spidAssets.count > 1 }
     var usingSlider: Bool = false {
         didSet {
             NotificationCenter.default.post(name: Notification.Name("usingSliderChanged"), object: nil)
@@ -102,6 +102,17 @@ class UserDataManager: ObservableObject {
         print("trimmedDuration ", trimmedDuration)
 
         if originalDuration - trimmedDuration > 0.5 { return true }
+        return false
+    }
+    
+    var soundOff: Bool = false
+    
+    func soundOff() async -> Bool {
+        for spidAsset in spidAssets {
+            if await spidAsset.soundOn == false {
+                return true
+            }
+        }
         return false
     }
     
