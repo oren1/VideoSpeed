@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-let minimumItemWidth = 64.0
+fileprivate let minimumItemWidth = 64.0
 
 extension EditViewController: UICollectionViewDataSource {
      func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -81,7 +81,18 @@ extension EditViewController: UICollectionViewDelegate {
             
         }
         
+        videosMenuDelegate.selectedMenuItem = selectedMenuItem
+        if selectedMenuItem.id == .fps ||
+            selectedMenuItem.id == .more ||
+            selectedMenuItem.id == .text {
+            showEntireVideoEditIndication()
+        }
+        else {
+            showSingleVideoEditIndication()
+        }
+        
         collectionView.reloadData()
+        videosCollectionView.reloadData()
     }
 }
 

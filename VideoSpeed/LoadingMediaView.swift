@@ -19,7 +19,7 @@ struct LoadingMediaView: View {
             Color.black.opacity(0.6)
                 .ignoresSafeArea()
             VStack(alignment: .center) {
-                Text("Preparing Video For Crop")
+                Text("Cropping Video")
                     .foregroundStyle(.white)
                     .padding(.bottom)
                 ZStack {

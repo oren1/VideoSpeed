@@ -29,7 +29,7 @@ class SpidPlayerViewController: UIViewController {
     var playerLayer: AVPlayerLayer!
     var aspectRatio: CGFloat = 3/4
     var playbackTimeCheckerTimer: Timer?
-    private var videoState = VideoState.isPaused
+    private(set) var videoState = VideoState.isPaused
     let timeFormatter = DateComponentsFormatter()
     var videoDuration = 0.0
     
@@ -298,18 +298,21 @@ class SpidPlayerViewController: UIViewController {
         Task {
             await updateTimeLabels()
             await updateLabelViews()
-            let currentTime = player.currentTime().seconds
-//            print("current time: \(currentTime)")
-            let sliderValue = await getSliderValue(currentTime)
-
-            await MainActor.run {
-                slider.value = sliderValue
-            }
+            let currentTime = player.currentTime()
+            
+            await updateSliderFor(time: currentTime)
             
         }
         
     }
     
+    func updateSliderFor(time: CMTime) async {
+        let sliderValue = await getSliderValue(time.seconds)
+
+        await MainActor.run {
+            slider.value = sliderValue
+        }
+    }
     
     // MARK: Custom Logic
     func setTimeFormatter() {
@@ -321,8 +324,7 @@ class SpidPlayerViewController: UIViewController {
     
     func updateTimeLabels() async {
         let videoCurrentTime =  playerLayer.player!.currentTime().seconds
-        
-        let videoDuration = await UserDataManager.main.currentSpidAsset.videoDuration()
+        guard  let videoDuration = try? await playerLayer.player!.currentItem!.asset.load(.duration).seconds else { return }
 
         let formattedVideoCurrentTimeString = timeFormatter.string(from: TimeInterval(ceill(videoCurrentTime)))
         let formattedVideoDurationString =  timeFormatter.string(from: TimeInterval(videoDuration))
@@ -335,14 +337,15 @@ class SpidPlayerViewController: UIViewController {
     
     
     func getTime(_ sliderValue: Float) async -> CMTime {
-        let videoDuration = await UserDataManager.main.currentSpidAsset.videoDuration()
+        
+        guard  let videoDuration = try? await playerLayer.player!.currentItem!.asset.load(.duration).seconds else { return .zero }
         let seconds = videoDuration * Double(sliderValue) * 600
 
         return CMTime(value: CMTimeValue(seconds), timescale: 600)
     }
     
     func getSliderValue(_ currentTime: TimeInterval) async -> Float {
-        let videoDuration = await UserDataManager.main.currentSpidAsset.videoDuration()
+        guard  let videoDuration = try? await playerLayer.player!.currentItem!.asset.load(.duration).seconds else { return 0 }
         return Float(1/videoDuration * currentTime)
     }
     

@@ -62,11 +62,31 @@ class AssetVideoScrollView: UIScrollView {
         let timesForThumbnail = getThumbnailTimes(for: asset, numberOfThumbnails: thumbnailCount)
         generateImages(for: asset, at: timesForThumbnail, with: thumbnailSize, visibleThumnails: visibleThumbnailsCount)
     }
-
-    internal func addThumbnails(for asset: AVAsset) {
+    
+    internal func regenerateThumbnails(for asset: AVAsset, completion: @escaping ([CGImage]) -> Void) {
         // Calculating the thumbnail size by taking the frame height of the assetPreview as the height,
         // and width by multiplyng the height by the aspect ratio of the real asset video track
         guard let thumbnailSize = getThumbnailFrameSize(from: asset), thumbnailSize.width != 0 else {
+            print("Could not calculate the thumbnail size.")
+            return
+        }
+
+        
+        generator?.cancelAllCGImageGeneration()
+        removeFormerThumbnails()
+        let newContentSize = setContentSize(for: asset, frame: frame)
+//        let refFrame = frame != nil ? frame! : self.frame
+        let visibleThumbnailsCount = Int(ceil(frame.width / thumbnailSize.width))
+        let thumbnailCount = Int(ceil(newContentSize.width / thumbnailSize.width))
+        addThumbnailViews(thumbnailCount, size: thumbnailSize)
+        let timesForThumbnail = getThumbnailTimes(for: asset, numberOfThumbnails: thumbnailCount)
+        generateImages(for: asset, at: timesForThumbnail, with: thumbnailSize, visibleThumnails: visibleThumbnailsCount, completion: completion)
+    }
+    
+    internal func addThumbnails(for asset: AVAsset) {
+        // Calculating the thumbnail size by taking the frame height of the assetPreview as the height,
+        // and width by multiplyng the height by the aspect ratio of the real asset video track
+        guard let thumbnailSize = getThumbnailSizeFor(asset: asset), thumbnailSize.width != 0 else {
             print("Could not calculate the thumbnail size.")
             return
         }
@@ -80,6 +100,23 @@ class AssetVideoScrollView: UIScrollView {
               displayImage(cgImage, at: index)
            }
         }
+    }
+    
+    private func getThumbnailSizeFor(asset: AVAsset) -> CGSize? {
+        guard let track = asset.tracks(withMediaType: AVMediaType.video).first else { return nil}
+
+        let assetSize = track.naturalSize.applying(track.preferredTransform)
+        let ratio: CGFloat
+        let height = frame.height
+        if assetSize.orientation() == .landscape {
+            ratio = 3/4
+        }
+        else {
+            ratio = assetSize.width / assetSize.height
+        }
+        let width = height * ratio
+        return CGSize(width: abs(width), height: abs(height))
+
     }
     
     private func getThumbnailFrameSize(from asset: AVAsset) -> CGSize? {
@@ -177,7 +214,37 @@ class AssetVideoScrollView: UIScrollView {
     }
 
    
+    private func generateImages(for asset: AVAsset, at times: [NSValue], with maximumSize: CGSize, visibleThumnails: Int,
+                                completion: @escaping ([CGImage]) -> Void) {
+        
+        generator = AVAssetImageGenerator(asset: asset)
+        generator?.appliesPreferredTrackTransform = true
 
+        let scaledSize = CGSize(width: maximumSize.width * UIScreen.main.scale, height: maximumSize.height * UIScreen.main.scale)
+        generator?.maximumSize = scaledSize
+        var count = 0
+        var images: [CGImage] = []
+        
+        let handler: AVAssetImageGeneratorCompletionHandler = { [weak self] (_, cgimage, _, result, error) in
+            if let cgimage = cgimage, error == nil && result == AVAssetImageGenerator.Result.succeeded {
+                DispatchQueue.main.async(execute: { [weak self] () -> Void in
+                    images.append(cgimage)
+                    if count == 0 {
+                        self?.displayFirstImage(cgimage, visibleThumbnails: visibleThumnails)
+                    }
+                    self?.displayImage(cgimage, at: count)
+                    
+                    count += 1
+                    
+                    if count == times.count {
+                        completion(images)
+                    }
+                })
+            }
+        }
+
+        generator?.generateCGImagesAsynchronously(forTimes: times, completionHandler: handler)
+    }
     
     private func displayFirstImage(_ cgImage: CGImage, visibleThumbnails: Int) {
         for i in 0...visibleThumbnails {

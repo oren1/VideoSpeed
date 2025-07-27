@@ -31,12 +31,14 @@ extension EditViewController {
         speedSectionVC.speedDidChange = { [weak self] (speed: Float) -> () in
             self?.speed = speed
             self?.speedLabel.text = "\(speed)x"
-            
+            guard let self = self else { return }
             Task {
                 await UserDataManager.main.currentSpidAsset.updateSpeed(speed: speed)
-                await self?.reloadComposition()
-                self?.spidPlayerController?.player.play()
-                await self?.textSectionVC.createTrimmerView()
+                await self.reloadComposition()
+                let startTime = self.getStartTimeForCurrentSpidAsset()
+                await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+                self.spidPlayerController?.player.play()
+                await self.textSectionVC.createTrimmerView()
             }
         }
         
@@ -66,22 +68,41 @@ extension EditViewController {
                      The crop will work only for assets that their orientation is the intended orientation
                      of the video
                      */
-                    
-//                    guard let _ = self.rotatedAsset else
-                    if await !UserDataManager.main.currentSpidAsset.assetHasBeenRotated
+                
+                    //                    guard let _ = self.rotatedAsset else
+                    let currentSpidAsset = UserDataManager.main.currentSpidAsset!
+                    if await !currentSpidAsset.assetHasBeenRotated
                     {
                         // 1. Show a loading view until the asset has been rotated
                         self.loadingMediaVC = UIHostingController(rootView: LoadingMediaView(loadingMediaViewModel: self.loadingMediaViewModel))
                         self.loadingMediaVC!.view.backgroundColor = .clear
                         self.loadingMediaVC!.view.frame = self.navigationController!.view.bounds
                         self.navigationController!.view.addSubview(self.loadingMediaVC!.view)
-                        return
+                        
+                        let asset = await currentSpidAsset.getOriginalAsset()
+                        // Start rotating the asset
+                        let assetRotator = AssetRotator(asset: asset)
+                        self.assetRotateProgressSubscription = assetRotator.$progress
+                            .receive(on: DispatchQueue.main)
+                            .sink { progress in
+                                /* Update the loadingMediaViewModel's progress variable so that the 'loadingMediaVC'
+                                 will be rendered with the new progress. */
+                                print("progress: \(progress)")
+                                self.loadingMediaViewModel.progress = progress
+                            }
+                        let rotatedAsset = await assetRotator.rotateVideoToIntendedOrientation()
+                        await currentSpidAsset.updateRotatedAsset(rotatedAsset: rotatedAsset)
+                        self.loadingMediaVC?.remove()
                     }
                     
                     await self.reloadComposition()
                     self.removeCropVCFromTop()
                 }
             }
+        }
+        
+        cropSectionVC.closeTapped = { [weak self] in
+            self?.removeCropVCFromTop()
         }
     }
     
@@ -104,12 +125,20 @@ extension EditViewController {
     func createSoundSection()  {
         soundSectionVC = SoundSectionVC()
         soundSectionVC.soundStateChanged = {[weak self] (soundOn: Bool) in
-            self?.soundOn = soundOn
+            guard let self = self else { return }
+            self.soundOn = soundOn
             let imageName = soundOn ? "volume.2.fill" : "volume.slash"
-            self?.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
-            self?.showProButtonIfNeeded()
+            self.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
             Task {
-                await self?.reloadComposition()
+               await UserDataManager.main.currentSpidAsset.updateSound(soundOn: soundOn)
+               UserDataManager.main.soundOff = await UserDataManager.main.soundOff()
+               await self.reloadComposition()
+               let startTime = self.getStartTimeForCurrentSpidAsset()
+               await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+                
+                Task{@MainActor in
+                    self.showProButtonIfNeeded()
+                }
             }
         }
         soundSectionVC.userNeedsToPurchase = {[weak self] in
@@ -145,12 +174,16 @@ extension EditViewController {
         trimmerSectionVC = TrimmerSectionVC()
         trimmerSectionVC.delegate = self
         trimmerSectionVC.timeRangeDidChange = { [weak self] timeRange in
+            guard let self = self else { return }
             Task {
                 await UserDataManager.main.currentSpidAsset.updateTimeRange(timeRange: timeRange)
-                await self?.reloadComposition()
-                await self?.textSectionVC.createTrimmerView()
+                await self.reloadComposition()
+                await self.textSectionVC.createTrimmerView()
+                let startTime = self.getStartTimeForCurrentSpidAsset()
+                await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
             }
         }
+    
         // this call to view,in turn, invokes the viewDidLoad method
         let _ = trimmerSectionVC.view
     }

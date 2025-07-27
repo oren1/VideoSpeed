@@ -30,7 +30,25 @@ class MainViewController: UIViewController {
     
     @IBOutlet weak var giftButton: UIBarButtonItem!
     @IBOutlet weak var collectionView: UICollectionView!
-    
+    @IBOutlet weak var nextButton: UIButton!
+    var selectedIndexes: [IndexPath] = [] {
+        didSet {
+            if selectedIndexes.isEmpty {
+                var config = nextButton.configuration ?? UIButton.Configuration.filled()
+                config.baseBackgroundColor = UIColor(red: 0.122, green: 0.122, blue: 0.122, alpha: 1)
+                config.baseForegroundColor = .black
+                nextButton.configuration = config
+                nextButton.isUserInteractionEnabled = false
+            }
+            else {
+                var config = nextButton.configuration ?? UIButton.Configuration.filled()
+                config.baseBackgroundColor = .systemBlue
+                config.baseForegroundColor = .white
+                nextButton.configuration = config
+                nextButton.isUserInteractionEnabled = true
+            }
+        }
+    }
     lazy var photoLibraryUsageDisabledView: PhotoLibraryUsageDisabledView = {
         photoLibraryUsageDisabledView = PhotoLibraryUsageDisabledView()
         return photoLibraryUsageDisabledView
@@ -74,7 +92,6 @@ class MainViewController: UIViewController {
         
         
         createGiftBarButtonItem()
-        
         
     }
     
@@ -139,6 +156,8 @@ class MainViewController: UIViewController {
             removeProButton()
         }
         
+        selectedIndexes = []
+        collectionView.reloadData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -300,6 +319,65 @@ class MainViewController: UIViewController {
     @IBAction func cameraButtonTapped(_ sender: Any) {
         VideoHelper.startMediaBrowser(delegate: self, sourceType: .camera)
     }
+    
+    @IBAction func nextButtonTapped(_ sender: Any) {
+
+        var phAssets: [PHAsset] = []
+
+        for indexPath in selectedIndexes {
+            let phAsset = videos![indexPath.row]
+            phAssets.append(phAsset)
+        }
+        
+        // Create the loading view and add it to the view
+        showLoading()
+        var progress: Double = 0.0
+        // Create a closure that updates the progress every time an AVAsset finishes loading
+        let updateProgress = {
+            progress += 1 / Double(phAssets.count)
+            print("progress \(progress)")
+        }
+
+        Task {
+            //1. Iterate the assets selected
+            for phAsset in phAssets {
+                    // 2. get the AVAsset object from the PHAsset
+                    let avAsset = await phAsset.getAVAsset(completion: updateProgress)
+
+                    // 3. create SpidAsset from the AVAsset
+                    guard let asset = avAsset,
+                    let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+                    let timeRange = try? await videoTrack.load(.timeRange),
+                    let naturalSize = try? await videoTrack.load(.naturalSize),
+                    let preferredTransform = try? await videoTrack.load(.preferredTransform),
+                    let thumbnailImage = await asset.generateThumbnailImage() else {return}
+
+                    let videoInfo = VideoHelper.orientation(from: preferredTransform)
+                    let videoSize: CGSize
+                    if videoInfo.isPortrait {
+                        videoSize = CGSize(
+                            width: naturalSize.height,
+                            height: naturalSize.width)
+                    } else {
+                        videoSize = naturalSize
+                    }
+
+                let spidAsset = SpidAsset(asset: asset,timeRange: timeRange, videoSize: videoSize, thumnbnailImage: thumbnailImage)
+
+                    // 4. add the spidAsset to the UserDataManager's spidAssets array
+                    UserDataManager.main.spidAssets.append(spidAsset)
+            }
+
+            Task {@MainActor [weak self] in
+                let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
+                UserDataManager.main.currentSpidAsset = UserDataManager.main.spidAssets.first
+                vc.asset = await UserDataManager.main.currentSpidAsset.getAsset()
+                self?.hideLoading()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+
+        }
+    }
 }
 
 // MARK: - UIImagePickerControllerDelegate
@@ -324,8 +402,10 @@ extension MainViewController: UIImagePickerControllerDelegate {
             guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
                   let timeRange = try? await videoTrack.load(.timeRange),
                   let naturalSize = try? await videoTrack.load(.naturalSize),
-                  let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return}
-         
+                  let preferredTransform = try? await videoTrack.load(.preferredTransform),
+                  let thumbnailImage = await asset.generateThumbnailImage() else {return}
+                  
+
             let videoInfo = VideoHelper.orientation(from: preferredTransform)
             let videoSize: CGSize
             if videoInfo.isPortrait {
@@ -336,7 +416,9 @@ extension MainViewController: UIImagePickerControllerDelegate {
                 videoSize = naturalSize
             }
             
-            UserDataManager.main.currentSpidAsset = SpidAsset(asset: asset,timeRange: timeRange, videoSize: videoSize)
+            UserDataManager.main.currentSpidAsset = SpidAsset(asset: asset,timeRange: timeRange, videoSize: videoSize, thumnbnailImage: thumbnailImage)
+            UserDataManager.main.spidAssets.append(UserDataManager.main.currentSpidAsset)
+
             vc.asset = asset
             
              await MainActor.run { [weak self] in
@@ -378,13 +460,18 @@ extension MainViewController: UICollectionViewDataSource {
 
     // 2
     // grab the photo
-//    cell.backgroundColor = .green
-//       cell.imageView.backgroundColor = .red
-    let asset = videos![indexPath.row]
+       let asset = videos![indexPath.row]
        cell.imageView.fetchImageAsset(asset, targetSize: cell.imageView.bounds.size, completionHandler: nil)
        cell.timeLabel.text = String(format: "%02d:%02d",Int((asset.duration / 60)),Int(asset.duration) % 60)
        cell.layer.cornerRadius = 8
 
+       if selectedIndexes.contains(indexPath) {
+           let videoPlaceIndex = selectedIndexes.firstIndex(where: {$0 == indexPath})!
+           cell.showIndicatorView(orderNumber: videoPlaceIndex + 1)
+       }
+       else {
+           cell.hideIndicatorView()
+       }
     return cell
   }
     
@@ -427,45 +514,16 @@ extension MainViewController: UICollectionViewDataSource {
 
 extension MainViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
-        let video = videos![indexPath.row]
         
-        video.getAVAssetUrl { [weak self] progress, error, stop, info in
-            DispatchQueue.main.async {
-                let loadingView = self?.view.viewWithTag(loadinViewTag)
-                if loadingView == nil && progress != 1 {
-                    self?.showLoading()
-                }
-                print("progress \(progress)")
-            }
-        } completionHandler: { responseURL, asset in
-            DispatchQueue.main.async { [weak self] in
-                self?.hideLoading()
-                Task {
-                    guard let asset = asset,
-                          let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
-                          let timeRange = try? await videoTrack.load(.timeRange),
-                          let naturalSize = try? await videoTrack.load(.naturalSize),
-                          let preferredTransform = try? await videoTrack.load(.preferredTransform) else {return}
-                 
-                    let videoInfo = VideoHelper.orientation(from: preferredTransform)
-                    let videoSize: CGSize
-                    if videoInfo.isPortrait {
-                        videoSize = CGSize(
-                            width: naturalSize.height,
-                            height: naturalSize.width)
-                    } else {
-                        videoSize = naturalSize
-                    }
-                    
-                    UserDataManager.main.currentSpidAsset = SpidAsset(asset: asset,timeRange: timeRange, videoSize: videoSize)
-                    vc.asset = asset
-                    
-                    self?.navigationController?.pushViewController(vc, animated: true)
-
-                }
-            }
+        if selectedIndexes.contains(indexPath)  {
+            selectedIndexes.removeAll(where: {$0 == indexPath})
         }
+        else {
+            selectedIndexes.append(indexPath)
+        }
+        
+        collectionView.reloadData()
+        
     }
 }
 

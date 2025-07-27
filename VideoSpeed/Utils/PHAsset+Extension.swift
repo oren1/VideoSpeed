@@ -27,4 +27,20 @@ extension PHAsset {
                })
            
        }
+    
+    func getAVAsset(completion: @escaping () -> ()) async -> AVAsset? {
+        let options: PHVideoRequestOptions = PHVideoRequestOptions()
+        options.deliveryMode = .highQualityFormat
+        options.isNetworkAccessAllowed = true
+ 
+        return await withCheckedContinuation { continuation in
+            
+            PHImageManager.default().requestAVAsset(forVideo: self, options: options, resultHandler: {(asset: AVAsset?, audioMix: AVAudioMix?, info: [AnyHashable : Any]?) -> Void in
+                completion()
+                continuation.resume(returning: asset)
+            })
+            
+        }
+        
+    }
 }

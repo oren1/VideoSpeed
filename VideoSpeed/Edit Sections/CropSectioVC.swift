@@ -18,6 +18,7 @@ class CropSectioVC: SectionViewController {
     @IBOutlet weak var cropButton: UIButton!
     var cropStatus: CropStatus = .cropping
     var cropSectionChangedStatusTo: CropSectionChangedStatusTo?
+    var closeTapped: (() -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,5 +47,8 @@ class CropSectioVC: SectionViewController {
         cropSectionChangedStatusTo?(cropStatus)
     }
     
-
+    @IBAction func closeButtonTapped(_ sender: Any) {
+        
+    }
+    
 }

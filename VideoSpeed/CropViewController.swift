@@ -18,20 +18,20 @@ class CropViewController: UIViewController {
     var templateImage: UIImage  = UIImage(named: "mountain-2")!
     var videoRect: CGRect!
     var cropPickerView: CropPickerView!
-
+    var startingRect: CGRect!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black
-        cropPickerView = CropPickerView()
-        cropPickerView.image = templateImage
-        cropPickerView.backgroundColor = .blue
-        cropPickerView.scrollMinimumZoomScale = 1
-        cropPickerView.scrollMaximumZoomScale = 1
-        cropPickerView.aspectRatio = videoAspectRatio
-        cropPickerView.delegate = self
-
-        view.addSubview(cropPickerView)
+            view.backgroundColor = .black
+            cropPickerView = CropPickerView()
+            cropPickerView.image = templateImage
+            cropPickerView.backgroundColor = .blue
+            cropPickerView.scrollMinimumZoomScale = 1
+            cropPickerView.scrollMaximumZoomScale = 1
+            cropPickerView.aspectRatio = videoAspectRatio
+            cropPickerView.delegate = self
+            view.addSubview(cropPickerView)
+        
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -106,6 +106,9 @@ extension CropViewController: CropPickerViewDelegate {
         guard frame != CGRectZero else {return}
         print("cropPickerView.frame", cropPickerView.frame)
         videoRect = frame
+        Task {
+            await UserDataManager.main.currentSpidAsset.updateVideoRect(videoRect)
+        }
 //        videoRect.origin.x = cropPickerView.frame.width - frame.origin.x - frame.width
 //        videoRect.origin.y = cropPickerView.frame.height - frame.origin.y - frame.height
         print("videoRect: \(videoRect!)")
