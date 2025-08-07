@@ -79,8 +79,8 @@
                                 <constraint firstAttribute="height" constant="24.666666666666675" id="t1R-aH-Msu"/>
                             </constraints>
                         </imageView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Slider Precision" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4o5-Jf-5gn">
-                            <rect key="frame" x="32.000000000000007" y="5.0000000000000009" width="94.666666666666686" height="14.333333333333336"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Speed Slider Precision" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4o5-Jf-5gn">
+                            <rect key="frame" x="32" y="4.6666666666666714" width="136" height="15"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>

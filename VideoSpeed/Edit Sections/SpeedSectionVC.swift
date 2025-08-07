@@ -42,6 +42,7 @@ class SpeedSectionVC: SectionViewController {
 //            guard let self = self else {return}
 //            oneButtonTapped(oneButton)
 //        })
+        NotificationCenter.default.addObserver(self, selector: #selector(videoSelectionChanged), name: Notification.Name.VideoSelectionChanged, object: nil)
         
         setBorderAndRadius(button: point25Button)
         setBorderAndRadius(button: point5Button)
@@ -59,6 +60,9 @@ class SpeedSectionVC: SectionViewController {
         setSelectedButton(button: sender)
         speed = 0.25
         slider.value = 5
+        Task {
+            await UserDataManager.main.currentSpidAsset.updateSliderValue(value: slider.value)
+        }
         UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
 
@@ -67,6 +71,9 @@ class SpeedSectionVC: SectionViewController {
         setSelectedButton(button: sender)
         speed = 0.5
         slider.value = 10
+        Task {
+            await UserDataManager.main.currentSpidAsset.updateSliderValue(value: slider.value)
+        }
         UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
     }
@@ -74,6 +81,9 @@ class SpeedSectionVC: SectionViewController {
         setSelectedButton(button: sender)
         speed = 1
         slider.value = 19
+        Task {
+            await UserDataManager.main.currentSpidAsset.updateSliderValue(value: slider.value)
+        }
         UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
 
@@ -82,6 +92,9 @@ class SpeedSectionVC: SectionViewController {
         setSelectedButton(button: sender)
         speed = 1.5
         slider.value = 20.5
+        Task {
+            await UserDataManager.main.currentSpidAsset.updateSliderValue(value: slider.value)
+        }
         UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
 
@@ -90,6 +103,9 @@ class SpeedSectionVC: SectionViewController {
         setSelectedButton(button: sender)
         speed = 2
         slider.value = 21
+        Task {
+            await UserDataManager.main.currentSpidAsset.updateSliderValue(value: slider.value)
+        }
         UserDataManager.main.usingSlider = false
         speedDidChange?(speed)
     }
@@ -117,6 +133,9 @@ class SpeedSectionVC: SectionViewController {
     @IBAction func sliderReleased(_ sender: Any) {
             let slider = sender as! UISlider
             speed = convertSliderValue(value: slider.value)
+            Task {
+                await UserDataManager.main.currentSpidAsset.updateSliderValue(value: slider.value)
+            }
             speedDidChange?(speed)
     }
     
@@ -158,6 +177,49 @@ class SpeedSectionVC: SectionViewController {
     }
     
    
-  
+    @objc private func videoSelectionChanged() {
+        Task { @MainActor in
+            if let speed = await UserDataManager.main.currentSpidAsset?.speed {
+                /* if the speed is one of the speeds that are allowed in the free version
+                 then make the according button selected */
+                if speed == 0.25 {
+                    setSelectedButton(button: point25Button)
+                    self.speed = 0.25
+//                    slider.value = 5
+                }
+                else if speed == 0.5 {
+                    setSelectedButton(button: point5Button)
+                    self.speed = 0.5
+//                    slider.value = 10
+                }
+                else if speed == 1 {
+                    setSelectedButton(button: oneButton)
+                    self.speed = 1
+//                    slider.value = 19
+                }
+                else if speed == 1.5 {
+                    setSelectedButton(button: onePoint5Button)
+                    self.speed = 1.5
+//                    slider.value = 20.5
+                }
+                else if speed == 2 {
+                    setSelectedButton(button: twoButton)
+                    self.speed = 2
+//                    slider.value = 21
+                }
+                else {
+                    setButtonUnselected(button: currentSelectedButton)
+                    self.speed = speed
+//                    let sliderValue = mapSpeedToSliderValue(speed)
+                }
+                Task {@MainActor in
+                    slider.value = await UserDataManager.main.currentSpidAsset.sliderValue
+                }
+                
+            }
+        }
+       
+    }
     
+
 }

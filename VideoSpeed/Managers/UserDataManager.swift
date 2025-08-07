@@ -89,6 +89,18 @@ class UserDataManager: ObservableObject {
         return false
     }
     
+    func isUsingSliderPrecision() async -> Bool {
+        let allowedSpeeds: [Float] = [0.25, 0.5, 1, 1.5, 2]
+        for spidAsset in spidAssets {
+            if !allowedSpeeds.contains(await spidAsset.speed) {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    
     @Published
     var labelViewModels: [LabelViewModel] = []
     
