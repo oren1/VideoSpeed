@@ -29,6 +29,8 @@ actor SpidAsset {
     var rightHandleConstraintConstant: CGFloat?
     var leftHandleConstraintConstant: CGFloat?
     var videoRect: CGRect = .zero
+    var sliderValue: Float = 19.5
+    
     
     private enum CodingKeys: String, CodingKey {
            case id
@@ -97,6 +99,9 @@ actor SpidAsset {
         self.videoRect = videoRect
     }
     
+    func updateSliderValue(value: Float)  {
+        self.sliderValue = value
+    }
 //    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool, cropRect: CGRect) async -> AVMutableVideoCompositionLayerInstruction {
 //        let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
 //        

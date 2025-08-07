@@ -34,6 +34,9 @@ extension EditViewController {
             guard let self = self else { return }
             Task {
                 await UserDataManager.main.currentSpidAsset.updateSpeed(speed: speed)
+                /* Updating whether at least one 'SpidAsset' is using the slider.
+                 i.e it's speed value is different from 0.25, 0.5, 1, 1.5 or 2 */
+                UserDataManager.main.usingSlider = await UserDataManager.main.isUsingSliderPrecision()
                 await self.reloadComposition()
                 let startTime = self.getStartTimeForCurrentSpidAsset()
                 await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
