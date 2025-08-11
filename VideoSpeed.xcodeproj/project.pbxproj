@@ -35,6 +35,7 @@
 		6B55F3062E013FFB00259275 /* CMTimeRange+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B55F3052E013FFB00259275 /* CMTimeRange+Extension.swift */; };
 		6B55F3082E01446100259275 /* CMTime+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B55F3072E01446100259275 /* CMTime+Extension.swift */; };
 		6B59549A2B5EA93100483047 /* TransactionObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5954992B5EA93100483047 /* TransactionObserver.swift */; };
+		6B66E3C32E48928500507C00 /* LanguageSelectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B66E3C22E48928500507C00 /* LanguageSelectionVC.swift */; };
 		6B6700942A6A6C13006F2980 /* PhotosHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6700932A6A6C13006F2980 /* PhotosHeader.swift */; };
 		6B6700972A6ABBF6006F2980 /* IAPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6700962A6ABBF6006F2980 /* IAPManager.swift */; };
 		6B6700992A6BAE36006F2980 /* VideoHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6700982A6BAE36006F2980 /* VideoHelper.swift */; };
@@ -68,6 +69,7 @@
 		6B71AAF32AC431A000C06619 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6B71AAF22AC431A000C06619 /* GoogleService-Info.plist */; };
 		6B7D10832BA6EF5B002DD73F /* YearlySubscriptionPurchaseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7D10822BA6EF5B002DD73F /* YearlySubscriptionPurchaseVC.swift */; };
 		6B7D10852BA70AE4002DD73F /* remote_config_defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6B7D10842BA70AE3002DD73F /* remote_config_defaults.plist */; };
+		6B80DE6A2E487B0B00DFD62B /* LanguageItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B80DE692E487B0300DFD62B /* LanguageItem.swift */; };
 		6B923FA62C2EA38F00CD1381 /* WeeklySubscriptionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B923FA52C2EA38F00CD1381 /* WeeklySubscriptionVC.swift */; };
 		6B923FA82C2EA3A800CD1381 /* MonthlySubscriptionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B923FA72C2EA3A800CD1381 /* MonthlySubscriptionVC.swift */; };
 		6B92E3592A77A192008CB22A /* AppOpenAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B92E3582A77A192008CB22A /* AppOpenAd.swift */; };
@@ -170,6 +172,7 @@
 		6B55F3052E013FFB00259275 /* CMTimeRange+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMTimeRange+Extension.swift"; sourceTree = "<group>"; };
 		6B55F3072E01446100259275 /* CMTime+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CMTime+Extension.swift"; sourceTree = "<group>"; };
 		6B5954992B5EA93100483047 /* TransactionObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionObserver.swift; sourceTree = "<group>"; };
+		6B66E3C22E48928500507C00 /* LanguageSelectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageSelectionVC.swift; sourceTree = "<group>"; };
 		6B6700932A6A6C13006F2980 /* PhotosHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosHeader.swift; sourceTree = "<group>"; };
 		6B6700962A6ABBF6006F2980 /* IAPManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPManager.swift; sourceTree = "<group>"; };
 		6B6700982A6BAE36006F2980 /* VideoHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoHelper.swift; sourceTree = "<group>"; };
@@ -203,6 +206,7 @@
 		6B71AAF22AC431A000C06619 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6B7D10822BA6EF5B002DD73F /* YearlySubscriptionPurchaseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YearlySubscriptionPurchaseVC.swift; sourceTree = "<group>"; };
 		6B7D10842BA70AE3002DD73F /* remote_config_defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = remote_config_defaults.plist; sourceTree = "<group>"; };
+		6B80DE692E487B0300DFD62B /* LanguageItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageItem.swift; sourceTree = "<group>"; };
 		6B923FA52C2EA38F00CD1381 /* WeeklySubscriptionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklySubscriptionVC.swift; sourceTree = "<group>"; };
 		6B923FA72C2EA3A800CD1381 /* MonthlySubscriptionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthlySubscriptionVC.swift; sourceTree = "<group>"; };
 		6B92E3582A77A192008CB22A /* AppOpenAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOpenAd.swift; sourceTree = "<group>"; };
@@ -325,6 +329,7 @@
 		6B23C1DE2BF62EF8001C4F24 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
+				6B80DE692E487B0300DFD62B /* LanguageItem.swift */,
 				6B96101D2D460B6C00DEE296 /* MenuItem.swift */,
 				6B23C1DF2BF62F11001C4F24 /* User.swift */,
 				6B23C1E12BF65B7C001C4F24 /* Response.swift */,
@@ -514,6 +519,7 @@
 				6B9610322D4CCBCF00DEE296 /* TextEditViewController.swift */,
 				6B09449A2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift */,
 				6B09449C2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift */,
+				6B66E3C22E48928500507C00 /* LanguageSelectionVC.swift */,
 				6BE9A2F12A5FC80C00FF8CB0 /* Main.storyboard */,
 				6BE9A2F42A5FC80D00FF8CB0 /* Assets.xcassets */,
 				6BE9A2F62A5FC80D00FF8CB0 /* LaunchScreen.storyboard */,
@@ -719,6 +725,7 @@
 				6B6700A82A6CFBF8006F2980 /* SKProduct+Utils.swift in Sources */,
 				6BC7B52C2D5C9AA100FF1CE9 /* UIView+Extension.swift in Sources */,
 				6BE9A3062A61811400FF8CB0 /* PhotoCell.swift in Sources */,
+				6B80DE6A2E487B0B00DFD62B /* LanguageItem.swift in Sources */,
 				6B9610252D49F1C000DEE296 /* TextCell.swift in Sources */,
 				6B0C7D792C88894C00063CBE /* PublishersManager.swift in Sources */,
 				6B92E3592A77A192008CB22A /* AppOpenAd.swift in Sources */,
@@ -728,6 +735,7 @@
 				6BA101362CE0A091001780BA /* AVAsset+Extension.swift in Sources */,
 				6BD071882DA23A0000D6744D /* UILabel+Extension.swift in Sources */,
 				6BB4FAD92AEE416D00D00E2D /* InterstitialAd.swift in Sources */,
+				6B66E3C32E48928500507C00 /* LanguageSelectionVC.swift in Sources */,
 				6B9610212D49ECA200DEE296 /* TextSectionVC.swift in Sources */,
 				6BB4EE862A8F38B4006CF87C /* BlackTransparentOverlay.swift in Sources */,
 				6BAFED962DECAD2500AF13E1 /* StrokeColorEditSection.swift in Sources */,

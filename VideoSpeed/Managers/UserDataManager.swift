@@ -7,6 +7,7 @@
 
 import Foundation
 import StoreKit
+import Speech
 
 let twentyFourHoursInSeconds = 24.0 * 60 * 60
 
@@ -25,6 +26,22 @@ class UserDataManager: ObservableObject {
             NotificationCenter.default.post(name: Notification.Name("usingSliderChanged"), object: nil)
         }
     }
+
+    let languageItems: [LanguageItem] = {
+        let locales = Array(SFSpeechRecognizer.supportedLocales())
+        let formatter = Locale.current
+        
+        return locales
+            .sorted {
+                let nameA = formatter.localizedString(forIdentifier: $0.identifier) ?? $0.identifier
+                let nameB = formatter.localizedString(forIdentifier: $1.identifier) ?? $1.identifier
+                return nameA.localizedCaseInsensitiveCompare(nameB) == .orderedAscending
+            }
+            .map { locale in
+                let name = formatter.localizedString(forIdentifier: locale.identifier) ?? locale.identifier
+                return LanguageItem(identifier: locale.identifier, localizedString: name)
+            }
+    }()
 
     @Published
     var textOverlayLabels: [SpidLabel] = []
