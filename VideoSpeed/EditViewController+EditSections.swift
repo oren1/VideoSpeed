@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVFoundation
+import Combine
 
 extension EditViewController {
     
@@ -18,6 +19,7 @@ extension EditViewController {
         createFiletypeSection()
         createTrimmerSection()
         createTextSection()
+        createCaptionsSection()
     }
     
     // MARK: Creating Sections
@@ -200,6 +202,22 @@ extension EditViewController {
         let _ = textSectionVC.view
     }
     
+    func createCaptionsSection()  {
+        // Prepare captions
+        var captions: [CaptionItem] = []
+        
+        captionsSectionVC = CaptionsSectionVC()
+        captionsViewModel = CaptionsViewModel(captions: CaptionItem.generatePreviewCaptions())
+        captionsViewModel.$lastEditedCaption.sink { captionItem in
+            if let caption = captionItem {
+                   print("UIKit got edit event for: \(caption.text)")
+            }
+        }.store(in: &subscribers)
+        
+        captionsSectionVC.viewModel = captionsViewModel
+    
+    }
+    
     // MARK: Adding Sections
     func addSpeedSection() {
         addSection(sectionVC: speedSectionVC)
@@ -234,5 +252,10 @@ extension EditViewController {
     func addTextSection() {
         addSection(sectionVC: textSectionVC)
         currentShownSection = textSectionVC
+    }
+    
+    func addCaptionsSection()  {
+        addSection(sectionVC: captionsSectionVC)
+        currentShownSection = captionsSectionVC
     }
 }

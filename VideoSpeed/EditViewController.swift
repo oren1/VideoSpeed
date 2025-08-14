@@ -51,6 +51,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var spidPlayerController: SpidPlayerViewController!
     var selectedMenuItem: MenuItem!
     var videosStartTimes: [CMTime] = [.zero]
+    var subscribers: [AnyCancellable] = []
+
+    
     
     @IBOutlet weak var videosContainerView: UIView!
     @IBOutlet weak var videosCollectionView: UICollectionView!
@@ -62,7 +65,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                                  MenuItem(id: .trim , title: "TRIM", imageName: "timeline.selection"),
 //                                 MenuItem(id: .crop , title: "CROP", imageName: "crop"),
                                  MenuItem(id: .text , title: "TEXT", imageName: "textformat.alt"),
-                                 MenuItem(id: .captions , title: "CAPTIONS", imageName: "textformat.alt"),
+                                 MenuItem(id: .captions , title: "CAPTIONS", imageName: "captions.bubble"),
                                  MenuItem(id: .fps , title: "FPS", imageName: "square.stack.3d.down.right.fill"),
                                  MenuItem(id: .sound , title: "SOUND", imageName: "speaker.wave.2"),
                                  MenuItem(id: .more , title: "MORE", imageName: "ellipsis")
@@ -106,6 +109,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var cropSectionVC: CropSectioVC!
     var trimmerSectionVC: TrimmerSectionVC!
     var textSectionVC: TextSectionVC!
+    var captionsSectionVC: CaptionsSectionVC!
+    var captionsViewModel: CaptionsViewModel!
     
     var editSections: [SectionViewController] = []
     var videosMenuDelegate: VideosMenuDelegate!
