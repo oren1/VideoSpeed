@@ -78,7 +78,8 @@ extension EditViewController: UICollectionViewDelegate {
             addTextSection()
         case .more:
             addFiletypeSection()
-            
+        case .captions:
+            addCaptionsSection()
         }
         
         videosMenuDelegate.selectedMenuItem = selectedMenuItem
