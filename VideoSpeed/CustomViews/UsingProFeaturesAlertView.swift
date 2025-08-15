@@ -11,10 +11,12 @@ import FirebaseRemoteConfig
 
 class UsingProFeaturesAlertView: UIView {
 
-    @IBOutlet var contentView: UIView!
-    @IBOutlet weak var continueButton: UIButton!
+   
     var onCancel: VoidClosure?
     var onContinue: VoidClosure?
+    @IBOutlet var contentView: UIView!
+    @IBOutlet weak var continueButton: UIButton!
+    @IBOutlet weak var priceLabel: UILabel!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -46,6 +48,14 @@ class UsingProFeaturesAlertView: UIView {
         contentView.layer.cornerRadius = 8
         continueButton.layer.cornerRadius = 8
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        let showPrice = RemoteConfig.remoteConfig().configValue(forKey: "showingPrice").boolValue
+        if showPrice {
+            let product = UserDataManager.main.products.first {$0.productIdentifier == SpidProducts.yearlySubscription }
+            priceLabel.text = "\(product!.localizedPrice) / year"
+        }
+        else {
+            priceLabel.isHidden = true
+        }
     }
     
     func updateStatus(usingSlider: Bool, soundOff: Bool, fps: Int32, fileType: AVFileType, usingProFont: Bool, mergeVideos: Bool) {
