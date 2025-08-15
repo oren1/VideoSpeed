@@ -31,7 +31,11 @@ class UserDataManager: ObservableObject {
         let locales = Array(SFSpeechRecognizer.supportedLocales())
         let formatter = Locale.current
         
-        return locales
+        /* create a custom 'LanguageItem' that will represent a language auto detection
+         performed by the SFSpeechRecognizer */
+        let autoDetectionLanguageItem: LanguageItem = LanguageItem(identifier: "autoDetection", localizedString: "Auto Detection", isSelected: true)
+        
+        var languageItems = locales
             .sorted {
                 let nameA = formatter.localizedString(forIdentifier: $0.identifier) ?? $0.identifier
                 let nameB = formatter.localizedString(forIdentifier: $1.identifier) ?? $1.identifier
@@ -41,6 +45,10 @@ class UserDataManager: ObservableObject {
                 let name = formatter.localizedString(forIdentifier: locale.identifier) ?? locale.identifier
                 return LanguageItem(identifier: locale.identifier, localizedString: name)
             }
+        
+        languageItems.insert(autoDetectionLanguageItem, at: 0)
+        
+        return languageItems
     }()
 
     @Published
