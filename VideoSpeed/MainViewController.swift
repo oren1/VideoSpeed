@@ -122,17 +122,18 @@ class MainViewController: UIViewController {
        
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
         // A/B Test for yearly price of $19.99 or $9.99
-        let pricingRaw = RemoteConfig.remoteConfig().configValue(forKey: "pricing").stringValue!
-        let pricing = Pricing(rawValue: pricingRaw)
-        switch pricing {
-        case .normal:
-            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
-        case .higher:
-            purchaseViewController.productIdentifier = SpidProducts.yearlyTwenty
-        default:
-            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
-        }
-//        purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+//        let pricingRaw = RemoteConfig.remoteConfig().configValue(forKey: "pricing").stringValue!
+//        let pricing = Pricing(rawValue: pricingRaw)
+//        switch pricing {
+//        case .normal:
+//            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+//        case .higher:
+//            purchaseViewController.productIdentifier = SpidProducts.yearlyTwenty
+//        default:
+//            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+//        }
+        
+        purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
        
         if UIDevice.current.userInterfaceIdiom == .phone {
             purchaseViewController.modalPresentationStyle = .automatic

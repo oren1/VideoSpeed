@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -19,6 +19,7 @@
                 <outlet property="mergeVideosView" destination="5AE-4l-0yL" id="MjP-fS-3xs"/>
                 <outlet property="mergeVideosViewHeightConstraint" destination="Rws-tQ-JwO" id="vXz-xq-erq"/>
                 <outlet property="mp4View" destination="S5L-Ha-uGw" id="43d-Je-Yq5"/>
+                <outlet property="priceLabel" destination="hCp-GK-aRm" id="q5q-Mm-ki1"/>
                 <outlet property="proFontView" destination="9Uc-fx-vlQ" id="3qg-Da-Bmy"/>
                 <outlet property="proFontViewHeightConstraint" destination="rYa-xG-8Ab" id="U9Z-H4-bGQ"/>
                 <outlet property="sliderPrecisionView" destination="eKL-tf-25K" id="fPd-68-hMc"/>
@@ -236,11 +237,21 @@
                         <constraint firstItem="f0s-II-bgz" firstAttribute="centerY" secondItem="5AE-4l-0yL" secondAttribute="centerY" id="rgc-hN-a7U"/>
                     </constraints>
                 </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$9.99 / year" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hCp-GK-aRm">
+                    <rect key="frame" x="123" y="279" width="94" height="21"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="eDM-yZ-zLZ"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="eKL-tf-25K" firstAttribute="top" secondItem="WoK-Ux-qrQ" secondAttribute="bottom" constant="24" id="1Ao-j7-OxQ"/>
+                <constraint firstItem="5Rq-u6-r42" firstAttribute="top" secondItem="hCp-GK-aRm" secondAttribute="bottom" constant="4" id="353-4w-Hy0"/>
                 <constraint firstItem="WoK-Ux-qrQ" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="5gK-eH-Ouz"/>
                 <constraint firstItem="WoK-Ux-qrQ" firstAttribute="top" secondItem="c2f-cp-a8D" secondAttribute="bottom" id="7Fj-Ct-3Cc"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="5Rq-u6-r42" secondAttribute="trailing" constant="24" id="8aM-0E-UiR"/>
@@ -253,6 +264,7 @@
                 <constraint firstAttribute="bottom" secondItem="5Rq-u6-r42" secondAttribute="bottom" constant="24" id="WvB-3N-Eb8"/>
                 <constraint firstItem="eKL-tf-25K" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="Y5R-Hd-Rss"/>
                 <constraint firstItem="c2f-cp-a8D" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="4" id="ZLa-p3-MOV"/>
+                <constraint firstItem="hCp-GK-aRm" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="b5x-iw-Sf1"/>
                 <constraint firstItem="5AE-4l-0yL" firstAttribute="top" secondItem="9Uc-fx-vlQ" secondAttribute="bottom" constant="4" id="bjq-jX-jyG"/>
                 <constraint firstItem="hMX-UY-dQX" firstAttribute="top" secondItem="eKL-tf-25K" secondAttribute="bottom" constant="4" id="cKx-J6-PpI"/>
                 <constraint firstItem="5Rq-u6-r42" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="24" id="daz-YU-Ap9"/>
@@ -262,7 +274,7 @@
             </constraints>
             <nil key="simulatedBottomBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="-9.1603053435114496" y="-121.83098591549296"/>
+            <point key="canvasLocation" x="-15" y="-113"/>
         </view>
     </objects>
     <resources>
