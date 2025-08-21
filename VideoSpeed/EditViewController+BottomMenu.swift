@@ -7,6 +7,8 @@
 
 import Foundation
 import UIKit
+import SwiftUI
+import Speech
 
 fileprivate let minimumItemWidth = 64.0
 
@@ -80,6 +82,12 @@ extension EditViewController: UICollectionViewDelegate {
             addFiletypeSection()
         case .captions:
             addCaptionsSection()
+            
+           
+            if UserDataManager.main.userDontHaveCaptionsYet() {
+                presentCaptionsSettingsView()
+            }
+           
         }
         
         videosMenuDelegate.selectedMenuItem = selectedMenuItem
@@ -94,6 +102,47 @@ extension EditViewController: UICollectionViewDelegate {
         
         collectionView.reloadData()
         videosCollectionView.reloadData()
+    }
+    
+    func presentCaptionsSettingsView() {
+        let captionsSettingsSelectionView = CaptionsSettingsSelectionView { languageItem in
+            /* this callback is called when the user tapped on the 'generate captions' button
+             so here the transcribing process starts */
+            print("languageItem \(languageItem)")
+            // open the 'CaptionsSettingsSelectionView' in case there aren't any captions generated
+            Task {
+                let status = await SpeechRecognizer.getSpeechRecognitionPermissionsStatus()
+                if status == .authorized {
+                    // start the speech recognition process
+                    // 1. grab the avasset from the playerItem
+                    let asset = self.spidPlayerController.player.currentItem!.asset
+                    let audioURL = FileManager.default.temporaryDirectory
+                               .appendingPathComponent(UUID().uuidString)
+                               .appendingPathExtension("m4a")
+                    let resultURL = try? await SpeechRecognizer.exportAudio(from: asset, to: audioURL)
+//                    let resultURL = Bundle.main.url(forResource: "test", withExtension: "m4a")
+                    if resultURL != nil {
+                        if let segments = try? await SpeechRecognizer.transcribeAudio(url: resultURL!) {
+                            for segment in segments {
+                                
+                                print("segment.substring \(segment.substring)")
+                            }
+                        }
+                        
+                    }
+                }
+                else {
+                    print ("Speech recognition not authorized")
+                }
+            }
+        } onClose: { [weak self] in
+            guard let self = self else { return }
+            captionsSettingsHostingVC?.dismiss(animated: true)
+        }
+
+        
+        captionsSettingsHostingVC = UIHostingController(rootView: captionsSettingsSelectionView)
+        present(captionsSettingsHostingVC!, animated: true)
     }
 }
 

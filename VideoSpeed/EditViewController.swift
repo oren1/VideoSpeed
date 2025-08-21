@@ -111,7 +111,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var textSectionVC: TextSectionVC!
     var captionsSectionVC: CaptionsSectionVC!
     var captionsViewModel: CaptionsViewModel!
-    
+    var captionsSettingsHostingVC: UIHostingController<CaptionsSettingsSelectionView>?
     var editSections: [SectionViewController] = []
     var videosMenuDelegate: VideosMenuDelegate!
     @IBOutlet weak var dashboardContainerView: UIView!

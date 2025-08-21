@@ -6,16 +6,12 @@
 //
 
 import SwiftUI
-
-
-
-
-import SwiftUI
 import Speech
 
 struct CaptionsSettingsSelectionView: View {
     
-    var generatedCaptions: ((LanguageItem) -> Void)?
+    var generateCaptions: ((LanguageItem) -> Void)?
+    var onClose: (() -> Void)?
     @State private var searchText = ""
     @State private var languages = UserDataManager.main.languageItems
     
@@ -34,6 +30,19 @@ struct CaptionsSettingsSelectionView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
+                // Top-left Close button
+                HStack {
+                    Button(action: {
+                          onClose?()
+                    }) {
+                        Image(systemName: "x.circle")
+                            .foregroundColor(.white)
+                            .frame(width: 24, height: 24)
+                    }
+                    .padding([.leading, .bottom], 25)
+                  Spacer()
+                }
+                          
                 // Custom search field
                 HStack {
                     Image(systemName: "magnifyingglass")
@@ -84,7 +93,7 @@ struct CaptionsSettingsSelectionView: View {
                 // Bottom button
                 Button(action: {
                     if let selectedLanguageItem = languages.first(where: { $0.isSelected }) {
-                        generatedCaptions?(selectedLanguageItem)
+                        generateCaptions?(selectedLanguageItem)
                     }
                 }) {
                     Text("Generate Captions")
@@ -98,7 +107,9 @@ struct CaptionsSettingsSelectionView: View {
                 .background(Color.black)
             }
             .background(Color.black)
+            
         }
+       
     }
     
     

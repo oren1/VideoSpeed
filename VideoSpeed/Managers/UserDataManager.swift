@@ -27,6 +27,9 @@ class UserDataManager: ObservableObject {
         }
     }
 
+    var captions: [CaptionItem] = []
+    func userDontHaveCaptionsYet() -> Bool { UserDataManager.main.captions.count == 0 }
+    
     let languageItems: [LanguageItem] = {
         let locales = Array(SFSpeechRecognizer.supportedLocales())
         let formatter = Locale.current
