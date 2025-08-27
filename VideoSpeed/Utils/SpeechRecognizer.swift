@@ -8,6 +8,33 @@
 import Foundation
 import Speech
 
+import Speech
+
+class Sentence {
+    let segments: [SFTranscriptionSegment]
+    
+    init(segments: [SFTranscriptionSegment]) {
+        self.segments = segments
+    }
+    
+    /// The concatenated text of all segments in this sentence
+    var text: String {
+        segments.map { $0.substring }.joined(separator: " ")
+    }
+    
+    /// Start time of the first segment
+    var startTime: TimeInterval {
+        segments.first?.timestamp ?? 0
+    }
+    
+    /// End time of the last segment
+    var endTime: TimeInterval {
+        guard let last = segments.last else { return 0 }
+        return last.timestamp + last.duration
+    }
+}
+
+
 enum SpeechRecognizerError: LocalizedError {
     case speechRecognizerNotAvailable
 
@@ -91,5 +118,44 @@ public class SpeechRecognizer {
             throw AudioExportError.exportFailed
         }
     }
+    
+    /// Groups transcription segments into sentences by detecting pauses.
+    /// - Parameters:
+    ///   - segments: Array of SFTranscriptionSegment (from `bestTranscription.segments`)
+    ///   - pauseThreshold: Seconds of silence to treat as a sentence boundary
+    /// - Returns: Array of sentences, each sentence is an array of SFTranscriptionSegment
+    static func groupSegmentsIntoSentences(
+        segments: [SFTranscriptionSegment],
+        pauseThreshold: TimeInterval = 0.6
+    ) -> [Sentence] {
+        
+        var sentences: [Sentence] = []
+        var currentSentence: [SFTranscriptionSegment] = []
+        
+        for (i, segment) in segments.enumerated() {
+            currentSentence.append(segment)
+            
+            // If this isn't the last segment, check the gap
+            if i < segments.count - 1 {
+                let thisEnd = segment.timestamp + segment.duration
+                let nextStart = segments[i + 1].timestamp
+                let gap = nextStart - thisEnd
+                
+                if gap >= pauseThreshold {
+                    // End of sentence
+                    sentences.append(Sentence(segments: currentSentence))
+                    currentSentence = []
+                }
+            }
+        }
+        
+        // Add the last sentence if any
+        if !currentSentence.isEmpty {
+            sentences.append(Sentence(segments: currentSentence))
+        }
+        
+        return sentences
+    }
+
 }
 

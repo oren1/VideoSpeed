@@ -9,6 +9,8 @@ import Foundation
 import UIKit
 import SwiftUI
 import Speech
+import WhisperKit
+import CoreML
 
 fileprivate let minimumItemWidth = 64.0
 
@@ -120,16 +122,47 @@ extension EditViewController: UICollectionViewDelegate {
                                .appendingPathComponent(UUID().uuidString)
                                .appendingPathExtension("m4a")
                     let resultURL = try? await SpeechRecognizer.exportAudio(from: asset, to: audioURL)
-//                    let resultURL = Bundle.main.url(forResource: "test", withExtension: "m4a")
+//                      let resultURL = Bundle.main.url(forResource: "test", withExtension: "m4a")
                     if resultURL != nil {
-                        if let segments = try? await SpeechRecognizer.transcribeAudio(url: resultURL!) {
-                            for segment in segments {
-                                
-                                print("segment.substring \(segment.substring)")
-                            }
-                        }
+                        // Initialize WhisperKit with default settings
+                        // WhisperKitConfig(model: "base")
+                        // Find your models inside the bundle
+                        let modelURL = Bundle.main.bundleURL.appendingPathComponent("openai_whisper-base")
+                        print("modelURL: \(modelURL)")
+                        let config = WhisperKitConfig(model: modelURL.path)
+
+                        // Initialize
                         
+                        
+                        
+                        do {
+                            let pipe = try await WhisperKit(config)
+                        } catch  {
+                            print("error \(error)")
+                        }
+//                        let pipe = try? await WhisperKit(WhisperKitConfig(model: "base"))
+                    
+//                        if let transcriptionResult = try? await pipe!.transcribe(audioPath: resultURL!.path)[0] {
+//                            for segment in transcriptionResult.segments {
+//                                print("segment.substring \(segment.words?[0].word)")
+//                            }
+////                            print("transcriptionResult \(transcriptionResult)")
+//                        }
                     }
+                           
+//                           let transcription = try? await pipe!.transcribe(audioPath: "path/to/your/audio.{wav,mp3,m4a,flac}")?.text
+                        
+//                        if let segments = try? await SpeechRecognizer.transcribeAudio(url: resultURL!) {
+//                            for segment in segments {
+//                                print("segment.substring \(segment.substring): \(segment.timestamp), \(segment.duration)")
+//                            }
+//                            
+//                           let sentences = SpeechRecognizer.groupSegmentsIntoSentences(segments: segments)
+//                            for sentence in sentences {
+//                                print("sentence: \(sentence.text)")
+//                            }
+//                        }
+                        
                 }
                 else {
                     print ("Speech recognition not authorized")
