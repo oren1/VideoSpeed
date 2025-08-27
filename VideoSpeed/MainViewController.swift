@@ -12,6 +12,7 @@ import AppTrackingTransparency
 import FirebaseRemoteConfig
 import SwiftUI
 import RevenueCat
+import StoreKit
 
 enum Pricing: String {
     case normal = "normal"
@@ -56,7 +57,9 @@ class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        if let appStoreCountry = SKPaymentQueue.default().storefront?.countryCode {
+            print("App Store country: \(appStoreCountry)")
+        }
         #if DEBUG
          print("purchased")
         #else
