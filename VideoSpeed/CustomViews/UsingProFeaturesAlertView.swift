@@ -48,14 +48,24 @@ class UsingProFeaturesAlertView: UIView {
         contentView.layer.cornerRadius = 8
         continueButton.layer.cornerRadius = 8
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        let showPrice = RemoteConfig.remoteConfig().configValue(forKey: "showingPrice").boolValue
-        if showPrice {
+        let freeTrialEnabled = RemoteConfig.remoteConfig().configValue(forKey: "freeTrialEnabled").boolValue
+        if freeTrialEnabled {
+            let product = UserDataManager.main.products.first {$0.productIdentifier == SpidProducts.freeTrialYearlySubscription }
+            priceLabel.text = "7 days free, then \(product!.localizedPrice) / year"
+            continueButton.setTitle("Start 7 Days Free Trial", for: .normal)
+        }
+        else {
             let product = UserDataManager.main.products.first {$0.productIdentifier == SpidProducts.yearlySubscription }
             priceLabel.text = "\(product!.localizedPrice) / year"
         }
-        else {
-            priceLabel.isHidden = true
-        }
+//        let showPrice = RemoteConfig.remoteConfig().configValue(forKey: "showingPrice").boolValue
+//        if showPrice {
+//            let product = UserDataManager.main.products.first {$0.productIdentifier == SpidProducts.yearlySubscription }
+//            priceLabel.text = "\(product!.localizedPrice) / year"
+//        }
+//        else {
+//            priceLabel.isHidden = true
+//        }
     }
     
     func updateStatus(usingSlider: Bool, soundOff: Bool, fps: Int32, fileType: AVFileType, usingProFont: Bool, mergeVideos: Bool) {

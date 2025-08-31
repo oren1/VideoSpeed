@@ -1030,9 +1030,23 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 self?.hideProFeatureAlert()
             }
             usingProFeaturesAlertView.onContinue = { [weak self] in
+                guard let self = self else { return }
                 AnalyticsManager.getProAndSaveVideoTapped()
-                self?.showPurchaseViewController()
-                self?.hideProFeatureAlert()
+                Task {
+                    let freeTrialEnabled = RemoteConfig.remoteConfig().configValue(forKey: "freeTrialEnabled").boolValue
+                    let productIdentifier: ProductIdentifier
+                    if freeTrialEnabled {
+                        productIdentifier = SpidProducts.freeTrialYearlySubscription
+                    }
+                    else {
+                        productIdentifier = SpidProducts.yearlySubscription
+                    }
+                    
+                    self.hideProFeatureAlert()
+                    await IAPManager.startPurchase(productIdentifier: productIdentifier, on: self) { [weak self] in
+                        self?.hideLoading()
+                    }
+                }
             }
             let constraints = [
                 usingProFeaturesAlertView.heightAnchor.constraint(equalToConstant: 350),
@@ -1123,8 +1137,14 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
 //        }
         
-        purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
-
+        let freeTrialEnabled = RemoteConfig.remoteConfig().configValue(forKey: "freeTrialEnabled").boolValue
+        if freeTrialEnabled {
+            purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
+        }
+        else {
+            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+        }
+        
         purchaseViewController.onDismiss = { [weak self] in
             if let _ = SpidProducts.store.userPurchasedProVersion() {
                 self?.hideProButton()

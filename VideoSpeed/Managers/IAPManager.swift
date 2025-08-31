@@ -9,6 +9,7 @@ import Foundation
 
 import Foundation
 import StoreKit
+import FirebaseAnalytics
 
 enum StoreError: Int {
     case paymentCancelled = 2
@@ -40,9 +41,9 @@ class SpidProducts {
     static let weeklySubscription = "Weekly.Subscription.Spid"
     static let yearlyFifteen = "Yearly.Subscription.Fifteen"
     static let yearlyTwenty = "Yearly.19"
+    static let freeTrialYearlySubscription = "3DayTrial.Yearly"
 
-
-    private static let productIdentifiers: Set<ProductIdentifier> = [proVersion, proVersionTenDollars, proVersionConsumable,monthlySubscription,yearlySubscription,yearlySubscriptionTakeTwo,monthlySubscriptionFive,weeklySubscription,yearlyFifteen,yearlyTwenty]
+    private static let productIdentifiers: Set<ProductIdentifier> = [proVersion, proVersionTenDollars, proVersionConsumable,monthlySubscription,yearlySubscription,yearlySubscriptionTakeTwo,monthlySubscriptionFive,weeklySubscription,yearlyFifteen,yearlyTwenty,freeTrialYearlySubscription]
     
     static let store = IAPManager(productIds: productIdentifiers)
 
@@ -197,6 +198,59 @@ class IAPManager: NSObject {
     func updateIdentifier(identifier: String) {
         purchasedProductIdentifiers.insert(identifier)
         UserDefaults.standard.set(true, forKey: identifier)
+    }
+    
+    static func startPurchase(productIdentifier: ProductIdentifier, on viewController: UIViewController, purchaseCompleted: (() -> Void)? = nil) async {
+            do {
+                await viewController.showLoading()
+                let products = try await Product.products(for: [productIdentifier])
+                let product =  products.first
+                let purchaseResult = try await product?.purchase()
+                switch purchaseResult {
+                case .success(let verificationResult):
+                    switch verificationResult {
+                    case .verified(let transaction):
+                        // Give the user access to purchased content.
+                        print("verified transaction \(transaction)")
+                        Analytics.logTransaction(transaction)
+                        SpidProducts.store.updateIdentifier(identifier: transaction.productID)
+                        AnalyticsManager.purchaseEvent()
+                        purchaseCompleted?()
+                        // Complete the transaction after providing
+                        // the user access to the content.
+                        await transaction.finish()
+                    case .unverified(_, let verificationError):
+                        // Handle unverified transactions based
+                        // on your business model.
+                        await viewController.showVerificationError(error: verificationError)
+                        
+                    }
+                case .pending:
+                    // The purchase requires action from the customer.
+                    // If the transaction completes,
+                    // it's available through Transaction.updates.
+                    await viewController.hideLoading()
+
+                    break
+                case .userCancelled:
+                    // The user canceled the purchase.
+                    await viewController.hideLoading()
+                    break
+               
+                case .none:
+                    await viewController.hideLoading()
+                    break
+
+                @unknown default:
+                    await viewController.hideLoading()
+                    break
+                }
+            }
+            catch  {
+                print("fatal error: couldn't get subscription products from Product struct: \(error)")
+                AnalyticsManager.couldntGetProductsEvent()
+            }
+
     }
 }
 
