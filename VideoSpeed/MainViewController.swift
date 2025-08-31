@@ -18,6 +18,7 @@ enum Pricing: String {
     case higher = "higher"
 }
 
+
 class MainViewController: UIViewController {
     
     // MARK: - Properties
@@ -133,8 +134,17 @@ class MainViewController: UIViewController {
 //            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
 //        }
         
-        purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
-       
+        
+        let freeTrialEnabled = RemoteConfig.remoteConfig().configValue(forKey: "freeTrialEnabled").boolValue
+        if freeTrialEnabled {
+            purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
+        }
+        else {
+            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+        }
+
+        
+        
         if UIDevice.current.userInterfaceIdiom == .phone {
             purchaseViewController.modalPresentationStyle = .automatic
         }

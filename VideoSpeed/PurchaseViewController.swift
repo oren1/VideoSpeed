@@ -35,9 +35,7 @@ class PurchaseViewController: UIViewController {
         super.viewDidLoad()
 //        productIdentifier = SpidProducts.yearlySubscription
         product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier}
-        priceLabel?.text = product.localizedPrice
-        
-        
+       
         if UIDevice.current.userInterfaceIdiom == .pad {
             backButton.isHidden = true
         }
@@ -123,19 +121,19 @@ class PurchaseViewController: UIViewController {
     
     
  
-    func showVerificationError(error: VerificationResult<Transaction>.VerificationError) {
-        let alert = UIAlertController(
-          title: "Could't Complete Purchase",
-          message: error.localizedDescription,
-          preferredStyle: .alert)
-        alert.addAction(UIAlertAction(
-          title: "OK",
-          style: UIAlertAction.Style.cancel,
-          handler: { [weak self] _ in
-              self?.hideLoading()
-          }))
-        present(alert, animated: true, completion: nil)
-    }
+//    func showVerificationError(error: VerificationResult<Transaction>.VerificationError) {
+//        let alert = UIAlertController(
+//          title: "Could't Complete Purchase",
+//          message: error.localizedDescription,
+//          preferredStyle: .alert)
+//        alert.addAction(UIAlertAction(
+//          title: "OK",
+//          style: UIAlertAction.Style.cancel,
+//          handler: { [weak self] _ in
+//              self?.hideLoading()
+//          }))
+//        present(alert, animated: true, completion: nil)
+//    }
     
     func showRefreshAlert(title: String)  {
         let alert = UIAlertController(

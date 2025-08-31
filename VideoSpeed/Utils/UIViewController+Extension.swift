@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import FirebaseRemoteConfig
+import StoreKit
 
 let loadinViewTag = 12
 
@@ -27,6 +28,20 @@ extension UIViewController {
         }
     
         return purchaseViewController
+    }
+    
+    func showVerificationError(error: VerificationResult<Transaction>.VerificationError) {
+        let alert = UIAlertController(
+          title: "Could't Complete Purchase",
+          message: error.localizedDescription,
+          preferredStyle: .alert)
+        alert.addAction(UIAlertAction(
+          title: "OK",
+          style: UIAlertAction.Style.cancel,
+          handler: { [weak self] _ in
+              self?.hideLoading()
+          }))
+        present(alert, animated: true, completion: nil)
     }
     
     func showLoading() {
