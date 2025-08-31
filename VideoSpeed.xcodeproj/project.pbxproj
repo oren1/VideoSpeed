@@ -36,6 +36,8 @@
 		6B4F7E742E51C75200564302 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4F7E732E51C75200564302 /* SpeechRecognizer.swift */; };
 		6B4F7E762E5497A100564302 /* test.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6B4F7E752E5497A100564302 /* test.m4a */; };
 		6B4F7E792E56DD2500564302 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6B4F7E782E56DD2500564302 /* WhisperKit */; };
+		6B4F7EA02E642BB500564302 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 6B4F7E9F2E642BB500564302 /* Secrets.xcconfig */; };
+		6B4F7EA22E642BE200564302 /* Secrets.template.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 6B4F7EA12E642BE200564302 /* Secrets.template.xcconfig */; };
 		6B51C1FA2A7233A50013ABAD /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B51C1F92A7233A50013ABAD /* LoadingView.swift */; };
 		6B51C1FC2A7233B80013ABAD /* LoadingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B51C1FB2A7233B80013ABAD /* LoadingView.xib */; };
 		6B55F3042DFD57C200259275 /* AVMutableComposition+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B55F3032DFD57C200259275 /* AVMutableComposition+Extension.swift */; };
@@ -178,6 +180,8 @@
 		6B4F7E6F2E4F14BB00564302 /* CaptionsSettingsSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionsSettingsSelectionView.swift; sourceTree = "<group>"; };
 		6B4F7E732E51C75200564302 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
 		6B4F7E752E5497A100564302 /* test.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.m4a; sourceTree = "<group>"; };
+		6B4F7E9F2E642BB500564302 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
+		6B4F7EA12E642BE200564302 /* Secrets.template.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.template.xcconfig; sourceTree = "<group>"; };
 		6B51C1F92A7233A50013ABAD /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		6B51C1FB2A7233B80013ABAD /* LoadingView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoadingView.xib; sourceTree = "<group>"; };
 		6B55F3032DFD57C200259275 /* AVMutableComposition+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVMutableComposition+Extension.swift"; sourceTree = "<group>"; };
@@ -354,6 +358,15 @@
 				6B4F7E6B2E4C934700564302 /* CaptionsViewModel.swift */,
 			);
 			path = Entities;
+			sourceTree = "<group>";
+		};
+		6B4F7E9E2E642B9000564302 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				6B4F7E9F2E642BB500564302 /* Secrets.xcconfig */,
+				6B4F7EA12E642BE200564302 /* Secrets.template.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		6B6700952A6ABBCE006F2980 /* Managers */ = {
@@ -543,6 +556,7 @@
 				6BE9A2F92A5FC80D00FF8CB0 /* Info.plist */,
 				6B71AAF22AC431A000C06619 /* GoogleService-Info.plist */,
 				6B7D10842BA70AE3002DD73F /* remote_config_defaults.plist */,
+				6B4F7E9E2E642B9000564302 /* Config */,
 				6B23C1DE2BF62EF8001C4F24 /* Entities */,
 				6B6700952A6ABBCE006F2980 /* Managers */,
 				6BAC9BBD2A666E500071A41B /* CustomViews */,
@@ -627,6 +641,7 @@
 				6BAFED952DECAD2500AF13E1 /* StrokeColorEditSection.xib in Resources */,
 				6BCAF7ED2A63C5100039BE15 /* SpeedSectionVC.xib in Resources */,
 				6BF019512B565CB800953AB6 /* SubscriptionOptionView.xib in Resources */,
+				6B4F7EA02E642BB500564302 /* Secrets.xcconfig in Resources */,
 				6B67009D2A6BCAD2006F2980 /* ProgressIndicatorView.xib in Resources */,
 				6B04F5862CB916FA000C8C59 /* CropSectioVC.xib in Resources */,
 				6BAFED802DD0638300AF13E1 /* FontEditSectionVC.xib in Resources */,
@@ -650,6 +665,7 @@
 				6BB4EE7E2A8E1109006CF87C /* CrownView.xib in Resources */,
 				6B51C1FC2A7233B80013ABAD /* LoadingView.xib in Resources */,
 				6B71AAC52A9098A000C06619 /* SoundSectionVC.xib in Resources */,
+				6B4F7EA22E642BE200564302 /* Secrets.template.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
