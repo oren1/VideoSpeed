@@ -10,11 +10,12 @@ import Speech
 
 struct CaptionsSettingsSelectionView: View {
     
-    var generateCaptions: ((LanguageItem) -> Void)?
+    var generateCaptions: ((LanguageItem) async throws -> Void)?
     var onClose: (() -> Void)?
     @State private var searchText = ""
     @State private var languages = UserDataManager.main.languageItems
-    
+    @State private var generatingCaptions: Bool = false
+    @State private var selectedLanguageItem = UserDataManager.main.languageItems.first!
     
     var filteredLanguages: [LanguageItem] {
         if searchText.isEmpty {
@@ -29,95 +30,118 @@ struct CaptionsSettingsSelectionView: View {
     
     var body: some View {
         ZStack {
-            VStack(spacing: 0) {
-                // Top-left Close button
-                HStack {
-                    Button(action: {
-                          onClose?()
-                    }) {
-                        Image(systemName: "x.circle")
-                            .foregroundColor(.white)
-                            .frame(width: 24, height: 24)
-                    }
-                    .padding([.leading, .bottom], 25)
-                  Spacer()
+            if generatingCaptions {
+                ZStack {
+                    Color.black.opacity(0.75)
+                    loadingMediaView()
                 }
-                          
-                // Custom search field
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.white)
-                    ZStack(alignment: .leading) {
-                        if searchText.isEmpty {
-                                Text("Search language")
-                                    .foregroundColor(.gray) // <-- Placeholder color
-                            }
-                            TextField("", text: $searchText)
-                                .textFieldStyle(PlainTextFieldStyle())
+                .ignoresSafeArea(.all)
+            }
+            else {
+                VStack(spacing: 0) {
+                    // Top-left Close button
+                    HStack {
+                        Button(action: {
+                              onClose?()
+                        }) {
+                            Image(systemName: "x.circle")
                                 .foregroundColor(.white)
-                                .autocapitalization(.none)
-                                .disableAutocorrection(true)
+                                .frame(width: 24, height: 24)
+                        }
+                        .padding([.leading, .bottom], 25)
+                      Spacer()
                     }
-            
-                }
-                .padding()
-                .background(Color.gray.opacity(0.3))
-                .cornerRadius(8)
-                .padding(.horizontal)
-                .padding([.bottom], 12)
+                              
+                    // Custom search field
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.white)
+                        ZStack(alignment: .leading) {
+                            if searchText.isEmpty {
+                                    Text("Search language")
+                                        .foregroundColor(.gray) // <-- Placeholder color
+                                }
+                                TextField("", text: $searchText)
+                                    .textFieldStyle(PlainTextFieldStyle())
+                                    .foregroundColor(.white)
+                                    .autocapitalization(.none)
+                                    .disableAutocorrection(true)
+                        }
                 
-                
-                List {
-                    ForEach(filteredLanguages) { item in
-                        HStack {
-                            Text("\(item.localizedString)")
-                                .foregroundStyle(Color.white)
-                            Spacer()
-                            if item.isSelected {
-                                Image(systemName: "checkmark")
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.3))
+                    .cornerRadius(8)
+                    .padding(.horizontal)
+                    .padding([.bottom], 12)
+                    
+                    
+                    List {
+                        ForEach(filteredLanguages) { item in
+                            HStack {
+                                Text("\(item.localizedString)")
                                     .foregroundStyle(Color.white)
+                                Spacer()
+                                if item == selectedLanguageItem {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(Color.white)
+                                }
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                selectLanguage(item)
                             }
                         }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            selectLanguage(item)
-                        }
+                        .listRowBackground(Color.clear)
+                        
+                        
                     }
-                    .listRowBackground(Color.clear)
-                    
-                    
-                }
-                .listStyle(PlainListStyle())
-                .background(Color.black)
-              
-                // Bottom button
-                Button(action: {
-                    if let selectedLanguageItem = languages.first(where: { $0.isSelected }) {
-                        generateCaptions?(selectedLanguageItem)
+                    .listStyle(PlainListStyle())
+                    .background(Color.black)
+                  
+                    // Bottom button
+                    Button(action: {
+//                        if let selectedLanguageItem {
+                            Task {
+                                generatingCaptions = true
+                                do {
+                                    try await generateCaptions?(selectedLanguageItem)
+                                } catch  {
+                                    print("transcription error: \(error)")
+                                }
+                                
+                                generatingCaptions = false
+                                onClose?()
+                            }
+//                        }
+                    }) {
+                        Text("Generate Captions")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
                     }
-                }) {
-                    Text("Generate Captions")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                    .padding()
+                    .background(Color.black)
                 }
-                .padding()
                 .background(Color.black)
             }
-            .background(Color.black)
-            
+           
         }
        
     }
     
     
     private func selectLanguage(_ selectedItem: LanguageItem) {
-        // Update selection
-        for i in languages.indices {
-            languages[i].isSelected = (languages[i].identifier == selectedItem.identifier)
-        }
+        selectedLanguageItem = selectedItem
+    }
+    
+    func loadingMediaView() -> some View {
+        let loadingMediaViewModel = LoadingMediaViewModel()
+        loadingMediaViewModel.showProgress = false
+        loadingMediaViewModel.title = "Creating Captions..."
+        return LoadingMediaView(loadingMediaViewModel: loadingMediaViewModel)
     }
 }
 

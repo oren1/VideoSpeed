@@ -19,15 +19,19 @@ struct LoadingMediaView: View {
             Color.black.opacity(0.6)
                 .ignoresSafeArea()
             VStack(alignment: .center) {
-                Text("Cropping Video")
+                let title = loadingMediaViewModel.title ?? "Loding..."
+                Text(title)
                     .foregroundStyle(.white)
                     .padding(.bottom)
                 ZStack {
                     ActivityIndicatorView(isVisible: $isActivityIndicatorVisible, type: .gradient([.white, Color(cgColor: UIColor.systemBlue.cgColor)], lineWidth: 2))
                         .frame(width: 100, height: 100)
-                    Text("\(Int(loadingMediaViewModel.progress * 100))%")
-                        .foregroundStyle(.white)
-                        .padding(.leading, 8)
+                    if loadingMediaViewModel.showProgress {
+                        Text("\(Int(loadingMediaViewModel.progress * 100))%")
+                            .foregroundStyle(.white)
+                            .padding(.leading, 8)
+                    }
+                    
                 }
                 
 
@@ -39,7 +43,14 @@ struct LoadingMediaView: View {
 }
 
 
+func loadingMediaViewPreview() -> some View {
+    let loadingMediaViewModel = LoadingMediaViewModel()
+    loadingMediaViewModel.showProgress = false
+    loadingMediaViewModel.progress = 0.5
+    loadingMediaViewModel.title = "Transcribing Audio..."
+    return LoadingMediaView(loadingMediaViewModel: loadingMediaViewModel)
+}
 
 #Preview {
-    LoadingMediaView(loadingMediaViewModel: LoadingMediaViewModel())
+    loadingMediaViewPreview()
 }

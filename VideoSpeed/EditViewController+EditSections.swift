@@ -215,6 +215,9 @@ extension EditViewController {
         }.store(in: &subscribers)
         
         captionsSectionVC.viewModel = captionsViewModel
+        captionsSectionVC.editStyleTapped = { [weak self] in
+            // 1. Create a custom "UISheetPresentationController"
+        }
     
     }
     

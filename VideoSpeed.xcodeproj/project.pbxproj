@@ -38,6 +38,7 @@
 		6B4F7E792E56DD2500564302 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6B4F7E782E56DD2500564302 /* WhisperKit */; };
 		6B4F7EA02E642BB500564302 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 6B4F7E9F2E642BB500564302 /* Secrets.xcconfig */; };
 		6B4F7EA22E642BE200564302 /* Secrets.template.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 6B4F7EA12E642BE200564302 /* Secrets.template.xcconfig */; };
+		6B4F7EA42E643CAC00564302 /* OpenAIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4F7EA32E643CA500564302 /* OpenAIManager.swift */; };
 		6B51C1FA2A7233A50013ABAD /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B51C1F92A7233A50013ABAD /* LoadingView.swift */; };
 		6B51C1FC2A7233B80013ABAD /* LoadingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B51C1FB2A7233B80013ABAD /* LoadingView.xib */; };
 		6B55F3042DFD57C200259275 /* AVMutableComposition+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B55F3032DFD57C200259275 /* AVMutableComposition+Extension.swift */; };
@@ -145,11 +146,38 @@
 		6BE9A3062A61811400FF8CB0 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A3052A61811400FF8CB0 /* PhotoCell.swift */; };
 		6BE9A30A2A618B2500FF8CB0 /* UIImageView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A3092A618B2500FF8CB0 /* UIImageView+Extension.swift */; };
 		6BE9A30C2A62809D00FF8CB0 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A30B2A62809D00FF8CB0 /* PHAsset+Extension.swift */; };
+		6BE9AD782E6D43F100DC6364 /* whisper.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BE9AD772E6D43F100DC6364 /* whisper.xcframework */; };
+		6BE9AD792E6D43F100DC6364 /* whisper.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BE9AD772E6D43F100DC6364 /* whisper.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6BE9AD7C2E6D445000DC6364 /* LibWhisper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD7B2E6D445000DC6364 /* LibWhisper.swift */; };
+		6BE9AD7E2E6D448D00DC6364 /* WhisperState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD7D2E6D448D00DC6364 /* WhisperState.swift */; };
+		6BE9AD802E6D44C300DC6364 /* Recorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD7F2E6D44C300DC6364 /* Recorder.swift */; };
+		6BE9AD822E6D44E300DC6364 /* RiffWaveUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD812E6D44E300DC6364 /* RiffWaveUtils.swift */; };
+		6BE9AD842E6D451B00DC6364 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD832E6D451B00DC6364 /* Model.swift */; };
+		6BE9AD892E6D461100DC6364 /* jfk.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6BE9AD882E6D461100DC6364 /* jfk.wav */; };
+		6BE9AD8B2E71415000DC6364 /* TamarEisenman.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BE9AD8A2E71415000DC6364 /* TamarEisenman.mp3 */; };
+		6BE9AD8D2E717E6B00DC6364 /* audio.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BE9AD8C2E717E6B00DC6364 /* audio.mp3 */; };
+		6BE9AD902E72FF8600DC6364 /* CurlDSL in Frameworks */ = {isa = PBXBuildFile; productRef = 6BE9AD8F2E72FF8600DC6364 /* CurlDSL */; };
+		6BE9AD922E7984DB00DC6364 /* Segment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD912E7984D700DC6364 /* Segment.swift */; };
+		6BE9AD942E9377FA00DC6364 /* ScalableTextContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD932E9377FA00DC6364 /* ScalableTextContainer.swift */; };
 		6BF0194F2B565CAC00953AB6 /* SubscriptionOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF0194E2B565CAC00953AB6 /* SubscriptionOptionView.swift */; };
 		6BF019512B565CB800953AB6 /* SubscriptionOptionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BF019502B565CB800953AB6 /* SubscriptionOptionView.xib */; };
 		6BF019532B57DB7400953AB6 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF019522B57DB7400953AB6 /* AnalyticsManager.swift */; };
 		D292176C54B84883ECC263F5 /* Pods_VideoSpeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75A20CDA63C3E3402AA1C3A7 /* Pods_VideoSpeed.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		6BE9AD7A2E6D43F100DC6364 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				6BE9AD792E6D43F100DC6364 /* whisper.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		6B04F5832CB916FA000C8C59 /* CropSectioVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropSectioVC.swift; sourceTree = "<group>"; };
@@ -182,6 +210,7 @@
 		6B4F7E752E5497A100564302 /* test.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.m4a; sourceTree = "<group>"; };
 		6B4F7E9F2E642BB500564302 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		6B4F7EA12E642BE200564302 /* Secrets.template.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.template.xcconfig; sourceTree = "<group>"; };
+		6B4F7EA32E643CA500564302 /* OpenAIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIManager.swift; sourceTree = "<group>"; };
 		6B51C1F92A7233A50013ABAD /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		6B51C1FB2A7233B80013ABAD /* LoadingView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoadingView.xib; sourceTree = "<group>"; };
 		6B55F3032DFD57C200259275 /* AVMutableComposition+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVMutableComposition+Extension.swift"; sourceTree = "<group>"; };
@@ -291,6 +320,17 @@
 		6BE9A3052A61811400FF8CB0 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		6BE9A3092A618B2500FF8CB0 /* UIImageView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+Extension.swift"; sourceTree = "<group>"; };
 		6BE9A30B2A62809D00FF8CB0 /* PHAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
+		6BE9AD772E6D43F100DC6364 /* whisper.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = whisper.xcframework; path = "../whisper.cpp/build-apple/whisper.xcframework"; sourceTree = "<group>"; };
+		6BE9AD7B2E6D445000DC6364 /* LibWhisper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibWhisper.swift; sourceTree = "<group>"; };
+		6BE9AD7D2E6D448D00DC6364 /* WhisperState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperState.swift; sourceTree = "<group>"; };
+		6BE9AD7F2E6D44C300DC6364 /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
+		6BE9AD812E6D44E300DC6364 /* RiffWaveUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiffWaveUtils.swift; sourceTree = "<group>"; };
+		6BE9AD832E6D451B00DC6364 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		6BE9AD882E6D461100DC6364 /* jfk.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = jfk.wav; sourceTree = "<group>"; };
+		6BE9AD8A2E71415000DC6364 /* TamarEisenman.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = TamarEisenman.mp3; sourceTree = "<group>"; };
+		6BE9AD8C2E717E6B00DC6364 /* audio.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = audio.mp3; sourceTree = "<group>"; };
+		6BE9AD912E7984D700DC6364 /* Segment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Segment.swift; sourceTree = "<group>"; };
+		6BE9AD932E9377FA00DC6364 /* ScalableTextContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScalableTextContainer.swift; sourceTree = "<group>"; };
 		6BF0194E2B565CAC00953AB6 /* SubscriptionOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionOptionView.swift; sourceTree = "<group>"; };
 		6BF019502B565CB800953AB6 /* SubscriptionOptionView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SubscriptionOptionView.xib; sourceTree = "<group>"; };
 		6BF019522B57DB7400953AB6 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
@@ -304,6 +344,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6BE9AD782E6D43F100DC6364 /* whisper.xcframework in Frameworks */,
+				6BE9AD902E72FF8600DC6364 /* CurlDSL in Frameworks */,
 				6B4F7E792E56DD2500564302 /* WhisperKit in Frameworks */,
 				6B6700A02A6C1D9A006F2980 /* StoreKit.framework in Frameworks */,
 				D292176C54B84883ECC263F5 /* Pods_VideoSpeed.framework in Frameworks */,
@@ -345,6 +387,7 @@
 		6B23C1DE2BF62EF8001C4F24 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
+				6BE9AD912E7984D700DC6364 /* Segment.swift */,
 				6B80DE692E487B0300DFD62B /* LanguageItem.swift */,
 				6B96101D2D460B6C00DEE296 /* MenuItem.swift */,
 				6B23C1DF2BF62F11001C4F24 /* User.swift */,
@@ -372,6 +415,7 @@
 		6B6700952A6ABBCE006F2980 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				6B4F7EA32E643CA500564302 /* OpenAIManager.swift */,
 				6B6700962A6ABBF6006F2980 /* IAPManager.swift */,
 				6B6700A32A6CDCB8006F2980 /* UserDataManager.swift */,
 				6B6700A92A6E5FE7006F2980 /* AppStoreReviewManager.swift */,
@@ -388,6 +432,7 @@
 		6B67009E2A6C1D9A006F2980 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6BE9AD772E6D43F100DC6364 /* whisper.xcframework */,
 				6B67009F2A6C1D9A006F2980 /* StoreKit.framework */,
 				75A20CDA63C3E3402AA1C3A7 /* Pods_VideoSpeed.framework */,
 			);
@@ -423,6 +468,7 @@
 		6BAC9BBD2A666E500071A41B /* CustomViews */ = {
 			isa = PBXGroup;
 			children = (
+				6BE9AD932E9377FA00DC6364 /* ScalableTextContainer.swift */,
 				6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */,
 				6BAC9BC02A666EEA0071A41B /* TopIndicatorView.swift */,
 				6B6700932A6A6C13006F2980 /* PhotosHeader.swift */,
@@ -523,6 +569,8 @@
 			children = (
 				6BE9A3012A5FD5A000FF8CB0 /* climbing.mov */,
 				6B4F7E752E5497A100564302 /* test.m4a */,
+				6BE9AD8A2E71415000DC6364 /* TamarEisenman.mp3 */,
+				6BE9AD8C2E717E6B00DC6364 /* audio.mp3 */,
 				6BE9A2EB2A5FC80C00FF8CB0 /* AppDelegate.swift */,
 				6BE9A2ED2A5FC80C00FF8CB0 /* SceneDelegate.swift */,
 				6BE9A2EF2A5FC80C00FF8CB0 /* EditViewController.swift */,
@@ -564,8 +612,22 @@
 				6BCAF7E42A63B6360039BE15 /* Edit Sections */,
 				6B0944A02DC21953009FBFB2 /* Text Edit Sections */,
 				6B6801172D153D44002B5454 /* Trimmer */,
+				6BE9AD852E6D456100DC6364 /* Whisper */,
 			);
 			path = VideoSpeed;
+			sourceTree = "<group>";
+		};
+		6BE9AD852E6D456100DC6364 /* Whisper */ = {
+			isa = PBXGroup;
+			children = (
+				6BE9AD7B2E6D445000DC6364 /* LibWhisper.swift */,
+				6BE9AD7D2E6D448D00DC6364 /* WhisperState.swift */,
+				6BE9AD7F2E6D44C300DC6364 /* Recorder.swift */,
+				6BE9AD812E6D44E300DC6364 /* RiffWaveUtils.swift */,
+				6BE9AD832E6D451B00DC6364 /* Model.swift */,
+				6BE9AD882E6D461100DC6364 /* jfk.wav */,
+			);
+			path = Whisper;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -581,6 +643,7 @@
 				6BE9A2E62A5FC80C00FF8CB0 /* Resources */,
 				D52300C6D83080611C6D156A /* [CP] Embed Pods Frameworks */,
 				190F2533A7BEA5C4ECB9FBAB /* [CP] Copy Pods Resources */,
+				6BE9AD7A2E6D43F100DC6364 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -618,6 +681,7 @@
 			mainGroup = 6BE9A2DF2A5FC80C00FF8CB0;
 			packageReferences = (
 				6B4F7E772E56DD2500564302 /* XCRemoteSwiftPackageReference "whisperkit" */,
+				6BE9AD8E2E72FF8600DC6364 /* XCRemoteSwiftPackageReference "CurlDSL" */,
 			);
 			productRefGroup = 6BE9A2E92A5FC80C00FF8CB0 /* Products */;
 			projectDirPath = "";
@@ -637,6 +701,7 @@
 				6BE9A2F82A5FC80D00FF8CB0 /* LaunchScreen.storyboard in Resources */,
 				6BE9A3022A5FD5A000FF8CB0 /* climbing.mov in Resources */,
 				6B6801322D2D6BE0002B5454 /* SpidPlayerViewController.xib in Resources */,
+				6BE9AD8D2E717E6B00DC6364 /* audio.mp3 in Resources */,
 				6BCDCF4E2A67E5FA00D8B656 /* FPSSectionVC.xib in Resources */,
 				6BAFED952DECAD2500AF13E1 /* StrokeColorEditSection.xib in Resources */,
 				6BCAF7ED2A63C5100039BE15 /* SpeedSectionVC.xib in Resources */,
@@ -647,11 +712,13 @@
 				6BAFED802DD0638300AF13E1 /* FontEditSectionVC.xib in Resources */,
 				6B96102E2D4C9A5B00DEE296 /* PlusCell.xib in Resources */,
 				6BB4EE882A8F48D1006CF87C /* UsingProFeaturesAlertView.xib in Resources */,
+				6BE9AD892E6D461100DC6364 /* jfk.wav in Resources */,
 				6B9610222D49ECA200DEE296 /* TextSectionVC.xib in Resources */,
 				6B0944B02DC49366009FBFB2 /* ClearColorCVCell.xib in Resources */,
 				6B0944A32DC219D7009FBFB2 /* ColorEditSectionVC.xib in Resources */,
 				6BB4EE842A8F3881006CF87C /* BlackTransparentOverlay.xib in Resources */,
 				6B9610262D49F1C000DEE296 /* TextCell.xib in Resources */,
+				6BE9AD8B2E71415000DC6364 /* TamarEisenman.mp3 in Resources */,
 				6B4F7E762E5497A100564302 /* test.m4a in Resources */,
 				6B7D10852BA70AE4002DD73F /* remote_config_defaults.plist in Resources */,
 				6BE9A2F52A5FC80D00FF8CB0 /* Assets.xcassets in Resources */,
@@ -747,9 +814,11 @@
 				6BF0194F2B565CAC00953AB6 /* SubscriptionOptionView.swift in Sources */,
 				6B6700972A6ABBF6006F2980 /* IAPManager.swift in Sources */,
 				6BE9A30A2A618B2500FF8CB0 /* UIImageView+Extension.swift in Sources */,
+				6BE9AD922E7984DB00DC6364 /* Segment.swift in Sources */,
 				6B9610332D4CCBCF00DEE296 /* TextEditViewController.swift in Sources */,
 				6B6700A42A6CDCB8006F2980 /* UserDataManager.swift in Sources */,
 				6BCEB60D2BF0C1A400010381 /* BenefitView.swift in Sources */,
+				6BE9AD842E6D451B00DC6364 /* Model.swift in Sources */,
 				6BB4EE8A2A8F48E2006CF87C /* UsingProFeaturesAlertView.swift in Sources */,
 				6B04F5892CBBAAC2000C8C59 /* CropViewController.swift in Sources */,
 				6B71AAEB2AAA321300C06619 /* UIViewController+Extension.swift in Sources */,
@@ -768,6 +837,7 @@
 				6B67009B2A6BCAC2006F2980 /* ProgressIndicatorView.swift in Sources */,
 				6BCEB6112BF0C5CB00010381 /* ActivityViewController.swift in Sources */,
 				6B6700992A6BAE36006F2980 /* VideoHelper.swift in Sources */,
+				6BE9AD802E6D44C300DC6364 /* Recorder.swift in Sources */,
 				6B6700A82A6CFBF8006F2980 /* SKProduct+Utils.swift in Sources */,
 				6BC7B52C2D5C9AA100FF1CE9 /* UIView+Extension.swift in Sources */,
 				6BE9A3062A61811400FF8CB0 /* PhotoCell.swift in Sources */,
@@ -783,9 +853,11 @@
 				6BB4FAD92AEE416D00D00E2D /* InterstitialAd.swift in Sources */,
 				6B9610212D49ECA200DEE296 /* TextSectionVC.swift in Sources */,
 				6BB4EE862A8F38B4006CF87C /* BlackTransparentOverlay.swift in Sources */,
+				6B4F7EA42E643CAC00564302 /* OpenAIManager.swift in Sources */,
 				6BAFED962DECAD2500AF13E1 /* StrokeColorEditSection.swift in Sources */,
 				6B0C7D7B2C89E4A700063CBE /* NotificationsManager.swift in Sources */,
 				6BD0718C2DAA574A00D6744D /* PaddingLabel.swift in Sources */,
+				6BE9AD942E9377FA00DC6364 /* ScalableTextContainer.swift in Sources */,
 				6B9610162D43C8C700DEE296 /* SpidLabel+Extension.swift in Sources */,
 				6B923FA82C2EA3A800CD1381 /* MonthlySubscriptionVC.swift in Sources */,
 				6B6801242D1557A4002B5454 /* TrimmerSectionVC.swift in Sources */,
@@ -794,7 +866,9 @@
 				6BE9A2EC2A5FC80C00FF8CB0 /* AppDelegate.swift in Sources */,
 				6B6700AA2A6E5FE7006F2980 /* AppStoreReviewManager.swift in Sources */,
 				6BCDCF542A67FADD00D8B656 /* SectionViewController.swift in Sources */,
+				6BE9AD7C2E6D445000DC6364 /* LibWhisper.swift in Sources */,
 				6B0944AA2DC36794009FBFB2 /* SpidColor.swift in Sources */,
+				6BE9AD7E2E6D448D00DC6364 /* WhisperState.swift in Sources */,
 				6B6E266C2E03E0AD004F736B /* CGSize+Extension.swift in Sources */,
 				6B6700942A6A6C13006F2980 /* PhotosHeader.swift in Sources */,
 				6B96102F2D4C9A5B00DEE296 /* PlusCell.swift in Sources */,
@@ -846,6 +920,7 @@
 				6B4F7E682E4B539700564302 /* CaptionsSectionView.swift in Sources */,
 				6B9610182D44CD8D00DEE296 /* SpidLabel.swift in Sources */,
 				6B55F3042DFD57C200259275 /* AVMutableComposition+Extension.swift in Sources */,
+				6BE9AD822E6D44E300DC6364 /* RiffWaveUtils.swift in Sources */,
 				6BAFED7F2DD0638300AF13E1 /* FontEditSectionVC.swift in Sources */,
 				6BB4EE802A8E11CA006CF87C /* CrownView.swift in Sources */,
 				6B23C1E02BF62F11001C4F24 /* User.swift in Sources */,
@@ -876,6 +951,7 @@
 /* Begin XCBuildConfiguration section */
 		6BE9A2FA2A5FC80D00FF8CB0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B4F7E9F2E642BB500564302 /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -936,6 +1012,7 @@
 		};
 		6BE9A2FB2A5FC80D00FF8CB0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B4F7E9F2E642BB500564302 /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1114,6 +1191,14 @@
 				minimumVersion = 0.13.1;
 			};
 		};
+		6BE9AD8E2E72FF8600DC6364 /* XCRemoteSwiftPackageReference "CurlDSL" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/zonble/CurlDSL.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.5;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1121,6 +1206,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6B4F7E772E56DD2500564302 /* XCRemoteSwiftPackageReference "whisperkit" */;
 			productName = WhisperKit;
+		};
+		6BE9AD8F2E72FF8600DC6364 /* CurlDSL */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6BE9AD8E2E72FF8600DC6364 /* XCRemoteSwiftPackageReference "CurlDSL" */;
+			productName = CurlDSL;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

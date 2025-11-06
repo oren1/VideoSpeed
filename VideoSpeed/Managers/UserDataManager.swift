@@ -28,9 +28,13 @@ class UserDataManager: ObservableObject {
     }
 
     var captions: [CaptionItem] = []
+    
     func userDontHaveCaptionsYet() -> Bool { UserDataManager.main.captions.count == 0 }
     
-    let languageItems: [LanguageItem] = {
+    @Published
+    var transcription: Transcription?
+    
+    var languageItems: [LanguageItem] = {
         let locales = Array(SFSpeechRecognizer.supportedLocales())
         let formatter = Locale.current
         
@@ -38,6 +42,7 @@ class UserDataManager: ObservableObject {
          performed by the SFSpeechRecognizer */
         let autoDetectionLanguageItem: LanguageItem = LanguageItem(identifier: "autoDetection", localizedString: "Auto Detection", isSelected: true)
         
+        // I want to support only the languages OpenAI says
         var languageItems = locales
             .sorted {
                 let nameA = formatter.localizedString(forIdentifier: $0.identifier) ?? $0.identifier
@@ -45,8 +50,14 @@ class UserDataManager: ObservableObject {
                 return nameA.localizedCaseInsensitiveCompare(nameB) == .orderedAscending
             }
             .map { locale in
-                let name = formatter.localizedString(forIdentifier: locale.identifier) ?? locale.identifier
-                return LanguageItem(identifier: locale.identifier, localizedString: name)
+                let code = locale.language.languageCode?.identifier ?? ""
+                let name = formatter.localizedString(forLanguageCode: code) ?? ""
+
+                return LanguageItem(identifier: code, code: code, localizedString: name)
+            }.reduce(into: [LanguageItem]()) { result, item in
+                if !result.contains(item) {
+                    result.append(item)
+                }
             }
         
         languageItems.insert(autoDetectionLanguageItem, at: 0)

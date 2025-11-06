@@ -48,6 +48,9 @@ class SpidPlayerViewController: UIViewController {
     var labelViews: [LabelView] = []
     var selectedLabelView: LabelView?
     var scaleValue = 0.0
+    var captionsTextContainer: ScalableLabelTextContainer!
+    var subscriptions: [AnyCancellable] = []
+    var captionsTimer: Timer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,6 +64,21 @@ class SpidPlayerViewController: UIViewController {
             self?.addLabelViews(labelViewsModels: UserDataManager.main.labelViewsModels)
         }
         
+        UserDataManager.main.$transcription
+            .receive(on: DispatchQueue.main)
+            .sink {  [weak self] transcription in
+                guard let self = self else { return }
+                // here i create the ScalableLabelTextContainer
+                captionsTextContainer = ScalableLabelTextContainer(frame: CGRect(origin: .zero, size: CGSize(width: videoContainerView.frame.width, height: 100)))
+                videoContainerView.addSubview(captionsTextContainer)
+                captionsTextContainer.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height * 0.75)
+                
+                if videoState == .isPlayed {
+                    startCaptionsTimer()
+                }
+            }
+            .store(in: &subscriptions)
+        
         slider.setThumbImage(UIImage(), for: .normal)
                slider.setThumbImage(UIImage(), for: .highlighted)
         
@@ -70,17 +88,27 @@ class SpidPlayerViewController: UIViewController {
                 self.stopPlaybackTimeChecker()
                 self.videoState = .isPaused
                 self.playButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
+                self.stopCaptionsTimer()
             case .playing:
                 self.startPlaybackTimeChecker()
                 self.videoState = .isPlayed
                 self.playButton.setImage(UIImage(systemName: "pause.fill"), for: .normal)
+                self.startCaptionsTimer()
             default:
                 return
             }
         })
         
+        
+       
     }
 
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+    }
+    
     deinit {
         cancellable = nil
         textOverlayLabelsCancellable = nil
@@ -117,6 +145,10 @@ class SpidPlayerViewController: UIViewController {
 
             startPlaybackTimeChecker()
             
+            captionsTextContainer = ScalableLabelTextContainer(frame: CGRect(origin: .zero, size: CGSize(width: videoContainerView.frame.width, height: 100)))
+            videoContainerView.addSubview(captionsTextContainer)
+            captionsTextContainer.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height * 0.75)
+
         }
         
     }
@@ -306,6 +338,31 @@ class SpidPlayerViewController: UIViewController {
         
     }
     
+    // MARK: Captions Timer
+    func startCaptionsTimer() {
+        stopCaptionsTimer()
+        captionsTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self,
+                                             selector:
+                                                #selector(onCaptionsTimer), userInfo: nil, repeats: true)
+    }
+    
+    func stopCaptionsTimer() {
+        captionsTimer?.invalidate()
+        captionsTimer = nil
+    }
+    
+    @objc func onCaptionsTimer() {
+        guard let segments = UserDataManager.main.transcription?.segments else { return }
+        for segment in segments {
+            let currentVideoTime = player.currentTime().seconds
+            if segment.start.isLess(than: currentVideoTime) && currentVideoTime.isLess(than: segment.end) {
+                captionsTextContainer.label.text = segment.text
+                break
+//                print("Caption: \(segment.text)")
+            }
+        }
+    }
+    
     func updateSliderFor(time: CMTime) async {
         let sliderValue = await getSliderValue(time.seconds)
 
@@ -373,6 +430,7 @@ class SpidPlayerViewController: UIViewController {
     
     // MARK: Actions
     @IBAction func playButtonTapped(_ sender: Any) {
+        
         if videoState == .isPlayed {
             player.pause()
         }

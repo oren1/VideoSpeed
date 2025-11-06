@@ -9,4 +9,6 @@ import Foundation
 
 class LoadingMediaViewModel: ObservableObject {
     @Published var progress: Float = 0
+    @Published var showProgress: Bool = true
+    @Published var title: String?
 }

@@ -112,7 +112,6 @@ extension EditViewController: UICollectionViewDelegate {
              so here the transcribing process starts */
             print("languageItem \(languageItem)")
             // open the 'CaptionsSettingsSelectionView' in case there aren't any captions generated
-            Task {
                 let status = await SpeechRecognizer.getSpeechRecognitionPermissionsStatus()
                 if status == .authorized {
                     // start the speech recognition process
@@ -123,51 +122,39 @@ extension EditViewController: UICollectionViewDelegate {
                                .appendingPathExtension("m4a")
                     let resultURL = try? await SpeechRecognizer.exportAudio(from: asset, to: audioURL)
 //                      let resultURL = Bundle.main.url(forResource: "test", withExtension: "m4a")
-                    if resultURL != nil {
-                        // Initialize WhisperKit with default settings
-                        // WhisperKitConfig(model: "base")
-                        // Find your models inside the bundle
-                        let modelURL = Bundle.main.bundleURL.appendingPathComponent("openai_whisper-base")
-                        print("modelURL: \(modelURL)")
-                        let config = WhisperKitConfig(model: modelURL.path)
-
-                        // Initialize
+                    if let resultURL {
+                       
+                        let apiKey = Bundle.main.object(forInfoDictionaryKey: "OPEN_AI_API_KEY") as! String
                         
+                        let transcriptionResult = await OpenAIManager.transcribeAudioAsync(fileURL: resultURL, apiKey: apiKey, languageCode: languageItem.code)
                         
-                        
-                        do {
-                            let pipe = try await WhisperKit(config)
-                        } catch  {
-                            print("error \(error)")
+                        switch transcriptionResult {
+                            case .success(let transcription):
+                                UserDataManager.main.transcription = transcription
+                                print(transcription.segments!)
+                            case .failure(let error):
+                            throw error
+//                                print("Error:", error)
                         }
-//                        let pipe = try? await WhisperKit(WhisperKitConfig(model: "base"))
-                    
-//                        if let transcriptionResult = try? await pipe!.transcribe(audioPath: resultURL!.path)[0] {
-//                            for segment in transcriptionResult.segments {
-//                                print("segment.substring \(segment.words?[0].word)")
-//                            }
-////                            print("transcriptionResult \(transcriptionResult)")
-//                        }
-                    }
-                           
-//                           let transcription = try? await pipe!.transcribe(audioPath: "path/to/your/audio.{wav,mp3,m4a,flac}")?.text
                         
-//                        if let segments = try? await SpeechRecognizer.transcribeAudio(url: resultURL!) {
-//                            for segment in segments {
-//                                print("segment.substring \(segment.substring): \(segment.timestamp), \(segment.duration)")
-//                            }
-//                            
-//                           let sentences = SpeechRecognizer.groupSegmentsIntoSentences(segments: segments)
-//                            for sentence in sentences {
-//                                print("sentence: \(sentence.text)")
+//                        OpenAIManager.transcribeAudio(fileURL: resultURL, apiKey: apiKey, languageCode: languageItem.code) { transcriptionResult in
+//                            switch transcriptionResult {
+//                            case .success(let transcription):
+//                                UserDataManager.main.transcription = transcription
+//                                print(transcription.segments!)
+//                            case .failure(let error):
+//                                print("Error:", error)
 //                            }
 //                        }
+                
+
+                    }
                         
                 }
                 else {
                     print ("Speech recognition not authorized")
                 }
-            }
+            
         } onClose: { [weak self] in
             guard let self = self else { return }
             captionsSettingsHostingVC?.dismiss(animated: true)

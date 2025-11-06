@@ -1,6 +1,15 @@
 {
-  "originHash" : "8f61689e55c5551e76f2c686d145061dc1fa621a58cbca576565ebfabc15c894",
+  "originHash" : "13fe5566d53a4ba24fd260d30304229bca84d7f1327d9faa561337cc8cfb96af",
   "pins" : [
+    {
+      "identity" : "curldsl",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/zonble/CurlDSL.git",
+      "state" : {
+        "revision" : "9a91a25dc3ca9496fe92680d2ea787adf5a50319",
+        "version" : "0.0.5"
+      }
+    },
     {
       "identity" : "jinja",
       "kind" : "remoteSourceControl",
