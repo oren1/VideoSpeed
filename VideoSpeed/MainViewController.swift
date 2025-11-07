@@ -134,15 +134,7 @@ class MainViewController: UIViewController {
 //            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
 //        }
         
-        
-        let freeTrialEnabled = RemoteConfig.remoteConfig().configValue(forKey: "freeTrialEnabled").boolValue
-        if freeTrialEnabled {
-            purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
-        }
-        else {
-            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
-        }
-
+        purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
         
         
         if UIDevice.current.userInterfaceIdiom == .phone {

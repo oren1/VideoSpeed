@@ -1033,17 +1033,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 guard let self = self else { return }
                 AnalyticsManager.getProAndSaveVideoTapped()
                 Task {
-                    let freeTrialEnabled = RemoteConfig.remoteConfig().configValue(forKey: "freeTrialEnabled").boolValue
-                    let productIdentifier: ProductIdentifier
-                    if freeTrialEnabled {
-                        productIdentifier = SpidProducts.freeTrialYearlySubscription
-                    }
-                    else {
-                        productIdentifier = SpidProducts.yearlySubscription
-                    }
-                    
                     self.hideProFeatureAlert()
-                    await IAPManager.startPurchase(productIdentifier: productIdentifier, on: self) { [weak self] in
+                    await IAPManager.startPurchase(productIdentifier: SpidProducts.freeTrialYearlySubscription, on: self) { [weak self] in
                         self?.hideLoading()
                     }
                 }
@@ -1136,15 +1127,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //        default:
 //            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
 //        }
-        
-        let freeTrialEnabled = RemoteConfig.remoteConfig().configValue(forKey: "freeTrialEnabled").boolValue
-        if freeTrialEnabled {
-            purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
-        }
-        else {
-            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
-        }
-        
+        purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
         purchaseViewController.onDismiss = { [weak self] in
             if let _ = SpidProducts.store.userPurchasedProVersion() {
                 self?.hideProButton()
