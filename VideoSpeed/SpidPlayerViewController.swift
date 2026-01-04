@@ -48,7 +48,7 @@ class SpidPlayerViewController: UIViewController {
     var labelViews: [LabelView] = []
     var selectedLabelView: LabelView?
     var scaleValue = 0.0
-    var captionsTextContainer: ScalableLabelTextContainer!
+    var captionsTextContainer: CaptionsTextContainer!
     var subscriptions: [AnyCancellable] = []
     var captionsTimer: Timer?
     
@@ -67,12 +67,20 @@ class SpidPlayerViewController: UIViewController {
         UserDataManager.main.$transcription
             .receive(on: DispatchQueue.main)
             .sink {  [weak self] transcription in
-                guard let self = self else { return }
+                guard let self, let transcription, let segments = transcription.segments else { return }
                 // here i create the ScalableLabelTextContainer
-                captionsTextContainer = ScalableLabelTextContainer(frame: CGRect(origin: .zero, size: CGSize(width: videoContainerView.frame.width, height: 100)))
+                let text = "1234567890123456789012345678901234567890"
+                let fontSize = CaptionStyleGenerator.basicFontSize
+                let labelHeight: CGFloat = text.height(withConstrainedWidth: videoContainerView.frame.width, font: UIFont.systemFont(ofSize: fontSize))
+                captionsTextContainer = CaptionsTextContainer(frame: CGRect(origin: .zero, size: CGSize(width: videoContainerView.frame.width, height: labelHeight)))
                 videoContainerView.addSubview(captionsTextContainer)
-                captionsTextContainer.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height * 0.75)
-                
+                captionsTextContainer.viewModel.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height * 0.75)
+//                captionsTextContainer.viewModel.fullScale
+//                UserDataManager.main.currentCaptions = CaptionStyleGenerator.generateOneWordCaptions(from: segments)
+//                UserDataManager.main.currentCaptions = CaptionStyleGenerator.generateOneByOneCaptions(from: segments)
+                  UserDataManager.main.currentCaptions = CaptionStyleGenerator.generateWordHighlightCaptions(from: segments)
+
+
                 if videoState == .isPlayed {
                     startCaptionsTimer()
                 }
@@ -145,9 +153,16 @@ class SpidPlayerViewController: UIViewController {
 
             startPlaybackTimeChecker()
             
-            captionsTextContainer = ScalableLabelTextContainer(frame: CGRect(origin: .zero, size: CGSize(width: videoContainerView.frame.width, height: 100)))
+            let text = "1234567890123456789012345678901234567890"
+            let fontSize = CaptionStyleGenerator.basicFontSize
+            let labelHeight: CGFloat = text.height(withConstrainedWidth: videoContainerView.frame.width, font: UIFont.systemFont(ofSize: fontSize))
+
+            captionsTextContainer = CaptionsTextContainer(frame: CGRect(origin: .zero, size: CGSize(width: videoContainerView.frame.width, height: labelHeight)))
             videoContainerView.addSubview(captionsTextContainer)
             captionsTextContainer.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height * 0.75)
+
+
+//            captionsTextContainer.label.attributedText = CaptionStyleGenerator.generateOneWordCaptionStyle()
 
         }
         
@@ -351,18 +366,35 @@ class SpidPlayerViewController: UIViewController {
         captionsTimer = nil
     }
     
+    
     @objc func onCaptionsTimer() {
-        guard let segments = UserDataManager.main.transcription?.segments else { return }
-        for segment in segments {
-            let currentVideoTime = player.currentTime().seconds
-            if segment.start.isLess(than: currentVideoTime) && currentVideoTime.isLess(than: segment.end) {
-                captionsTextContainer.label.text = segment.text
-                break
-//                print("Caption: \(segment.text)")
-            }
-        }
+
+        guard let captions = UserDataManager.main.currentCaptions else { return }
+        let currentVideoTime = player.currentTime().seconds
+//        let caption = CaptionStyleGenerator.getCurrentCaption(captions: captions, time: currentVideoTime)
+        let caption = CaptionStyleGenerator.getCurrentWordByWordCaption(captions: captions, time: currentVideoTime)
+
+        captionsTextContainer.label.attributedText = caption.text
     }
     
+//    @objc func onCaptionsTimer() {
+//        guard let segments = UserDataManager.main.transcription?.segments else { return }
+//        for segment in segments {
+//            let currentVideoTime = player.currentTime().seconds
+//            if segment.start.isLess(than: currentVideoTime) && currentVideoTime.isLess(than: segment.end) {
+////                captionsTextContainer.label.text = segment.text
+//                
+////                captionsTextContainer.label.attributedText = CaptionStyleGenerator.generateOneWordCaptionStyle(segment: segment, time: currentVideoTime)
+//                
+//                captionsTextContainer.label.attributedText = CaptionStyleGenerator.generateOneByOneCaptionStyle(segment: segment, time: currentVideoTime)
+//                
+//                break
+////                print("Caption: \(segment.text)")
+//            }
+//        }
+//    }
+    
+
     func updateSliderFor(time: CMTime) async {
         let sliderValue = await getSliderValue(time.seconds)
 

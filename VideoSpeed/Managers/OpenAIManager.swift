@@ -11,7 +11,7 @@ import Foundation
 class OpenAIManager {
     static func transcribeAudio(fileURL: URL, apiKey: String, languageCode: String? ,completion: @escaping (Result<Transcription, Error>) -> Void) {
         let url = "https://api.openai.com/v1/audio/transcriptions"
-        
+
         AF.upload(
             multipartFormData: { multipart in
                 // Add model parameter
@@ -33,14 +33,41 @@ class OpenAIManager {
             method: .post,
             headers: [
                 "Authorization": "Bearer \(apiKey)"
-            ]
-           
+
+            ]            
         )
         .validate()
+//        .responseJSON { response in
+//            switch response.result {
+//            case .success(let json):
+//                print("JSON response:", json)
+//
+//                // If you want Dictionary:
+//                if let dict = json as? [String: Any] {
+//                    print("Parsed dict:", dict)
+//                }
+//                
+//            case .failure(let error):
+//                print("Upload failed:", error)
+//            }
+//        }
         .responseDecodable(of: TranscriptionResponse.self) { response in
             switch response.result {
             case .success(let transcriptionResponse):
-                print("text: \(transcriptionResponse.text)")
+                print("response text: \(transcriptionResponse.text)")
+               
+                do {
+                    // For debugging purposes, saving the transcription data to save time sending transcription requests
+                    let encoder = JSONEncoder()
+                    encoder.outputFormatting = .prettyPrinted
+
+                    let jsonData = try encoder.encode(transcriptionResponse)
+                    UserDefaults.standard.set(jsonData, forKey: "transcriptionResponse")
+                   
+                } catch  {
+                    print("Error saving JSON data: \(error)")
+                }
+
                 if let transcription = Transcription(transcriptionResponse: transcriptionResponse) {
                     completion(.success(transcription))
                 }

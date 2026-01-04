@@ -8,7 +8,8 @@
 import Foundation
 
 // Word entity
-class Word: Decodable {
+class Word: Codable {
+
     let text: String
     let start: Double
     let end: Double
@@ -46,7 +47,8 @@ class Segment: NSObject, Decodable {
 }
 
 // API response
-class TranscriptionResponse: Decodable {
+class TranscriptionResponse: Codable {
+
     let text: String
     let words: [Word]?
 }
@@ -63,7 +65,8 @@ class Transcription {
             return nil
         }
         
-        let segments = Transcription.createSegments(from: words)
+        let segments = Transcription.createSegments2(from: words)
+
         
         self.text = transcriptionResponse.text
         self.words = words
@@ -114,4 +117,79 @@ class Transcription {
          return segments
      }
     
+    
+    static func createSegments2(
+        from words: [Word],
+        maxLength: Int = 40,
+        minDuration: Double = 1.0,
+        maxDuration: Double = 4.0
+    ) -> [Segment] {
+        
+        var segments: [Segment] = []
+        var currentWords: [Word] = []
+        var currentText = ""
+        
+        for word in words {
+            let potentialText = currentText.isEmpty
+                ? word.text
+                : currentText + " " + word.text
+            
+            let segmentStart = currentWords.first?.start ?? word.start
+            let potentialEnd = word.end
+            let potentialDuration = potentialEnd - segmentStart
+            
+            let exceedsLength = potentialText.count > maxLength
+            let exceedsTime = potentialDuration > maxDuration
+            
+            if (exceedsLength || exceedsTime), !currentWords.isEmpty {
+                // Close current segment
+                let start = currentWords.first!.start
+                var end = currentWords.last!.end
+                
+                // Ensure minimum duration
+                if end - start < minDuration {
+                    end = start + minDuration
+                }
+                
+                segments.append(
+                    Segment(
+                        text: currentText,
+                        start: start,
+                        end: end,
+                        words: currentWords
+                    )
+                )
+                
+                // Start new segment
+                currentWords = [word]
+                currentText = word.text
+            } else {
+                currentWords.append(word)
+                currentText = potentialText
+            }
+        }
+        
+        // Final segment
+        if !currentWords.isEmpty {
+            let start = currentWords.first!.start
+            var end = currentWords.last!.end
+            
+            if end - start < minDuration {
+                end = start + minDuration
+            }
+            
+            segments.append(
+                Segment(
+                    text: currentText,
+                    start: start,
+                    end: end,
+                    words: currentWords
+                )
+            )
+        }
+        
+        return segments
+    }
+
+
 }

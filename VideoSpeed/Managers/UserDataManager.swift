@@ -34,6 +34,9 @@ class UserDataManager: ObservableObject {
     @Published
     var transcription: Transcription?
     
+    var currentCaptions: [Caption]?
+    
+
     var languageItems: [LanguageItem] = {
         let locales = Array(SFSpeechRecognizer.supportedLocales())
         let formatter = Locale.current

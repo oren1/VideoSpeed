@@ -36,7 +36,6 @@
 		6B4F7E742E51C75200564302 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4F7E732E51C75200564302 /* SpeechRecognizer.swift */; };
 		6B4F7E762E5497A100564302 /* test.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6B4F7E752E5497A100564302 /* test.m4a */; };
 		6B4F7E792E56DD2500564302 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6B4F7E782E56DD2500564302 /* WhisperKit */; };
-		6B4F7EA02E642BB500564302 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 6B4F7E9F2E642BB500564302 /* Secrets.xcconfig */; };
 		6B4F7EA22E642BE200564302 /* Secrets.template.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 6B4F7EA12E642BE200564302 /* Secrets.template.xcconfig */; };
 		6B4F7EA42E643CAC00564302 /* OpenAIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4F7EA32E643CA500564302 /* OpenAIManager.swift */; };
 		6B51C1FA2A7233A50013ABAD /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B51C1F92A7233A50013ABAD /* LoadingView.swift */; };
@@ -70,6 +69,8 @@
 		6B68012B2D1FD9FA002B5454 /* EditViewController+EditSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B68012A2D1FD9F0002B5454 /* EditViewController+EditSections.swift */; };
 		6B6801322D2D6BE0002B5454 /* SpidPlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B6801312D2D6BE0002B5454 /* SpidPlayerViewController.xib */; };
 		6B6801332D2D6BE0002B5454 /* SpidPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6801302D2D6BE0002B5454 /* SpidPlayerViewController.swift */; };
+		6B6C941C2EC087D100ED232D /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 6B6C941B2EC087D100ED232D /* Secrets.xcconfig */; };
+		6B6C941E2EC2282300ED232D /* CaptionStyleGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6C941D2EC2282300ED232D /* CaptionStyleGenerator.swift */; };
 		6B6E266C2E03E0AD004F736B /* CGSize+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */; };
 		6B6E266E2E0D0B52004F736B /* EditViewController+VideosMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E266D2E0D0B52004F736B /* EditViewController+VideosMenu.swift */; };
 		6B71AAC42A9098A000C06619 /* SoundSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */; };
@@ -158,7 +159,7 @@
 		6BE9AD8D2E717E6B00DC6364 /* audio.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BE9AD8C2E717E6B00DC6364 /* audio.mp3 */; };
 		6BE9AD902E72FF8600DC6364 /* CurlDSL in Frameworks */ = {isa = PBXBuildFile; productRef = 6BE9AD8F2E72FF8600DC6364 /* CurlDSL */; };
 		6BE9AD922E7984DB00DC6364 /* Segment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD912E7984D700DC6364 /* Segment.swift */; };
-		6BE9AD942E9377FA00DC6364 /* ScalableTextContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD932E9377FA00DC6364 /* ScalableTextContainer.swift */; };
+		6BE9AD942E9377FA00DC6364 /* CaptionsTextContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD932E9377FA00DC6364 /* CaptionsTextContainer.swift */; };
 		6BF0194F2B565CAC00953AB6 /* SubscriptionOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF0194E2B565CAC00953AB6 /* SubscriptionOptionView.swift */; };
 		6BF019512B565CB800953AB6 /* SubscriptionOptionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BF019502B565CB800953AB6 /* SubscriptionOptionView.xib */; };
 		6BF019532B57DB7400953AB6 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF019522B57DB7400953AB6 /* AnalyticsManager.swift */; };
@@ -208,7 +209,6 @@
 		6B4F7E6F2E4F14BB00564302 /* CaptionsSettingsSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionsSettingsSelectionView.swift; sourceTree = "<group>"; };
 		6B4F7E732E51C75200564302 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
 		6B4F7E752E5497A100564302 /* test.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.m4a; sourceTree = "<group>"; };
-		6B4F7E9F2E642BB500564302 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		6B4F7EA12E642BE200564302 /* Secrets.template.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.template.xcconfig; sourceTree = "<group>"; };
 		6B4F7EA32E643CA500564302 /* OpenAIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIManager.swift; sourceTree = "<group>"; };
 		6B51C1F92A7233A50013ABAD /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
@@ -242,6 +242,8 @@
 		6B68012A2D1FD9F0002B5454 /* EditViewController+EditSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditViewController+EditSections.swift"; sourceTree = "<group>"; };
 		6B6801302D2D6BE0002B5454 /* SpidPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidPlayerViewController.swift; sourceTree = "<group>"; };
 		6B6801312D2D6BE0002B5454 /* SpidPlayerViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SpidPlayerViewController.xib; sourceTree = "<group>"; };
+		6B6C941B2EC087D100ED232D /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
+		6B6C941D2EC2282300ED232D /* CaptionStyleGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionStyleGenerator.swift; sourceTree = "<group>"; };
 		6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGSize+Extension.swift"; sourceTree = "<group>"; };
 		6B6E266D2E0D0B52004F736B /* EditViewController+VideosMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditViewController+VideosMenu.swift"; sourceTree = "<group>"; };
 		6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSectionVC.swift; sourceTree = "<group>"; };
@@ -330,7 +332,8 @@
 		6BE9AD8A2E71415000DC6364 /* TamarEisenman.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = TamarEisenman.mp3; sourceTree = "<group>"; };
 		6BE9AD8C2E717E6B00DC6364 /* audio.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = audio.mp3; sourceTree = "<group>"; };
 		6BE9AD912E7984D700DC6364 /* Segment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Segment.swift; sourceTree = "<group>"; };
-		6BE9AD932E9377FA00DC6364 /* ScalableTextContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScalableTextContainer.swift; sourceTree = "<group>"; };
+		6BE9AD932E9377FA00DC6364 /* CaptionsTextContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionsTextContainer.swift; sourceTree = "<group>"; };
+
 		6BF0194E2B565CAC00953AB6 /* SubscriptionOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionOptionView.swift; sourceTree = "<group>"; };
 		6BF019502B565CB800953AB6 /* SubscriptionOptionView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SubscriptionOptionView.xib; sourceTree = "<group>"; };
 		6BF019522B57DB7400953AB6 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
@@ -406,8 +409,8 @@
 		6B4F7E9E2E642B9000564302 /* Config */ = {
 			isa = PBXGroup;
 			children = (
-				6B4F7E9F2E642BB500564302 /* Secrets.xcconfig */,
 				6B4F7EA12E642BE200564302 /* Secrets.template.xcconfig */,
+				6B6C941B2EC087D100ED232D /* Secrets.xcconfig */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -468,7 +471,7 @@
 		6BAC9BBD2A666E500071A41B /* CustomViews */ = {
 			isa = PBXGroup;
 			children = (
-				6BE9AD932E9377FA00DC6364 /* ScalableTextContainer.swift */,
+				6BE9AD932E9377FA00DC6364 /* CaptionsTextContainer.swift */,
 				6BAC9BBE2A666EBE0071A41B /* TopIndicatorView.xib */,
 				6BAC9BC02A666EEA0071A41B /* TopIndicatorView.swift */,
 				6B6700932A6A6C13006F2980 /* PhotosHeader.swift */,
@@ -542,6 +545,7 @@
 				6B55F3072E01446100259275 /* CMTime+Extension.swift */,
 				6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */,
 				6B4F7E732E51C75200564302 /* SpeechRecognizer.swift */,
+				6B6C941D2EC2282300ED232D /* CaptionStyleGenerator.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -706,7 +710,6 @@
 				6BAFED952DECAD2500AF13E1 /* StrokeColorEditSection.xib in Resources */,
 				6BCAF7ED2A63C5100039BE15 /* SpeedSectionVC.xib in Resources */,
 				6BF019512B565CB800953AB6 /* SubscriptionOptionView.xib in Resources */,
-				6B4F7EA02E642BB500564302 /* Secrets.xcconfig in Resources */,
 				6B67009D2A6BCAD2006F2980 /* ProgressIndicatorView.xib in Resources */,
 				6B04F5862CB916FA000C8C59 /* CropSectioVC.xib in Resources */,
 				6BAFED802DD0638300AF13E1 /* FontEditSectionVC.xib in Resources */,
@@ -718,6 +721,8 @@
 				6B0944A32DC219D7009FBFB2 /* ColorEditSectionVC.xib in Resources */,
 				6BB4EE842A8F3881006CF87C /* BlackTransparentOverlay.xib in Resources */,
 				6B9610262D49F1C000DEE296 /* TextCell.xib in Resources */,
+				6B6C941C2EC087D100ED232D /* Secrets.xcconfig in Resources */,
+
 				6BE9AD8B2E71415000DC6364 /* TamarEisenman.mp3 in Resources */,
 				6B4F7E762E5497A100564302 /* test.m4a in Resources */,
 				6B7D10852BA70AE4002DD73F /* remote_config_defaults.plist in Resources */,
@@ -826,6 +831,7 @@
 				6B92E3672A7E2F3C008CB22A /* PhotoLibraryUsageDisabledView.swift in Sources */,
 				6B04F5852CB916FA000C8C59 /* CropSectioVC.swift in Sources */,
 				6BAFED822DD063FB00AF13E1 /* SpidFont.swift in Sources */,
+				6B6C941E2EC2282300ED232D /* CaptionStyleGenerator.swift in Sources */,
 				6B55F3082E01446100259275 /* CMTime+Extension.swift in Sources */,
 				6B6700A22A6CD981006F2980 /* SplashViewController.swift in Sources */,
 				6B4F7E6C2E4C934700564302 /* CaptionsViewModel.swift in Sources */,
@@ -857,7 +863,7 @@
 				6BAFED962DECAD2500AF13E1 /* StrokeColorEditSection.swift in Sources */,
 				6B0C7D7B2C89E4A700063CBE /* NotificationsManager.swift in Sources */,
 				6BD0718C2DAA574A00D6744D /* PaddingLabel.swift in Sources */,
-				6BE9AD942E9377FA00DC6364 /* ScalableTextContainer.swift in Sources */,
+				6BE9AD942E9377FA00DC6364 /* CaptionsTextContainer.swift in Sources */,
 				6B9610162D43C8C700DEE296 /* SpidLabel+Extension.swift in Sources */,
 				6B923FA82C2EA3A800CD1381 /* MonthlySubscriptionVC.swift in Sources */,
 				6B6801242D1557A4002B5454 /* TrimmerSectionVC.swift in Sources */,
@@ -951,7 +957,7 @@
 /* Begin XCBuildConfiguration section */
 		6BE9A2FA2A5FC80D00FF8CB0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6B4F7E9F2E642BB500564302 /* Secrets.xcconfig */;
+			baseConfigurationReference = 6B6C941B2EC087D100ED232D /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1012,7 +1018,7 @@
 		};
 		6BE9A2FB2A5FC80D00FF8CB0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6B4F7E9F2E642BB500564302 /* Secrets.xcconfig */;
+			baseConfigurationReference = 6B6C941B2EC087D100ED232D /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
