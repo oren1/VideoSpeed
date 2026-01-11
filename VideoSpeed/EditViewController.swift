@@ -499,16 +499,41 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         for (index, caption) in captions.enumerated() {
            // For every caption, create a scaled UIImageView and add it's layer to the video`s overlay layer
-            
             // 1. Assign the current caption to the captions container label
             let textLayer = CATextLayer()
             textLayer.frame = CGRect(origin: .zero, size: captionsContainerViewScaledSize)
-//        
+            textLayer.alignmentMode = .center
+            let backgroundTextLayer = CATextLayer()
+            backgroundTextLayer.frame = CGRect(origin: .zero, size: captionsContainerViewScaledSize)
+            backgroundTextLayer.alignmentMode = .center
+
+            let strokeAttributedString = NSMutableAttributedString(attributedString: caption.text)
+            strokeAttributedString.addAttributes([
+                .foregroundColor: UIColor.clear.cgColor,
+                .strokeColor: UIColor.black.cgColor,
+                .strokeWidth: 30
+            ], range: NSRange(location: 0, length: caption.text.length))
+        
+            backgroundTextLayer.string =  strokeAttributedString
+            backgroundTextLayer.isWrapped = true
+            
+            // Crisp text (VERY IMPORTANT)
+            backgroundTextLayer.contentsScale = UIScreen.main.scale
+
+            
+            backgroundTextLayer.position = CGPoint(x: viewModel.center.x * scaleX, y: viewModel.center.y * scaleY)
+//            textLayer.backgroundColor = UIColor.green.cgColor
+            backgroundTextLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+            backgroundTextLayer.transform = CATransform3DMakeRotation(viewModel.fullRotation, 0, 0, 1)
+
+            backgroundTextLayer.opacity = 0
+            
+            
             // Text
             textLayer.string = caption.text
 //            textLayer.alignmentMode = .center
             textLayer.isWrapped = true
-    
+            
             // Crisp text (VERY IMPORTANT)
             textLayer.contentsScale = UIScreen.main.scale 
 
@@ -539,10 +564,13 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             textLayer.add(show, forKey: "show")
             textLayer.add(hide, forKey: "hide")
             
+            backgroundTextLayer.add(show, forKey: "show")
+            backgroundTextLayer.add(hide, forKey: "hide")
             
             print("show.beginTime \(show.beginTime)")
             print("hide.begin \(show.beginTime)")
 
+            layer.addSublayer(backgroundTextLayer)
             layer.addSublayer(textLayer)
 
         }

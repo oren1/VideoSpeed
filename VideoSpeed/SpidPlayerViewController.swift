@@ -373,27 +373,9 @@ class SpidPlayerViewController: UIViewController {
         let currentVideoTime = player.currentTime().seconds
 //        let caption = CaptionStyleGenerator.getCurrentCaption(captions: captions, time: currentVideoTime)
         let caption = CaptionStyleGenerator.getCurrentWordByWordCaption(captions: captions, time: currentVideoTime)
-
-        captionsTextContainer.label.attributedText = caption.text
+        captionsTextContainer.updateText(attributedText: caption.text)
+//        captionsTextContainer.label.attributedText = caption.text
     }
-    
-//    @objc func onCaptionsTimer() {
-//        guard let segments = UserDataManager.main.transcription?.segments else { return }
-//        for segment in segments {
-//            let currentVideoTime = player.currentTime().seconds
-//            if segment.start.isLess(than: currentVideoTime) && currentVideoTime.isLess(than: segment.end) {
-////                captionsTextContainer.label.text = segment.text
-//                
-////                captionsTextContainer.label.attributedText = CaptionStyleGenerator.generateOneWordCaptionStyle(segment: segment, time: currentVideoTime)
-//                
-//                captionsTextContainer.label.attributedText = CaptionStyleGenerator.generateOneByOneCaptionStyle(segment: segment, time: currentVideoTime)
-//                
-//                break
-////                print("Caption: \(segment.text)")
-//            }
-//        }
-//    }
-    
 
     func updateSliderFor(time: CMTime) async {
         let sliderValue = await getSliderValue(time.seconds)

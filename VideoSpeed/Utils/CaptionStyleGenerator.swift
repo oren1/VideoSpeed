@@ -280,17 +280,13 @@ class CaptionStyleGenerator {
                let captionAttributtedText = NSMutableAttributedString(string: segment.text)
 
                // 3. Give specific attributes for the current phrase range
-               captionAttributtedText.addAttributes([
-                .paragraphStyle: paragraphStyle,
-                .foregroundColor: UIColor.white,
-//                .backgroundColor: UIColor.green,
-                .font: UIFont.systemFont(ofSize: fontSize, weight: .semibold)
-               ], range: nsRange)
+               captionAttributtedText.addAttributes(attributes, range: nsRange)
 
                captionAttributtedText.addAttributes([
                 .foregroundColor: UIColor.green,
-                .font: UIFont.systemFont(ofSize: fontSize, weight: .bold),
-                .strokeColor: UIColor.black,
+                .font: UIFont.systemFont(ofSize: fontSize, weight: .semibold),
+//                .strokeColor: UIColor.black,
+//                .strokeWidth: -2.0,
                ], range: lastWordNSRange)
 //               captionAttributtedText.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: segment.text.count))
 

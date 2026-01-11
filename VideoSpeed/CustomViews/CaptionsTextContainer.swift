@@ -12,6 +12,8 @@ import Combine
 class CaptionsTextContainer: UIView {
     
     let label = UILabel()
+    let backgroundLabel = UILabel()
+    
     private var baseFontSize: CGFloat = 32
     private var currentScale: CGFloat = 1.0
     private var currentRotation: CGFloat = 0.0
@@ -26,6 +28,8 @@ class CaptionsTextContainer: UIView {
         super.init(frame: frame)
         setupView()
         setupViewModel()
+        // Important to call the labels setup in this order so the backgroundLabel is behind the label
+        setupBackgroundLabel(frame: frame)
         setupLabel(frame: frame)
 //        setupTextLayer(frame: frame)
         setupGesture()
@@ -60,7 +64,7 @@ class CaptionsTextContainer: UIView {
        
         let scale = 4.0
 
-        let text = "Pinch to scale me uhguy hygu khgcd"
+//        let text = "Pinch to scale me uhguy hygu khgcd"
         label.textColor = .white
         label.font = UIFont.systemFont(ofSize: baseFontSize * scale)
         label.textAlignment = .center
@@ -68,69 +72,54 @@ class CaptionsTextContainer: UIView {
         label.adjustsFontSizeToFitWidth = false
         label.lineBreakMode = .byWordWrapping
     
-//        label.backgroundColor = .red
         let scaledWidth = frame.width * scale
         let scaledHeight = frame.height * scale
 
         let scaledFontSize = baseFontSize * scale
-        
-//        let labelHeight: CGFloat = text.height(withConstrainedWidth: frame.width, font: UIFont.systemFont(ofSize: baseFontSize))
-//        label.frame = CGRect(x: 0, y: 0, width: frame.width, height: labelHeight)
-        
-//        let labelHeight: CGFloat = text.height(withConstrainedWidth: scaledWidth, font: UIFont.systemFont(ofSize: scaledFontSize))
-//        label.frame = CGRect(x: 0, y: 0, width: scaledWidth, height: labelHeight)
-
+    
        
         label.frame = CGRect(x: 0, y: 0, width: scaledWidth , height: scaledHeight)
         
-        
-//        label.sizeToFit()
 
-        
-//        let bounds = label.bounds
-//        label.font = label.font.withSize(200)
-//        label.bounds.size = label.intrinsicContentSize
-//        
-////        label.layer.cornerRadius = label.bounds.size.height / 10
-//        
-//        let scaleX = label.bounds.size.width / label.frame.size.width
-//        let scaleY = label.bounds.size.height / label.frame.size.height
-//
-//        
         label.transform = CGAffineTransform(scaleX: 1/scale, y: 1/scale)
 //        label.backgroundColor = .green
         label.center = CGPoint(x: self.frame.size.width / 2.0, y: self.frame.size.height / 2.0)
 //        view.addSubview(label)
         
         addSubview(label)
-        
-        
-        
-//        let label = label
-//        let bounds = label.bounds
-//        print("bounds \(bounds)")
-//        label.font = label.font.withSize(200)
-//        label.bounds.size = label.intrinsicContentSize
-////        label.layer.cornerRadius = label.bounds.size.height / 10
-//        
-//        let scaleX = bounds.size.width / label.frame.size.width
-//        let scaleY = bounds.size.height / label.frame.size.height
-//        
-//        label.transform = CGAffineTransform(scaleX: scaleX, y: scaleY)
-//        label.center = .init(x: self.frame.width / 2, y: self.frame.height / 2)
 
-        
-//        label.translatesAutoresizingMaskIntoConstraints = false
-//        let constraints = [
-//            label.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
-//            label.leftAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leftAnchor),
-//            label.rightAnchor.constraint(equalTo: self.safeAreaLayoutGuide.rightAnchor),
-////            label.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
-//        ]
-//        
-//        NSLayoutConstraint.activate(constraints)
-//        setNeedsLayout()
     }
+    
+    private func setupBackgroundLabel(frame: CGRect) {
+       
+        let scale = 4.0
+
+//        let text = "Pinch to scale me uhguy hygu khgcd"
+//        backgroundLabel.textColor = .white
+//        backgroundLabel.font = UIFont.systemFont(ofSize: baseFontSize * scale)
+        backgroundLabel.textAlignment = .center
+        backgroundLabel.numberOfLines = 0
+        backgroundLabel.adjustsFontSizeToFitWidth = false
+        backgroundLabel.lineBreakMode = .byWordWrapping
+    
+        let scaledWidth = frame.width * scale
+        let scaledHeight = frame.height * scale
+
+        let scaledFontSize = baseFontSize * scale
+    
+       
+        backgroundLabel.frame = CGRect(x: 0, y: 0, width: scaledWidth , height: scaledHeight)
+        
+
+        backgroundLabel.transform = CGAffineTransform(scaleX: 1/scale, y: 1/scale)
+//        backgroundLabel.backgroundColor = .green
+        backgroundLabel.center = CGPoint(x: self.frame.size.width / 2.0, y: self.frame.size.height / 2.0)
+//        view.addSubview(label)
+        
+        addSubview(backgroundLabel)
+        
+    }
+    
     private func setupTextLayer(frame: CGRect) {
         let textLayer = CATextLayer()
 
@@ -174,7 +163,20 @@ class CaptionsTextContainer: UIView {
         let convertedPoint = closeButton.convert(point, from: self)
         return closeButton.bounds.contains(convertedPoint)
     }
-
+    
+    // MARK: - Gestures
+    func updateText(attributedText: NSAttributedString) {
+        label.attributedText = attributedText
+        
+        let strokeAttributedString = NSMutableAttributedString(attributedString: attributedText)
+        strokeAttributedString.addAttributes([
+            .foregroundColor: UIColor.clear.cgColor,
+            .strokeColor: UIColor.black.cgColor,
+            .strokeWidth: 30
+        ], range: NSRange(location: 0, length: attributedText.length))
+        backgroundLabel.attributedText = strokeAttributedString
+    }
+    
     // MARK: - Gestures
     private func setupGesture() {
         let pinch = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
