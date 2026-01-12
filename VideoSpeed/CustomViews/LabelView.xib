@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -27,11 +27,11 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6yl-OK-8X7">
-                    <rect key="frame" x="-15" y="-15" width="30" height="30"/>
+                    <rect key="frame" x="-20" y="-20" width="40" height="40"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="30" id="7Kv-Tj-mbe"/>
-                        <constraint firstAttribute="height" constant="30" id="rvU-Ob-Ge3"/>
+                        <constraint firstAttribute="width" constant="40" id="7Kv-Tj-mbe"/>
+                        <constraint firstAttribute="height" constant="40" id="rvU-Ob-Ge3"/>
                     </constraints>
                     <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <state key="normal" title="Button"/>
@@ -49,8 +49,8 @@
                 <constraint firstItem="7HV-Us-1tq" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="5RR-bg-fZA"/>
                 <constraint firstAttribute="trailing" secondItem="7HV-Us-1tq" secondAttribute="trailing" id="6Kg-Bt-CAw"/>
                 <constraint firstItem="7HV-Us-1tq" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="RFv-FU-a8e"/>
-                <constraint firstItem="6yl-OK-8X7" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="-15" id="dvn-YF-dJH"/>
-                <constraint firstItem="6yl-OK-8X7" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="-15" id="pcB-67-fei"/>
+                <constraint firstItem="6yl-OK-8X7" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="-20" id="dvn-YF-dJH"/>
+                <constraint firstItem="6yl-OK-8X7" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="-20" id="pcB-67-fei"/>
                 <constraint firstAttribute="bottom" secondItem="7HV-Us-1tq" secondAttribute="bottom" id="uds-Vl-ScG"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>

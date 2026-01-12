@@ -44,6 +44,7 @@ class LabelView: UIView {
                 }.store(in: &subscribers)
             
             viewModel.$scale
+                .dropFirst()
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] scale in
                     guard let self = self else { return }
@@ -53,6 +54,10 @@ class LabelView: UIView {
                     )
                  cancelButton.transform = cancelButton.transform.scaledBy(x: 1/scale, y: 1/scale)
                  viewModel.fullScale *= scale
+//                    viewModel.fullScale *= scale
+                    print("scale: \(scale)")
+                    print("fullscale: \(viewModel.fullScale)")
+
                 }.store(in: &subscribers)
         
             viewModel.$rotation

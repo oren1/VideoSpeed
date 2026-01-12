@@ -166,6 +166,8 @@ class SpidPlayerViewController: UIViewController {
             self.videoContainerView.addSubview(labelView)
             
             labelView.transform = labelView.transform.scaledBy(x: scale, y: scale)
+            labelView.cancelButton.transform = labelView.cancelButton.transform.scaledBy(x: 1/scale, y: 1/scale)
+
             labelView.transform = labelView.transform.rotated(by: rotation)
         }
         
