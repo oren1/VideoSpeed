@@ -103,7 +103,11 @@ class AssetVideoScrollView: UIScrollView {
     }
     
     private func getThumbnailSizeFor(asset: AVAsset) -> CGSize? {
-        guard let track = asset.tracks(withMediaType: AVMediaType.video).first else { return nil}
+        guard let track = asset.tracks(withMediaType: AVMediaType.video).first else {
+            print("getThumbnailSizeFor: no tracks")
+
+            return nil
+        }
 
         let assetSize = track.naturalSize.applying(track.preferredTransform)
         let ratio: CGFloat

@@ -1035,7 +1035,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 Task {
                     self.hideProFeatureAlert()
                     await IAPManager.startPurchase(productIdentifier: SpidProducts.freeTrialYearlySubscription, on: self) { [weak self] in
-                        self?.hideLoading()
+                        Task {@MainActor in
+                            self?.hideLoading()
+                        }
                     }
                 }
             }

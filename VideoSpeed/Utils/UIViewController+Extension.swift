@@ -46,6 +46,7 @@ extension UIViewController {
     
     func showLoading() {
         let loadingView = LoadingView()
+        loadingView.backgroundColor = .green
         loadingView.tag = loadinViewTag
         disablePresentaionDismiss()
         loadingView.activityIndicator.startAnimating()

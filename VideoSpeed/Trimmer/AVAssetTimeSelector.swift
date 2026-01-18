@@ -49,7 +49,7 @@ public class AVAssetTimeSelector: UIView, UIScrollViewDelegate {
     public func preGenerateImagesWith(trimmerHeight: CGFloat) async -> [CGImage]?  {
         if let asset = asset {
             let trimmerAssetGenerator = TrimmerAssetsGenerator(asset: asset,
-                                                               videoComposition: videoComposition,
+//                                                               videoComposition: videoComposition,
                                                                trimmerWidth: UIScreen.main.bounds.width - 70,
                                                                trimmerHeight: trimmerHeight)
             assetPreview.images = await trimmerAssetGenerator.generateThumbnailImages()
