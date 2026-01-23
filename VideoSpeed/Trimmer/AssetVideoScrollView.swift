@@ -71,17 +71,43 @@ class AssetVideoScrollView: UIScrollView {
             return
         }
 
-        
+        print("thumbnailSize: \(thumbnailSize)")
         generator?.cancelAllCGImageGeneration()
         removeFormerThumbnails()
-        let newContentSize = setContentSize(for: asset, frame: frame)
+        print("content view bounds: \(contentView.bounds)")
+        print("frame: \(String(describing: frame))")
+//        let newContentSize = setContentSize(for: asset, frame: frame)
+//        print("newContentSize: \(newContentSize)")
 //        let refFrame = frame != nil ? frame! : self.frame
         let visibleThumbnailsCount = Int(ceil(frame.width / thumbnailSize.width))
-        let thumbnailCount = Int(ceil(newContentSize.width / thumbnailSize.width))
-        addThumbnailViews(thumbnailCount, size: thumbnailSize)
-        let timesForThumbnail = getThumbnailTimes(for: asset, numberOfThumbnails: thumbnailCount)
+        print("visibleThumbnailsCount: \(visibleThumbnailsCount)")
+//        let thumbnailCount = Int(ceil(newContentSize.width / thumbnailSize.width))
+        
+        addThumbnailViews(visibleThumbnailsCount, size: thumbnailSize)
+        let timesForThumbnail = getThumbnailTimes(for: asset, numberOfThumbnails: visibleThumbnailsCount)
         generateImages(for: asset, at: timesForThumbnail, with: thumbnailSize, visibleThumnails: visibleThumbnailsCount, completion: completion)
     }
+    
+    
+//    internal func regenerateThumbnails(for asset: AVAsset, completion: @escaping ([CGImage]) -> Void) {
+//        // Calculating the thumbnail size by taking the frame height of the assetPreview as the height,
+//        // and width by multiplyng the height by the aspect ratio of the real asset video track
+//        guard let thumbnailSize = getThumbnailFrameSize(from: asset), thumbnailSize.width != 0 else {
+//            print("Could not calculate the thumbnail size.")
+//            return
+//        }
+//
+//        
+//        generator?.cancelAllCGImageGeneration()
+//        removeFormerThumbnails()
+//        let newContentSize = setContentSize(for: asset, frame: frame)
+////        let refFrame = frame != nil ? frame! : self.frame
+//        let visibleThumbnailsCount = Int(ceil(frame.width / thumbnailSize.width))
+//        let thumbnailCount = Int(ceil(newContentSize.width / thumbnailSize.width))
+//        addThumbnailViews(thumbnailCount, size: thumbnailSize)
+//        let timesForThumbnail = getThumbnailTimes(for: asset, numberOfThumbnails: thumbnailCount)
+//        generateImages(for: asset, at: timesForThumbnail, with: thumbnailSize, visibleThumnails: visibleThumbnailsCount, completion: completion)
+//    }
     
     internal func addThumbnails(for asset: AVAsset) {
         // Calculating the thumbnail size by taking the frame height of the assetPreview as the height,
@@ -94,6 +120,7 @@ class AssetVideoScrollView: UIScrollView {
         removeFormerThumbnails()
         
         if let images =  images {
+            print("images.count \(images.count)")
             addThumbnailViews(images.count, size: thumbnailSize)
 
             for (index, cgImage) in images.enumerated() {

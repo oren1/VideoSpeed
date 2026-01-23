@@ -49,24 +49,19 @@ class TrimmerSectionVC: SectionViewController {
             trimmerView.mainColor = UIColor.systemBlue
             trimmerView.maskColor = UIColor.black
             trimmerView.positionBarColor = UIColor.clear
-            let thumbnailImages = await trimmerView.preGenerateImagesWith(trimmerHeight: trimmerHeight)
-            await UserDataManager.main.currentSpidAsset.updateThumbnailImages(images: thumbnailImages)
-            trimmerView.regenerateThumbnails()
-//            trimmerView.assetPreview.images = []
-            // 1. create a new PlayerItem with the original video asset
-           
-            
-//            delegate.spidPlayerController.player.currentItem?.observe(\.asset, changeHandler: { playerItem, change in
-//                print("change: \(change)")
-//            })
-//            taylor.observe(\Person.name, options: .new) { person, change in
-//                print("I'm now called \(person.name)")
-//            }
         }
        
 
     }
-
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        trimmerView.generateThumbnails { thumbnailImages in
+            Task {
+                await UserDataManager.main.currentSpidAsset.updateThumbnailImages(images: thumbnailImages)
+            }
+        }
+        
+    }
      @objc private func videoSelectionChanged() {
        
         Task { @MainActor in
