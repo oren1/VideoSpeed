@@ -18,7 +18,12 @@ class YearlySubscriptionPurchaseVC: PurchaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier}
-        priceLabel?.text = "\(product.localizedPrice) / year"
+        if productIdentifier == SpidProducts.freeTrialYearlySubscription {
+            priceLabel.text = "7 days free, then \(product!.localizedPrice) / year"
+        }
+        else {
+            priceLabel?.text = "\(product.localizedPrice) / year"
+        }
         
     }
     

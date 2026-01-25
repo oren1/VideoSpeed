@@ -103,5 +103,10 @@ class AnalyticsManager {
         let eventName = "couldnt_get_products"
         Analytics.logEvent(eventName, parameters: [:])
     }
+    
+    static func getProAndSaveVideoTapped() {
+        let eventName = "get_pro_and_save_video_tapped"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
 }
 

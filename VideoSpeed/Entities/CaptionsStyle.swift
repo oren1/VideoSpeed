@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 enum captionsType {
     case oneWord, wordByWord, wordHighlighted

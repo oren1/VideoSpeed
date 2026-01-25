@@ -22,12 +22,14 @@ class TrimmerAssetsGenerator {
         generator = AVAssetImageGenerator(asset: asset)
         generator.videoComposition = videoComposition
         generator.appliesPreferredTrackTransform = true
-       
     }
     
     
     func generateThumbnailImages() async -> [CGImage]? {
-        guard let thumbnailSize = getThumbnailSize() else { return nil }
+        guard let thumbnailSize = getThumbnailSize() else {
+            print("no thumbnail size")
+            return nil
+        }
         let scaledSize = await CGSize(width: thumbnailSize.width * UIScreen.main.scale, height: thumbnailSize.height * UIScreen.main.scale)
         generator.maximumSize = scaledSize
         let visibleThumbnailsCount = Int(ceil(trimmerWidth / thumbnailSize.width))

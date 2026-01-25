@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -27,13 +27,23 @@
                         <constraint firstAttribute="height" constant="60" id="qJW-PP-kcc"/>
                     </constraints>
                 </view>
+                <activityIndicatorView hidden="YES" opaque="NO" tag="4" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="JZc-Ja-zz3">
+                    <rect key="frame" x="186.66666666666666" y="358" width="20" height="20"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="20" id="V6O-nz-9fY"/>
+                        <constraint firstAttribute="height" constant="20" id="ct1-wb-kb0"/>
+                    </constraints>
+                    <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                </activityIndicatorView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="Yj5-pr-1WG" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="2XD-Xs-67Y"/>
+                <constraint firstItem="JZc-Ja-zz3" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="XmF-gd-Otw"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="Yj5-pr-1WG" secondAttribute="trailing" constant="20" id="pW4-rB-zds"/>
                 <constraint firstItem="Yj5-pr-1WG" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="20" id="rVN-N0-OWg"/>
+                <constraint firstItem="Yj5-pr-1WG" firstAttribute="top" secondItem="JZc-Ja-zz3" secondAttribute="bottom" constant="18" id="xcH-WX-ulc"/>
             </constraints>
             <point key="canvasLocation" x="216.03053435114504" y="-203.52112676056339"/>
         </view>

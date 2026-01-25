@@ -39,6 +39,9 @@ class TrimmerSectionVC: SectionViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(videoSelectionChanged), name: Notification.Name.VideoSelectionChanged, object: nil)
         
         Task {
+            let originalAsset = await UserDataManager.main.currentSpidAsset.getOriginalAsset()
+            playerItem = AVPlayerItem(asset: originalAsset)
+            
             trimmerView.asset = await UserDataManager.main.currentSpidAsset.getAsset()
 //            trimmerView.asset = delegate.spidPlayerController.player.currentItem?.asset
             trimmerView.delegate = self
@@ -46,27 +49,22 @@ class TrimmerSectionVC: SectionViewController {
             trimmerView.mainColor = UIColor.systemBlue
             trimmerView.maskColor = UIColor.black
             trimmerView.positionBarColor = UIColor.clear
-            let thumbnailImages = await trimmerView.preGenerateImagesWith(trimmerHeight: trimmerHeight)
-            await UserDataManager.main.currentSpidAsset.updateThumbnailImages(images: thumbnailImages)
-            trimmerView.regenerateThumbnails()
-//            trimmerView.assetPreview.images = []
-            // 1. create a new PlayerItem with the original video asset
-            let originalAsset = await UserDataManager.main.currentSpidAsset.getOriginalAsset()
-            playerItem = AVPlayerItem(asset: originalAsset)
-            
-//            delegate.spidPlayerController.player.currentItem?.observe(\.asset, changeHandler: { playerItem, change in
-//                print("change: \(change)")
-//            })
-//            taylor.observe(\Person.name, options: .new) { person, change in
-//                print("I'm now called \(person.name)")
-//            }
         }
        
 
     }
-
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        trimmerView.generateThumbnails { thumbnailImages in
+            Task {
+                await UserDataManager.main.currentSpidAsset.updateThumbnailImages(images: thumbnailImages)
+            }
+        }
+        
+    }
      @objc private func videoSelectionChanged() {
-        Task {
+       
+        Task { @MainActor in
             /* Replace the current PlayerItem with a new PlayerItem that is loaded with the current
                 selected SpidAsset's video */
             let originalAsset = await UserDataManager.main.currentSpidAsset.getOriginalAsset()
@@ -91,9 +89,12 @@ class TrimmerSectionVC: SectionViewController {
                 trimmerView.updateRightConstraint(constatnt: rightConstraintConstant)
                 trimmerView.updateLeftConstraint(constatnt: leftConstraintConstant)
             }
-            
+           
         }
     }
+    
+    
+    
     
     func startPlaybackTimeChecker() {
 
@@ -140,7 +141,6 @@ extension TrimmerSectionVC: TrimmerViewDelegate {
             await currentSpidAsset?.updateRightHandleConstraintConstant(constant: trimmerView.rightConstraint!.constant)
             await currentSpidAsset?.updateLeftHandleConstraintConstant(constant: trimmerView.leftConstraint!.constant)
             timeRangeDidChange?(timeRange)
-
         }
     }
 
@@ -149,8 +149,8 @@ extension TrimmerSectionVC: TrimmerViewDelegate {
             await MainActor.run {
                 delegate?.spidPlayerController?.player?.pause()
             }
-            // 2. Set the playerController's player with the new PlayerItem
-            delegate?.spidPlayerController?.player?.replaceCurrentItem(with: playerItem!)
+            // 2. Set the playerController's player with the new PlayerItem            
+            delegate?.spidPlayerController?.player?.replaceCurrentItem(with: playerItem)
             await delegate?.spidPlayerController?.player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         }
         

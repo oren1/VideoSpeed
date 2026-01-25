@@ -1288,8 +1288,16 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 self?.hideProFeatureAlert()
             }
             usingProFeaturesAlertView.onContinue = { [weak self] in
-                self?.showPurchaseViewController()
-                self?.hideProFeatureAlert()
+                guard let self = self else { return }
+                AnalyticsManager.getProAndSaveVideoTapped()
+                Task {
+                    self.hideProFeatureAlert()
+                    await IAPManager.startPurchase(productIdentifier: SpidProducts.freeTrialYearlySubscription, on: self) { [weak self] in
+                        Task {@MainActor in
+                            self?.hideLoading()
+                        }
+                    }
+                }
             }
             let constraints = [
                 usingProFeaturesAlertView.heightAnchor.constraint(equalToConstant: 350),
@@ -1379,9 +1387,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //        default:
 //            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
 //        }
-        
-        purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
 
+        purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
         purchaseViewController.onDismiss = { [weak self] in
             if let _ = SpidProducts.store.userPurchasedProVersion() {
                 self?.hideProButton()
