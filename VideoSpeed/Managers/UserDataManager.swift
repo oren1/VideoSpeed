@@ -25,6 +25,7 @@ class UserDataManager: ObservableObject {
             NotificationCenter.default.post(name: Notification.Name("usingSliderChanged"), object: nil)
         }
     }
+    let hasLaunchedKey = "hasLaunchedBefore"
 
     @Published
     var textOverlayLabels: [SpidLabel] = []
@@ -177,5 +178,49 @@ class UserDataManager: ObservableObject {
             }
             return UserDefaults.standard.double(forKey: "lastPurchaseScreenApearance")
         }
+    }
+    
+    func setHasLaunchedKeyIfNeeded() {
+        if !UserDefaults.standard.bool(forKey: hasLaunchedKey) {
+            print("First launch ever!")
+            UserDefaults.standard.set(true, forKey: hasLaunchedKey)
+        }
+    }
+   
+    func hasLaunchedAppBefore() -> Bool {
+        return UserDefaults.standard.bool(forKey: hasLaunchedKey)
+    }
+    
+    var sentNotificationPermissionAnalyticStatus : Bool {
+        set {
+            UserDefaults.standard.set(newValue, forKey: "sentNotificationPermissionAnalyticStatus")
+        }
+        get {
+            return UserDefaults.standard.bool(forKey: "sentNotificationPermissionAnalyticStatus")
+        }
+    }
+    
+    func setGiftDueDate(giftDueDate: Date) {
+        let defaults = UserDefaults.standard
+
+        if let oldDueDate = defaults.object(forKey: "giftDueDate") as? Date {
+           if oldDueDate < Date() {
+                UserDefaults.standard.set(giftDueDate, forKey: "giftDueDate")
+            }
+        }
+        else {
+            UserDefaults.standard.set(giftDueDate, forKey: "giftDueDate")
+        }
+      
+    }
+    
+    func isGiftActive() -> Bool {
+        let defaults = UserDefaults.standard
+
+        guard let giftDueDate = defaults.object(forKey: "giftDueDate") as? Date else {
+            return false
+        }
+
+        return Date() < giftDueDate
     }
 }

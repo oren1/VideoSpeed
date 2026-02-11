@@ -108,5 +108,23 @@ class AnalyticsManager {
         let eventName = "get_pro_and_save_video_tapped"
         Analytics.logEvent(eventName, parameters: [:])
     }
+    
+    static func disabledNotificationsOnPermissionRequest() {
+        if !UserDataManager.main.sentNotificationPermissionAnalyticStatus {
+            print("disabledNotificationsOnPermissionRequest")
+            let eventName = "disabled_notifications_on_request"
+            Analytics.logEvent(eventName, parameters: [:])
+            UserDataManager.main.sentNotificationPermissionAnalyticStatus = true
+        }
+    }
+    
+    static func enabledNotificationsOnRequest() {
+        if !UserDataManager.main.sentNotificationPermissionAnalyticStatus {
+            print("enabledNotificationsOnRequest")
+            let eventName = "enabled_notifications_on_request"
+            Analytics.logEvent(eventName, parameters: [:])
+            UserDataManager.main.sentNotificationPermissionAnalyticStatus = true
+        }
+    }
 }
 

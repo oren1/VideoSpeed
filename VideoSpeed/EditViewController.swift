@@ -13,6 +13,11 @@ import FirebaseRemoteConfig
 import SwiftUI
 import Combine
 
+enum PermissionLocation: String {
+    case mainScreen = "mainScreen"
+    case editScreen = "editScreen"
+}
+
 enum ExportButtonType: String {
     case noText = "noText"
     case withText = "withText"
@@ -250,6 +255,11 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         super.viewDidAppear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false;
         
+        let notificationPermissionLocation = RemoteConfig.remoteConfig().configValue(forKey: "notificationPermissionLocation").stringValue ?? ""
+        if let permissionLocation = PermissionLocation(rawValue: notificationPermissionLocation),
+           permissionLocation == .editScreen {
+            PushNotificationManager.main.registerForPushNotifications()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -599,7 +609,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         AnalyticsManager.exportButtonTapped()
         
         guard  SpidProducts.store.userPurchasedProVersion() != nil ||
-                UserDataManager.main.userBenefitStatus == .entitled else {
+        UserDataManager.main.isGiftActive() else {
             
             if !usingProFeatures() {
                 Task {

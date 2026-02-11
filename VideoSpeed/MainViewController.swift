@@ -383,6 +383,12 @@ class MainViewController: UIViewController {
             }
 
             Task {@MainActor [weak self] in
+
+                let notificationPermissionLocation = RemoteConfig.remoteConfig().configValue(forKey: "notificationPermissionLocation").stringValue ?? ""
+                if let permissionLocation = PermissionLocation(rawValue: notificationPermissionLocation),
+                    permissionLocation == .mainScreen {
+                    await PushNotificationManager.main.registerForPushNotificationsAsync()
+                }
                 let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
                 UserDataManager.main.currentSpidAsset = UserDataManager.main.spidAssets.first
                 vc.asset = await UserDataManager.main.currentSpidAsset.getAsset()
