@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import FirebaseRemoteConfig
 import StoreKit
+import SwiftUI
 
 let loadinViewTag = 12
 
@@ -30,7 +31,7 @@ extension UIViewController {
         return purchaseViewController
     }
     
-    func showVerificationError(error: VerificationResult<Transaction>.VerificationError) {
+    func showVerificationError(error: VerificationResult<StoreKit.Transaction>.VerificationError) {
         let alert = UIAlertController(
           title: "Could't Complete Purchase",
           message: error.localizedDescription,
@@ -81,5 +82,18 @@ extension UIViewController {
             willMove(toParent: nil)
             view.removeFromSuperview()
             removeFromParent()
+    }
+    
+    func showGiftPopup(daysFree: Int) {
+            let popupView = GiftPopupView(daysFree: daysFree) {
+                      self.dismiss(animated: false)
+            }
+
+              let hostingVC = UIHostingController(rootView: popupView)
+
+            hostingVC.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+            hostingVC.view.backgroundColor = UIColor.clear
+
+            present(hostingVC, animated: false)
     }
 }
