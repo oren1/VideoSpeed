@@ -323,6 +323,20 @@ class MainViewController: UIViewController {
     func createGiftBarButtonItem() {
         giftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gift.fill"), style: .plain, target: self, action: #selector(giftButtonTapped))
     }
+    
+    @MainActor
+    func enterEditScreen() async {
+        let notificationPermissionLocation = RemoteConfig.remoteConfig().configValue(forKey: "notificationPermissionLocation").stringValue ?? ""
+        if let permissionLocation = PermissionLocation(rawValue: notificationPermissionLocation),
+            permissionLocation == .mainScreen {
+            await PushNotificationManager.main.registerForPushNotificationsAsync()
+        }
+        let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
+        UserDataManager.main.currentSpidAsset = UserDataManager.main.spidAssets.first
+        vc.asset = await UserDataManager.main.currentSpidAsset.getAsset()
+        self.hideLoading()
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
     //MARK: - Actions
     
     @IBAction func giftButtonTapped(_ sender: Any) {
@@ -383,17 +397,29 @@ class MainViewController: UIViewController {
             }
 
             Task {@MainActor [weak self] in
-
-                let notificationPermissionLocation = RemoteConfig.remoteConfig().configValue(forKey: "notificationPermissionLocation").stringValue ?? ""
-                if let permissionLocation = PermissionLocation(rawValue: notificationPermissionLocation),
-                    permissionLocation == .mainScreen {
-                    await PushNotificationManager.main.registerForPushNotificationsAsync()
+                
+                guard let self = self else { return }
+                if SpidProducts.store.userPurchasedProVersion() != nil {
+                    await self.enterEditScreen()
                 }
-                let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
-                UserDataManager.main.currentSpidAsset = UserDataManager.main.spidAssets.first
-                vc.asset = await UserDataManager.main.currentSpidAsset.getAsset()
-                self?.hideLoading()
-                self?.navigationController?.pushViewController(vc, animated: true)
+                else {
+                    let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
+                    purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
+                    purchaseViewController.onDismiss = { [weak self] in
+                        Task {
+                           await self?.enterEditScreen()
+                        }
+                    }
+                    if UIDevice.current.userInterfaceIdiom == .phone {
+                        purchaseViewController.modalPresentationStyle = .automatic
+                    }
+                    else if UIDevice.current.userInterfaceIdiom == .pad {
+                        purchaseViewController.modalPresentationStyle = .formSheet
+                    }
+                    
+                    self.present(purchaseViewController, animated: true)
+                }
+                
             }
 
         }
