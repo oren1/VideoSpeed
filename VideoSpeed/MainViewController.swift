@@ -55,6 +55,8 @@ class MainViewController: UIViewController {
         return photoLibraryUsageDisabledView
     }()
     
+    private var ratingPromptHostingController: UIHostingController<RatingPromptView>?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -176,6 +178,8 @@ class MainViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        showRatingPromptIfNeeded()
+
         Task {
 //            await requestPermissionForIDFAAsync()
             
@@ -194,7 +198,55 @@ class MainViewController: UIViewController {
 //        requestPermissionForIDFA()
     }
     
-   
+    // MARK: - Rating Prompt (A/B: main_after_export variant)
+    
+    private func showRatingPromptIfNeeded() {
+        guard AppStoreReviewManager.ratingPromptLocationVariant() == "main_after_export",
+              AppStoreReviewManager.shouldShowRatingPrompt(),
+              ratingPromptHostingController == nil else { return }
+        
+        let promptView = RatingPromptView(
+            onPositive: { [weak self] in
+                self?.handleRatingPositiveTap()
+            },
+            onNegative: { [weak self] in
+                self?.handleRatingNegativeTap()
+            }
+        )
+        
+        let hostingController = UIHostingController(rootView: promptView)
+        
+        if let sheet = hostingController.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.preferredCornerRadius = 20
+            sheet.prefersGrabberVisible = false
+        }
+        
+        hostingController.modalPresentationStyle = .pageSheet
+        ratingPromptHostingController = hostingController
+        present(hostingController, animated: true)
+        
+        AnalyticsManager.ratingGateShownAfterExport()
+    }
+    
+    private func hideRatingPromptView() {
+        ratingPromptHostingController?.dismiss(animated: true) { [weak self] in
+            self?.ratingPromptHostingController = nil
+        }
+    }
+    
+    private func handleRatingPositiveTap() {
+        AppStoreReviewManager.markRatingPromptShownForCurrentVersion()
+        hideRatingPromptView()
+        AnalyticsManager.ratingGatePositiveTap()
+        AppStoreReviewManager.requestReviewIfAppropriate()
+    }
+    
+    private func handleRatingNegativeTap() {
+        AppStoreReviewManager.markRatingPromptShownForCurrentVersion()
+        hideRatingPromptView()
+        AnalyticsManager.ratingGateNegativeTap()
+    }
     
     func requestPermissionForIDFAAsync() async {
         let status = await ATTrackingManager.requestTrackingAuthorization()

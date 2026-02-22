@@ -6,8 +6,11 @@
 //
 
 import UIKit
+import SwiftUI
 
 class SuccessMessageViewController: UIViewController {
+
+    private var ratingPromptHostingController: UIHostingController<RatingPromptView>?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -15,25 +18,63 @@ class SuccessMessageViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
+        showRatingPromptIfNeeded()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        AppStoreReviewManager.requestReviewIfAppropriate()
-    }
+    
     @IBAction func backButtonTapped(_ sender: Any) {
         dismiss(animated: true)
     }
     
-    /*
-    // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    // MARK: - Rating Prompt Flow
+    
+    private func showRatingPromptIfNeeded() {
+        guard AppStoreReviewManager.ratingPromptLocationVariant() == "success_screen",
+              AppStoreReviewManager.shouldShowRatingPrompt(),
+              ratingPromptHostingController == nil else { return }
+        
+        let promptView = RatingPromptView(
+            onPositive: { [weak self] in
+                self?.handleRatingPositiveTap()
+            },
+            onNegative: { [weak self] in
+                self?.handleRatingNegativeTap()
+            }
+        )
+        
+        let hostingController = UIHostingController(rootView: promptView)
+        
+        if let sheet = hostingController.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.preferredCornerRadius = 20
+            sheet.prefersGrabberVisible = false
+        }
+        
+        hostingController.modalPresentationStyle = .pageSheet
+        ratingPromptHostingController = hostingController
+        present(hostingController, animated: true)
+        
+        AnalyticsManager.ratingGateShownAfterExport()
     }
-    */
-
+    
+    private func hideRatingPromptView() {
+        ratingPromptHostingController?.dismiss(animated: true) { [weak self] in
+            self?.ratingPromptHostingController = nil
+        }
+    }
+    
+    private func handleRatingPositiveTap() {
+        AppStoreReviewManager.markRatingPromptShownForCurrentVersion()
+        hideRatingPromptView()
+        AnalyticsManager.ratingGatePositiveTap()
+        AppStoreReviewManager.requestReviewIfAppropriate()
+    }
+    
+    private func handleRatingNegativeTap() {
+        AppStoreReviewManager.markRatingPromptShownForCurrentVersion()
+        hideRatingPromptView()
+        AnalyticsManager.ratingGateNegativeTap()
+        // Optional: could present a feedback flow here in the future.
+    }
 }

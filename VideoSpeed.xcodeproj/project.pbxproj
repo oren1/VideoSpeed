@@ -63,6 +63,7 @@
 		6B6DC4922F2F179200D78EA7 /* PushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4912F2F179200D78EA7 /* PushNotificationManager.swift */; };
 		6B6DC4972F330CBC00D78EA7 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4962F330CBC00D78EA7 /* Date+Extension.swift */; };
 		6B6DC49B2F34CCA900D78EA7 /* GiftPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC49A2F34CCA900D78EA7 /* GiftPopupView.swift */; };
+		6B6DC4A12F4AC65900D78EA7 /* RatingPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4A02F4AC65900D78EA7 /* RatingPromptView.swift */; };
 		6B6E266C2E03E0AD004F736B /* CGSize+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */; };
 		6B6E266E2E0D0B52004F736B /* EditViewController+VideosMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E266D2E0D0B52004F736B /* EditViewController+VideosMenu.swift */; };
 		6B71AAC42A9098A000C06619 /* SoundSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */; };
@@ -202,6 +203,7 @@
 		6B6DC4932F2F5B2100D78EA7 /* VideoSpeed.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VideoSpeed.entitlements; sourceTree = "<group>"; };
 		6B6DC4962F330CBC00D78EA7 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
 		6B6DC49A2F34CCA900D78EA7 /* GiftPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftPopupView.swift; sourceTree = "<group>"; };
+		6B6DC4A02F4AC65900D78EA7 /* RatingPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingPromptView.swift; sourceTree = "<group>"; };
 		6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGSize+Extension.swift"; sourceTree = "<group>"; };
 		6B6E266D2E0D0B52004F736B /* EditViewController+VideosMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditViewController+VideosMenu.swift"; sourceTree = "<group>"; };
 		6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSectionVC.swift; sourceTree = "<group>"; };
@@ -525,6 +527,7 @@
 				6B9610322D4CCBCF00DEE296 /* TextEditViewController.swift */,
 				6B09449A2DC0A545009FBFB2 /* TextEditViewController+CollectionViewDelegate.swift */,
 				6B09449C2DC0A77D009FBFB2 /* TextEditMenuItemCVCell.swift */,
+				6B6DC4A02F4AC65900D78EA7 /* RatingPromptView.swift */,
 				6BE9A2F12A5FC80C00FF8CB0 /* Main.storyboard */,
 				6BE9A2F42A5FC80D00FF8CB0 /* Assets.xcassets */,
 				6BE9A2F62A5FC80D00FF8CB0 /* LaunchScreen.storyboard */,
@@ -722,6 +725,7 @@
 				6B04F5892CBBAAC2000C8C59 /* CropViewController.swift in Sources */,
 				6B71AAEB2AAA321300C06619 /* UIViewController+Extension.swift in Sources */,
 				6BE9A2F02A5FC80C00FF8CB0 /* EditViewController.swift in Sources */,
+				6B6DC4A12F4AC65900D78EA7 /* RatingPromptView.swift in Sources */,
 				6B92E3672A7E2F3C008CB22A /* PhotoLibraryUsageDisabledView.swift in Sources */,
 				6B04F5852CB916FA000C8C59 /* CropSectioVC.swift in Sources */,
 				6BAFED822DD063FB00AF13E1 /* SpidFont.swift in Sources */,

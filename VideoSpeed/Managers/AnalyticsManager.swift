@@ -126,5 +126,26 @@ class AnalyticsManager {
             UserDataManager.main.sentNotificationPermissionAnalyticStatus = true
         }
     }
+    
+    static func ratingGateShownAfterExport() {
+        let eventName = "rating_gate_shown_after_export"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func ratingGatePositiveTap() {
+        let eventName = "rating_gate_positive_tap"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func ratingGateNegativeTap() {
+        let eventName = "rating_gate_negative_tap"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func ratingSystemPromptRequested() {
+        let eventName = "rating_system_prompt_requested"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
 }
 
