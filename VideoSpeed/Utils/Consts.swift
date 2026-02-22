@@ -10,4 +10,7 @@ import Foundation
 class Consts {
    static let reviewWorthyActionCount = "reviewWorthyActionCount"
    static let lastReviewRequestAppVersion = "lastReviewRequestAppVersion"
+   static let successfulExportCount = "successfulExportCount"
+   static let exportRatingPromptLastAppVersion = "exportRatingPromptLastAppVersion"
+ 
 }

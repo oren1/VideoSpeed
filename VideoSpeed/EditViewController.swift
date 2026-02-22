@@ -708,6 +708,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         contextInfo info: AnyObject
     ) {
         if error == nil {
+            AppStoreReviewManager.incrementSuccessfulExportCount()
             let successMessageViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SuccessMessageViewController") as! SuccessMessageViewController
             if UIDevice.current.userInterfaceIdiom == .phone {
                 successMessageViewController.modalPresentationStyle = .fullScreen

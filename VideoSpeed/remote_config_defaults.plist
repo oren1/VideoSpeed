@@ -18,5 +18,7 @@
 	<string>1</string>
 	<key>business_model</key>
 	<string>one_time_charge</string>
+	<key>ratingPromptLocation</key>
+	<string>main_after_export</string>
 </dict>
 </plist>
