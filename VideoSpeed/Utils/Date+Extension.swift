@@ -14,4 +14,9 @@ extension Date {
                                      to: Date())!
     }
 
+    static func nowWithAppending(seconds: Double) -> Date {
+        return Calendar.current.date(byAdding: .second,
+                                     value: Int(seconds),
+                                     to: Date())!
+    }
 }

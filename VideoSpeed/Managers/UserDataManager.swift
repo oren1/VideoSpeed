@@ -8,10 +8,15 @@
 import Foundation
 import StoreKit
 
-let twentyFourHoursInSeconds = 24.0 * 60 * 60
 
+let twentyFourHoursInSeconds = 24.0 * 60 * 60
+let oneMinuteInSeconds = 60.0
+let fiveMinutesInSeconds = 5.0 * 60
+let twoWeeksInSeconds = 14.0 * 24 * 60 * 60
 
 class UserDataManager: ObservableObject {
+    
+    
     
     static let main: UserDataManager = UserDataManager()
     var products: [SKProduct]!
@@ -168,6 +173,7 @@ class UserDataManager: ObservableObject {
         return false
     }
     
+    
     var lastApearanceOfPurchaseScreen: Double? {
         set {
             UserDefaults.standard.set(newValue, forKey: "lastPurchaseScreenApearance")
@@ -178,6 +184,36 @@ class UserDataManager: ObservableObject {
             }
             return UserDefaults.standard.double(forKey: "lastPurchaseScreenApearance")
         }
+    }
+    
+    var lastTimePurchaseScreenShownAfterNextTap: Double {
+        set {
+            UserDefaults.standard.set(newValue, forKey: "lastTimePurchaseScreenShownAfterNextTap")
+        }
+        get {
+            return UserDefaults.standard.double(forKey: "lastTimePurchaseScreenShownAfterNextTap")
+        }
+    }
+    
+    var dateToShowPurchaseScreen: Double {
+        set {
+            UserDefaults.standard.set(newValue, forKey: "dateToShowPurchaseScreen")
+        }
+        get {
+            return UserDefaults.standard.double(forKey: "dateToShowPurchaseScreen")
+        }
+    }
+    
+    func twoWeeksPassedSincePurchaseScreenShownAfterNextTap() -> Bool {
+        let lastShown = lastTimePurchaseScreenShownAfterNextTap
+        guard lastShown != 0 else { return false }
+        return (lastShown + twoWeeksInSeconds) < Date().timeIntervalSince1970
+    }
+    
+    func fiveMinutesPassedSincePurchaseScreenShownAfterNextTap() -> Bool {
+        let lastShown = lastTimePurchaseScreenShownAfterNextTap
+        guard lastShown != 0 else { return false }
+        return (lastShown + fiveMinutesInSeconds) < Date().timeIntervalSince1970
     }
     
     func setHasLaunchedKeyIfNeeded() {

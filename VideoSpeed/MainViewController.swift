@@ -451,10 +451,10 @@ class MainViewController: UIViewController {
             Task {@MainActor [weak self] in
                 
                 guard let self = self else { return }
-                if SpidProducts.store.userPurchasedProVersion() != nil {
-                    await self.enterEditScreen()
-                }
-                else {
+                if SpidProducts.store.userPurchasedProVersion() == nil &&
+                    UserDataManager.main.dateToShowPurchaseScreen < Date().timeIntervalSince1970 &&
+                    !UserDataManager.main.isGiftActive() {
+                    
                     let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
                     purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
                     purchaseViewController.onDismiss = { [weak self] in
@@ -470,7 +470,13 @@ class MainViewController: UIViewController {
                     }
                     
                     self.present(purchaseViewController, animated: true)
+                    
+                    UserDataManager.main.dateToShowPurchaseScreen = Date().timeIntervalSince1970 + twoWeeksInSeconds
                 }
+                else {
+                    await self.enterEditScreen()
+                }
+               
                 
             }
 

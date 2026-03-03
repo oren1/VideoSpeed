@@ -57,6 +57,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
         UNUserNotificationCenter.current().delegate = self
         Messaging.messaging().delegate = self
 
+        // assigning a date so that the 'PurchaseViewController' will not apear on 'next' button tap right after the app installation
+        if UserDataManager.main.dateToShowPurchaseScreen == 0 {
+            UserDataManager.main.dateToShowPurchaseScreen = Date().timeIntervalSince1970 + twoWeeksInSeconds
+        }
         return true
     }
 
