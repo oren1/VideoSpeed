@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>notificationPermissionLocation</key>
+	<string>mainScreen</string>
 	<key>pricing_model</key>
 	<string>lifetime</string>
 	<key>experimentProFeatures</key>
@@ -16,5 +18,7 @@
 	<string>1</string>
 	<key>business_model</key>
 	<string>one_time_charge</string>
+	<key>ratingPromptLocation</key>
+	<string>main_after_export</string>
 </dict>
 </plist>

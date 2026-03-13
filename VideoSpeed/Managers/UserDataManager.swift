@@ -9,10 +9,15 @@ import Foundation
 import StoreKit
 import Speech
 
-let twentyFourHoursInSeconds = 24.0 * 60 * 60
 
+let twentyFourHoursInSeconds = 24.0 * 60 * 60
+let oneMinuteInSeconds = 60.0
+let fiveMinutesInSeconds = 5.0 * 60
+let twoWeeksInSeconds = 14.0 * 24 * 60 * 60
 
 class UserDataManager: ObservableObject {
+    
+    
     
     static let main: UserDataManager = UserDataManager()
     var products: [SKProduct]!
@@ -26,6 +31,7 @@ class UserDataManager: ObservableObject {
             NotificationCenter.default.post(name: Notification.Name("usingSliderChanged"), object: nil)
         }
     }
+    let hasLaunchedKey = "hasLaunchedBefore"
 
     var captions: [CaptionItem] = []
     
@@ -209,6 +215,7 @@ class UserDataManager: ObservableObject {
         return false
     }
     
+    
     var lastApearanceOfPurchaseScreen: Double? {
         set {
             UserDefaults.standard.set(newValue, forKey: "lastPurchaseScreenApearance")
@@ -219,5 +226,79 @@ class UserDataManager: ObservableObject {
             }
             return UserDefaults.standard.double(forKey: "lastPurchaseScreenApearance")
         }
+    }
+    
+    var lastTimePurchaseScreenShownAfterNextTap: Double {
+        set {
+            UserDefaults.standard.set(newValue, forKey: "lastTimePurchaseScreenShownAfterNextTap")
+        }
+        get {
+            return UserDefaults.standard.double(forKey: "lastTimePurchaseScreenShownAfterNextTap")
+        }
+    }
+    
+    var dateToShowPurchaseScreen: Double {
+        set {
+            UserDefaults.standard.set(newValue, forKey: "dateToShowPurchaseScreen")
+        }
+        get {
+            return UserDefaults.standard.double(forKey: "dateToShowPurchaseScreen")
+        }
+    }
+    
+    func twoWeeksPassedSincePurchaseScreenShownAfterNextTap() -> Bool {
+        let lastShown = lastTimePurchaseScreenShownAfterNextTap
+        guard lastShown != 0 else { return false }
+        return (lastShown + twoWeeksInSeconds) < Date().timeIntervalSince1970
+    }
+    
+    func fiveMinutesPassedSincePurchaseScreenShownAfterNextTap() -> Bool {
+        let lastShown = lastTimePurchaseScreenShownAfterNextTap
+        guard lastShown != 0 else { return false }
+        return (lastShown + fiveMinutesInSeconds) < Date().timeIntervalSince1970
+    }
+    
+    func setHasLaunchedKeyIfNeeded() {
+        if !UserDefaults.standard.bool(forKey: hasLaunchedKey) {
+            print("First launch ever!")
+            UserDefaults.standard.set(true, forKey: hasLaunchedKey)
+        }
+    }
+   
+    func hasLaunchedAppBefore() -> Bool {
+        return UserDefaults.standard.bool(forKey: hasLaunchedKey)
+    }
+    
+    var sentNotificationPermissionAnalyticStatus : Bool {
+        set {
+            UserDefaults.standard.set(newValue, forKey: "sentNotificationPermissionAnalyticStatus")
+        }
+        get {
+            return UserDefaults.standard.bool(forKey: "sentNotificationPermissionAnalyticStatus")
+        }
+    }
+    
+    func setGiftDueDate(giftDueDate: Date) {
+        let defaults = UserDefaults.standard
+
+        if let oldDueDate = defaults.object(forKey: "giftDueDate") as? Date {
+           if oldDueDate < Date() {
+                UserDefaults.standard.set(giftDueDate, forKey: "giftDueDate")
+            }
+        }
+        else {
+            UserDefaults.standard.set(giftDueDate, forKey: "giftDueDate")
+        }
+      
+    }
+    
+    func isGiftActive() -> Bool {
+        let defaults = UserDefaults.standard
+
+        guard let giftDueDate = defaults.object(forKey: "giftDueDate") as? Date else {
+            return false
+        }
+
+        return Date() < giftDueDate
     }
 }

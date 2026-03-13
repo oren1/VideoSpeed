@@ -8,6 +8,7 @@ target 'VideoSpeed' do
     pod 'FirebaseAnalytics'
     pod 'FirebaseAuth'
     pod 'FirebaseRemoteConfig'
+    pod 'Firebase/Messaging'
     pod 'FirebaseCrashlytics'
     pod 'RevenueCat'
     pod 'CropPickerView', '~> 0.3'

@@ -13,6 +13,11 @@ import FirebaseRemoteConfig
 import SwiftUI
 import Combine
 
+enum PermissionLocation: String {
+    case mainScreen = "mainScreen"
+    case editScreen = "editScreen"
+}
+
 enum ExportButtonType: String {
     case noText = "noText"
     case withText = "withText"
@@ -269,6 +274,12 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false;
+        
+        let notificationPermissionLocation = RemoteConfig.remoteConfig().configValue(forKey: "notificationPermissionLocation").stringValue ?? ""
+        if let permissionLocation = PermissionLocation(rawValue: notificationPermissionLocation),
+           permissionLocation == .editScreen {
+            PushNotificationManager.main.registerForPushNotifications()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -855,7 +866,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         AnalyticsManager.exportButtonTapped()
         
         guard  SpidProducts.store.userPurchasedProVersion() != nil ||
-                UserDataManager.main.userBenefitStatus == .entitled else {
+        UserDataManager.main.isGiftActive() else {
             
             if !usingProFeatures() {
                 Task {
@@ -956,6 +967,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         contextInfo info: AnyObject
     ) {
         if error == nil {
+            AppStoreReviewManager.incrementSuccessfulExportCount()
             let successMessageViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SuccessMessageViewController") as! SuccessMessageViewController
             if UIDevice.current.userInterfaceIdiom == .phone {
                 successMessageViewController.modalPresentationStyle = .fullScreen

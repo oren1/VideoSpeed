@@ -8,14 +8,54 @@
 import Foundation
 import StoreKit
 import FirebaseRemoteConfig
+import UIKit
 
 enum AppStoreReviewManager {
-    
-  static let minimumReviewWorthyActionCount = RemoteConfig.remoteConfig().configValue(forKey: "minimumReviewWorthyActionCount").numberValue.intValue
 
-  static func requestReviewIfAppropriate() {
+    /// A/B test: where to show the 2-step rating prompt. "success_screen" = after export on SuccessMessageViewController; "main_after_export" = on MainViewController when returning after 3+ exports.
+    static func ratingPromptLocationVariant() -> String {
+        RemoteConfig.remoteConfig().configValue(forKey: "ratingPromptLocation").stringValue ?? "main_after_export"
+    }
+    
+    static let minimumReviewWorthyActionCount = RemoteConfig.remoteConfig().configValue(forKey: "minimumReviewWorthyActionCount").numberValue.intValue
+    
+    // MARK: - Export Count
+    
+    static func incrementSuccessfulExportCount() {
         let defaults = UserDefaults.standard
-        let bundle = Bundle.main
+        let currentCount = defaults.integer(forKey: Consts.successfulExportCount)
+        defaults.set(currentCount + 1, forKey: Consts.successfulExportCount)
+    }
+    
+    static func successfulExportCount() -> Int {
+        let defaults = UserDefaults.standard
+        return defaults.integer(forKey: Consts.successfulExportCount)
+    }
+    
+    // MARK: - Rating Prompt Gate (shared for A/B test)
+    
+    /// Returns true when we should show the 2-step rating gate (export count >= 3, not yet shown this app version).
+    static func shouldShowRatingPrompt() -> Bool {
+        let exportCount = successfulExportCount()
+        guard exportCount >= 3 else { return false }
+        guard let currentVersion = UIApplication.appVersion else { return false }
+        let defaults = UserDefaults.standard
+        if let lastVersion = defaults.string(forKey: Consts.exportRatingPromptLastAppVersion),
+           lastVersion == currentVersion {
+            return false
+        }
+        return true
+    }
+    
+    static func markRatingPromptShownForCurrentVersion() {
+        guard let currentVersion = UIApplication.appVersion else { return }
+        UserDefaults.standard.set(currentVersion, forKey: Consts.exportRatingPromptLastAppVersion)
+    }
+
+    // MARK: - Review Request
+
+    static func requestReviewIfAppropriate() {
+        let defaults = UserDefaults.standard
 
         // increasing the count by 1
         var actionCount = defaults.integer(forKey: Consts.reviewWorthyActionCount)
@@ -44,6 +84,8 @@ enum AppStoreReviewManager {
         else {
             SKStoreReviewController.requestReview()
         }
+        
+        AnalyticsManager.ratingSystemPromptRequested()
 
         // reset the worthy count to zero and last app version to the current version
         defaults.set(0, forKey: Consts.reviewWorthyActionCount)
