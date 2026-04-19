@@ -69,7 +69,7 @@ class UserDataManager: ObservableObject {
                 }
             }
         
-        languageItems.insert(autoDetectionLanguageItem, at: 0)
+//        languageItems.insert(autoDetectionLanguageItem, at: 0)
         
         return languageItems
     }()

@@ -102,16 +102,19 @@ struct CaptionsSectionView: View {
                 
                 HStack {
                            Spacer()
-                           
+                
                            Button(action: {
                                editStyleTapped?()
                            }) {
+                               Text("Edit Captions Style")
+                                .foregroundStyle(.white)
                                Image(systemName: "long.text.page.and.pencil")
                                    .resizable()
                                    .scaledToFit()
-                                   .frame(width: 35, height: 35)
+                                   .frame(width: 25, height: 25)
                                    .foregroundColor(.white)
                            }
+                           .padding(.bottom, 20)
                            Spacer()
                        }
                        .frame(height: 50)

@@ -81,11 +81,12 @@ struct CaptionsSettingsSelectionView: View {
                             HStack {
                                 Text("\(item.localizedString)")
                                     .foregroundStyle(Color.white)
-                                Spacer()
                                 if item == selectedLanguageItem {
                                     Image(systemName: "checkmark")
                                         .foregroundStyle(Color.white)
                                 }
+                                
+                                Spacer()
                             }
                             .contentShape(Rectangle())
                             .onTapGesture {
