@@ -11,42 +11,9 @@ import FirebaseRemoteConfig
 import UIKit
 
 enum AppStoreReviewManager {
-
-    /// A/B test: where to show the 2-step rating prompt. "success_screen" = after export on SuccessMessageViewController; "main_after_export" = on MainViewController when returning after 3+ exports.
-    static func ratingPromptLocationVariant() -> String {
-        RemoteConfig.remoteConfig().configValue(forKey: "ratingPromptLocation").stringValue ?? "main_after_export"
-    }
     
     static let minimumReviewWorthyActionCount = RemoteConfig.remoteConfig().configValue(forKey: "minimumReviewWorthyActionCount").numberValue.intValue
-    
-    // MARK: - Export Count
-    
-    static func incrementSuccessfulExportCount() {
-        let defaults = UserDefaults.standard
-        let currentCount = defaults.integer(forKey: Consts.successfulExportCount)
-        defaults.set(currentCount + 1, forKey: Consts.successfulExportCount)
-    }
-    
-    static func successfulExportCount() -> Int {
-        let defaults = UserDefaults.standard
-        return defaults.integer(forKey: Consts.successfulExportCount)
-    }
-    
-    // MARK: - Rating Prompt Gate (shared for A/B test)
-    
-    /// Returns true when we should show the 2-step rating gate (export count >= 3, not yet shown this app version).
-    static func shouldShowRatingPrompt() -> Bool {
-        let exportCount = successfulExportCount()
-        guard exportCount >= 3 else { return false }
-        guard let currentVersion = UIApplication.appVersion else { return false }
-        let defaults = UserDefaults.standard
-        if let lastVersion = defaults.string(forKey: Consts.exportRatingPromptLastAppVersion),
-           lastVersion == currentVersion {
-            return false
-        }
-        return true
-    }
-    
+
     static func markRatingPromptShownForCurrentVersion() {
         guard let currentVersion = UIApplication.appVersion else { return }
         UserDefaults.standard.set(currentVersion, forKey: Consts.exportRatingPromptLastAppVersion)

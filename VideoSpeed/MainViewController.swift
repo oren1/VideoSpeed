@@ -124,6 +124,7 @@ class MainViewController: UIViewController {
     @objc func showPurchaseViewController() {
        
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
+       
         // A/B Test for yearly price of $19.99 or $9.99
 //        let pricingRaw = RemoteConfig.remoteConfig().configValue(forKey: "pricing").stringValue!
 //        let pricing = Pricing(rawValue: pricingRaw)
@@ -178,7 +179,6 @@ class MainViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        showRatingPromptIfNeeded()
 
         Task {
 //            await requestPermissionForIDFAAsync()
@@ -197,56 +197,7 @@ class MainViewController: UIViewController {
         }
 //        requestPermissionForIDFA()
     }
-    
-    // MARK: - Rating Prompt (A/B: main_after_export variant)
-    
-    private func showRatingPromptIfNeeded() {
-        guard AppStoreReviewManager.ratingPromptLocationVariant() == "main_after_export",
-              AppStoreReviewManager.shouldShowRatingPrompt(),
-              ratingPromptHostingController == nil else { return }
-        
-        let promptView = RatingPromptView(
-            onPositive: { [weak self] in
-                self?.handleRatingPositiveTap()
-            },
-            onNegative: { [weak self] in
-                self?.handleRatingNegativeTap()
-            }
-        )
-        
-        let hostingController = UIHostingController(rootView: promptView)
-        
-        if let sheet = hostingController.sheetPresentationController {
-            sheet.detents = [.medium()]
-            sheet.preferredCornerRadius = 20
-            sheet.prefersGrabberVisible = false
-        }
-        
-        hostingController.modalPresentationStyle = .pageSheet
-        ratingPromptHostingController = hostingController
-        present(hostingController, animated: true)
-        
-        AnalyticsManager.ratingGateShownAfterExport()
-    }
-    
-    private func hideRatingPromptView() {
-        ratingPromptHostingController?.dismiss(animated: true) { [weak self] in
-            self?.ratingPromptHostingController = nil
-        }
-    }
-    
-    private func handleRatingPositiveTap() {
-        AppStoreReviewManager.markRatingPromptShownForCurrentVersion()
-        hideRatingPromptView()
-        AnalyticsManager.ratingGatePositiveTap()
-        AppStoreReviewManager.requestReviewIfAppropriate()
-    }
-    
-    private func handleRatingNegativeTap() {
-        AppStoreReviewManager.markRatingPromptShownForCurrentVersion()
-        hideRatingPromptView()
-        AnalyticsManager.ratingGateNegativeTap()
-    }
+            
     
     func requestPermissionForIDFAAsync() async {
         let status = await ATTrackingManager.requestTrackingAuthorization()
@@ -378,11 +329,9 @@ class MainViewController: UIViewController {
     
     @MainActor
     func enterEditScreen() async {
-        let notificationPermissionLocation = RemoteConfig.remoteConfig().configValue(forKey: "notificationPermissionLocation").stringValue ?? ""
-        if let permissionLocation = PermissionLocation(rawValue: notificationPermissionLocation),
-            permissionLocation == .mainScreen {
-            await PushNotificationManager.main.registerForPushNotificationsAsync()
-        }
+        
+        await PushNotificationManager.main.registerForPushNotificationsAsync()
+
         let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
         UserDataManager.main.currentSpidAsset = UserDataManager.main.spidAssets.first
         vc.asset = await UserDataManager.main.currentSpidAsset.getAsset()
