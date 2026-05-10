@@ -216,7 +216,18 @@ extension EditViewController {
         
         captionsSectionVC.viewModel = captionsViewModel
         captionsSectionVC.editStyleTapped = { [weak self] in
-            // 1. Create a custom "UISheetPresentationController"
+            guard let self = self else { return }
+
+            let sheetVC = UIHostingController(rootView: CaptionsStyleSheetView())
+            sheetVC.modalPresentationStyle = .pageSheet
+            
+            if let sheetPresentationController = sheetVC.sheetPresentationController {
+                sheetPresentationController.detents = [.medium()]
+                sheetPresentationController.prefersGrabberVisible = true
+                sheetPresentationController.preferredCornerRadius = 20
+            }
+            
+            self.present(sheetVC, animated: true)
         }
     
     }

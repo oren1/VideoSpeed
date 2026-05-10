@@ -138,18 +138,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
 //                                                 .font: UIFont.boldSystemFont(ofSize: 14)], for: .normal)
         
-        if let transcriptionsResponseData = UserDefaults.standard.data(forKey: "transcriptionResponse")  {
-            do {
-                let transcriptioResponse = try JSONDecoder().decode(TranscriptionResponse.self, from: transcriptionsResponseData)
-                UserDataManager.main.transcription = Transcription(transcriptionResponse: transcriptioResponse)
-
-            } catch {
-                print("Error decoding transcription response")
-            }
-        }
-        else {
-            print("No transcription response data found in UserDefaults")
-        }
+       
         
         videosMenuDelegate = VideosMenuDelegate()
         videosMenuDelegate.didSelectVideo = { [weak self] spidAsset in
@@ -265,6 +254,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 await textSectionVC.recreateThumbnailsFor(asset: compositionCopy, videoComposition: videoCompositionCopy)
 //                await rotateVideoForCropFeature()
             }
+            
+            
         }
         
     }

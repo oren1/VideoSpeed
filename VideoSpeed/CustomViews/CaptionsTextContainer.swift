@@ -177,6 +177,25 @@ class CaptionsTextContainer: UIView {
         backgroundLabel.attributedText = strokeAttributedString
     }
     
+    func updateText(caption: Caption) {
+        label.attributedText = caption.text
+        
+        let strokeAttributedString = NSMutableAttributedString(attributedString: caption.text)
+        strokeAttributedString.addAttributes([
+            .foregroundColor: UIColor.clear.cgColor,
+            .strokeColor: UIColor.black.cgColor,
+            .strokeWidth: 30
+        ], range: NSRange(location: 0, length: caption.text.length))
+        
+        if let remainingTextRange = caption.remainingTextRange {
+            strokeAttributedString.addAttributes([
+                .strokeColor: UIColor.clear.cgColor
+            ], range: remainingTextRange)
+        }
+        
+        backgroundLabel.attributedText = strokeAttributedString
+    }
+    
     // MARK: - Gestures
     private func setupGesture() {
         let pinch = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))

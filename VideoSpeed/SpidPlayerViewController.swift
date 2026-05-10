@@ -114,7 +114,10 @@ class SpidPlayerViewController: UIViewController {
             }
         })
         
-        
+        UserDataManager.main.$currentCaptions.receive(on: RunLoop.main).sink { captions in
+            guard let captions else { return }
+            print("captions \(captions)")
+        }.store(in: &subscriptions)
        
     }
 
@@ -122,6 +125,22 @@ class SpidPlayerViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+            super.viewDidAppear(animated)
+        if let transcriptionsResponseData = UserDefaults.standard.data(forKey: "transcriptionResponse")  {
+            do {
+                let transcriptioResponse = try JSONDecoder().decode(TranscriptionResponse.self, from: transcriptionsResponseData)
+                UserDataManager.main.transcription = Transcription(transcriptionResponse: transcriptioResponse)
+
+            } catch {
+                print("Error decoding transcription response")
+            }
+        }
+        else {
+            print("No transcription response data found in UserDefaults")
+        }
     }
     
     deinit {
@@ -380,10 +399,11 @@ class SpidPlayerViewController: UIViewController {
 
         guard let captions = UserDataManager.main.currentCaptions else { return }
         let currentVideoTime = player.currentTime().seconds
-//        let caption = CaptionStyleGenerator.getCurrentCaption(captions: captions, time: currentVideoTime)
-        let caption = CaptionStyleGenerator.getCurrentWordByWordCaption(captions: captions, time: currentVideoTime)
-        captionsTextContainer.updateText(attributedText: caption.text)
+        let caption = CaptionStyleGenerator.getCurrentCaption(captions: captions, time: currentVideoTime)
+//        let caption = CaptionStyleGenerator.getCurrentWordByWordCaption(captions: captions, time: currentVideoTime)
+//        captionsTextContainer.updateText(attributedText: caption.text)
 //        captionsTextContainer.label.attributedText = caption.text
+        captionsTextContainer.updateText(caption: caption)
     }
 
     func updateSliderFor(time: CMTime) async {

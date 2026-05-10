@@ -44,6 +44,28 @@ class Segment: NSObject, Decodable {
     override var description: String {
         return "Segment: \(text), start: \(start), end: \(end)"
     }
+    
+    static func demoTranscription() -> Transcription {
+        let words = [
+            Word(text: "this", start: 0.0, end: 0.35),
+            Word(text: "is", start: 0.35, end: 0.55),
+            Word(text: "example", start: 0.55, end: 1.05),
+            Word(text: "template", start: 1.05, end: 1.55)
+        ]
+        
+        let segment = Segment(
+            text: "this is example template",
+            start: 0.0,
+            end: 1.55,
+            words: words
+        )
+        
+        return Transcription(
+            text: "this is example template",
+            words: words,
+            segments: [segment]
+        )
+    }
 }
 
 // API response

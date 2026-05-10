@@ -5,6 +5,7 @@
 //  Created by Oren Shalev on 10/11/2025.
 //
 
+import Combine
 import Foundation
 import UIKit
 
@@ -12,6 +13,35 @@ class CaptionStyleGenerator {
    
     static var basicFontSize = CGFloat(32)
     static let scaleFactor = 4.0
+
+    private static var captionsStyleCancellables = Set<AnyCancellable>()
+
+    static var captionsStyle: CaptionsStyle = {
+        let style = CaptionsStyle()
+        // `objectWillChange` fires before mutations. These `$property` streams emit after each
+        // new value is stored. `dropFirst()` skips the initial value Combine sends on subscription.
+        Publishers.MergeMany(
+            style.$captionType.dropFirst().map { _ in () }.eraseToAnyPublisher(),
+            style.$textColor.dropFirst().map { _ in () }.eraseToAnyPublisher(),
+            style.$borderColor.dropFirst().map { _ in () }.eraseToAnyPublisher(),
+            style.$highlightColor.dropFirst().map { _ in () }.eraseToAnyPublisher(),
+            style.$font.dropFirst().map { _ in () }.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { _ in
+            captionsStyleDidChange()
+        }
+        .store(in: &captionsStyleCancellables)
+        return style
+    }()
+
+    /// Called on the main queue after a `@Published` property on `captionsStyle` has changed.
+    private static func captionsStyleDidChange() {
+         guard let transcription = UserDataManager.main.transcription,
+               let segments = transcription.segments else { return }
+        
+        UserDataManager.main.currentCaptions = generateCaptions(from: segments)
+    }
     
     static func getCurrentCaption(captions: [Caption], time: Double) -> Caption {
        
@@ -144,13 +174,26 @@ class CaptionStyleGenerator {
     }
     
     
+    static func generateCaptions(from segments: [Segment], scale: CGFloat = 4.0) -> [Caption] {
+        switch captionsStyle.captionType {
+        case .oneWord:
+            return generateOneWordCaptions(from: segments, scale: scale)
+        case .wordByWord:
+            return generateOneByOneCaptions(from: segments, scale: scale)
+        case .wordHighlighted:
+            return generateWordHighlightCaptions(from: segments, scale: scale)
+        }
+    }
+    
+    
     // function that gets a segments array and returns a Captions array with timmings
-    static func generateOneWordCaptions(from segments: [Segment]) -> [Caption] {
+    static func generateOneWordCaptions(from segments: [Segment], scale: CGFloat = 4.0) -> [Caption] {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
-        
+        let fontSize: CGFloat = basicFontSize * scale
+
         let attributes: [NSAttributedString.Key : Any] = [
-            .font: UIFont.systemFont(ofSize: 32, weight: .semibold),
+            .font: UIFont.systemFont(ofSize: fontSize, weight: .semibold),
             .foregroundColor: UIColor.white,
             .paragraphStyle: paragraphStyle
         ]
@@ -202,8 +245,12 @@ class CaptionStyleGenerator {
                // 1. Search for the range of the phrase in the complete segment text
                guard let nsRange = segment.text.nsRange(of: phrase, options: .caseInsensitive) else {continue}
                
-               // 2. Create the NSMutableAttributesString with the entire segment's text
-               let captionAttributtedText = NSMutableAttributedString(string: segment.text)
+               // 2. Create a fully attributed base string first.
+               // Keeping consistent font metrics across the whole line prevents stroke/border misalignment.
+               let captionAttributtedText = NSMutableAttributedString(
+                   string: segment.text,
+                   attributes: attributes
+               )
 
                // 3. Give specific attributes for the current phrase range
                captionAttributtedText.addAttribute(.foregroundColor,
@@ -216,11 +263,14 @@ class CaptionStyleGenerator {
 
                
                
-               // 4. Give the rest of the text different attributes
-//               let remainingTextRange = nsRange.upperBound..<segment.text.count
+               // 4. Give the rest of the text different attributes while keeping the same base font/paragraph metrics.
                let length = segment.text.count - nsRange.upperBound
                let nsRemainingTextRange = NSRange(location: nsRange.upperBound, length: length)
-               captionAttributtedText.addAttribute(.foregroundColor, value: UIColor.clear, range: nsRemainingTextRange)
+               captionAttributtedText.addAttributes([
+                .font: UIFont.systemFont(ofSize: fontSize, weight: .semibold),
+                .foregroundColor: UIColor.clear,
+                .paragraphStyle: paragraphStyle
+               ], range: nsRemainingTextRange)
     
 
                let startTime = segment.words[index].start
@@ -234,7 +284,7 @@ class CaptionStyleGenerator {
                else {
                   endTime = segment.words[index + 1].start
                }
-               captions.append(Caption(startTime: startTime, endTime: endTime, text: captionAttributtedText))
+               captions.append(Caption(startTime: startTime, endTime: endTime, text: captionAttributtedText, remainingTextRange: nsRemainingTextRange))
             }
         }
      
@@ -325,11 +375,13 @@ class Caption {
     let startTime: Double
     let endTime: Double
     let text: NSAttributedString
+    let remainingTextRange: NSRange?
     
-    init(startTime: Double, endTime: Double, text: NSAttributedString) {
+    init(startTime: Double, endTime: Double, text: NSAttributedString, remainingTextRange: NSRange? = nil) {
         self.startTime = startTime
         self.endTime = endTime
         self.text = text
+        self.remainingTextRange = remainingTextRange
     }
     
     var description: String {

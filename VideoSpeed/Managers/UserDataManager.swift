@@ -40,6 +40,7 @@ class UserDataManager: ObservableObject {
     @Published
     var transcription: Transcription?
     
+    @Published
     var currentCaptions: [Caption]?
     var captionsStyle = CaptionsStyle()
 

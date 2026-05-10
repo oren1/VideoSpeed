@@ -1,0 +1,6 @@
+---
+alwaysApply: true
+---
+
+When creating a new SwiftUI view, always include a #Preview. If the file is not recognized by Xcode, update the .xcodeproj/project.pbxproj to add file reference, build file, group entry, and sources build phase entry.
+If you want, I can help you choose the exact best place in your current Cursor version (UI labels changed across versions).
