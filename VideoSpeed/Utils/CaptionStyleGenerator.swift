@@ -16,22 +16,33 @@ class CaptionStyleGenerator {
 
     private static var captionsStyleCancellables = Set<AnyCancellable>()
 
-    static var captionsStyle: CaptionsStyle = {
-        let style = CaptionsStyle()
-        // `objectWillChange` fires before mutations. These `$property` streams emit after each
-        // new value is stored. `dropFirst()` skips the initial value Combine sends on subscription.
+    private static func makeCaptionsStyleChangePublisher(style: CaptionsStyle) -> AnyPublisher<Void, Never> {
         Publishers.MergeMany(
             style.$captionType.dropFirst().map { _ in () }.eraseToAnyPublisher(),
             style.$textColor.dropFirst().map { _ in () }.eraseToAnyPublisher(),
             style.$borderColor.dropFirst().map { _ in () }.eraseToAnyPublisher(),
             style.$highlightColor.dropFirst().map { _ in () }.eraseToAnyPublisher(),
-            style.$font.dropFirst().map { _ in () }.eraseToAnyPublisher()
+            style.$spidFont.dropFirst().map { _ in () }.eraseToAnyPublisher(),
+            style.$fontSize.dropFirst().map { _ in () }.eraseToAnyPublisher()
         )
-        .receive(on: DispatchQueue.main)
-        .sink { _ in
-            captionsStyleDidChange()
-        }
-        .store(in: &captionsStyleCancellables)
+        .eraseToAnyPublisher()
+    }
+
+    /// Subscribe for updates after any `captionsStyle` `@Published` value changes (same semantics as internal regeneration).
+    static func subscribeCaptionsStyleChanges(_ handler: @escaping () -> Void) -> AnyCancellable {
+        makeCaptionsStyleChangePublisher(style: captionsStyle)
+            .receive(on: DispatchQueue.main)
+            .sink { handler() }
+    }
+
+    static var captionsStyle: CaptionsStyle = {
+        let style = CaptionsStyle()
+        makeCaptionsStyleChangePublisher(style: style)
+            .receive(on: DispatchQueue.main)
+            .sink {
+                captionsStyleDidChange()
+            }
+            .store(in: &captionsStyleCancellables)
         return style
     }()
 
@@ -42,7 +53,7 @@ class CaptionStyleGenerator {
         
         UserDataManager.main.currentCaptions = generateCaptions(from: segments)
     }
-    
+
     static func getCurrentCaption(captions: [Caption], time: Double) -> Caption {
        
         // look for the current caption that needs to be presented
@@ -190,10 +201,11 @@ class CaptionStyleGenerator {
     static func generateOneWordCaptions(from segments: [Segment], scale: CGFloat = 4.0) -> [Caption] {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
-        let fontSize: CGFloat = basicFontSize * scale
+        
+        let font = captionsStyle.resolvedUIFont(scale: scale)
 
         let attributes: [NSAttributedString.Key : Any] = [
-            .font: UIFont.systemFont(ofSize: fontSize, weight: .semibold),
+            .font: font,
             .foregroundColor: UIColor.white,
             .paragraphStyle: paragraphStyle
         ]
@@ -216,10 +228,10 @@ class CaptionStyleGenerator {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
     
-        let fontSize: CGFloat = basicFontSize * scale
-    
+        let faceFont = captionsStyle.resolvedUIFont(scale: scale)
+
         let attributes: [NSAttributedString.Key : Any] = [
-            .font: UIFont.systemFont(ofSize: fontSize, weight: .semibold),
+            .font: faceFont,
             .foregroundColor: UIColor.red,
             .paragraphStyle: paragraphStyle
         ]
@@ -256,7 +268,7 @@ class CaptionStyleGenerator {
                captionAttributtedText.addAttribute(.foregroundColor,
                                                    value: UIColor.red,
                                                    range: nsRange)
-               captionAttributtedText.addAttribute(.font, value: UIFont.systemFont(ofSize: fontSize, weight: .light), range: nsRange)
+               captionAttributtedText.addAttribute(.font, value: faceFont, range: nsRange)
                captionAttributtedText.addAttributes([.paragraphStyle: paragraphStyle], range: nsRange)
                
                captionAttributtedText.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: segment.text.count))
@@ -267,7 +279,7 @@ class CaptionStyleGenerator {
                let length = segment.text.count - nsRange.upperBound
                let nsRemainingTextRange = NSRange(location: nsRange.upperBound, length: length)
                captionAttributtedText.addAttributes([
-                .font: UIFont.systemFont(ofSize: fontSize, weight: .semibold),
+                .font: faceFont,
                 .foregroundColor: UIColor.clear,
                 .paragraphStyle: paragraphStyle
                ], range: nsRemainingTextRange)
@@ -296,10 +308,10 @@ class CaptionStyleGenerator {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
     
-        let fontSize: CGFloat = basicFontSize * scale
-    
+        let faceFont = captionsStyle.resolvedUIFont(scale: scale)
+
         let attributes: [NSAttributedString.Key : Any] = [
-            .font: UIFont.systemFont(ofSize: fontSize, weight: .semibold),
+            .font: faceFont,
             .foregroundColor: UIColor.white,
             .paragraphStyle: paragraphStyle
         ]
@@ -334,7 +346,7 @@ class CaptionStyleGenerator {
 
                captionAttributtedText.addAttributes([
                 .foregroundColor: UIColor.green,
-                .font: UIFont.systemFont(ofSize: fontSize, weight: .semibold),
+                .font: faceFont,
 //                .strokeColor: UIColor.black,
 //                .strokeWidth: -2.0,
                ], range: lastWordNSRange)

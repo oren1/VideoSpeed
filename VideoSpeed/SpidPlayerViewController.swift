@@ -48,9 +48,14 @@ class SpidPlayerViewController: UIViewController {
     var labelViews: [LabelView] = []
     var selectedLabelView: LabelView?
     var scaleValue = 0.0
-    var captionsTextContainer: CaptionsTextContainer!
+    var captionsTextContainer: CaptionsTextContainer?
     var subscriptions: [AnyCancellable] = []
     var captionsTimer: Timer?
+
+    /// UserDefaults key for persisted API transcription (testing / dev convenience).
+    private let transcriptionUserDefaultsKey = "transcriptionResponse"
+    /// Ensures we rebuild captions once after layout so container width matches `videoContainerView`.
+    private var didApplyCaptionsFromUserDefaultsAfterLayout = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,33 +71,24 @@ class SpidPlayerViewController: UIViewController {
         
         UserDataManager.main.$transcription
             .receive(on: DispatchQueue.main)
-            .sink {  [weak self] transcription in
-                guard let self, let transcription,
+            .sink { [weak self] transcription in
+                guard let self else { return }
+                guard let transcription,
                       let segments = transcription.segments,
-                      let firstSegment = segments.first else { return }
-                // here i create the ScalableLabelTextContainer
-                let text = "1234567890123456789012345678901234567890"
-                let fontSize = CaptionStyleGenerator.basicFontSize
-                let labelHeight: CGFloat = text.height(withConstrainedWidth: videoContainerView.frame.width, font: UIFont.systemFont(ofSize: fontSize))
-                captionsTextContainer = CaptionsTextContainer(frame: CGRect(origin: .zero, size: CGSize(width: videoContainerView.frame.width, height: labelHeight)))
-                videoContainerView.addSubview(captionsTextContainer)
-                captionsTextContainer.viewModel.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height * 0.75)
-//                UserDataManager.main.currentCaptions = CaptionStyleGenerator.generateOneWordCaptions(from: segments)
-//                UserDataManager.main.currentCaptions = CaptionStyleGenerator.generateOneByOneCaptions(from: segments)
-                  UserDataManager.main.currentCaptions = CaptionStyleGenerator.generateWordHighlightCaptions(from: segments)
-                Task {
-                    let scale: CMTimeScale = 600
-                    let startTime =  firstSegment.start
-                    let cmTime = CMTime(value: CMTimeValue(startTime), timescale: 1).converted(toScale: scale)
-                    await self.player.seek(to: cmTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-                    self.player.play()
+                      !segments.isEmpty else {
+                    self.captionsTextContainer?.removeFromSuperview()
+                    self.captionsTextContainer = nil
+                    UserDataManager.main.currentCaptions = nil
+                    return
                 }
-
-                if videoState == .isPlayed {
-                    startCaptionsTimer()
-                }
+                self.rebuildCaptionsTextContainer(shouldSeekToFirstSegment: true)
             }
             .store(in: &subscriptions)
+
+        CaptionStyleGenerator.subscribeCaptionsStyleChanges { [weak self] in
+            self?.rebuildCaptionsTextContainer(shouldSeekToFirstSegment: false)
+        }
+        .store(in: &subscriptions)
         
         slider.setThumbImage(UIImage(), for: .normal)
                slider.setThumbImage(UIImage(), for: .highlighted)
@@ -114,11 +110,84 @@ class SpidPlayerViewController: UIViewController {
             }
         })
         
-        UserDataManager.main.$currentCaptions.receive(on: RunLoop.main).sink { captions in
+        UserDataManager.main.$currentCaptions
+            .receive(on: RunLoop.main)
+            .sink { captions in
             guard let captions else { return }
             print("captions \(captions)")
         }.store(in: &subscriptions)
        
+    }
+
+    /// Recreates `captionsTextContainer` using the longest segment text and `CaptionStyleGenerator.captionsStyle` font (`fontSize` + `spidFont`).
+    private func rebuildCaptionsTextContainer(shouldSeekToFirstSegment: Bool) {
+        guard let segments = UserDataManager.main.transcription?.segments,
+              let firstSegment = segments.first,
+              !segments.isEmpty else {
+            captionsTextContainer?.removeFromSuperview()
+            captionsTextContainer = nil
+            return
+        }
+
+        let longestText = segments.map(\.text).max(by: { $0.count < $1.count }) ?? ""
+        let font = CaptionStyleGenerator.captionsStyle.resolvedUIFont(scale: 1.0)
+        let containerWidth = max(videoContainerView.frame.width, 1)
+        let measuredHeight = longestText.height(withConstrainedWidth: containerWidth, font: font)
+        let labelHeight = max(measuredHeight, ceil(font.lineHeight * 1.25))
+
+        captionsTextContainer?.removeFromSuperview()
+        let container = CaptionsTextContainer(frame: CGRect(origin: .zero, size: CGSize(width: containerWidth, height: labelHeight)))
+        captionsTextContainer = container
+        videoContainerView.addSubview(container)
+        container.viewModel.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height * 0.75)
+
+        UserDataManager.main.currentCaptions = CaptionStyleGenerator.generateCaptions(from: segments)
+
+        guard shouldSeekToFirstSegment else { return }
+
+        Task { [weak self] in
+            guard let self else { return }
+            let scale: CMTimeScale = 600
+            let startTime = firstSegment.start
+            let cmTime = CMTime(value: CMTimeValue(startTime), timescale: 1).converted(toScale: scale)
+            await self.player.seek(to: cmTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+            self.player.play()
+        }
+
+        if videoState == .isPlayed {
+            startCaptionsTimer()
+        }
+    }
+
+    /// Loads persisted transcription from UserDefaults (`transcriptionResponse`) when valid (words → segments).
+    @discardableResult
+    private func applyTranscriptionFromUserDefaultsIfAvailable() -> Bool {
+        guard let data = UserDefaults.standard.data(forKey: transcriptionUserDefaultsKey) else {
+            return false
+        }
+        do {
+            let response = try JSONDecoder().decode(TranscriptionResponse.self, from: data)
+            guard let transcription = Transcription(transcriptionResponse: response),
+                  let segments = transcription.segments,
+                  !segments.isEmpty else {
+                return false
+            }
+            UserDataManager.main.transcription = transcription
+            return true
+        } catch {
+            print("Error decoding transcription response: \(error)")
+            return false
+        }
+    }
+
+    /// After layout: if UserDefaults holds `transcriptionResponse`, reload and rebuild captions container with correct width (testing; avoids zero-width rebuild from `viewDidAppear`).
+    private func applyCaptionsFromUserDefaultsAfterLayoutIfPossible() {
+        guard !didApplyCaptionsFromUserDefaultsAfterLayout else { return }
+        guard videoContainerView.frame.width > 2 else { return }
+        guard UserDefaults.standard.data(forKey: transcriptionUserDefaultsKey) != nil else { return }
+        guard applyTranscriptionFromUserDefaultsIfAvailable() else { return }
+        rebuildCaptionsTextContainer(shouldSeekToFirstSegment: false)
+        didApplyCaptionsFromUserDefaultsAfterLayout = true
     }
 
     
@@ -128,18 +197,13 @@ class SpidPlayerViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-            super.viewDidAppear(animated)
-        if let transcriptionsResponseData = UserDefaults.standard.data(forKey: "transcriptionResponse")  {
-            do {
-                let transcriptioResponse = try JSONDecoder().decode(TranscriptionResponse.self, from: transcriptionsResponseData)
-                UserDataManager.main.transcription = Transcription(transcriptionResponse: transcriptioResponse)
-
-            } catch {
-                print("Error decoding transcription response")
-            }
-        }
-        else {
+        super.viewDidAppear(animated)
+        if UserDefaults.standard.data(forKey: transcriptionUserDefaultsKey) == nil {
             print("No transcription response data found in UserDefaults")
+            return
+        }
+        if !applyTranscriptionFromUserDefaultsIfAvailable() {
+            print("transcriptionResponse data present but transcription could not be loaded (missing words or decode error)")
         }
     }
     
@@ -178,8 +242,10 @@ class SpidPlayerViewController: UIViewController {
             player.play()
 
             startPlaybackTimeChecker()
-            
-//            let text = "1234567890123456789012345678901234567890"
+
+            await MainActor.run { [weak self] in
+                self?.applyCaptionsFromUserDefaultsAfterLayoutIfPossible()
+            }
 //            let fontSize = CaptionStyleGenerator.basicFontSize
 //            let labelHeight: CGFloat = text.height(withConstrainedWidth: videoContainerView.frame.width, font: UIFont.systemFont(ofSize: fontSize))
 //
@@ -397,6 +463,7 @@ class SpidPlayerViewController: UIViewController {
     
     @objc func onCaptionsTimer() {
 
+        guard let captionsTextContainer else { return }
         guard let captions = UserDataManager.main.currentCaptions else { return }
         let currentVideoTime = player.currentTime().seconds
         let caption = CaptionStyleGenerator.getCurrentCaption(captions: captions, time: currentVideoTime)
