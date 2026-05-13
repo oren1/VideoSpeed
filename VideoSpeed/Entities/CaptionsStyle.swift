@@ -17,6 +17,7 @@ final class CaptionsStyle: ObservableObject {
     @Published var captionType: CaptionsType = .oneWord
     @Published var textColor: UIColor = .white
     @Published var borderColor: UIColor = .black
+    @Published var borderWidth: CGFloat = 8
     @Published var highlightColor: UIColor?
 
     /// PostScript face + metadata; use `fontSize` and `resolvedUIFont` for the actual `UIFont`.
@@ -25,10 +26,12 @@ final class CaptionsStyle: ObservableObject {
 
     init(
         spidFont: SpidFont = CaptionsStyle.defaultSpidFont,
-        fontSize: CGFloat = 32
+        fontSize: CGFloat = 32,
+        borderWidth: CGFloat = 8
     ) {
         self.spidFont = spidFont
         self.fontSize = fontSize
+        self.borderWidth = borderWidth
     }
 
     /// Default matches first catalog entry (display “SYSTEM”, PostScript `TimesNewRomanPSMT`).

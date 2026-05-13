@@ -495,7 +495,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         guard let segments = UserDataManager.main.transcription?.segments else { return }
         let scale = viewModel.fullScale * scaleX
 //        let captions = CaptionStyleGenerator.generateOneByOneCaptions(from: segments, scale: scale)
-        let captions = CaptionStyleGenerator.generateWordHighlightCaptions(from: segments, scale: scale)
+//        let captions = CaptionStyleGenerator.generateWordHighlightCaptions(from: segments, scale: scale)
+        let captions = CaptionStyleGenerator.generateCaptions(from: segments, scale: scale)
 
         
         
@@ -512,10 +513,16 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             let strokeAttributedString = NSMutableAttributedString(attributedString: caption.text)
             strokeAttributedString.addAttributes([
                 .foregroundColor: UIColor.clear.cgColor,
-                .strokeColor: UIColor.black.cgColor,
-                .strokeWidth: 30
+                .strokeColor: CaptionStyleGenerator.captionsStyle.borderColor.cgColor,
+                .strokeWidth: CaptionStyleGenerator.captionsStyle.borderWidth
             ], range: NSRange(location: 0, length: caption.text.length))
         
+            if let remainingTextRange = caption.remainingTextRange {
+                strokeAttributedString.addAttributes([
+                    .strokeColor: UIColor.clear.cgColor
+                ], range: remainingTextRange)
+            }
+            
             backgroundTextLayer.string =  strokeAttributedString
             backgroundTextLayer.isWrapped = true
             

@@ -14,6 +14,14 @@ class CaptionStyleGenerator {
     static var basicFontSize = CGFloat(32)
     static let scaleFactor = 4.0
 
+    /// Fixed fill/highlight for template thumbnails; ignores live `captionsStyle`.
+    private static func previewUIFont(scale: CGFloat) -> UIFont {
+        UIFont.systemFont(ofSize: basicFontSize * scale, weight: .semibold)
+    }
+
+    private static let previewCaptionTextColor = UIColor.white
+    private static let previewCaptionHighlightColor = UIColor.systemGreen
+
     private static var captionsStyleCancellables = Set<AnyCancellable>()
 
     private static func makeCaptionsStyleChangePublisher(style: CaptionsStyle) -> AnyPublisher<Void, Never> {
@@ -21,6 +29,7 @@ class CaptionStyleGenerator {
             style.$captionType.dropFirst().map { _ in () }.eraseToAnyPublisher(),
             style.$textColor.dropFirst().map { _ in () }.eraseToAnyPublisher(),
             style.$borderColor.dropFirst().map { _ in () }.eraseToAnyPublisher(),
+            style.$borderWidth.dropFirst().map { _ in () }.eraseToAnyPublisher(),
             style.$highlightColor.dropFirst().map { _ in () }.eraseToAnyPublisher(),
             style.$spidFont.dropFirst().map { _ in () }.eraseToAnyPublisher(),
             style.$fontSize.dropFirst().map { _ in () }.eraseToAnyPublisher()
@@ -90,8 +99,8 @@ class CaptionStyleGenerator {
     
     static func generateOneWordCaptionStyle(segment: Segment, time: Double) -> NSAttributedString {
         let attributes: [NSAttributedString.Key : Any] = [
-            .font: UIFont.systemFont(ofSize: 32, weight: .semibold),
-            .foregroundColor: UIColor.white
+            .font: captionsStyle.resolvedUIFont(scale: 1.0),
+            .foregroundColor: captionsStyle.textColor
         ]
         // look for the current word that needs to be presented
         for word in segment.words {
@@ -130,8 +139,8 @@ class CaptionStyleGenerator {
         paragraphStyle.lineBreakMode = .byWordWrapping
         
         let attributes: [NSAttributedString.Key : Any] = [
-            .font: UIFont.systemFont(ofSize: 32, weight: .semibold),
-            .foregroundColor: UIColor.white,
+            .font: captionsStyle.resolvedUIFont(scale: 1.0),
+            .foregroundColor: captionsStyle.textColor,
             .paragraphStyle: paragraphStyle,
         ]
         
@@ -185,28 +194,29 @@ class CaptionStyleGenerator {
     }
     
     
-    static func generateCaptions(from segments: [Segment], scale: CGFloat = 4.0) -> [Caption] {
+    static func generateCaptions(from segments: [Segment], scale: CGFloat = 4.0, forPreview: Bool = false) -> [Caption] {
         switch captionsStyle.captionType {
         case .oneWord:
-            return generateOneWordCaptions(from: segments, scale: scale)
+            return generateOneWordCaptions(from: segments, scale: scale, forPreview: forPreview)
         case .wordByWord:
-            return generateOneByOneCaptions(from: segments, scale: scale)
+            return generateOneByOneCaptions(from: segments, scale: scale, forPreview: forPreview)
         case .wordHighlighted:
-            return generateWordHighlightCaptions(from: segments, scale: scale)
+            return generateWordHighlightCaptions(from: segments, scale: scale, forPreview: forPreview)
         }
     }
     
     
     // function that gets a segments array and returns a Captions array with timmings
-    static func generateOneWordCaptions(from segments: [Segment], scale: CGFloat = 4.0) -> [Caption] {
+    static func generateOneWordCaptions(from segments: [Segment], scale: CGFloat = 4.0, forPreview: Bool = false) -> [Caption] {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
         
-        let font = captionsStyle.resolvedUIFont(scale: scale)
+        let font = forPreview ? previewUIFont(scale: scale) : captionsStyle.resolvedUIFont(scale: scale)
+        let textColor = forPreview ? previewCaptionTextColor : captionsStyle.textColor
 
         let attributes: [NSAttributedString.Key : Any] = [
             .font: font,
-            .foregroundColor: UIColor.white,
+            .foregroundColor: textColor,
             .paragraphStyle: paragraphStyle
         ]
         
@@ -224,15 +234,16 @@ class CaptionStyleGenerator {
         return captions
     }
     
-    static func generateOneByOneCaptions(from segments: [Segment], scale: CGFloat = 4.0) -> [Caption] {
+    static func generateOneByOneCaptions(from segments: [Segment], scale: CGFloat = 4.0, forPreview: Bool = false) -> [Caption] {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
     
-        let faceFont = captionsStyle.resolvedUIFont(scale: scale)
+        let faceFont = forPreview ? previewUIFont(scale: scale) : captionsStyle.resolvedUIFont(scale: scale)
+        let textColor = forPreview ? UIColor.red : captionsStyle.textColor
 
         let attributes: [NSAttributedString.Key : Any] = [
             .font: faceFont,
-            .foregroundColor: UIColor.red,
+            .foregroundColor: textColor,
             .paragraphStyle: paragraphStyle
         ]
         
@@ -266,7 +277,7 @@ class CaptionStyleGenerator {
 
                // 3. Give specific attributes for the current phrase range
                captionAttributtedText.addAttribute(.foregroundColor,
-                                                   value: UIColor.red,
+                                                   value: textColor,
                                                    range: nsRange)
                captionAttributtedText.addAttribute(.font, value: faceFont, range: nsRange)
                captionAttributtedText.addAttributes([.paragraphStyle: paragraphStyle], range: nsRange)
@@ -304,15 +315,17 @@ class CaptionStyleGenerator {
     }
     
     
-    static func generateWordHighlightCaptions(from segments: [Segment], scale: CGFloat = 4.0) -> [Caption] {
+    static func generateWordHighlightCaptions(from segments: [Segment], scale: CGFloat = 4.0, forPreview: Bool = false) -> [Caption] {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
     
-        let faceFont = captionsStyle.resolvedUIFont(scale: scale)
+        let faceFont = forPreview ? previewUIFont(scale: scale) : captionsStyle.resolvedUIFont(scale: scale)
+        let textColor = forPreview ? previewCaptionTextColor : captionsStyle.textColor
+        let highlight = forPreview ? previewCaptionHighlightColor : (captionsStyle.highlightColor ?? UIColor.systemGreen)
 
         let attributes: [NSAttributedString.Key : Any] = [
             .font: faceFont,
-            .foregroundColor: UIColor.white,
+            .foregroundColor: textColor,
             .paragraphStyle: paragraphStyle
         ]
         
@@ -345,10 +358,8 @@ class CaptionStyleGenerator {
                captionAttributtedText.addAttributes(attributes, range: nsRange)
 
                captionAttributtedText.addAttributes([
-                .foregroundColor: UIColor.green,
+                .foregroundColor: highlight,
                 .font: faceFont,
-//                .strokeColor: UIColor.black,
-//                .strokeWidth: -2.0,
                ], range: lastWordNSRange)
 //               captionAttributtedText.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: segment.text.count))
 

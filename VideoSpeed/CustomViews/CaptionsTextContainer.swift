@@ -169,10 +169,11 @@ class CaptionsTextContainer: UIView {
         label.attributedText = attributedText
         
         let strokeAttributedString = NSMutableAttributedString(attributedString: attributedText)
+        let strokeWidth = CaptionStyleGenerator.captionsStyle.borderWidth
         strokeAttributedString.addAttributes([
             .foregroundColor: UIColor.clear.cgColor,
-            .strokeColor: UIColor.black.cgColor,
-            .strokeWidth: 30
+            .strokeColor: CaptionStyleGenerator.captionsStyle.borderColor.cgColor,
+            .strokeWidth: strokeWidth
         ], range: NSRange(location: 0, length: attributedText.length))
         backgroundLabel.attributedText = strokeAttributedString
     }
@@ -181,10 +182,11 @@ class CaptionsTextContainer: UIView {
         label.attributedText = caption.text
         
         let strokeAttributedString = NSMutableAttributedString(attributedString: caption.text)
+        let strokeWidth = CaptionStyleGenerator.captionsStyle.borderWidth
         strokeAttributedString.addAttributes([
             .foregroundColor: UIColor.clear.cgColor,
-            .strokeColor: UIColor.black.cgColor,
-            .strokeWidth: 30
+            .strokeColor: CaptionStyleGenerator.captionsStyle.borderColor.cgColor,
+            .strokeWidth: strokeWidth
         ], range: NSRange(location: 0, length: caption.text.length))
         
         if let remainingTextRange = caption.remainingTextRange {

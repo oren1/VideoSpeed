@@ -112,10 +112,15 @@ class SpidPlayerViewController: UIViewController {
         
         UserDataManager.main.$currentCaptions
             .receive(on: RunLoop.main)
-            .sink { captions in
-            guard let captions else { return }
-            print("captions \(captions)")
-        }.store(in: &subscriptions)
+            .sink { [weak self] captions in
+                guard let self else { return }
+                guard let captions, !captions.isEmpty else { return }
+                guard let captionsTextContainer else { return }
+                let t = self.player?.currentTime().seconds ?? 0
+                let caption = CaptionStyleGenerator.getCurrentCaption(captions: captions, time: t)
+                captionsTextContainer.updateText(caption: caption)
+            }
+            .store(in: &subscriptions)
        
     }
 

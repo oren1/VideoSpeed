@@ -36,11 +36,11 @@ struct CaptionsTemplatePreviewView: View {
 
             switch captionsType {
             case .oneWord:
-                captions = CaptionStyleGenerator.generateOneWordCaptions(from: segments, scale: 0.5)
+                captions = CaptionStyleGenerator.generateOneWordCaptions(from: segments, scale: 0.5, forPreview: true)
             case .wordByWord:
-                captions = CaptionStyleGenerator.generateOneByOneCaptions(from: segments, scale: 0.5)
+                captions = CaptionStyleGenerator.generateOneByOneCaptions(from: segments, scale: 0.5, forPreview: true)
             case .wordHighlighted:
-                captions = CaptionStyleGenerator.generateWordHighlightCaptions(from: segments,scale: 0.5)
+                captions = CaptionStyleGenerator.generateWordHighlightCaptions(from: segments, scale: 0.5, forPreview: true)
             }
 
             currentTime = 0
