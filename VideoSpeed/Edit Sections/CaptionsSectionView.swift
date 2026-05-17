@@ -40,128 +40,55 @@ class CaptionItem: Identifiable, Equatable, Hashable {
            }
            return items
     }
-
-    
-    
 }
-
-
 
 struct CaptionsSectionView: View {
-    
     @ObservedObject var viewModel: CaptionsViewModel
     var editStyleTapped: (() -> Void)?
-    @State private var scrollTarget: UUID?
+
+    @State private var isEditTextSheetPresented = false
 
     var body: some View {
-        ZStack {
-            VStack {
-
-                ScrollViewReader { proxy in
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 16) {
-                            ForEach(viewModel.captions, id: \.self) { item in
-                                VStack {
-                                    Text("\(item.text)")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.white)
-                                    Image(systemName: "pencil.and.ellipsis.rectangle")
-                                        .resizable()
-                                        .frame(width: 25, height: 25)
-                                        .foregroundColor(.blue)
-                                }
-                                .frame(width: 100, height: 60)
-                                .background(.clear)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 6)
-                                        .stroke(Color.gray.opacity(1), lineWidth: 1)
-                                )
-                                .cornerRadius(6)                                .cornerRadius(6)
-                                .id(item.id) // 👈 Give each item an id for scrollTo
-                            }
-                        }
-                        .padding(.horizontal)
-                    }
-                    .frame(height: 150)
-                    .onChange(of: scrollTarget) { oldValue, newValue in
-                        // ✅ New two-parameter closure version
-                        if let targetID = newValue {
-                            withAnimation {
-                                proxy.scrollTo(targetID, anchor: .center)
-                            }
-                        }
-                    }
-                    .onAppear {
-                                    // Scroll to the 5th caption after a delay
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            scrollTarget = viewModel.captions[4].id
-                        }
-                    }
-                             
-                }
-                
-                HStack {
-                           Spacer()
-                
-                           Button(action: {
-                               editStyleTapped?()
-                           }) {
-                               Text("Edit Captions Style")
-                                .foregroundStyle(.white)
-                               Image(systemName: "long.text.page.and.pencil")
-                                   .resizable()
-                                   .scaledToFit()
-                                   .frame(width: 25, height: 25)
-                                   .foregroundColor(.white)
-                           }
-                           .padding(.bottom, 20)
-                           Spacer()
-                       }
-                       .frame(height: 50)
-                       .background(Color.clear)
-                       .cornerRadius(12)
-                       .padding(.horizontal)
+        HStack(spacing: 12) {
+            sectionActionButton(title: "Edit Text") {
+                isEditTextSheetPresented = true
             }
+            sectionActionButton(title: "Edit Style") {
+                editStyleTapped?()
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black)
+        .sheet(isPresented: $isEditTextSheetPresented) {
+            CaptionsEditTextSheetView()
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
+        }
+    }
 
-        }.background(Color.black)
+    private func sectionActionButton(title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .strokeBorder(Color.white.opacity(0.35), lineWidth: 1)
+                )
+                .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
-
 
 #Preview {
     let captionItems = CaptionItem.generatePreviewCaptions()
     let viewModel = CaptionsViewModel(captions: captionItems, lastEditedCaption: captionItems.first!)
+        
     CaptionsSectionView(viewModel: viewModel)
 }
-
-
-
-//                List(viewModel.captions) { item in
-//                    HStack {
-//                        Text(String(format: "%.2f - %.2f", item.startTime, item.endTime))
-//                            .font(.subheadline)
-//                            .foregroundColor(Color.gray)
-//                            .frame(width: 120, alignment: .leading)
-//                        Text(item.text)
-//                            .font(.body)
-//                            .foregroundColor(Color.white)
-//
-//                        Spacer()
-//
-//                        Button(action: {
-//                            print("Edit tapped for: \(item.text)")
-//                        }) {
-//                            Image(systemName: "pencil.and.ellipsis.rectangle")
-//                                .foregroundColor(.white)
-//                                .imageScale(.medium)
-//                        }
-//    //                    .buttonStyle(BorderlessButtonStyle())
-//                        // prevent row selection override
-//                        .padding(.trailing, 16)
-//                    }
-//                    .padding(.vertical, 4)
-//                    .listRowBackground(Color.clear)
-//
-//                }
-//                .listStyle(PlainListStyle())
-//                .background(Color.black)

@@ -467,10 +467,15 @@ class SpidPlayerViewController: UIViewController {
     
     
     @objc func onCaptionsTimer() {
+        let currentVideoTime = player.currentTime().seconds
+        NotificationCenter.default.post(
+            name: .captionsPlaybackTimeDidChange,
+            object: nil,
+            userInfo: [CaptionsPlaybackTimeNotification.currentTimeKey: currentVideoTime]
+        )
 
         guard let captionsTextContainer else { return }
         guard let captions = UserDataManager.main.currentCaptions else { return }
-        let currentVideoTime = player.currentTime().seconds
         let caption = CaptionStyleGenerator.getCurrentCaption(captions: captions, time: currentVideoTime)
 //        let caption = CaptionStyleGenerator.getCurrentWordByWordCaption(captions: captions, time: currentVideoTime)
 //        captionsTextContainer.updateText(attributedText: caption.text)
