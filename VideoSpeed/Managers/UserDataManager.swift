@@ -35,7 +35,13 @@ class UserDataManager: ObservableObject {
 
     var captions: [CaptionItem] = []
     
-    func userDontHaveCaptionsYet() -> Bool { UserDataManager.main.captions.count == 0 }
+    func userDontHaveCaptionsYet() -> Bool {
+        guard let currentCaptions = UserDataManager.main.currentCaptions else {
+            return true
+        }
+        
+        return currentCaptions.count == 0
+    }
     
     @Published
     var transcription: Transcription?
@@ -70,7 +76,7 @@ class UserDataManager: ObservableObject {
                 }
             }
         
-//        languageItems.insert(autoDetectionLanguageItem, at: 0)
+        languageItems.insert(autoDetectionLanguageItem, at: 0)
         
         return languageItems
     }()

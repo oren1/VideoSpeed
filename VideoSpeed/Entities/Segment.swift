@@ -44,6 +44,124 @@ class Segment: NSObject, Decodable {
     override var description: String {
         return "Segment: \(text), start: \(start), end: \(end)"
     }
+
+    static func normalizedTokens(from raw: String) -> [String] {
+        raw.split { $0.isWhitespace }.filter { !$0.isEmpty }.map(String.init)
+    }
+
+    /// Rebuilds `words` and `text` after the user edits this segment’s caption string.
+    /// - Matching token → same timing, updated text.
+    /// - Replacement → edited token keeps that word’s timing.
+    /// - Insertion(s) before a word → coupled with the **next** original word (one `Word`, next word’s timing).
+    /// - Deletion → original word dropped.
+    /// - Trailing insertions → coupled into the previous word slot.
+    func withEditedText(_ raw: String) -> Segment {
+        let tokens = Self.normalizedTokens(from: raw)
+        guard !tokens.isEmpty else {
+            return Segment(text: "", start: start, end: end, words: [])
+        }
+        let newWords = Self.reconcileWords(originalWords: words, editedTokens: tokens)
+        let newText = newWords.map(\.text).joined(separator: " ")
+        return Segment(text: newText, start: start, end: end, words: newWords)
+    }
+
+    static func reconcileWords(originalWords: [Word], editedTokens: [String]) -> [Word] {
+        guard !originalWords.isEmpty else {
+            return editedTokens.enumerated().map { index, token in
+                let t = Double(index)
+                return Word(text: token, start: t, end: t + 1)
+            }
+        }
+
+        var result: [Word] = []
+        var o = 0
+        var e = 0
+
+        while e < editedTokens.count {
+            if o >= originalWords.count {
+                appendTrailingInsertion(editedTokens[e], to: &result, fallback: originalWords.last!)
+                e += 1
+                continue
+            }
+
+            let orig = originalWords[o]
+            let token = editedTokens[e]
+
+            if token.fuzzyMatches(orig.text) {
+                result.append(Word(text: token, start: orig.start, end: orig.end))
+                o += 1
+                e += 1
+                continue
+            }
+
+            if e + 1 < editedTokens.count, editedTokens[e + 1].fuzzyMatches(orig.text) {
+                let coupled = [token, orig.text].joined(separator: " ")
+                result.append(Word(text: coupled, start: orig.start, end: orig.end))
+                o += 1
+                e += 2
+                continue
+            }
+
+            if let insertionRunEnd = endOfInsertionRun(
+                editedTokens: editedTokens,
+                startEditIndex: e,
+                originalWords: originalWords,
+                originalIndex: o
+            ) {
+                let run = Array(editedTokens[e..<insertionRunEnd])
+                let coupled = (run + [orig.text]).joined(separator: " ")
+                result.append(Word(text: coupled, start: orig.start, end: orig.end))
+                o += 1
+                e = insertionRunEnd + 1
+                continue
+            }
+
+            if o + 1 < originalWords.count, token.fuzzyMatches(originalWords[o + 1].text) {
+                o += 1
+                continue
+            }
+
+            result.append(Word(text: token, start: orig.start, end: orig.end))
+            o += 1
+            e += 1
+        }
+
+        return result
+    }
+
+    private static func endOfInsertionRun(
+        editedTokens: [String],
+        startEditIndex: Int,
+        originalWords: [Word],
+        originalIndex: Int
+    ) -> Int? {
+        guard originalIndex < originalWords.count else { return nil }
+        let anchor = originalWords[originalIndex].text
+
+        var index = startEditIndex
+        while index < editedTokens.count {
+            if editedTokens[index].fuzzyMatches(anchor) {
+                return index > startEditIndex ? index : nil
+            }
+            if index + 1 < editedTokens.count, editedTokens[index + 1].fuzzyMatches(anchor) {
+                return nil
+            }
+            index += 1
+        }
+        return nil
+    }
+
+    private static func appendTrailingInsertion(_ token: String, to result: inout [Word], fallback: Word) {
+        if let last = result.last {
+            result[result.count - 1] = Word(
+                text: [last.text, token].joined(separator: " "),
+                start: last.start,
+                end: last.end
+            )
+        } else {
+            result.append(Word(text: token, start: fallback.start, end: fallback.end))
+        }
+    }
     
     static func demoTranscription() -> Transcription {
         let words = [
@@ -213,5 +331,19 @@ class Transcription {
         return segments
     }
 
+    /// Replaces one segment (by index) and rebuilds flat `words` plus top-level `text`.
+    func replacingSegment(at index: Int, editedText: String) -> Transcription? {
+        guard let segments, index >= 0, index < segments.count else { return nil }
+        var newSegments = Array(segments)
+        newSegments[index] = segments[index].withEditedText(editedText)
+        let flatWords = newSegments.flatMap(\.words)
+        let fullText = newSegments.map(\.text).joined(separator: " ")
+        return Transcription(text: fullText, words: flatWords, segments: newSegments)
+    }
+}
 
+private extension String {
+    func fuzzyMatches(_ other: String) -> Bool {
+        caseInsensitiveCompare(other) == .orderedSame
+    }
 }

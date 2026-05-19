@@ -56,17 +56,17 @@ class OpenAIManager {
             case .success(let transcriptionResponse):
                 print("response text: \(transcriptionResponse.text)")
                
-                do {
-                    // For debugging purposes, saving the transcription data to save time sending transcription requests
-                    let encoder = JSONEncoder()
-                    encoder.outputFormatting = .prettyPrinted
-
-                    let jsonData = try encoder.encode(transcriptionResponse)
-                    UserDefaults.standard.set(jsonData, forKey: "transcriptionResponse")
-                   
-                } catch  {
-                    print("Error saving JSON data: \(error)")
-                }
+//                do {
+//                    // For debugging purposes, saving the transcription data to save time sending transcription requests
+//                    let encoder = JSONEncoder()
+//                    encoder.outputFormatting = .prettyPrinted
+//
+//                    let jsonData = try encoder.encode(transcriptionResponse)
+//                    UserDefaults.standard.set(jsonData, forKey: "transcriptionResponse")
+//                   
+//                } catch  {
+//                    print("Error saving JSON data: \(error)")
+//                }
 
                 if let transcription = Transcription(transcriptionResponse: transcriptionResponse) {
                     completion(.success(transcription))

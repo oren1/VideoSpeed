@@ -287,6 +287,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         UserDataManager.main.selectedLabelViewModel = nil
         UserDataManager.main.usingSlider = false
         UserDataManager.main.spidAssets = []
+        UserDataManager.main.currentCaptions = nil
+        UserDataManager.main.transcription = nil
     }
     
     func createProButton() -> UIButton {

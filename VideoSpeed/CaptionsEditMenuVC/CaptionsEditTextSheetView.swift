@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Sheet for reviewing and editing transcription segments (save logic not wired yet).
+/// Sheet for reviewing and editing transcription segments.
 struct CaptionsEditTextSheetView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var userData = UserDataManager.main
@@ -38,6 +38,7 @@ struct CaptionsEditTextSheetView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
+                        applyPendingSegmentEdits()
                         dismiss()
                     } label: {
                         Image(systemName: "checkmark")
@@ -94,7 +95,10 @@ struct CaptionsEditTextSheetView: View {
             .onChange(of: activeSegmentIndex) { _, newIndex in
                 scrollToActiveSegment(newIndex, proxy: proxy)
             }
-            .onChange(of: focusedSegmentIndex) { _, focusedIndex in
+            .onChange(of: focusedSegmentIndex) { oldFocused, focusedIndex in
+                if let oldFocused, oldFocused != focusedIndex {
+                    applySegmentEdit(at: oldFocused)
+                }
                 guard focusedIndex == nil else { return }
                 scrollToActiveSegment(activeSegmentIndex, proxy: proxy)
             }
@@ -110,13 +114,14 @@ struct CaptionsEditTextSheetView: View {
 
     private func segmentRow(index: Int) -> some View {
         let startTime = userData.transcription?.segments?[index].start ?? 0
-        let isActive = focusedSegmentIndex == nil && activeSegmentIndex == index
+        let isPlayingSegment = activeSegmentIndex == index
+        let isActive = focusedSegmentIndex == nil && isPlayingSegment
 
         return HStack(alignment: .center, spacing: 12) {
             Button {
                 // Preview playback — not wired yet
             } label: {
-                Image(systemName: "play.fill")
+                Image(systemName: isPlayingSegment ? "pause.fill" : "play.fill")
                     .font(.caption)
                     .foregroundStyle(.white)
                     .frame(width: 28, height: 28)
@@ -158,6 +163,44 @@ struct CaptionsEditTextSheetView: View {
     private func syncSegmentTextsFromTranscription() {
         segmentTexts = userData.transcription?.segments?.map(\.text) ?? []
         activeSegmentIndex = nil
+    }
+
+    private func applyPendingSegmentEdits() {
+        guard var transcription = userData.transcription else { return }
+        var didChange = false
+        for index in segmentTexts.indices {
+            guard let segments = transcription.segments,
+                  index < segmentTexts.count,
+                  segmentTexts[index] != segments[index].text,
+                  let updated = transcription.replacingSegment(at: index, editedText: segmentTexts[index])
+            else { continue }
+            transcription = updated
+            segmentTexts[index] = updated.segments?[index].text ?? segmentTexts[index]
+            didChange = true
+        }
+        guard didChange else { return }
+        commitTranscription(transcription)
+    }
+
+    private func applySegmentEdit(at index: Int) {
+        guard var transcription = userData.transcription,
+              let segments = transcription.segments,
+              index >= 0,
+              index < segments.count,
+              index < segmentTexts.count else { return }
+
+        let editedText = segmentTexts[index]
+        guard editedText != segments[index].text,
+              let updated = transcription.replacingSegment(at: index, editedText: editedText) else { return }
+
+        segmentTexts[index] = updated.segments?[index].text ?? editedText
+        commitTranscription(updated)
+    }
+
+    private func commitTranscription(_ transcription: Transcription) {
+        userData.transcription = transcription
+        guard let segments = transcription.segments else { return }
+        userData.currentCaptions = CaptionStyleGenerator.generateCaptions(from: segments)
     }
 
     private func updateActiveSegment(for time: Double) {
