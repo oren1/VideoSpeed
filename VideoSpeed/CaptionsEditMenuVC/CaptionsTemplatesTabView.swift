@@ -25,7 +25,8 @@ struct CaptionsTemplatesTabView: View {
     private let templateOptions: [(title: String, type: CaptionsType)] = [
         ("One Word", .oneWord),
         ("Word By Word", .wordByWord),
-        ("Word Highlighted", .wordHighlighted)
+        ("Word Highlighted", .wordHighlighted),
+        ("Full Line", .fullLine)
     ]
 
     var body: some View {

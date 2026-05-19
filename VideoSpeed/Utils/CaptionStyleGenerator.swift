@@ -202,6 +202,8 @@ class CaptionStyleGenerator {
             return generateOneByOneCaptions(from: segments, scale: scale, forPreview: forPreview)
         case .wordHighlighted:
             return generateWordHighlightCaptions(from: segments, scale: scale, forPreview: forPreview)
+        case .fullLine:
+            return generateFullLineCaptions(from: segments, scale: scale, forPreview: forPreview)
         }
     }
     
@@ -231,6 +233,27 @@ class CaptionStyleGenerator {
             }
         }
         
+        return captions
+    }
+
+    static func generateFullLineCaptions(from segments: [Segment], scale: CGFloat = 4.0, forPreview: Bool = false) -> [Caption] {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .center
+
+        let font = forPreview ? previewUIFont(scale: scale) : captionsStyle.resolvedUIFont(scale: scale)
+        let textColor = forPreview ? previewCaptionTextColor : captionsStyle.textColor
+
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .foregroundColor: textColor,
+            .paragraphStyle: paragraphStyle
+        ]
+
+        var captions: [Caption] = []
+        for segment in segments {
+            let text = NSAttributedString(string: segment.text, attributes: attributes)
+            captions.append(Caption(startTime: segment.start, endTime: segment.end, text: text))
+        }
         return captions
     }
     

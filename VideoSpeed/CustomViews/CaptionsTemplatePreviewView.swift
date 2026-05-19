@@ -41,6 +41,8 @@ struct CaptionsTemplatePreviewView: View {
                 captions = CaptionStyleGenerator.generateOneByOneCaptions(from: segments, scale: 0.5, forPreview: true)
             case .wordHighlighted:
                 captions = CaptionStyleGenerator.generateWordHighlightCaptions(from: segments, scale: 0.5, forPreview: true)
+            case .fullLine:
+                captions = CaptionStyleGenerator.generateFullLineCaptions(from: segments, scale: 0.5, forPreview: true)
             }
 
             currentTime = 0

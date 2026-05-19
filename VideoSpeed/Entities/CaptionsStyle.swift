@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 enum CaptionsType {
-    case oneWord, wordByWord, wordHighlighted
+    case oneWord, wordByWord, wordHighlighted, fullLine
 }
 
 final class CaptionsStyle: ObservableObject {
