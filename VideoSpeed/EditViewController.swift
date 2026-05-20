@@ -265,12 +265,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false;
-        
-        let notificationPermissionLocation = RemoteConfig.remoteConfig().configValue(forKey: "notificationPermissionLocation").stringValue ?? ""
-        if let permissionLocation = PermissionLocation(rawValue: notificationPermissionLocation),
-           permissionLocation == .editScreen {
-            PushNotificationManager.main.registerForPushNotifications()
-        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -865,8 +859,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     @objc func tryToExportVideo() {
         AnalyticsManager.exportButtonTapped()
         
-        guard  SpidProducts.store.userPurchasedProVersion() != nil ||
-        UserDataManager.main.isGiftActive() else {
+        guard  SpidProducts.store.userPurchasedProVersion() != nil
+                || UserDataManager.main.isGiftActive()
+        else {
             
             if !usingProFeatures() {
                 Task {
@@ -967,7 +962,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         contextInfo info: AnyObject
     ) {
         if error == nil {
-            AppStoreReviewManager.incrementSuccessfulExportCount()
             let successMessageViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SuccessMessageViewController") as! SuccessMessageViewController
             if UIDevice.current.userInterfaceIdiom == .phone {
                 successMessageViewController.modalPresentationStyle = .fullScreen
@@ -1306,7 +1300,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 AnalyticsManager.getProAndSaveVideoTapped()
                 Task {
                     self.hideProFeatureAlert()
-                    await IAPManager.startPurchase(productIdentifier: SpidProducts.freeTrialYearlySubscription, on: self) { [weak self] in
+                    let productIdentifier = SpidProducts.freeTrialYearlySubscription
+                    await IAPManager.startPurchase(productIdentifier: productIdentifier, on: self) { [weak self] in
                         Task {@MainActor in
                             self?.hideLoading()
                         }
@@ -1391,7 +1386,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
         
         // A/B Test for yearly price of $19.99 or $9.99
-//        let pricingRaw = RemoteConfig.remoteConfig().configValue(forKey: "pricing").stringValue!
 //        let pricing = Pricing(rawValue: pricingRaw)
 //        switch pricing {
 //        case .normal:
@@ -1401,8 +1395,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //        default:
 //            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
 //        }
-
         purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
+        
         purchaseViewController.onDismiss = { [weak self] in
             if let _ = SpidProducts.store.userPurchasedProVersion() {
                 self?.hideProButton()
