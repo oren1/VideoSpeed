@@ -28,6 +28,7 @@ class UsingProFeaturesAlertView: UIView {
     @IBOutlet weak var sliderPrecisionView: UIView!
     @IBOutlet weak var proFontView: UIView!
     @IBOutlet weak var mergeVideosView: UIView!
+    @IBOutlet weak var captionsView: UIView!
     
     @IBOutlet weak var sliderPrecisionViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var soundOffViewHeightConstraint: NSLayoutConstraint!
@@ -35,7 +36,8 @@ class UsingProFeaturesAlertView: UIView {
     @IBOutlet weak var videoFormatViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var proFontViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var mergeVideosViewHeightConstraint: NSLayoutConstraint!
-   
+    @IBOutlet weak var captionsHeightConstraint: NSLayoutConstraint!
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         commonInit()
@@ -55,7 +57,7 @@ class UsingProFeaturesAlertView: UIView {
         
     }
     
-    func updateStatus(usingSlider: Bool, soundOff: Bool, fps: Int32, fileType: AVFileType, usingProFont: Bool, mergeVideos: Bool) {
+    func updateStatus(usingSlider: Bool, soundOff: Bool, fps: Int32, fileType: AVFileType, usingProFont: Bool, mergeVideos: Bool, captions: Bool) {
         
 //        let isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
 
@@ -76,6 +78,9 @@ class UsingProFeaturesAlertView: UIView {
         
         mergeVideosViewHeightConstraint.constant = 0
         mergeVideosView.isHidden = true
+        
+        captionsHeightConstraint.constant = 0
+        captionsView.isHidden = true
         
         if usingSlider {
             sliderPrecisionViewHeightConstraint.constant = 24
@@ -102,6 +107,11 @@ class UsingProFeaturesAlertView: UIView {
         if mergeVideos {
             mergeVideosViewHeightConstraint.constant = 24
             mergeVideosView.isHidden = false
+        }
+        
+        if captions {
+            captionsHeightConstraint.constant = 24
+            captionsView.isHidden = false
         }
     }
     

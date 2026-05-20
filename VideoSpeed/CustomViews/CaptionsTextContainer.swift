@@ -265,6 +265,10 @@ class CaptionsTextContainer: UIView {
     }
 
     @objc private func closeTapped() {
+        let userData = UserDataManager.main
+        userData.transcription = nil
+        userData.currentCaptions = nil
+        userData.captions = []
         removeFromSuperview()
     }
     

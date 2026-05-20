@@ -1291,7 +1291,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                                                    fps: fps,
                                                    fileType: fileType,
                                                    usingProFont: UserDataManager.main.usingProFont(),
-                                                   mergeVideos: UserDataManager.main.usingMergeFeature())
+                                                   mergeVideos: UserDataManager.main.usingMergeFeature(),
+                                                   captions: UserDataManager.main.usingCaptions())
+                                                
             
             usingProFeaturesAlertView.layer.opacity = 0
             self.navigationController!.view.addSubview(usingProFeaturesAlertView)
@@ -1539,7 +1541,8 @@ extension NotificationObservers {
                 UserDataManager.main.soundOff ||
                 fileType == .mp4 ||
                 UserDataManager.main.usingProFont() ||
-                UserDataManager.main.usingMergeFeature() {
+                UserDataManager.main.usingMergeFeature() ||
+                UserDataManager.main.usingCaptions() {
                 
                 return true
             }

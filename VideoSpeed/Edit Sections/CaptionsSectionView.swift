@@ -45,17 +45,34 @@ class CaptionItem: Identifiable, Equatable, Hashable {
 struct CaptionsSectionView: View {
     @ObservedObject var viewModel: CaptionsViewModel
     var editStyleTapped: (() -> Void)?
+    var generateCaptionsTapped: (() -> Void)?
 
     @State private var isEditTextSheetPresented = false
 
     var body: some View {
-        HStack(spacing: 12) {
-            sectionActionButton(title: "Edit Text") {
-                isEditTextSheetPresented = true
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                sectionActionButton(title: "Edit Text") {
+                    isEditTextSheetPresented = true
+                }
+                sectionActionButton(title: "Edit Style") {
+                    editStyleTapped?()
+                }
             }
-            sectionActionButton(title: "Edit Style") {
-                editStyleTapped?()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            Button {
+                generateCaptionsTapped?()
+            } label: {
+                Text("Select Language")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(Color(uiColor: .systemBlue))
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
+            .buttonStyle(.plain)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 20)

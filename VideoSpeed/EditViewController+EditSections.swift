@@ -229,6 +229,9 @@ extension EditViewController {
             
             self.present(sheetVC, animated: true)
         }
+        captionsSectionVC.generateCaptionsTapped = { [weak self] in
+            self?.presentCaptionsSettingsView()
+        }
     
     }
     

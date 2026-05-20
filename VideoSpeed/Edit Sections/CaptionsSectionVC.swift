@@ -13,10 +13,17 @@ class CaptionsSectionVC: SectionViewController {
     var captionsSectionHostingController: UIHostingController<CaptionsSectionView>!
     var viewModel: CaptionsViewModel!
     var editStyleTapped: (() -> Void)?
-    
+    var generateCaptionsTapped: (() -> Void)?
+
     override func viewDidLoad() {
             super.viewDidLoad()
-        captionsSectionHostingController = UIHostingController(rootView: CaptionsSectionView(viewModel: viewModel, editStyleTapped: editStyleTapped))
+        captionsSectionHostingController = UIHostingController(
+            rootView: CaptionsSectionView(
+                viewModel: viewModel,
+                editStyleTapped: editStyleTapped,
+                generateCaptionsTapped: generateCaptionsTapped
+            )
+        )
 
             addChild(captionsSectionHostingController)
             captionsSectionHostingController.view.translatesAutoresizingMaskIntoConstraints = false

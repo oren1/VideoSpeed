@@ -43,6 +43,14 @@ class UserDataManager: ObservableObject {
         return currentCaptions.count == 0
     }
     
+    func usingCaptions() -> Bool {
+        guard let currentCaptions = UserDataManager.main.currentCaptions else {
+            return false
+        }
+        
+        return currentCaptions.count > 0
+    }
+    
     @Published
     var transcription: Transcription?
     
