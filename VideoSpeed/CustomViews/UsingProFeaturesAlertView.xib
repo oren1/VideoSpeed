@@ -2,7 +2,6 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -12,6 +11,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UsingProFeaturesAlertView" customModule="VideoSpeed" customModuleProvider="target">
             <connections>
+                <outlet property="captionsHeightConstraint" destination="N1O-4t-xtD" id="PHs-00-S8c"/>
+                <outlet property="captionsView" destination="BO3-Mi-IIP" id="C0e-EY-1qx"/>
                 <outlet property="contentView" destination="iN0-l3-epB" id="O95-V4-Ucw"/>
                 <outlet property="continueButton" destination="5Rq-u6-r42" id="kSf-TS-RwE"/>
                 <outlet property="fpsView" destination="OgW-AD-Col" id="cLM-8j-xTX"/>
@@ -31,7 +32,7 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB">
-            <rect key="frame" x="0.0" y="0.0" width="340" height="374"/>
+            <rect key="frame" x="0.0" y="0.0" width="340" height="398"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c2f-cp-a8D">
@@ -55,7 +56,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Rq-u6-r42">
-                    <rect key="frame" x="24" y="304" width="292" height="46"/>
+                    <rect key="frame" x="24" y="328" width="292" height="46"/>
                     <color key="backgroundColor" systemColor="systemCyanColor"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="46" id="gHJ-cT-Tfl"/>
@@ -238,7 +239,7 @@
                     </constraints>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$9.99 / year" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hCp-GK-aRm">
-                    <rect key="frame" x="123" y="279" width="94" height="21"/>
+                    <rect key="frame" x="123" y="303" width="94" height="21"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="21" id="eDM-yZ-zLZ"/>
                     </constraints>
@@ -246,6 +247,34 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BO3-Mi-IIP">
+                    <rect key="frame" x="50" y="259" width="240" height="24"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="captions.bubble" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="pyw-Ur-Pl3">
+                            <rect key="frame" x="0.0" y="0.66666666666668561" width="24" height="23.666666666666668"/>
+                            <color key="tintColor" red="0.02287416104" green="0.023331644259999999" blue="0.023331644259999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="24" id="78f-Hp-ImG"/>
+                                <constraint firstAttribute="height" constant="24.666666666666675" id="UEu-OW-25x"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Captions" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ka4-dm-idJ">
+                            <rect key="frame" x="32" y="4.6666666666666856" width="54" height="15"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstItem="pyw-Ur-Pl3" firstAttribute="leading" secondItem="BO3-Mi-IIP" secondAttribute="leading" id="DHw-Q5-o2l"/>
+                        <constraint firstAttribute="height" constant="24" id="N1O-4t-xtD"/>
+                        <constraint firstItem="ka4-dm-idJ" firstAttribute="centerY" secondItem="BO3-Mi-IIP" secondAttribute="centerY" id="XrO-n5-xWk"/>
+                        <constraint firstItem="pyw-Ur-Pl3" firstAttribute="centerY" secondItem="BO3-Mi-IIP" secondAttribute="centerY" id="bdL-ME-2Oq"/>
+                        <constraint firstAttribute="width" constant="240" id="cj7-Ic-87g"/>
+                        <constraint firstItem="ka4-dm-idJ" firstAttribute="leading" secondItem="pyw-Ur-Pl3" secondAttribute="trailing" constant="8" id="sPU-Lw-6j7"/>
+                    </constraints>
+                </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -258,6 +287,7 @@
                 <constraint firstItem="9Uc-fx-vlQ" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="9pN-YO-hbU"/>
                 <constraint firstItem="S5L-Ha-uGw" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="O0W-3C-34U"/>
                 <constraint firstItem="OgW-AD-Col" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="OT0-9a-vkT"/>
+                <constraint firstItem="BO3-Mi-IIP" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="RDc-vo-Bcb"/>
                 <constraint firstItem="9Uc-fx-vlQ" firstAttribute="top" secondItem="S5L-Ha-uGw" secondAttribute="bottom" constant="4" id="TG2-bs-Cho"/>
                 <constraint firstItem="OgW-AD-Col" firstAttribute="top" secondItem="hMX-UY-dQX" secondAttribute="bottom" constant="4" id="V8G-Yy-vsE"/>
                 <constraint firstItem="S5L-Ha-uGw" firstAttribute="top" secondItem="OgW-AD-Col" secondAttribute="bottom" constant="4" id="Vsk-nu-HeY"/>
@@ -271,13 +301,15 @@
                 <constraint firstItem="c2f-cp-a8D" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="4" id="fNw-Ac-8Dt"/>
                 <constraint firstItem="5AE-4l-0yL" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="p0o-hI-hYs"/>
                 <constraint firstItem="hMX-UY-dQX" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="pgk-Ch-NJm"/>
+                <constraint firstItem="BO3-Mi-IIP" firstAttribute="top" secondItem="5AE-4l-0yL" secondAttribute="bottom" constant="4" id="sY5-7V-wCz"/>
             </constraints>
             <nil key="simulatedBottomBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="-15" y="-113"/>
+            <point key="canvasLocation" x="-15.267175572519083" y="-104.92957746478874"/>
         </view>
     </objects>
     <resources>
+        <image name="captions.bubble" catalog="system" width="128" height="110"/>
         <image name="multiply" catalog="system" width="128" height="111"/>
         <image name="rectangle.split.2x1.fill" catalog="system" width="128" height="93"/>
         <image name="slider.horizontal.2.square.on.square" catalog="system" width="128" height="116"/>

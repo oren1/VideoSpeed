@@ -10,9 +10,12 @@ import GoogleMobileAds
 import FirebaseCore
 import FirebaseRemoteConfig
 import StoreKit
+import CurlDSL
+import AVFoundation
+import Alamofire
 
 class SplashViewController: UIViewController, GADFullScreenContentDelegate {
-
+    
     var appOpenAd: GADAppOpenAd?
     var adDidDismis = false
     var requestsDidFinish = false
@@ -23,6 +26,7 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         
         let minimumAppOpensToShowAd = RemoteConfig.remoteConfig().configValue(forKey: "minimumAppOpensToShowAd").numberValue.intValue
 
@@ -78,18 +82,25 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
         
         downloadGroup.notify(queue: DispatchQueue.main) { [weak self] in
                 self?.pushMainViewController()
-            
-//             if let appOpenAd = self?.appOpenAd,
-//                let rootViewController = self?.view.window?.rootViewController {
-//                 appOpenAd.present(fromRootViewController: rootViewController)
-//                 return
-//             }
-//             else {
-//                self?.pushMainViewController()
-//             }
         }
+       
     }
+    func fileSize(at url: URL) -> Double? {
+        do {
+            let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
+            if let size = attributes[.size] as? NSNumber {
+//                return size.int64Value
+                return Double(truncating: size) / (1024 * 1024) // convert bytes → MB
+
+            }
+        } catch {
+            print("Error getting file size:", error)
+        }
+        return nil
+    }
+
     
+  
     
     
     func loadAppOpenAdIfAppropriate(viewVontroller: UIViewController, completion: @escaping VoidClosure) {

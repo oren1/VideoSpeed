@@ -7,6 +7,7 @@
 
 import Foundation
 import StoreKit
+import Speech
 
 
 let twentyFourHoursInSeconds = 24.0 * 60 * 60
@@ -31,6 +32,62 @@ class UserDataManager: ObservableObject {
         }
     }
     let hasLaunchedKey = "hasLaunchedBefore"
+
+    var captions: [CaptionItem] = []
+    
+    func userDontHaveCaptionsYet() -> Bool {
+        guard let currentCaptions = UserDataManager.main.currentCaptions else {
+            return true
+        }
+        
+        return currentCaptions.count == 0
+    }
+    
+    func usingCaptions() -> Bool {
+        guard let currentCaptions = UserDataManager.main.currentCaptions else {
+            return false
+        }
+        
+        return currentCaptions.count > 0
+    }
+    
+    @Published
+    var transcription: Transcription?
+    
+    @Published
+    var currentCaptions: [Caption]?
+    var captionsStyle = CaptionsStyle()
+
+    var languageItems: [LanguageItem] = {
+        let locales = Array(SFSpeechRecognizer.supportedLocales())
+        let formatter = Locale.current
+        
+        /* create a custom 'LanguageItem' that will represent a language auto detection
+         performed by the SFSpeechRecognizer */
+        let autoDetectionLanguageItem: LanguageItem = LanguageItem(identifier: "autoDetection", localizedString: "Auto Detection", isSelected: true)
+        
+        // I want to support only the languages OpenAI says
+        var languageItems = locales
+            .sorted {
+                let nameA = formatter.localizedString(forIdentifier: $0.identifier) ?? $0.identifier
+                let nameB = formatter.localizedString(forIdentifier: $1.identifier) ?? $1.identifier
+                return nameA.localizedCaseInsensitiveCompare(nameB) == .orderedAscending
+            }
+            .map { locale in
+                let code = locale.language.languageCode?.identifier ?? ""
+                let name = formatter.localizedString(forLanguageCode: code) ?? ""
+
+                return LanguageItem(identifier: code, code: code, localizedString: name)
+            }.reduce(into: [LanguageItem]()) { result, item in
+                if !result.contains(item) {
+                    result.append(item)
+                }
+            }
+        
+        languageItems.insert(autoDetectionLanguageItem, at: 0)
+        
+        return languageItems
+    }()
 
     @Published
     var textOverlayLabels: [SpidLabel] = []

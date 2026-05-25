@@ -8,7 +8,7 @@
 
 
 enum ItemId {
-    case speed, trim, crop, fps, sound, text, more
+    case speed, trim, crop, captions, fps, sound, text, more
 }
 
 struct MenuItem: Equatable {

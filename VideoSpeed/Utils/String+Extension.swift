@@ -7,9 +7,34 @@
 
 import CoreGraphics
 import UIKit
+import NaturalLanguage
 
 
 extension String {
+    func nsRangeOfLastWord() -> NSRange? {
+        let nsText = self as NSString
+        let tokenizer = NLTokenizer(unit: .word)
+        tokenizer.string = self
+
+        var lastRange: NSRange?
+
+        tokenizer.enumerateTokens(in: self.startIndex..<self.endIndex) { range, _ in
+            lastRange = NSRange(range, in: self)
+            return true
+        }
+
+        return lastRange
+    }
+
+    
+    func nsRange(of substring: String,
+                    options: CompareOptions = []) -> NSRange? {
+           guard let range = self.range(of: substring, options: options) else {
+               return nil
+           }
+           return NSRange(range, in: self)
+       }
+    
     func height(withConstrainedWidth width: CGFloat, font: UIFont) -> CGFloat {
         let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
         let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font], context: nil)

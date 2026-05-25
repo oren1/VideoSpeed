@@ -56,6 +56,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var spidPlayerController: SpidPlayerViewController!
     var selectedMenuItem: MenuItem!
     var videosStartTimes: [CMTime] = [.zero]
+    var subscribers: [AnyCancellable] = []
+
+    
     
     @IBOutlet weak var videosContainerView: UIView!
     @IBOutlet weak var videosCollectionView: UICollectionView!
@@ -67,6 +70,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                                  MenuItem(id: .trim , title: "TRIM", imageName: "timeline.selection"),
 //                                 MenuItem(id: .crop , title: "CROP", imageName: "crop"),
                                  MenuItem(id: .text , title: "TEXT", imageName: "textformat.alt"),
+                                 MenuItem(id: .captions , title: "CAPTIONS", imageName: "captions.bubble"),
                                  MenuItem(id: .fps , title: "FPS", imageName: "square.stack.3d.down.right.fill"),
                                  MenuItem(id: .sound , title: "SOUND", imageName: "speaker.wave.2"),
                                  MenuItem(id: .more , title: "MORE", imageName: "ellipsis")
@@ -110,7 +114,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var cropSectionVC: CropSectioVC!
     var trimmerSectionVC: TrimmerSectionVC!
     var textSectionVC: TextSectionVC!
-    
+    var captionsSectionVC: CaptionsSectionVC!
+    var captionsViewModel: CaptionsViewModel!
+    var captionsSettingsHostingVC: UIHostingController<CaptionsSettingsSelectionView>?
     var editSections: [SectionViewController] = []
     var videosMenuDelegate: VideosMenuDelegate!
     @IBOutlet weak var dashboardContainerView: UIView!
@@ -131,6 +137,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 14)], for: .selected)
 //        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
 //                                                 .font: UIFont.boldSystemFont(ofSize: 14)], for: .normal)
+        
+       
+        
         videosMenuDelegate = VideosMenuDelegate()
         videosMenuDelegate.didSelectVideo = { [weak self] spidAsset in
             guard let self = self else { return }
@@ -245,6 +254,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 await textSectionVC.recreateThumbnailsFor(asset: compositionCopy, videoComposition: videoCompositionCopy)
 //                await rotateVideoForCropFeature()
             }
+            
+            
         }
         
     }
@@ -270,6 +281,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         UserDataManager.main.selectedLabelViewModel = nil
         UserDataManager.main.usingSlider = false
         UserDataManager.main.spidAssets = []
+        UserDataManager.main.currentCaptions = nil
+        UserDataManager.main.transcription = nil
     }
     
     func createProButton() -> UIButton {
@@ -446,7 +459,251 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         }
         
     }
+
     
+    func addCaptions2(to layer: CALayer, videoSize: CGSize) {
+    
+        guard let captionsTextContainerCopy = spidPlayerController.captionsTextContainer?.duplicateNoTransform() else { return }
+       
+        let viewModel = captionsTextContainerCopy.viewModel
+
+//        let label = UILabel(frame: viewModel.initialFrame)
+//        label.center = viewModel.center
+////        label.backgroundColor = .red
+//        label.numberOfLines = 0
+//        print("label.frame \(label.frame)")
+        
+        // 1. scale the initialFrame by the standard scale factor used for caprions
+        let originalSize = captionsTextContainerCopy.bounds.size
+
+        // The ratio between the original video size and the 'videoContainerView' that presents the video in the editor
+        let scaleX = videoSize.width / spidPlayerController.videoContainerView.frame.width
+        let scaleY = videoSize.height / spidPlayerController.videoContainerView.frame.height
+        print("scaleX \(scaleX)")
+        // The Captions Container size after applying the user scale transform
+        let captionsContainerViewScaledSize = CGSize(width: viewModel.initialFrame.width * viewModel.fullScale * scaleX, height: viewModel.initialFrame.height * viewModel.fullScale * scaleX)
+        print("viewModel.fullScale \(viewModel.fullScale)")
+        print("captionsContainerViewScaledSize \(captionsContainerViewScaledSize)")
+        
+        /* Here i want to create a new captions array especialy for the exported version that will have
+        the correct font size, scaled by the user's scale selection (fullScale) and the 'edit screen / original video'
+         ratio */
+        guard let segments = UserDataManager.main.transcription?.segments else { return }
+        let scale = viewModel.fullScale * scaleX
+//        let captions = CaptionStyleGenerator.generateOneByOneCaptions(from: segments, scale: scale)
+//        let captions = CaptionStyleGenerator.generateWordHighlightCaptions(from: segments, scale: scale)
+        let captions = CaptionStyleGenerator.generateCaptions(from: segments, scale: scale)
+
+        
+        
+        for (index, caption) in captions.enumerated() {
+           // For every caption, create a scaled UIImageView and add it's layer to the video`s overlay layer
+            // 1. Assign the current caption to the captions container label
+            let textLayer = CATextLayer()
+            textLayer.frame = CGRect(origin: .zero, size: captionsContainerViewScaledSize)
+            textLayer.alignmentMode = .center
+            let backgroundTextLayer = CATextLayer()
+            backgroundTextLayer.frame = CGRect(origin: .zero, size: captionsContainerViewScaledSize)
+            backgroundTextLayer.alignmentMode = .center
+
+            let strokeAttributedString = NSMutableAttributedString(attributedString: caption.text)
+            strokeAttributedString.addAttributes([
+                .foregroundColor: UIColor.clear.cgColor,
+                .strokeColor: CaptionStyleGenerator.captionsStyle.borderColor.cgColor,
+                .strokeWidth: CaptionStyleGenerator.captionsStyle.borderWidth
+            ], range: NSRange(location: 0, length: caption.text.length))
+        
+            if let remainingTextRange = caption.remainingTextRange {
+                strokeAttributedString.addAttributes([
+                    .strokeColor: UIColor.clear.cgColor
+                ], range: remainingTextRange)
+            }
+            
+            backgroundTextLayer.string =  strokeAttributedString
+            backgroundTextLayer.isWrapped = true
+            
+            // Crisp text (VERY IMPORTANT)
+            backgroundTextLayer.contentsScale = UIScreen.main.scale
+
+            
+            backgroundTextLayer.position = CGPoint(x: viewModel.center.x * scaleX, y: viewModel.center.y * scaleY)
+//            textLayer.backgroundColor = UIColor.green.cgColor
+            backgroundTextLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+            backgroundTextLayer.transform = CATransform3DMakeRotation(viewModel.fullRotation, 0, 0, 1)
+
+            backgroundTextLayer.opacity = 0
+            
+            
+            // Text
+            textLayer.string = caption.text
+//            textLayer.alignmentMode = .center
+            textLayer.isWrapped = true
+            
+            // Crisp text (VERY IMPORTANT)
+            textLayer.contentsScale = UIScreen.main.scale 
+
+            
+            textLayer.position = CGPoint(x: viewModel.center.x * scaleX, y: viewModel.center.y * scaleY)
+//            textLayer.backgroundColor = UIColor.green.cgColor
+            textLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+            textLayer.transform = CATransform3DMakeRotation(viewModel.fullRotation, 0, 0, 1)
+
+            textLayer.opacity = 0
+
+            let show = CABasicAnimation(keyPath: "opacity")
+            show.fromValue = 0
+            show.toValue = 1
+            show.beginTime = AVCoreAnimationBeginTimeAtZero + caption.startTime
+            show.duration = 0.01
+            show.fillMode = .forwards
+            show.isRemovedOnCompletion = false
+            
+            let hide = CABasicAnimation(keyPath: "opacity")
+            hide.fromValue = 1
+            hide.toValue = 0
+            hide.beginTime = AVCoreAnimationBeginTimeAtZero + caption.endTime
+            hide.duration = 0.01
+            hide.fillMode = .forwards
+            hide.isRemovedOnCompletion = false
+            
+            textLayer.add(show, forKey: "show")
+            textLayer.add(hide, forKey: "hide")
+            
+            backgroundTextLayer.add(show, forKey: "show")
+            backgroundTextLayer.add(hide, forKey: "hide")
+            
+            print("show.beginTime \(show.beginTime)")
+            print("hide.begin \(show.beginTime)")
+
+            layer.addSublayer(backgroundTextLayer)
+            layer.addSublayer(textLayer)
+
+        }
+        
+    }
+
+    
+    
+    func addCaptions(to layer: CALayer, videoSize: CGSize) {
+      
+        DispatchQueue.main.async { [weak self] in
+            // Making sure the user created captions
+            guard let captions = UserDataManager.main.currentCaptions else { return }
+            guard let spidPlayerController = self?.spidPlayerController else { return }
+            guard let captionsTextContainerCopy = self?.spidPlayerController.captionsTextContainer?.duplicateNoTransform() else { return }
+            
+            let viewModel = captionsTextContainerCopy.viewModel
+            
+            //        let label = UILabel(frame: viewModel.initialFrame)
+            //        label.center = viewModel.center
+            ////        label.backgroundColor = .red
+            //        label.numberOfLines = 0
+            //        print("label.frame \(label.frame)")
+            
+            
+            // The ratio between the original video size and the 'videoContainerView' that presents the video in the editor
+            let scaleX = videoSize.width / spidPlayerController.videoContainerView.frame.width
+            let scaleY = videoSize.height / spidPlayerController.videoContainerView.frame.height
+            
+            // 1. scale the initialFrame by the standard scale factor used for caprions
+            let originalSize = captionsTextContainerCopy.bounds.size
+            
+            // The Captions Container size after applying the user scale transform
+            let captionsContainerViewScaledSize = CGSize(width: viewModel.initialFrame.width * viewModel.fullScale * scaleX, height: viewModel.initialFrame.height * viewModel.fullScale * scaleX)
+            print("viewModel.fullScale \(viewModel.fullScale)")
+            
+            print("captionsContainerViewScaledSize \(captionsContainerViewScaledSize)")
+            
+            
+            
+            for caption in captions {
+                // For every caption, create a scaled UIImageView and add it's layer to the video`s overlay layer
+                
+                // 1. Assign the current caption to the captions container label
+                //            captionsTextContainerCopy.label.attributedText = caption.text
+                //            let label = UILabel(frame: viewModel.initialFrame)
+                let paragraphStyle = NSMutableParagraphStyle()
+                paragraphStyle.alignment = .left
+                paragraphStyle.lineBreakMode = .byWordWrapping
+                //        paragraphStyle.lineSpacing = 4
+                
+                
+                let attributes: [NSAttributedString.Key : Any] = [
+                    .font: UIFont.systemFont(ofSize: 32 * viewModel.fullScale * scaleX, weight: .semibold),
+                    .foregroundColor: UIColor.red,
+                    .paragraphStyle: paragraphStyle,
+                    //                .strokeColor: UIColor.red,
+                    //                .strokeWidth: -1
+                ]
+                let label = UILabel(frame: CGRect(origin: .zero, size: captionsContainerViewScaledSize))
+                //            label.center = viewModel.center
+                label.backgroundColor = .clear
+                label.numberOfLines = 0
+                label.attributedText = NSAttributedString(string: caption.text.string, attributes: attributes)
+                
+                // The size needed for rendering the labelView in the video actual size
+                let size = CGSize(width: captionsContainerViewScaledSize.width * scaleX,
+                                  height: captionsContainerViewScaledSize.height * scaleY)
+                //            let bounds = CGRect(origin: .zero, size: size)
+                let bounds = CGRect(origin: .zero, size: captionsContainerViewScaledSize)
+                
+                //            let renderer = UIGraphicsImageRenderer(size: size)
+                let renderer = UIGraphicsImageRenderer(size: captionsContainerViewScaledSize)
+                let image = renderer.image { ctx in
+                    // Ensure layout is valid BEFORE drawing
+                    label.layoutIfNeeded()
+
+                    // Render via CALayer (safe!)
+                    label.layer.render(in: ctx.cgContext)
+                }
+//                let image = renderer.image { ctx in
+//                    //                captionsTextContainerCopy.drawHierarchy(in: bounds, afterScreenUpdates: true)
+//                    label.drawHierarchy(in: bounds, afterScreenUpdates: true)
+//                    
+//                }
+                let imageView = UIImageView(image: image)
+                //            imageView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+                imageView.center = CGPoint(x: viewModel.center.x * scaleX, y: viewModel.center.y * scaleY)
+                //            imageView.transform = imageView.transform.rotated(by: viewModel.fullRotation)
+                
+                let overlay = CALayer()
+                overlay.contents = image.cgImage
+                overlay.frame = imageView.frame
+                overlay.opacity = 0 // initially hidden
+                overlay.contentsGravity = .resizeAspect
+                
+                var transform = CATransform3DIdentity
+                // 2. Rotate 30 degrees
+                transform = CATransform3DRotate(transform, viewModel.fullRotation, 0, 0, 1)
+                overlay.transform = transform
+                
+                
+                let show = CABasicAnimation(keyPath: "opacity")
+                show.fromValue = 0
+                show.toValue = 1
+                show.beginTime = AVCoreAnimationBeginTimeAtZero + caption.startTime
+                show.duration = 0.01
+                show.fillMode = .forwards
+                show.isRemovedOnCompletion = false
+                
+                let hide = CABasicAnimation(keyPath: "opacity")
+                hide.fromValue = 1
+                hide.toValue = 0
+                hide.beginTime = AVCoreAnimationBeginTimeAtZero + caption.endTime
+                hide.duration = 0.01
+                hide.fillMode = .forwards
+                hide.isRemovedOnCompletion = false
+                
+                overlay.add(show, forKey: "show")
+                overlay.add(hide, forKey: "hide")
+                
+                
+                
+                layer.addSublayer(overlay)
+            }
+            
+        }
+    }
     
     private func add(labelView: LabelView, to layer: CALayer, videoSize: CGSize) {
         
@@ -643,6 +900,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         
         addLabelViews(to: overlayLayer, videoSize: videoSize)
+        
+        addCaptions2(to: overlayLayer, videoSize: videoSize)
         
         videoComposition.animationTool = AVVideoCompositionCoreAnimationTool(
           postProcessingAsVideoLayer: videoLayer,
@@ -1026,7 +1285,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                                                    fps: fps,
                                                    fileType: fileType,
                                                    usingProFont: UserDataManager.main.usingProFont(),
-                                                   mergeVideos: UserDataManager.main.usingMergeFeature())
+                                                   mergeVideos: UserDataManager.main.usingMergeFeature(),
+                                                   captions: UserDataManager.main.usingCaptions())
+                                                
             
             usingProFeaturesAlertView.layer.opacity = 0
             self.navigationController!.view.addSubview(usingProFeaturesAlertView)
@@ -1134,7 +1395,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //        default:
 //            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
 //        }
-        
         purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
         
         purchaseViewController.onDismiss = { [weak self] in
@@ -1275,7 +1535,8 @@ extension NotificationObservers {
                 UserDataManager.main.soundOff ||
                 fileType == .mp4 ||
                 UserDataManager.main.usingProFont() ||
-                UserDataManager.main.usingMergeFeature() {
+                UserDataManager.main.usingMergeFeature() ||
+                UserDataManager.main.usingCaptions() {
                 
                 return true
             }

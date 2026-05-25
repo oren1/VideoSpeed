@@ -1,5 +1,6 @@
 PODS:
   - ActivityIndicatorView (1.1.1)
+  - Alamofire (5.10.2)
   - CropPickerView (0.3.0)
   - Firebase/CoreOnly (10.24.0):
     - FirebaseCore (= 10.24.0)
@@ -152,6 +153,7 @@ PODS:
 
 DEPENDENCIES:
   - ActivityIndicatorView
+  - Alamofire
   - CropPickerView (~> 0.3)
   - Firebase/Messaging
   - FirebaseAnalytics
@@ -164,6 +166,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - ActivityIndicatorView
+    - Alamofire
     - CropPickerView
     - Firebase
     - FirebaseABTesting
@@ -194,6 +197,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   ActivityIndicatorView: f14ac8e200a344fe992577807998b0c8562bd964
+  Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
   CropPickerView: 7149fca438041a7a78d88e88dd0de805c182fc6a
   Firebase: 91fefd38712feb9186ea8996af6cbdef41473442
   FirebaseABTesting: 4431c2c56ac6e56f463b9cab05cc111078639f99
@@ -222,6 +226,6 @@ SPEC CHECKSUMS:
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   RevenueCat: 6dfcfac3395509b65aa483fbc6c666ac7aaac4ba
 
-PODFILE CHECKSUM: dbb923226376ecb35ea263f10d0b707759a0e9ad
+PODFILE CHECKSUM: 5ad5081faf5f5b9fc0ad807cb93d10b2e0d45ae5
 
 COCOAPODS: 1.16.2

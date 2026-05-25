@@ -1,0 +1,60 @@
+{
+  "originHash" : "13fe5566d53a4ba24fd260d30304229bca84d7f1327d9faa561337cc8cfb96af",
+  "pins" : [
+    {
+      "identity" : "curldsl",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/zonble/CurlDSL.git",
+      "state" : {
+        "revision" : "9a91a25dc3ca9496fe92680d2ea787adf5a50319",
+        "version" : "0.0.5"
+      }
+    },
+    {
+      "identity" : "jinja",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/johnmai-dev/Jinja",
+      "state" : {
+        "revision" : "bb238dd96fbe4c18014f3107c00edd6edb15428e",
+        "version" : "1.2.4"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser.git",
+      "state" : {
+        "revision" : "309a47b2b1d9b5e991f36961c983ecec72275be3",
+        "version" : "1.6.1"
+      }
+    },
+    {
+      "identity" : "swift-collections",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-collections.git",
+      "state" : {
+        "revision" : "8c0c0a8b49e080e54e5e328cc552821ff07cd341",
+        "version" : "1.2.1"
+      }
+    },
+    {
+      "identity" : "swift-transformers",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/huggingface/swift-transformers.git",
+      "state" : {
+        "revision" : "8a83416cc00ab07a5de9991e6ad817a9b8588d20",
+        "version" : "0.1.15"
+      }
+    },
+    {
+      "identity" : "whisperkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/argmaxinc/whisperkit",
+      "state" : {
+        "revision" : "c814caea8876036f0c87a0de29552f028d59832d",
+        "version" : "0.13.1"
+      }
+    }
+  ],
+  "version" : 3
+}

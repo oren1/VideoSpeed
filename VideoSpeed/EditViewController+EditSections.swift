@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVFoundation
+import Combine
 
 extension EditViewController {
     
@@ -18,6 +19,7 @@ extension EditViewController {
         createFiletypeSection()
         createTrimmerSection()
         createTextSection()
+        createCaptionsSection()
     }
     
     // MARK: Creating Sections
@@ -200,6 +202,39 @@ extension EditViewController {
         let _ = textSectionVC.view
     }
     
+    func createCaptionsSection()  {
+        // Prepare captions
+        var captions: [CaptionItem] = []
+        
+        captionsSectionVC = CaptionsSectionVC()
+        captionsViewModel = CaptionsViewModel(captions: CaptionItem.generatePreviewCaptions())
+        captionsViewModel.$lastEditedCaption.sink { captionItem in
+            if let caption = captionItem {
+                   print("UIKit got edit event for: \(caption.text)")
+            }
+        }.store(in: &subscribers)
+        
+        captionsSectionVC.viewModel = captionsViewModel
+        captionsSectionVC.editStyleTapped = { [weak self] in
+            guard let self = self else { return }
+
+            let sheetVC = UIHostingController(rootView: CaptionsStyleSheetView())
+            sheetVC.modalPresentationStyle = .pageSheet
+            
+            if let sheetPresentationController = sheetVC.sheetPresentationController {
+                sheetPresentationController.detents = [.medium()]
+                sheetPresentationController.prefersGrabberVisible = true
+                sheetPresentationController.preferredCornerRadius = 20
+            }
+            
+            self.present(sheetVC, animated: true)
+        }
+        captionsSectionVC.generateCaptionsTapped = { [weak self] in
+            self?.presentCaptionsSettingsView()
+        }
+    
+    }
+    
     // MARK: Adding Sections
     func addSpeedSection() {
         addSection(sectionVC: speedSectionVC)
@@ -234,5 +269,10 @@ extension EditViewController {
     func addTextSection() {
         addSection(sectionVC: textSectionVC)
         currentShownSection = textSectionVC
+    }
+    
+    func addCaptionsSection()  {
+        addSection(sectionVC: captionsSectionVC)
+        currentShownSection = captionsSectionVC
     }
 }

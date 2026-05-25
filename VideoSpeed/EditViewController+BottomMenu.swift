@@ -7,6 +7,10 @@
 
 import Foundation
 import UIKit
+import SwiftUI
+import Speech
+import WhisperKit
+import CoreML
 
 fileprivate let minimumItemWidth = 64.0
 
@@ -78,7 +82,14 @@ extension EditViewController: UICollectionViewDelegate {
             addTextSection()
         case .more:
             addFiletypeSection()
+        case .captions:
+            addCaptionsSection()
             
+           
+            if UserDataManager.main.userDontHaveCaptionsYet() {
+                presentCaptionsSettingsView()
+            }
+           
         }
         
         videosMenuDelegate.selectedMenuItem = selectedMenuItem
@@ -93,6 +104,59 @@ extension EditViewController: UICollectionViewDelegate {
         
         collectionView.reloadData()
         videosCollectionView.reloadData()
+    }
+    
+    func presentCaptionsSettingsView() {
+        let captionsSettingsSelectionView = CaptionsSettingsSelectionView { languageItem in
+            /* this callback is called when the user tapped on the 'generate captions' button
+             so here the transcribing process starts */
+            print("languageItem \(languageItem)")
+//            if let transcriptionsResponseData = UserDefaults.standard.data(forKey: "transcriptionResponse")  {
+//                do {
+//                    let transcriptioResponse = try JSONDecoder().decode(TranscriptionResponse.self, from: transcriptionsResponseData)
+//                    UserDataManager.main.transcription = Transcription(transcriptionResponse: transcriptioResponse)
+//
+//                } catch {
+//                    print("Error decoding transcription response")
+//                }
+//            }
+//            else {
+                // open the 'CaptionsSettingsSelectionView' in case there aren't any captions generated
+                        // start the speech recognition process
+                        // 1. grab the avasset from the playerItem
+                        let asset = self.spidPlayerController.player.currentItem!.asset
+                        let audioURL = FileManager.default.temporaryDirectory
+                                   .appendingPathComponent(UUID().uuidString)
+                                   .appendingPathExtension("m4a")
+                        let resultURL = try? await SpeechRecognizer.exportAudio(from: asset, to: audioURL)
+    //                      let resultURL = Bundle.main.url(forResource: "test", withExtension: "m4a")
+                        if let resultURL {
+                           
+                            let apiKey = Bundle.main.object(forInfoDictionaryKey: "OPEN_AI_API_KEY") as! String
+                            
+                            let transcriptionResult = await OpenAIManager.transcribeAudioAsync(fileURL: resultURL, apiKey: apiKey, languageCode: languageItem.code)
+                            
+                            switch transcriptionResult {
+                                case .success(let transcription):
+                                    UserDataManager.main.transcription = transcription
+                                    print(transcription.segments!)
+                                case .failure(let error):
+                                throw error
+    //                                print("Error:", error)
+                            }
+                    
+
+                        }
+//            }
+           
+        } onClose: { [weak self] in
+            guard let self = self else { return }
+            captionsSettingsHostingVC?.dismiss(animated: true)
+        }
+
+        
+        captionsSettingsHostingVC = UIHostingController(rootView: captionsSettingsSelectionView)
+        present(captionsSettingsHostingVC!, animated: true)
     }
 }
 

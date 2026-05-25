@@ -13,6 +13,7 @@ target 'VideoSpeed' do
     pod 'RevenueCat'
     pod 'CropPickerView', '~> 0.3'
     pod 'ActivityIndicatorView'
+    pod 'Alamofire'
   # Pods for VideoSpeed
 
 end

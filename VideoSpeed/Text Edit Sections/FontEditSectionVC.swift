@@ -7,8 +7,6 @@
 
 import UIKit
 
-import UIKit
-
 typealias FontClosure = (UIFont) -> Void
 
 class FontEditSectionVC: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
@@ -21,7 +19,6 @@ class FontEditSectionVC: UIViewController, UICollectionViewDelegate, UICollectio
 
     // The array of SpidFont objects
     var spidFonts: [SpidFont] = []
-    let freeFonts: [String] = ["SYSTEM","Neo","Retrowrite"]
     var didSelectFont: FontClosure?
     
     
@@ -48,7 +45,7 @@ class FontEditSectionVC: UIViewController, UICollectionViewDelegate, UICollectio
 
         // Add the collection view to the view hierarchy
         self.collectionView.attachToEdges(of: view)
-        spidFonts = loadAllSpidFontsPrioritized()
+        spidFonts = SpidFont.loadAllPrioritized(size: 18)
 //        self.view.addSubview(collectionView)
     }
 
@@ -76,113 +73,6 @@ class FontEditSectionVC: UIViewController, UICollectionViewDelegate, UICollectio
     }
 
     
-    func loadAllSpidFontsPrioritized(size: CGFloat = 18) -> [SpidFont] {
-        var spidFonts: [SpidFont] = []
-
-        // Prioritized font names (PostScript names)
-        let prioritizedFontNames: [String] = [
-            "TimesNewRomanPSMT",
-//            ".SFUIText", // System font (San Francisco)
-            "HelveticaNeue",
-            "CourierNewPSMT",
-            "HelveticaNeue-Bold",
-            "AvenirNext-Regular",
-            "Avenir-Book",
-            "AvenirNext-Bold",
-            "Futura-Medium",
-            "Futura-CondensedMedium",
-            "Georgia",
-            "Georgia-Bold",
-            "TimesNewRomanPS-BoldMT",
-            "Menlo-Regular",
-            "Menlo-Bold",
-            "CourierNewPS-BoldMT",
-            "AmericanTypewriter",
-            "AmericanTypewriter-Bold",
-            "ChalkboardSE-Regular",
-            "ChalkboardSE-Bold",
-            "MarkerFelt-Thin",
-            "MarkerFelt-Wide",
-            "Noteworthy-Bold",
-            "Noteworthy-Light",
-            "SnellRoundhand-Bold",
-            "GillSans",
-            "GillSans-Bold",
-            "HoeflerText-Regular",
-            "HoeflerText-Black",
-            "Zapfino",
-            "Baskerville",
-            "Baskerville-Bold",
-            "Palatino-Roman",
-            "Palatino-Bold",
-            "Didot",
-            "Didot-Bold",
-            "Optima-Regular",
-            "Optima-Bold",
-            "TrebuchetMS",
-            "Verdana",
-        ]
-        
-        let spidFontDisplayNames: [String: String] = [
-                "HelveticaNeue": "Neo",
-                "HelveticaNeue-Bold": "NeoBold",
-                "AvenirNext-Regular": "Futuresoft",
-                "Avenir-Book": "FuturesoftLite",
-                "AvenirNext-Bold": "FuturesoftBold",
-                "Futura-Medium": "Coretone",
-                "Futura-CondensedMedium": "CoretoneNarrow",
-                "Georgia": "Classicread",
-                "Georgia-Bold": "ClassicreadBold",
-                "TimesNewRomanPSMT": "SYSTEM",
-                "TimesNewRomanPS-BoldMT": "RoyalprintBold",
-                "Menlo-Regular": "Codeblock",
-                "Menlo-Bold": "CodeblockBold",
-                "CourierNewPSMT": "Retrowrite",
-                "CourierNewPS-BoldMT": "RetrowriteBold",
-                "AmericanTypewriter": "Keystrike",
-                "AmericanTypewriter-Bold": "KeystrikeBold",
-                "ChalkboardSE-Regular": "Sketchnote",
-                "ChalkboardSE-Bold": "SketchnoteBold",
-                "MarkerFelt-Thin": "Inkwave",
-                "MarkerFelt-Wide": "InkwaveWide",
-                "Noteworthy-Bold": "Jotit",
-                "Noteworthy-Light": "JotitLite",
-                "SnellRoundhand-Bold": "Velvetscript",
-                "GillSans": "Metrosans",
-                "GillSans-Bold": "MetrosansBold",
-                "HoeflerText-Regular": "Oldstyle",
-                "HoeflerText-Black": "OldstyleBlack",
-                "Zapfino": "Flourish",
-                "Baskerville": "Serifedge",
-                "Baskerville-Bold": "SerifedgeBold",
-                "Palatino-Roman": "Versetext",
-                "Palatino-Bold": "VersetextBold",
-                "Didot": "Hauteline",
-                "Didot-Bold": "HautelineBold",
-                "Optima-Regular": "Optix",
-                "Optima-Bold": "OptixBold",
-                "TrebuchetMS": "Novabridge",
-                "Verdana": "Clearsans",
-//                ".SFUIText": "SYSTEM"
-            ]
-
-
-        // Add prioritized fonts with custom names
-         for name in prioritizedFontNames {
-             if let font = UIFont(name: name, size: size) {
-                 let displayName = spidFontDisplayNames[name] ?? name
-                 if freeFonts.contains(displayName) {
-                     spidFonts.append(SpidFont(name: displayName, font: font, isPro: false))
-                 }
-                 else {
-                     spidFonts.append(SpidFont(name: displayName, font: font, isPro: true))
-                 }
-                 
-             }
-         }
-
-        return spidFonts
-    }
 }
 
 // Custom UICollectionViewCell to display font name and sample
@@ -243,7 +133,7 @@ class FontCell: UICollectionViewCell {
     }
 
     func configure(with spidFont: SpidFont, isPro: Bool = false, tagText: String = "New") {
-        fontLabel.text = spidFont.name
+        fontLabel.text = spidFont.displayName
         fontLabel.font = spidFont.font
 
         tagLabel.text = tagText.uppercased()
