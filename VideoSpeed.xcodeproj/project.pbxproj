@@ -77,11 +77,13 @@
 		6B6DC49B2F34CCA900D78EA7 /* GiftPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC49A2F34CCA900D78EA7 /* GiftPopupView.swift */; };
 		6B6DC4A12F4AC65900D78EA7 /* RatingPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4A02F4AC65900D78EA7 /* RatingPromptView.swift */; };
 		6B6DC4A52F4BD70000D78EA7 /* CaptionsStyleSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4A42F4BD70000D78EA7 /* CaptionsStyleSheetView.swift */; };
-		6B6DC4B22F4C700000D78EA7 /* CaptionsEditTextSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4B12F4C700000D78EA7 /* CaptionsEditTextSheetView.swift */; };
 		6B6DC4A72F4C100000D78EA7 /* CaptionsTemplatesTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4A62F4C100000D78EA7 /* CaptionsTemplatesTabView.swift */; };
 		6B6DC4A92F4C100000D78EA7 /* CaptionsFontsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4A82F4C100000D78EA7 /* CaptionsFontsTabView.swift */; };
 		6B6DC4AB2F4C100000D78EA7 /* CaptionsStylesTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4AA2F4C100000D78EA7 /* CaptionsStylesTabView.swift */; };
 		6B6DC4AD2F4C2D0000D78EA7 /* CaptionsTemplatePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4AC2F4C2D0000D78EA7 /* CaptionsTemplatePreviewView.swift */; };
+		6B6DC4B12F4C500000D78EA7 /* SpidFont+Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4B02F4C500000D78EA7 /* SpidFont+Catalog.swift */; };
+		6B6DC4B22F4C700000D78EA7 /* CaptionsEditTextSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4B12F4C700000D78EA7 /* CaptionsEditTextSheetView.swift */; };
+		6B6DC4B32F4C800000D78EA7 /* DebugSessionLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4B22F4C800000D78EA7 /* DebugSessionLog.swift */; };
 		6B6E266C2E03E0AD004F736B /* CGSize+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */; };
 		6B6E266E2E0D0B52004F736B /* EditViewController+VideosMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E266D2E0D0B52004F736B /* EditViewController+VideosMenu.swift */; };
 		6B71AAC42A9098A000C06619 /* SoundSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */; };
@@ -118,7 +120,6 @@
 		6BAFED7F2DD0638300AF13E1 /* FontEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED7D2DD0638300AF13E1 /* FontEditSectionVC.swift */; };
 		6BAFED802DD0638300AF13E1 /* FontEditSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BAFED7E2DD0638300AF13E1 /* FontEditSectionVC.xib */; };
 		6BAFED822DD063FB00AF13E1 /* SpidFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED812DD063FB00AF13E1 /* SpidFont.swift */; };
-		6B6DC4B12F4C500000D78EA7 /* SpidFont+Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4B02F4C500000D78EA7 /* SpidFont+Catalog.swift */; };
 		6BAFED842DD841AE00AF13E1 /* AlignmentEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED832DD841AE00AF13E1 /* AlignmentEditSectionVC.swift */; };
 		6BAFED862DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED852DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift */; };
 		6BAFED882DDD87EE00AF13E1 /* VerticalLabelsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAFED872DDD87EE00AF13E1 /* VerticalLabelsView.swift */; };
@@ -263,11 +264,13 @@
 		6B6DC49A2F34CCA900D78EA7 /* GiftPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftPopupView.swift; sourceTree = "<group>"; };
 		6B6DC4A02F4AC65900D78EA7 /* RatingPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingPromptView.swift; sourceTree = "<group>"; };
 		6B6DC4A42F4BD70000D78EA7 /* CaptionsStyleSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionsStyleSheetView.swift; sourceTree = "<group>"; };
-		6B6DC4B12F4C700000D78EA7 /* CaptionsEditTextSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionsEditTextSheetView.swift; sourceTree = "<group>"; };
 		6B6DC4A62F4C100000D78EA7 /* CaptionsTemplatesTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionsTemplatesTabView.swift; sourceTree = "<group>"; };
 		6B6DC4A82F4C100000D78EA7 /* CaptionsFontsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionsFontsTabView.swift; sourceTree = "<group>"; };
 		6B6DC4AA2F4C100000D78EA7 /* CaptionsStylesTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionsStylesTabView.swift; sourceTree = "<group>"; };
 		6B6DC4AC2F4C2D0000D78EA7 /* CaptionsTemplatePreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionsTemplatePreviewView.swift; sourceTree = "<group>"; };
+		6B6DC4B02F4C500000D78EA7 /* SpidFont+Catalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpidFont+Catalog.swift"; sourceTree = "<group>"; };
+		6B6DC4B12F4C700000D78EA7 /* CaptionsEditTextSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionsEditTextSheetView.swift; sourceTree = "<group>"; };
+		6B6DC4B22F4C800000D78EA7 /* DebugSessionLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSessionLog.swift; sourceTree = "<group>"; };
 		6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGSize+Extension.swift"; sourceTree = "<group>"; };
 		6B6E266D2E0D0B52004F736B /* EditViewController+VideosMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditViewController+VideosMenu.swift"; sourceTree = "<group>"; };
 		6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSectionVC.swift; sourceTree = "<group>"; };
@@ -303,7 +306,6 @@
 		6BAFED7D2DD0638300AF13E1 /* FontEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontEditSectionVC.swift; sourceTree = "<group>"; };
 		6BAFED7E2DD0638300AF13E1 /* FontEditSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FontEditSectionVC.xib; sourceTree = "<group>"; };
 		6BAFED812DD063FB00AF13E1 /* SpidFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidFont.swift; sourceTree = "<group>"; };
-		6B6DC4B02F4C500000D78EA7 /* SpidFont+Catalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpidFont+Catalog.swift"; sourceTree = "<group>"; };
 		6BAFED832DD841AE00AF13E1 /* AlignmentEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlignmentEditSectionVC.swift; sourceTree = "<group>"; };
 		6BAFED852DD9A1B900AF13E1 /* FontSizeEditSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSizeEditSectionVC.swift; sourceTree = "<group>"; };
 		6BAFED872DDD87EE00AF13E1 /* VerticalLabelsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalLabelsView.swift; sourceTree = "<group>"; };
@@ -586,6 +588,7 @@
 				6B55F3072E01446100259275 /* CMTime+Extension.swift */,
 				6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */,
 				6B4F7E732E51C75200564302 /* SpeechRecognizer.swift */,
+				6B6DC4B22F4C800000D78EA7 /* DebugSessionLog.swift */,
 				6B6C941D2EC2282300ED232D /* CaptionStyleGenerator.swift */,
 				6B6DC4962F330CBC00D78EA7 /* Date+Extension.swift */,
 			);
@@ -932,6 +935,7 @@
 				6BAFED8A2DDDC1EF00AF13E1 /* BGStyleEditSectionVC.swift in Sources */,
 				6BC7B5242D537C1200FF1CE9 /* LabelView.swift in Sources */,
 				6B4F7E742E51C75200564302 /* SpeechRecognizer.swift in Sources */,
+				6B6DC4B32F4C800000D78EA7 /* DebugSessionLog.swift in Sources */,
 				6BCDCF512A67FAC800D8B656 /* MoreSectionVC.swift in Sources */,
 				6BCDCF4D2A67E5FA00D8B656 /* FPSSectionVC.swift in Sources */,
 				6BAC9BC12A666EEA0071A41B /* TopIndicatorView.swift in Sources */,
@@ -1164,7 +1168,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenSSL/lib",
 				);
-				MARKETING_VERSION = 5.0.0;
+				MARKETING_VERSION = 5.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -1213,7 +1217,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenSSL/lib",
 				);
-				MARKETING_VERSION = 5.0.0;
+				MARKETING_VERSION = 5.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

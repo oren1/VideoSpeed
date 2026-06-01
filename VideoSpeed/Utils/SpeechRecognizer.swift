@@ -91,8 +91,25 @@ public class SpeechRecognizer {
     }
     
     static func exportAudio(from asset: AVAsset, to outputURL: URL) async throws -> URL {
+        // #region agent log
+        let syncAudioCount = asset.tracks(withMediaType: .audio).count
+        DebugSessionLog.write(
+            hypothesisId: "A",
+            location: "SpeechRecognizer.exportAudio:entry",
+            message: "exportAudio started",
+            data: ["syncAudioTrackCount": syncAudioCount, "durationSeconds": asset.duration.seconds]
+        )
+        // #endregion
         // Ensure asset has audio track
         guard asset.tracks(withMediaType: .audio).count > 0 else {
+            // #region agent log
+            DebugSessionLog.write(
+                hypothesisId: "A",
+                location: "SpeechRecognizer.exportAudio:noAudio",
+                message: "no audio tracks (sync API)",
+                data: [:]
+            )
+            // #endregion
             throw AudioExportError.noAudioTrack
         }
 
@@ -113,8 +130,24 @@ public class SpeechRecognizer {
         switch exportSession.status {
         case .completed:
           print("completed export with url: \(outputURL)")
+            // #region agent log
+            DebugSessionLog.write(
+                hypothesisId: "A",
+                location: "SpeechRecognizer.exportAudio:completed",
+                message: "audio export completed",
+                data: ["outputURL": outputURL.lastPathComponent]
+            )
+            // #endregion
             return outputURL
         default:
+            // #region agent log
+            DebugSessionLog.write(
+                hypothesisId: "A",
+                location: "SpeechRecognizer.exportAudio:failed",
+                message: "audio export failed",
+                data: ["status": exportSession.status.rawValue, "error": exportSession.error?.localizedDescription ?? "none"]
+            )
+            // #endregion
             throw AudioExportError.exportFailed
         }
     }

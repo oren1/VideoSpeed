@@ -73,9 +73,34 @@ class SpidPlayerViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] transcription in
                 guard let self else { return }
+                let segCount = transcription?.segments?.count ?? -1
+                // #region agent log
+                DebugSessionLog.write(
+                    hypothesisId: "E",
+                    location: "SpidPlayerViewController:transcriptionSink",
+                    message: "transcription publisher fired",
+                    data: [
+                        "hasTranscription": transcription != nil,
+                        "segmentCount": segCount,
+                        "videoContainerWidth": videoContainerView.frame.width,
+                        "videoContainerHeight": videoContainerView.frame.height
+                    ]
+                )
+                // #endregion
                 guard let transcription,
                       let segments = transcription.segments,
                       !segments.isEmpty else {
+                    // #region agent log
+                    DebugSessionLog.write(
+                        hypothesisId: "D",
+                        location: "SpidPlayerViewController:transcriptionSink:cleared",
+                        message: "transcription missing or empty segments — removing container",
+                        data: [
+                            "hasTranscription": transcription != nil,
+                            "segmentCount": transcription?.segments?.count ?? -1
+                        ]
+                    )
+                    // #endregion
                     self.captionsTextContainer?.removeFromSuperview()
                     self.captionsTextContainer = nil
                     UserDataManager.main.currentCaptions = nil
@@ -147,6 +172,19 @@ class SpidPlayerViewController: UIViewController {
         container.viewModel.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height * 0.75)
 
         UserDataManager.main.currentCaptions = CaptionStyleGenerator.generateCaptions(from: segments)
+        // #region agent log
+        DebugSessionLog.write(
+            hypothesisId: "E",
+            location: "SpidPlayerViewController:rebuildCaptionsTextContainer",
+            message: "captions container rebuilt",
+            data: [
+                "segmentCount": segments.count,
+                "containerWidth": containerWidth,
+                "labelHeight": labelHeight,
+                "captionsCount": UserDataManager.main.currentCaptions?.count ?? 0
+            ]
+        )
+        // #endregion
 
         guard shouldSeekToFirstSegment else { return }
 

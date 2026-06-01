@@ -493,62 +493,34 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //        let captions = CaptionStyleGenerator.generateOneByOneCaptions(from: segments, scale: scale)
 //        let captions = CaptionStyleGenerator.generateWordHighlightCaptions(from: segments, scale: scale)
         let captions = CaptionStyleGenerator.generateCaptions(from: segments, scale: scale)
+        let exportContentsScale = min(2.0, UIScreen.main.scale)
+        let strokePad = CaptionStyleGenerator.captionsStyle.borderWidth
+        let backgroundLabel = UILabel()
+        let foregroundLabel = UILabel()
+        backgroundLabel.numberOfLines = 0
+        foregroundLabel.numberOfLines = 0
+        backgroundLabel.textAlignment = .center
+        foregroundLabel.textAlignment = .center
 
-        
-        
-        for (index, caption) in captions.enumerated() {
-           // For every caption, create a scaled UIImageView and add it's layer to the video`s overlay layer
-            // 1. Assign the current caption to the captions container label
-            let textLayer = CATextLayer()
-            textLayer.frame = CGRect(origin: .zero, size: captionsContainerViewScaledSize)
-            textLayer.alignmentMode = .center
-            let backgroundTextLayer = CATextLayer()
-            backgroundTextLayer.frame = CGRect(origin: .zero, size: captionsContainerViewScaledSize)
-            backgroundTextLayer.alignmentMode = .center
+        let center = CGPoint(x: viewModel.center.x * scaleX, y: viewModel.center.y * scaleY)
+        for caption in captions {
+            guard let raster = rasterizeCaptionForExport(
+                caption: caption,
+                maxSize: captionsContainerViewScaledSize,
+                strokePadding: strokePad,
+                contentsScale: exportContentsScale,
+                backgroundLabel: backgroundLabel,
+                foregroundLabel: foregroundLabel
+            ) else { continue }
 
-            let strokeAttributedString = NSMutableAttributedString(attributedString: caption.text)
-            strokeAttributedString.addAttributes([
-                .foregroundColor: UIColor.clear.cgColor,
-                .strokeColor: CaptionStyleGenerator.captionsStyle.borderColor.cgColor,
-                .strokeWidth: CaptionStyleGenerator.captionsStyle.borderWidth
-            ], range: NSRange(location: 0, length: caption.text.length))
-        
-            if let remainingTextRange = caption.remainingTextRange {
-                strokeAttributedString.addAttributes([
-                    .strokeColor: UIColor.clear.cgColor
-                ], range: remainingTextRange)
-            }
-            
-            backgroundTextLayer.string =  strokeAttributedString
-            backgroundTextLayer.isWrapped = true
-            
-            // Crisp text (VERY IMPORTANT)
-            backgroundTextLayer.contentsScale = UIScreen.main.scale
-
-            
-            backgroundTextLayer.position = CGPoint(x: viewModel.center.x * scaleX, y: viewModel.center.y * scaleY)
-//            textLayer.backgroundColor = UIColor.green.cgColor
-            backgroundTextLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-            backgroundTextLayer.transform = CATransform3DMakeRotation(viewModel.fullRotation, 0, 0, 1)
-
-            backgroundTextLayer.opacity = 0
-            
-            
-            // Text
-            textLayer.string = caption.text
-//            textLayer.alignmentMode = .center
-            textLayer.isWrapped = true
-            
-            // Crisp text (VERY IMPORTANT)
-            textLayer.contentsScale = UIScreen.main.scale 
-
-            
-            textLayer.position = CGPoint(x: viewModel.center.x * scaleX, y: viewModel.center.y * scaleY)
-//            textLayer.backgroundColor = UIColor.green.cgColor
-            textLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-            textLayer.transform = CATransform3DMakeRotation(viewModel.fullRotation, 0, 0, 1)
-
-            textLayer.opacity = 0
+            let overlay = CALayer()
+            overlay.contents = raster.image
+            overlay.bounds = CGRect(origin: .zero, size: raster.size)
+            overlay.contentsScale = exportContentsScale
+            overlay.position = center
+            overlay.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+            overlay.transform = CATransform3DMakeRotation(viewModel.fullRotation, 0, 0, 1)
+            overlay.opacity = 0
 
             let show = CABasicAnimation(keyPath: "opacity")
             show.fromValue = 0
@@ -557,7 +529,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             show.duration = 0.01
             show.fillMode = .forwards
             show.isRemovedOnCompletion = false
-            
+
             let hide = CABasicAnimation(keyPath: "opacity")
             hide.fromValue = 1
             hide.toValue = 0
@@ -565,21 +537,71 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             hide.duration = 0.01
             hide.fillMode = .forwards
             hide.isRemovedOnCompletion = false
-            
-            textLayer.add(show, forKey: "show")
-            textLayer.add(hide, forKey: "hide")
-            
-            backgroundTextLayer.add(show, forKey: "show")
-            backgroundTextLayer.add(hide, forKey: "hide")
-            
-            print("show.beginTime \(show.beginTime)")
-            print("hide.begin \(show.beginTime)")
 
-            layer.addSublayer(backgroundTextLayer)
-            layer.addSublayer(textLayer)
-
+            overlay.add(show, forKey: "show")
+            overlay.add(hide, forKey: "hide")
+            layer.addSublayer(overlay)
         }
-        
+    }
+
+    private struct RasterizedCaption {
+        let image: CGImage
+        let size: CGSize
+    }
+
+    private func strokeAttributedString(for caption: Caption) -> NSAttributedString {
+        let strokeAttributedString = NSMutableAttributedString(attributedString: caption.text)
+        strokeAttributedString.addAttributes([
+            .foregroundColor: UIColor.clear.cgColor,
+            .strokeColor: CaptionStyleGenerator.captionsStyle.borderColor.cgColor,
+            .strokeWidth: CaptionStyleGenerator.captionsStyle.borderWidth
+        ], range: NSRange(location: 0, length: caption.text.length))
+        if let remainingTextRange = caption.remainingTextRange {
+            strokeAttributedString.addAttributes([
+                .strokeColor: UIColor.clear.cgColor
+            ], range: remainingTextRange)
+        }
+        return strokeAttributedString
+    }
+
+    /// Renders fill + stroke into one bitmap sized to the caption text (not the full video container).
+    private func rasterizeCaptionForExport(
+        caption: Caption,
+        maxSize: CGSize,
+        strokePadding: CGFloat,
+        contentsScale: CGFloat,
+        backgroundLabel: UILabel,
+        foregroundLabel: UILabel
+    ) -> RasterizedCaption? {
+        let maxFrame = CGRect(origin: .zero, size: maxSize)
+        backgroundLabel.frame = maxFrame
+        foregroundLabel.frame = maxFrame
+        backgroundLabel.attributedText = strokeAttributedString(for: caption)
+        foregroundLabel.attributedText = caption.text
+
+        let fitSize = foregroundLabel.sizeThatFits(maxSize)
+        let renderSize = CGSize(
+            width: min(maxSize.width, ceil(fitSize.width) + strokePadding * 2),
+            height: min(maxSize.height, ceil(fitSize.height) + strokePadding * 2)
+        )
+        guard renderSize.width > 1, renderSize.height > 1 else { return nil }
+
+        let renderFrame = CGRect(origin: .zero, size: renderSize)
+        backgroundLabel.frame = renderFrame
+        foregroundLabel.frame = renderFrame
+        backgroundLabel.layoutIfNeeded()
+        foregroundLabel.layoutIfNeeded()
+
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = contentsScale
+        format.opaque = false
+        let renderer = UIGraphicsImageRenderer(size: renderSize, format: format)
+        let uiImage = renderer.image { context in
+            backgroundLabel.layer.render(in: context.cgContext)
+            foregroundLabel.layer.render(in: context.cgContext)
+        }
+        guard let cgImage = uiImage.cgImage else { return nil }
+        return RasterizedCaption(image: cgImage, size: renderSize)
     }
 
     
