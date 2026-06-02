@@ -26,7 +26,7 @@ final class CaptionsStyle: ObservableObject {
 
     init(
         spidFont: SpidFont = CaptionsStyle.defaultSpidFont,
-        fontSize: CGFloat = 32,
+        fontSize: CGFloat = 24,
         borderWidth: CGFloat = 8
     ) {
         self.spidFont = spidFont
