@@ -833,6 +833,35 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //                                              speedItem
         ]
     }
+
+    private func shouldApplyExportWatermark() -> Bool {
+        let hasPremiumAccess = SpidProducts.store.userPurchasedProVersion() != nil || UserDataManager.main.isGiftActive()
+        return !hasPremiumAccess
+    }
+
+    private func makeExportWatermarkLayer(videoSize: CGSize) -> CATextLayer {
+        let margin = max(8, min(videoSize.width, videoSize.height) * 0.015)
+        let fontSize = max(38, min(videoSize.width, videoSize.height) * 0.07)
+        let text = "SPID"
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.boldSystemFont(ofSize: fontSize),
+            .foregroundColor: UIColor.white.withAlphaComponent(0.75)
+        ]
+        let attributedText = NSAttributedString(string: text, attributes: attributes)
+        let textSize = attributedText.size()
+
+        let watermarkLayer = CATextLayer()
+        watermarkLayer.contentsScale = UIScreen.main.scale
+        watermarkLayer.string = attributedText
+        watermarkLayer.alignmentMode = .right
+        watermarkLayer.frame = CGRect(
+            x: max(0, videoSize.width - textSize.width - margin),
+            y: max(0, videoSize.height - textSize.height - margin),
+            width: textSize.width,
+            height: textSize.height + 4
+        )
+        return watermarkLayer
+    }
     
     @objc func soundButtonTapped() {
         
@@ -924,6 +953,11 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         addLabelViews(to: overlayLayer, videoSize: videoSize)
         
         addCaptions2(to: overlayLayer, videoSize: videoSize)
+
+        if shouldApplyExportWatermark() {
+            let watermarkLayer = makeExportWatermarkLayer(videoSize: videoSize)
+            overlayLayer.addSublayer(watermarkLayer)
+        }
         
         videoComposition.animationTool = AVVideoCompositionCoreAnimationTool(
           postProcessingAsVideoLayer: videoLayer,
