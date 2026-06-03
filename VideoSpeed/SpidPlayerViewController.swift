@@ -312,11 +312,6 @@ class SpidPlayerViewController: UIViewController {
         
     }
     
-    private func shouldShowWatermarkPreview() -> Bool {
-        let hasPremiumAccess = SpidProducts.store.userPurchasedProVersion() != nil || UserDataManager.main.isGiftActive()
-        return !hasPremiumAccess
-    }
-    
     private func setupWatermarkPreviewView() {
         watermarkPreviewContainer.backgroundColor = .clear
         watermarkPreviewContainer.isUserInteractionEnabled = true
@@ -341,7 +336,7 @@ class SpidPlayerViewController: UIViewController {
     }
     
     private func updateWatermarkPreviewLayout() {
-        guard shouldShowWatermarkPreview(), !isWatermarkPreviewDismissed else {
+        guard UserDataManager.main.shouldShowWatermark(), !isWatermarkPreviewDismissed else {
             watermarkPreviewContainer.isHidden = true
             return
         }

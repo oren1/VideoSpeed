@@ -837,11 +837,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         ]
     }
 
-    private func shouldApplyExportWatermark() -> Bool {
-        let hasPremiumAccess = SpidProducts.store.userPurchasedProVersion() != nil || UserDataManager.main.isGiftActive()
-        return !hasPremiumAccess
-    }
-
     private func makeExportWatermarkLayer(videoSize: CGSize) -> CATextLayer {
         let margin = max(8, min(videoSize.width, videoSize.height) * 0.015)
         let fontSize = max(38, min(videoSize.width, videoSize.height) * 0.07)
@@ -957,7 +952,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         addCaptions2(to: overlayLayer, videoSize: videoSize)
 
-        if shouldApplyExportWatermark() {
+        if UserDataManager.main.shouldShowWatermark() {
             let watermarkLayer = makeExportWatermarkLayer(videoSize: videoSize)
             overlayLayer.addSublayer(watermarkLayer)
         }
@@ -1444,6 +1439,13 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
         
+        // A/B Test for watermark use
+        let useWatermark = RemoteConfig.remoteConfig().configValue(forKey: "useWatermark").boolValue
+        if useWatermark {
+            purchaseViewController.productIdentifier = SpidProducts.yearlyWatermark
+        } else {
+            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+        }
         // A/B Test for yearly price of $19.99 or $9.99
 //        let pricing = Pricing(rawValue: pricingRaw)
 //        switch pricing {
@@ -1454,7 +1456,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //        default:
 //            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
 //        }
-        purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
+//        purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
         
         purchaseViewController.onDismiss = { [weak self] in
             if let _ = SpidProducts.store.userPurchasedProVersion() {
