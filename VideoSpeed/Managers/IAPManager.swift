@@ -43,8 +43,9 @@ class SpidProducts {
     static let yearlyTwenty = "Yearly.19"
     static let freeTrialYearlySubscription = "3DayTrial.Yearly"
     static let freeTrialYearlyTen = "7.day.trial.yearly.10"
-
-    private static let productIdentifiers: Set<ProductIdentifier> = [proVersion, proVersionTenDollars, proVersionConsumable,monthlySubscription,yearlySubscription,yearlySubscriptionTakeTwo,monthlySubscriptionFive,weeklySubscription,yearlyFifteen,yearlyTwenty,freeTrialYearlySubscription,freeTrialYearlyTen]
+    static let yearlyWatermark = "Yearly.Watermark"
+    
+    private static let productIdentifiers: Set<ProductIdentifier> = [proVersion, proVersionTenDollars, proVersionConsumable,monthlySubscription,yearlySubscription,yearlySubscriptionTakeTwo,monthlySubscriptionFive,weeklySubscription,yearlyFifteen,yearlyTwenty,freeTrialYearlySubscription,freeTrialYearlyTen,yearlyWatermark]
     
     static let store = IAPManager(productIds: productIdentifiers)
 

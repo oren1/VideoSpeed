@@ -247,6 +247,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 
             spidPlayerController = SpidPlayerViewController()
             spidPlayerController.player = player
+            spidPlayerController.onWatermarkPreviewCloseTapped = { [weak self] in
+                self?.showPurchaseViewController()
+            }
             addSpidPlayerTop()
             loopVideo()
             
@@ -833,6 +836,30 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //                                              speedItem
         ]
     }
+
+    private func makeExportWatermarkLayer(videoSize: CGSize) -> CATextLayer {
+        let margin = max(8, min(videoSize.width, videoSize.height) * 0.015)
+        let fontSize = max(38, min(videoSize.width, videoSize.height) * 0.07)
+        let text = "SPID"
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.boldSystemFont(ofSize: fontSize),
+            .foregroundColor: UIColor.white.withAlphaComponent(0.75)
+        ]
+        let attributedText = NSAttributedString(string: text, attributes: attributes)
+        let textSize = attributedText.size()
+
+        let watermarkLayer = CATextLayer()
+        watermarkLayer.contentsScale = UIScreen.main.scale
+        watermarkLayer.string = attributedText
+        watermarkLayer.alignmentMode = .right
+        watermarkLayer.frame = CGRect(
+            x: max(0, videoSize.width - textSize.width - margin),
+            y: max(0, videoSize.height - textSize.height - margin),
+            width: textSize.width,
+            height: textSize.height + 4
+        )
+        return watermarkLayer
+    }
     
     @objc func soundButtonTapped() {
         
@@ -924,6 +951,11 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         addLabelViews(to: overlayLayer, videoSize: videoSize)
         
         addCaptions2(to: overlayLayer, videoSize: videoSize)
+
+        if UserDataManager.main.shouldShowWatermark() {
+            let watermarkLayer = makeExportWatermarkLayer(videoSize: videoSize)
+            overlayLayer.addSublayer(watermarkLayer)
+        }
         
         videoComposition.animationTool = AVVideoCompositionCoreAnimationTool(
           postProcessingAsVideoLayer: videoLayer,
@@ -1407,6 +1439,13 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
         
+        // A/B Test for watermark use
+        let useWatermark = RemoteConfig.remoteConfig().configValue(forKey: "useWatermark").boolValue
+        if useWatermark {
+            purchaseViewController.productIdentifier = SpidProducts.yearlyWatermark
+        } else {
+            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
+        }
         // A/B Test for yearly price of $19.99 or $9.99
 //        let pricing = Pricing(rawValue: pricingRaw)
 //        switch pricing {
@@ -1417,7 +1456,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //        default:
 //            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
 //        }
-        purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
+//        purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
         
         purchaseViewController.onDismiss = { [weak self] in
             if let _ = SpidProducts.store.userPurchasedProVersion() {

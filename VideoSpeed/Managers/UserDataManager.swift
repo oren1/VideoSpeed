@@ -8,6 +8,7 @@
 import Foundation
 import StoreKit
 import Speech
+import FirebaseRemoteConfig
 
 
 let twentyFourHoursInSeconds = 24.0 * 60 * 60
@@ -315,5 +316,13 @@ class UserDataManager: ObservableObject {
         }
 
         return Date() < giftDueDate
+    }
+
+    /// Watermark on export and player preview for free users only.
+    func shouldShowWatermark() -> Bool {
+        let hasPremiumAccess = SpidProducts.store.userPurchasedProVersion() != nil || isGiftActive()
+        let useWatermark = RemoteConfig.remoteConfig().configValue(forKey: "useWatermark").boolValue
+
+        return !hasPremiumAccess && useWatermark
     }
 }
