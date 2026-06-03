@@ -247,6 +247,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 
             spidPlayerController = SpidPlayerViewController()
             spidPlayerController.player = player
+            spidPlayerController.onWatermarkPreviewCloseTapped = { [weak self] in
+                self?.showPurchaseViewController()
+            }
             addSpidPlayerTop()
             loopVideo()
             

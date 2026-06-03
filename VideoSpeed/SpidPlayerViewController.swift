@@ -51,6 +51,12 @@ class SpidPlayerViewController: UIViewController {
     var captionsTextContainer: CaptionsTextContainer?
     var subscriptions: [AnyCancellable] = []
     var captionsTimer: Timer?
+    private let watermarkPreviewContainer = UIView()
+    private let watermarkPreviewLabel = UILabel()
+    private let watermarkPreviewCloseButton = UIButton(type: .system)
+    private var isWatermarkPreviewDismissed = false
+    private var sourceVideoSizeForWatermarkPreview: CGSize = .zero
+    var onWatermarkPreviewCloseTapped: (() -> Void)?
 
     /// UserDefaults key for persisted API transcription (testing / dev convenience).
     private let transcriptionUserDefaultsKey = "transcriptionResponse"
@@ -61,6 +67,7 @@ class SpidPlayerViewController: UIViewController {
         super.viewDidLoad()
         videoContainerView = UIView(frame: CGRectZero)
         mainContainer.insertSubview(videoContainerView, belowSubview: timeContainerView)
+        setupWatermarkPreviewView()
         timeContainerView?.layer.cornerRadius = 4
         setTimeFormatter()
         setGestureRecognizers()
@@ -271,6 +278,7 @@ class SpidPlayerViewController: UIViewController {
                 let videoSize = await UserDataManager.main.currentSpidAsset.videoSize
                 playerLayer = AVPlayerLayer(player: player)
                 aspectRatio = videoSize.width / videoSize.height
+                sourceVideoSizeForWatermarkPreview = videoSize
             }
             
             videoDuration = await UserDataManager.main.currentSpidAsset.videoDuration()
@@ -281,6 +289,7 @@ class SpidPlayerViewController: UIViewController {
             videoContainerView.layer.addSublayer(playerLayer)
             videoContainerView.clipsToBounds = true
             playerLayer.frame = videoContainerView.bounds
+            updateWatermarkPreviewLayout()
            
             player.play()
 
@@ -301,6 +310,94 @@ class SpidPlayerViewController: UIViewController {
 
         }
         
+    }
+    
+    private func shouldShowWatermarkPreview() -> Bool {
+        let hasPremiumAccess = SpidProducts.store.userPurchasedProVersion() != nil || UserDataManager.main.isGiftActive()
+        return !hasPremiumAccess
+    }
+    
+    private func setupWatermarkPreviewView() {
+        watermarkPreviewContainer.backgroundColor = .clear
+        watermarkPreviewContainer.isUserInteractionEnabled = true
+        watermarkPreviewContainer.isHidden = true
+        
+        watermarkPreviewLabel.text = "SPID"
+        watermarkPreviewLabel.textColor = UIColor.white.withAlphaComponent(0.75)
+        watermarkPreviewLabel.font = UIFont.boldSystemFont(ofSize: 38)
+        watermarkPreviewLabel.textAlignment = .right
+        watermarkPreviewLabel.layer.shadowColor = UIColor.black.cgColor
+        watermarkPreviewLabel.layer.shadowOpacity = 0.8
+        watermarkPreviewLabel.layer.shadowRadius = 2
+        watermarkPreviewLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
+        
+        watermarkPreviewCloseButton.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
+        watermarkPreviewCloseButton.tintColor = UIColor.white.withAlphaComponent(0.9)
+        watermarkPreviewCloseButton.addTarget(self, action: #selector(watermarkPreviewCloseTapped), for: .touchUpInside)
+        
+        watermarkPreviewContainer.addSubview(watermarkPreviewLabel)
+        watermarkPreviewContainer.addSubview(watermarkPreviewCloseButton)
+        videoContainerView.addSubview(watermarkPreviewContainer)
+    }
+    
+    private func updateWatermarkPreviewLayout() {
+        guard shouldShowWatermarkPreview(), !isWatermarkPreviewDismissed else {
+            watermarkPreviewContainer.isHidden = true
+            return
+        }
+        
+        let videoSize = videoContainerView.bounds.size
+        guard videoSize.width > 1, videoSize.height > 1 else {
+            watermarkPreviewContainer.isHidden = true
+            return
+        }
+        
+        let sourceVideoSize = sourceVideoSizeForWatermarkPreview.width > 1 && sourceVideoSizeForWatermarkPreview.height > 1
+            ? sourceVideoSizeForWatermarkPreview
+            : videoSize
+        
+        // Match export math in EditViewController, then scale into the preview container.
+        let exportMargin = max(8, min(sourceVideoSize.width, sourceVideoSize.height) * 0.015)
+        let exportFontSize = max(38, min(sourceVideoSize.width, sourceVideoSize.height) * 0.07)
+        let previewScale = min(videoSize.width / sourceVideoSize.width, videoSize.height / sourceVideoSize.height)
+        let margin = exportMargin * previewScale
+        let fontSize = exportFontSize * previewScale
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.boldSystemFont(ofSize: fontSize),
+            .foregroundColor: UIColor.white.withAlphaComponent(0.75)
+        ]
+        let text = "SPID"
+        let attributedText = NSAttributedString(string: text, attributes: attributes)
+        let textSize = attributedText.size()
+        let closeButtonSide = max(16, fontSize * 0.45)
+        let closeButtonGap = max(2, fontSize * 0.06)
+        
+        let containerWidth = textSize.width + closeButtonSide + closeButtonGap
+        let containerHeight = max(textSize.height, closeButtonSide)
+        watermarkPreviewContainer.frame = CGRect(
+            x: max(0, videoSize.width - containerWidth - margin),
+            y: max(0, videoSize.height - containerHeight - margin),
+            width: containerWidth,
+            height: containerHeight
+        )
+        
+        watermarkPreviewLabel.font = UIFont.boldSystemFont(ofSize: fontSize)
+        watermarkPreviewLabel.frame = CGRect(
+            x: closeButtonSide + closeButtonGap,
+            y: 0,
+            width: textSize.width,
+            height: watermarkPreviewContainer.bounds.height
+        )
+        
+        watermarkPreviewCloseButton.frame = CGRect(
+            x: 0,
+            y: (watermarkPreviewContainer.bounds.height - closeButtonSide) / 2,
+            width: closeButtonSide,
+            height: closeButtonSide
+        )
+        
+        videoContainerView.bringSubviewToFront(watermarkPreviewContainer)
+        watermarkPreviewContainer.isHidden = false
     }
     
     func addLabelViews(labelViews: [LabelView]) {
@@ -609,8 +706,8 @@ class SpidPlayerViewController: UIViewController {
     }
     
     
-    @objc func xButtonTapped(sender: UIButton) {
-        print("xButtonTapped")
+    @objc private func watermarkPreviewCloseTapped() {
+        onWatermarkPreviewCloseTapped?()
     }
     
 }
