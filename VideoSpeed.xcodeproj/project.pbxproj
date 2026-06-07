@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6B02A7BE2FD5542A0023EC18 /* Speed Up Video & Slow Mo: Spid.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 6B02A7BD2FD5542A0023EC18 /* Speed Up Video & Slow Mo: Spid.storekit */; };
 		6B04F5852CB916FA000C8C59 /* CropSectioVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B04F5832CB916FA000C8C59 /* CropSectioVC.swift */; };
 		6B04F5862CB916FA000C8C59 /* CropSectioVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B04F5842CB916FA000C8C59 /* CropSectioVC.xib */; };
 		6B04F5892CBBAAC2000C8C59 /* CropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B04F5872CBBAAC2000C8C59 /* CropViewController.swift */; };
@@ -194,6 +195,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6B02A7BD2FD5542A0023EC18 /* Speed Up Video & Slow Mo: Spid.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Speed Up Video & Slow Mo: Spid.storekit"; sourceTree = "<group>"; };
 		6B04F5832CB916FA000C8C59 /* CropSectioVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropSectioVC.swift; sourceTree = "<group>"; };
 		6B04F5842CB916FA000C8C59 /* CropSectioVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CropSectioVC.xib; sourceTree = "<group>"; };
 		6B04F5872CBBAAC2000C8C59 /* CropViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropViewController.swift; sourceTree = "<group>"; };
@@ -621,6 +623,7 @@
 				6B4F7E752E5497A100564302 /* test.m4a */,
 				6BE9AD8A2E71415000DC6364 /* TamarEisenman.mp3 */,
 				6BE9AD8C2E717E6B00DC6364 /* audio.mp3 */,
+				6B02A7BD2FD5542A0023EC18 /* Speed Up Video & Slow Mo: Spid.storekit */,
 				6BE9A2EB2A5FC80C00FF8CB0 /* AppDelegate.swift */,
 				6BE9A2ED2A5FC80C00FF8CB0 /* SceneDelegate.swift */,
 				6BE9A2EF2A5FC80C00FF8CB0 /* EditViewController.swift */,
@@ -770,6 +773,7 @@
 				6BB4EE842A8F3881006CF87C /* BlackTransparentOverlay.xib in Resources */,
 				6B9610262D49F1C000DEE296 /* TextCell.xib in Resources */,
 				6B6C941C2EC087D100ED232D /* Secrets.xcconfig in Resources */,
+				6B02A7BE2FD5542A0023EC18 /* Speed Up Video & Slow Mo: Spid.storekit in Resources */,
 				6BE9AD8B2E71415000DC6364 /* TamarEisenman.mp3 in Resources */,
 				6B4F7E762E5497A100564302 /* test.m4a in Resources */,
 				6B7D10852BA70AE4002DD73F /* remote_config_defaults.plist in Resources */,
@@ -1140,7 +1144,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = VideoSpeed/VideoSpeed.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = K969727JC6;
 				ENABLE_DEBUG_DYLIB = YES;
@@ -1168,7 +1172,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenSSL/lib",
 				);
-				MARKETING_VERSION = 5.1.2;
+				MARKETING_VERSION = 5.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -1189,7 +1193,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = VideoSpeed/VideoSpeed.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = K969727JC6;
 				ENABLE_DEBUG_DYLIB = YES;
@@ -1217,7 +1221,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenSSL/lib",
 				);
-				MARKETING_VERSION = 5.1.2;
+				MARKETING_VERSION = 5.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

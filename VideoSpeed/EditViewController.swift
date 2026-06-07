@@ -1459,8 +1459,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //        purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
         
         purchaseViewController.onDismiss = { [weak self] in
-            if let _ = SpidProducts.store.userPurchasedProVersion() {
+            if SpidProducts.store.userPurchasedProVersion() != nil {
                 self?.hideProButton()
+                self?.spidPlayerController.refreshWatermarkPreview()
             }
         }
         

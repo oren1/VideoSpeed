@@ -1,0 +1,556 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "527333B3",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : false,
+      "internalID" : "6452315886",
+      "localizations" : [
+        {
+          "description" : "Pro Version",
+          "displayName" : "Pro Version",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.spid.app.pro",
+      "referenceName" : "Pro Version",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "7.99",
+      "familyShareable" : false,
+      "internalID" : "6470450002",
+      "localizations" : [
+        {
+          "description" : "Pro Version",
+          "displayName" : "Pro Version",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "ProVersion.v2",
+      "referenceName" : "Pro Version 2",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : false,
+      "internalID" : "6472876642",
+      "localizations" : [
+        {
+          "description" : "Pro Version",
+          "displayName" : "Pro Version",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "ProVersion.9",
+      "referenceName" : "Pro Version 9.99",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "6.99",
+      "familyShareable" : false,
+      "internalID" : "6453074203",
+      "localizations" : [
+        {
+          "description" : "All Features",
+          "displayName" : "Pro Version",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "ProVersion345",
+      "referenceName" : "Pro Version Consumable",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6452276248",
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_developerTeamID" : "K969727JC6",
+    "_disableDialogs" : false,
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 802509869.95901597,
+    "_locale" : "en_US",
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+
+    ],
+    "_timeRate" : 0
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21431558",
+      "localizations" : [
+        {
+          "description" : "",
+          "displayName" : "Spid",
+          "locale" : "en_US"
+        }
+      ],
+      "name" : "Spid",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "9.99",
+              "displayPrice" : "9.99",
+              "internalID" : "6760764723_BILLED_UPFRONT",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "9.99",
+          "familyShareable" : false,
+          "groupNumber" : 12,
+          "internalID" : "6760764723",
+          "introductoryOffer" : {
+            "billingPlanType" : "BILLED_UPFRONT",
+            "internalID" : "4A6CBAD0",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P3D"
+          },
+          "introductoryOffers" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "internalID" : "4A6CBAD0",
+              "numberOfPeriods" : 1,
+              "paymentMode" : "free",
+              "subscriptionPeriod" : "P3D"
+            }
+          ],
+          "localizations" : [
+            {
+              "description" : "Pro Version",
+              "displayName" : "Pro Version",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "7.day.trial.yearly.10",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "7 day trial yearly 10",
+          "subscriptionGroupID" : "21431558",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "9.99",
+              "displayPrice" : "9.99",
+              "internalID" : "6751566702_BILLED_UPFRONT",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "9.99",
+          "familyShareable" : false,
+          "groupNumber" : 10,
+          "internalID" : "6751566702",
+          "introductoryOffer" : {
+            "billingPlanType" : "BILLED_UPFRONT",
+            "internalID" : "50F6DE60",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P3D"
+          },
+          "introductoryOffers" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "internalID" : "50F6DE60",
+              "numberOfPeriods" : 1,
+              "paymentMode" : "free",
+              "subscriptionPeriod" : "P3D"
+            }
+          ],
+          "localizations" : [
+            {
+              "description" : "Access To All Features",
+              "displayName" : "Pro Version",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "3DayTrial.Yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "7 day trial yearly subscription",
+          "subscriptionGroupID" : "21431558",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "4.99",
+              "displayPrice" : "4.99",
+              "internalID" : "6535669423_BILLED_UPFRONT",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 6,
+          "internalID" : "6535669423",
+          "introductoryOffers" : [
+
+          ],
+          "localizations" : [
+            {
+              "description" : "Pro Version",
+              "displayName" : "Pro Version",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "Monthly.Subscription.Five",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Monthly",
+          "subscriptionGroupID" : "21431558",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "1.99",
+              "displayPrice" : "1.99",
+              "internalID" : "6476134688_BILLED_UPFRONT",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "1.99",
+          "familyShareable" : false,
+          "groupNumber" : 3,
+          "internalID" : "6476134688",
+          "introductoryOffers" : [
+
+          ],
+          "localizations" : [
+            {
+              "description" : "Pro Version",
+              "displayName" : "Pro Version",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "Monthly.Subscription",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Monthly Pro Version",
+          "subscriptionGroupID" : "21431558",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "19.99",
+              "displayPrice" : "19.99",
+              "internalID" : "6476177422_BILLED_UPFRONT",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "19.99",
+          "familyShareable" : false,
+          "groupNumber" : 5,
+          "internalID" : "6476177422",
+          "introductoryOffers" : [
+
+          ],
+          "localizations" : [
+            {
+              "description" : "Access To All Features",
+              "displayName" : "Pro Version",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "Yearly.Subscription",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Pro Version Yearly",
+          "subscriptionGroupID" : "21431558",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "19.99",
+              "displayPrice" : "19.99",
+              "internalID" : "6747131316_BILLED_UPFRONT",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "19.99",
+          "familyShareable" : false,
+          "groupNumber" : 9,
+          "internalID" : "6747131316",
+          "introductoryOffers" : [
+
+          ],
+          "localizations" : [
+            {
+              "description" : "Pro Version",
+              "displayName" : "Pro Version",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "Yearly.19",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Pro Version Yearly 19.99",
+          "subscriptionGroupID" : "21431558",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "9.99",
+              "displayPrice" : "9.99",
+              "internalID" : "6752210983_BILLED_UPFRONT",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "9.99",
+          "familyShareable" : false,
+          "groupNumber" : 11,
+          "internalID" : "6752210983",
+          "introductoryOffer" : {
+            "billingPlanType" : "BILLED_UPFRONT",
+            "internalID" : "7DC7CD3E",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "introductoryOffers" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "internalID" : "7DC7CD3E",
+              "numberOfPeriods" : 1,
+              "paymentMode" : "free",
+              "subscriptionPeriod" : "P1W"
+            }
+          ],
+          "localizations" : [
+            {
+              "description" : "Access to all features ",
+              "displayName" : "Pro Version",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "Test.free.trial",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Test 2 free trial",
+          "subscriptionGroupID" : "21431558",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "2.99",
+              "displayPrice" : "2.99",
+              "internalID" : "6535676093_BILLED_UPFRONT",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "2.99",
+          "familyShareable" : false,
+          "groupNumber" : 7,
+          "internalID" : "6535676093",
+          "introductoryOffers" : [
+
+          ],
+          "localizations" : [
+            {
+              "description" : "Pro Version",
+              "displayName" : "Pro Version",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "Weekly.Subscription.Spid",
+          "recurringSubscriptionPeriod" : "P1W",
+          "referenceName" : "Weekly",
+          "subscriptionGroupID" : "21431558",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "14.99",
+              "displayPrice" : "14.99",
+              "internalID" : "6740728304_BILLED_UPFRONT",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "14.99",
+          "familyShareable" : false,
+          "groupNumber" : 8,
+          "internalID" : "6740728304",
+          "introductoryOffers" : [
+
+          ],
+          "localizations" : [
+            {
+              "description" : "Pro Version",
+              "displayName" : "Pro Vesrion",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "Yearly.Subscription.Fifteen",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Yearly Subscription Test",
+          "subscriptionGroupID" : "21431558",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "billingPlans" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "commitmentDisplayPrice" : "19.99",
+              "displayPrice" : "19.99",
+              "internalID" : "6776118051_BILLED_UPFRONT",
+              "isEnabled" : true
+            }
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "19.99",
+          "familyShareable" : false,
+          "groupNumber" : 13,
+          "internalID" : "6776118051",
+          "introductoryOffer" : {
+            "billingPlanType" : "BILLED_UPFRONT",
+            "internalID" : "CF801746",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P3D"
+          },
+          "introductoryOffers" : [
+            {
+              "billingPlanType" : "BILLED_UPFRONT",
+              "internalID" : "CF801746",
+              "numberOfPeriods" : 1,
+              "paymentMode" : "free",
+              "subscriptionPeriod" : "P3D"
+            }
+          ],
+          "localizations" : [
+            {
+              "description" : "Pro Version",
+              "displayName" : "Pro Version",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "Yearly.Watermark",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Yearly Subscription Watermark",
+          "subscriptionGroupID" : "21431558",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 5,
+    "minor" : 0
+  }
+}

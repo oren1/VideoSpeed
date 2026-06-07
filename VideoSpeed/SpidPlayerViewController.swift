@@ -335,6 +335,10 @@ class SpidPlayerViewController: UIViewController {
         videoContainerView.addSubview(watermarkPreviewContainer)
     }
     
+    func refreshWatermarkPreview() {
+        updateWatermarkPreviewLayout()
+    }
+    
     private func updateWatermarkPreviewLayout() {
         guard UserDataManager.main.shouldShowWatermark(), !isWatermarkPreviewDismissed else {
             watermarkPreviewContainer.isHidden = true

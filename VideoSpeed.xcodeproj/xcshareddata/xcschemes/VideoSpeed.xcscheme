@@ -62,6 +62,9 @@
             isEnabled = "YES">
          </AdditionalOption>
       </AdditionalOptions>
+      <StoreKitConfigurationFileReference
+         identifier = "../VideoSpeed/Speed Up Video &amp; Slow Mo: Spid.storekit">
+      </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
