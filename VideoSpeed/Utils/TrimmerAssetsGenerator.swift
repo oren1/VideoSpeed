@@ -13,12 +13,14 @@ class TrimmerAssetsGenerator {
     let trimmerWidth: CGFloat
     let trimmerHeight: CGFloat
     let asset: AVAsset
+    let timeRange: CMTimeRange?
     let generator: AVAssetImageGenerator
     
-    init(asset: AVAsset, videoComposition: AVVideoComposition? = nil, trimmerWidth: CGFloat, trimmerHeight: CGFloat) {
+    init(asset: AVAsset, videoComposition: AVVideoComposition? = nil, trimmerWidth: CGFloat, trimmerHeight: CGFloat, timeRange: CMTimeRange? = nil) {
         self.trimmerWidth = trimmerWidth
         self.trimmerHeight = trimmerHeight
         self.asset = asset
+        self.timeRange = timeRange
         generator = AVAssetImageGenerator(asset: asset)
         generator.videoComposition = videoComposition
         generator.appliesPreferredTrackTransform = true
@@ -80,12 +82,16 @@ class TrimmerAssetsGenerator {
     
     
     private func getThumbnailTimes(numberOfThumbnails: Int) -> [NSValue] {
-        let timeIncrement = (asset.duration.seconds * 1000) / Double(numberOfThumbnails)
+        let sourceRange = timeRange ?? CMTimeRange(start: .zero, duration: asset.duration)
+        let durationSeconds = sourceRange.duration.seconds
+        guard durationSeconds > 0, numberOfThumbnails > 0 else { return [] }
+
+        let timeIncrement = (durationSeconds * 1000) / Double(numberOfThumbnails)
         var timesForThumbnails = [NSValue]()
         for index in 0..<numberOfThumbnails {
-            let cmTime = CMTime(value: Int64(timeIncrement * Float64(index)), timescale: 1000)
-            let nsValue = NSValue(time: cmTime)
-            timesForThumbnails.append(nsValue)
+            let offset = CMTime(value: Int64(timeIncrement * Float64(index)), timescale: 1000)
+            let cmTime = CMTimeAdd(sourceRange.start, offset)
+            timesForThumbnails.append(NSValue(time: cmTime))
         }
         return timesForThumbnails
     }

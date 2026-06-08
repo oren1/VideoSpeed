@@ -18,6 +18,7 @@ extension EditViewController {
         createSoundSection()
         createFiletypeSection()
         createTrimmerSection()
+        createSplitSection()
         createTextSection()
         createCaptionsSection()
     }
@@ -192,6 +193,37 @@ extension EditViewController {
         // this call to view,in turn, invokes the viewDidLoad method
         let _ = trimmerSectionVC.view
     }
+
+    func createSplitSection() {
+        splitSectionVC = SplitSectionVC()
+        splitSectionVC.delegate = self
+
+        splitSectionVC.splitConfirmed = { [weak self] splitTime in
+            guard let self else { return }
+            Task {
+                let didSplit = await UserDataManager.main.splitCurrentAsset(at: splitTime)
+                guard didSplit else {
+                    await self.splitSectionVC.reloadTimelineFromOutside()
+                    return
+                }
+                await self.reloadComposition()
+                await MainActor.run {
+                    self.videosCollectionView.reloadData()
+                }
+                NotificationCenter.default.post(name: Notification.Name.VideoSelectionChanged, object: nil)
+                let startTime = self.getStartTimeForCurrentSpidAsset()
+                await self.spidPlayerController?.player?.seek(
+                    to: startTime,
+                    toleranceBefore: .zero,
+                    toleranceAfter: .zero
+                )
+                self.spidPlayerController?.player?.play()
+                await self.splitSectionVC.reloadTimelineFromOutside()
+            }
+        }
+
+        let _ = splitSectionVC.view
+    }
     
     func createTextSection() {
         textSectionVC = TextSectionVC()
@@ -266,6 +298,15 @@ extension EditViewController {
         addSection(sectionVC: trimmerSectionVC)
         currentShownSection = trimmerSectionVC
     }
+
+    func addSplitSection() {
+        addSection(sectionVC: splitSectionVC)
+        currentShownSection = splitSectionVC
+        Task {
+            await splitSectionVC.reloadTimelineFromOutside()
+        }
+    }
+
     func addTextSection() {
         addSection(sectionVC: textSectionVC)
         currentShownSection = textSectionVC

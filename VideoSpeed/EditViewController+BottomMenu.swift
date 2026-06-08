@@ -59,6 +59,7 @@ extension EditViewController: UICollectionViewDataSource {
 extension EditViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let menuItem = menuItems[indexPath.row]
+        let previousMenuItem = selectedMenuItem
         selectedMenuItem = menuItem
         if menuItem.id != .crop {
             removeCropVCFromTop()
@@ -71,6 +72,8 @@ extension EditViewController: UICollectionViewDelegate {
             addSpeedSection()
         case .trim:
             addTrimmerSection()
+        case .split:
+            addSplitSection()
         case .crop:
             addCropSection()
             addCropViewControllerToTop()
@@ -104,6 +107,12 @@ extension EditViewController: UICollectionViewDelegate {
         
         collectionView.reloadData()
         videosCollectionView.reloadData()
+
+        if previousMenuItem?.id == .split, menuItem.id != .split {
+            Task {
+                await reloadComposition()
+            }
+        }
     }
     
     func presentCaptionsSettingsView() {

@@ -24,7 +24,7 @@ actor SpidAsset {
     var videoSize: CGSize
     var speed: Float = 1
     var soundOn: Bool = true
-    let thumbnailImage: CGImage
+    private(set) var thumbnailImage: CGImage
     var thumbnailImages: [CGImage]?
     var rightHandleConstraintConstant: CGFloat?
     var leftHandleConstraintConstant: CGFloat?
@@ -86,6 +86,10 @@ actor SpidAsset {
     func updateThumbnailImages(images: [CGImage]?) {
         self.thumbnailImages = images
     }
+
+    func updateThumbnailImage(_ image: CGImage) {
+        thumbnailImage = image
+    }
     
     func updateRightHandleConstraintConstant(constant: CGFloat) {
         self.rightHandleConstraintConstant = constant
@@ -101,6 +105,29 @@ actor SpidAsset {
     
     func updateSliderValue(value: Float)  {
         self.sliderValue = value
+    }
+
+    func clearTrimmerHandleConstants() {
+        rightHandleConstraintConstant = nil
+        leftHandleConstraintConstant = nil
+        thumbnailImages = nil
+    }
+
+    func duplicate(with timeRange: CMTimeRange, thumbnailImage: CGImage) async -> SpidAsset {
+        let newAsset = SpidAsset(
+            asset: getOriginalAsset(),
+            timeRange: timeRange,
+            videoSize: videoSize,
+            thumnbnailImage: thumbnailImage
+        )
+        await newAsset.updateSpeed(speed: speed)
+        await newAsset.updateSound(soundOn: soundOn)
+        await newAsset.updateVideoRect(videoRect)
+        await newAsset.updateSliderValue(value: sliderValue)
+        if assetHasBeenRotated, let rotatedAsset {
+            await newAsset.updateRotatedAsset(rotatedAsset: rotatedAsset)
+        }
+        return newAsset
     }
 //    private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool, cropRect: CGRect) async -> AVMutableVideoCompositionLayerInstruction {
 //        let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
