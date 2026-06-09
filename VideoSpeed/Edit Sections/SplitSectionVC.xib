@@ -53,14 +53,14 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="hint-lbl" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="8" id="hint-top"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="hint-lbl" secondAttribute="trailing" constant="20" id="hint-trailing"/>
                 <constraint firstItem="hint-lbl" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="20" id="hint-leading"/>
-                <constraint firstItem="split-timeline" firstAttribute="top" secondItem="hint-lbl" secondAttribute="bottom" constant="12" id="timeline-top"/>
+                <constraint firstItem="split-timeline" firstAttribute="top" secondItem="hint-lbl" secondAttribute="bottom" constant="18" id="hint-timeline"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="split-timeline" secondAttribute="trailing" constant="20" id="timeline-trailing"/>
                 <constraint firstItem="split-timeline" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="20" id="timeline-leading"/>
                 <constraint firstItem="split-btn" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="split-centerX"/>
                 <constraint firstItem="split-btn" firstAttribute="top" secondItem="split-timeline" secondAttribute="bottom" constant="16" id="split-top"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="split-btn" secondAttribute="bottom" constant="18" id="split-bottom"/>
             </constraints>
             <point key="canvasLocation" x="216" y="-204"/>
         </view>

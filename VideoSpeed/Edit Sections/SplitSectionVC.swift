@@ -23,6 +23,7 @@ class SplitSectionVC: SectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.clipsToBounds = false
         splitTimelineView.splitDelegate = self
         splitButton.layer.cornerRadius = 8
 

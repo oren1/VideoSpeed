@@ -27,10 +27,12 @@ class SplitTimelineView: AVAssetTimeSelector {
     private var markerLeadingConstraint: NSLayoutConstraint?
     private let markerVisualWidth: CGFloat = 4
     private let markerTouchWidth: CGFloat = 44
+    private let markerVerticalOverflow: CGFloat = 12
     private let trimmerHeight: CGFloat = 60
 
     override func setupSubviews() {
         super.setupSubviews()
+        clipsToBounds = false
         setupSplitMarker()
         setupMarkerGesture()
         assetPreview.contentOffset = .zero
@@ -75,22 +77,28 @@ class SplitTimelineView: AVAssetTimeSelector {
 
         splitMarker.translatesAutoresizingMaskIntoConstraints = false
         splitMarker.backgroundColor = .systemBlue
-        splitMarker.layer.cornerRadius = markerVisualWidth / 2
         splitMarker.layer.masksToBounds = true
         splitMarkerContainer.addSubview(splitMarker)
 
         markerLeadingConstraint = splitMarkerContainer.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0)
         NSLayoutConstraint.activate([
             markerLeadingConstraint!,
-            splitMarkerContainer.topAnchor.constraint(equalTo: topAnchor),
-            splitMarkerContainer.bottomAnchor.constraint(equalTo: bottomAnchor),
+            splitMarkerContainer.centerYAnchor.constraint(equalTo: centerYAnchor),
+            splitMarkerContainer.heightAnchor.constraint(
+                equalTo: heightAnchor,
+                constant: markerVerticalOverflow * 2
+            ),
             splitMarkerContainer.widthAnchor.constraint(equalToConstant: markerTouchWidth),
 
             splitMarker.centerXAnchor.constraint(equalTo: splitMarkerContainer.centerXAnchor),
-            splitMarker.topAnchor.constraint(equalTo: splitMarkerContainer.topAnchor),
-            splitMarker.bottomAnchor.constraint(equalTo: splitMarkerContainer.bottomAnchor),
+            splitMarker.centerYAnchor.constraint(equalTo: splitMarkerContainer.centerYAnchor),
+            splitMarker.heightAnchor.constraint(
+                equalTo: heightAnchor,
+                constant: markerVerticalOverflow * 2
+            ),
             splitMarker.widthAnchor.constraint(equalToConstant: markerVisualWidth)
         ])
+        splitMarker.layer.cornerRadius = markerVisualWidth / 2
     }
 
     private func setupMarkerGesture() {
