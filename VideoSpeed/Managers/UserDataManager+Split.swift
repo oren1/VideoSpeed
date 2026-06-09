@@ -29,6 +29,7 @@ extension UserDataManager {
         let rightThumbnail = await mediaAsset.generateThumbnailImage(at: rightRange.start)
 
         await asset.updateTimeRange(timeRange: leftRange)
+        await asset.updateClipSourceRange(leftRange)
         await asset.clearTrimmerHandleConstants()
         if let leftThumbnail {
             await asset.updateThumbnailImage(leftThumbnail)

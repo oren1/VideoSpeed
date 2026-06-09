@@ -23,6 +23,9 @@ public class AVAssetTimeSelector: UIView, UIScrollViewDelegate {
     }
     
     public var videoComposition: AVVideoComposition?
+
+    /// When set, the timeline maps to this range on the asset instead of the full duration.
+    public var clipTimeRange: CMTimeRange?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -77,6 +80,36 @@ public class AVAssetTimeSelector: UIView, UIScrollViewDelegate {
             assetPreview.regenerateThumbnails(for: asset, completion: completion)
         }
     }
+
+    func generateClipThumbnails(
+        for timeRange: CMTimeRange,
+        trimmerHeight: CGFloat,
+        completion: @escaping ([CGImage]) -> Void
+    ) {
+        clipTimeRange = timeRange
+        guard let asset else {
+            completion([])
+            return
+        }
+
+        let trimmerWidth = bounds.width > 0 ? bounds.width : UIScreen.main.bounds.width - 40
+        let generator = TrimmerAssetsGenerator(
+            asset: asset,
+            videoComposition: videoComposition,
+            trimmerWidth: trimmerWidth,
+            trimmerHeight: trimmerHeight,
+            timeRange: timeRange
+        )
+
+        Task {
+            let images = await generator.generateThumbnailImages() ?? []
+            await MainActor.run {
+                self.replaceTo(thumbnailImages: images)
+                self.assetPreview.contentOffset = .zero
+                completion(images)
+            }
+        }
+    }
     
     // MARK: - Asset Preview
 
@@ -108,6 +141,12 @@ public class AVAssetTimeSelector: UIView, UIScrollViewDelegate {
     }
 
     func getTime(from position: CGFloat) -> CMTime? {
+        if let clipTimeRange, clipTimeRange.duration.isValid, clipTimeRange.duration.seconds > 0 {
+            let normalizedRatio = max(min(1, position / durationSize), 0)
+            let offset = CMTimeMultiplyByFloat64(clipTimeRange.duration, multiplier: Double(normalizedRatio))
+            return CMTimeAdd(clipTimeRange.start, offset)
+        }
+
         guard let asset = asset else {
             return nil
         }
@@ -117,6 +156,12 @@ public class AVAssetTimeSelector: UIView, UIScrollViewDelegate {
     }
 
     func getPosition(from time: CMTime) -> CGFloat? {
+        if let clipTimeRange, clipTimeRange.duration.isValid, clipTimeRange.duration.seconds > 0 {
+            let elapsed = CMTimeSubtract(time, clipTimeRange.start)
+            let ratio = elapsed.seconds / clipTimeRange.duration.seconds
+            return CGFloat(max(0, min(1, ratio))) * durationSize
+        }
+
         guard let asset = asset else {
             return nil
         }

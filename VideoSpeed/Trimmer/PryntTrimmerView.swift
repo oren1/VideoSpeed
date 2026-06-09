@@ -271,12 +271,34 @@ public protocol TrimmerViewDelegate: AnyObject {
 
     override func assetDidChange(newAsset: AVAsset?) {
         super.assetDidChange(newAsset: newAsset)
-        resetHandleViewPosition()
+        resetHandlesToFullClip()
     }
 
-    private func resetHandleViewPosition() {
+    func resetHandlesToFullClip() {
         leftConstraint?.constant = 0
         rightConstraint?.constant = 0
+        layoutIfNeeded()
+    }
+
+    /// Positions trim handles for `selectionRange` on a strip that represents `clipBounds`.
+    func applySelectionRange(_ selectionRange: CMTimeRange, clipBounds: CMTimeRange) {
+        clipTimeRange = clipBounds
+        assetPreview.contentOffset = .zero
+        layoutIfNeeded()
+
+        guard asset != nil,
+              let startPosition = getPosition(from: selectionRange.start),
+              let endPosition = getPosition(from: selectionRange.end) else {
+            resetHandlesToFullClip()
+            return
+        }
+
+        let contentOffset = assetPreview.contentOffset.x
+        leftConstraint?.constant = max(0, startPosition - contentOffset)
+        rightConstraint?.constant = min(
+            0,
+            endPosition - bounds.width - contentOffset + (2 * handleWidth)
+        )
         layoutIfNeeded()
     }
 
@@ -325,7 +347,9 @@ public protocol TrimmerViewDelegate: AnyObject {
 
     private var minimumDistanceBetweenHandle: CGFloat {
         guard let asset = asset else { return 0 }
-        return CGFloat(minDuration) * assetPreview.contentView.frame.width / CGFloat(asset.duration.seconds)
+        let durationSeconds = clipTimeRange?.duration.seconds ?? asset.duration.seconds
+        guard durationSeconds > 0 else { return 0 }
+        return CGFloat(minDuration) * assetPreview.contentView.frame.width / CGFloat(durationSeconds)
     }
 
     // MARK: - Scroll View Delegate

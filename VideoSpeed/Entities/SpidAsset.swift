@@ -21,6 +21,8 @@ actor SpidAsset {
     private var rotatedAsset: AVAsset?
     private(set) var assetHasBeenRotated: Bool = false
     var timeRange: CMTimeRange
+    /// Fixed source bounds for trimmer thumbnails; does not shrink when the user trims.
+    var clipSourceRange: CMTimeRange
     var videoSize: CGSize
     var speed: Float = 1
     var soundOn: Bool = true
@@ -51,6 +53,7 @@ actor SpidAsset {
     init(asset: AVAsset, timeRange: CMTimeRange, videoSize: CGSize, thumnbnailImage: CGImage) {
         self.asset = asset
         self.timeRange = timeRange
+        self.clipSourceRange = timeRange
         self.videoSize = videoSize
         self.thumbnailImage = thumnbnailImage
         self.id = UUID()
@@ -69,6 +72,10 @@ actor SpidAsset {
     
     func updateTimeRange(timeRange: CMTimeRange) {
         self.timeRange = timeRange
+    }
+
+    func updateClipSourceRange(_ range: CMTimeRange) {
+        clipSourceRange = range
     }
     
     func updateSpeed(speed: Float) {

@@ -12,6 +12,7 @@ class SplitTimelineView: AVAssetTimeSelector {
 
     var trimTimeRange: CMTimeRange = .zero {
         didSet {
+            clipTimeRange = trimTimeRange
             layoutIfNeeded()
             updateMarkerPosition(for: currentSplitTime ?? defaultSplitTime(), notifyDelegate: false)
         }
@@ -37,6 +38,7 @@ class SplitTimelineView: AVAssetTimeSelector {
 
     func configure(asset: AVAsset, trimTimeRange: CMTimeRange) {
         self.trimTimeRange = trimTimeRange
+        clipTimeRange = trimTimeRange
         self.asset = asset
         assetPreview.contentOffset = .zero
         layoutIfNeeded()
@@ -46,29 +48,11 @@ class SplitTimelineView: AVAssetTimeSelector {
     }
 
     func generateClipThumbnails(completion: @escaping ([CGImage]) -> Void) {
-        guard let asset else {
-            completion([])
-            return
-        }
-
-        let trimmerWidth = bounds.width > 0 ? bounds.width : UIScreen.main.bounds.width - 40
-        let generator = TrimmerAssetsGenerator(
-            asset: asset,
-            trimmerWidth: trimmerWidth,
-            trimmerHeight: trimmerHeight,
-            timeRange: trimTimeRange
-        )
-
-        Task {
-            let images = await generator.generateThumbnailImages() ?? []
-            await MainActor.run {
-                self.replaceTo(thumbnailImages: images)
-                self.assetPreview.contentOffset = .zero
-                if let time = self.currentSplitTime {
-                    self.updateMarkerPosition(for: time, notifyDelegate: false)
-                }
-                completion(images)
+        generateClipThumbnails(for: trimTimeRange, trimmerHeight: trimmerHeight) { images in
+            if let time = self.currentSplitTime {
+                self.updateMarkerPosition(for: time, notifyDelegate: false)
             }
+            completion(images)
         }
     }
 
@@ -82,24 +66,6 @@ class SplitTimelineView: AVAssetTimeSelector {
 
     override func assetDidChange(newAsset: AVAsset?) {
         // Thumbnails are generated explicitly for the clip timeRange.
-    }
-
-    override func getTime(from position: CGFloat) -> CMTime? {
-        guard trimTimeRange.duration.isValid, trimTimeRange.duration.seconds > 0 else {
-            return trimTimeRange.start
-        }
-        let normalizedRatio = max(min(1, position / durationSize), 0)
-        let offset = CMTimeMultiplyByFloat64(trimTimeRange.duration, multiplier: Double(normalizedRatio))
-        return CMTimeAdd(trimTimeRange.start, offset)
-    }
-
-    override func getPosition(from time: CMTime) -> CGFloat? {
-        guard trimTimeRange.duration.isValid, trimTimeRange.duration.seconds > 0 else {
-            return 0
-        }
-        let elapsed = CMTimeSubtract(time, trimTimeRange.start)
-        let ratio = elapsed.seconds / trimTimeRange.duration.seconds
-        return CGFloat(max(0, min(1, ratio))) * durationSize
     }
 
     private func setupSplitMarker() {
