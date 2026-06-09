@@ -68,7 +68,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     let menuItemReuseIdentifier = "MenuItem"
     let menuItems: [MenuItem] = [MenuItem(id: .speed , title: "SPEED", imageName: "timer"),
                                  MenuItem(id: .trim , title: "TRIM", imageName: "timeline.selection"),
-                                 MenuItem(id: .split , title: "SPLIT", imageName: "scissors"),
+                                 MenuItem(id: .split , title: "SPLIT", imageName: "square.fill.and.line.vertical.square.fill"),
 //                                 MenuItem(id: .crop , title: "CROP", imageName: "crop"),
                                  MenuItem(id: .text , title: "TEXT", imageName: "textformat.alt"),
                                  MenuItem(id: .captions , title: "CAPTIONS", imageName: "captions.bubble"),
