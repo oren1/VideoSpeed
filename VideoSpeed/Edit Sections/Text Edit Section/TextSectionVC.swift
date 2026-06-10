@@ -204,7 +204,7 @@ extension CollectionView: UICollectionViewDelegate, UICollectionViewDataSource, 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // Selection of the plus button
         if indexPath.row == UserDataManager.main.labelViewsModels.count {
-            // open the TextEditViewController
+            AnalyticsManager.textPlusButtonTappedEvent()
             openTextEditViewController(editStatus: .new)
             return
         }

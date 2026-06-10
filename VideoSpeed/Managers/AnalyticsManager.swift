@@ -114,6 +114,31 @@ class AnalyticsManager {
         Analytics.logEvent(eventName, parameters: ["split_count": splitCount])
     }
     
+    static func textMenuItemSelectedEvent() {
+        let eventName = "text_menu_item_selected"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func textPlusButtonTappedEvent() {
+        let eventName = "text_plus_button_tapped"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func textDoneButtonTappedEvent() {
+        let eventName = "text_done_button_tapped"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func textAddedEvent() {
+        let eventName = "text_added"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func textUsedOnExportEvent() {
+        let eventName = "text_used_on_export"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
     static func couldntGetProductsEvent() {
         let eventName = "couldnt_get_products"
         Analytics.logEvent(eventName, parameters: [:])

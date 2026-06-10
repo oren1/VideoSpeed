@@ -1548,6 +1548,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         if UserDataManager.main.splitCount > 0 {
             AnalyticsManager.splitUsedOnExportEvent(splitCount: UserDataManager.main.splitCount)
         }
+        if !UserDataManager.main.labelViewsModels.isEmpty {
+            AnalyticsManager.textUsedOnExportEvent()
+        }
     }
     
     func generateTemplateImage(asset: AVAsset, time: CMTime? = nil) async -> UIImage {

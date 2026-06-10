@@ -83,6 +83,7 @@ extension EditViewController: UICollectionViewDelegate {
         case .sound:
             addSoundSection()
         case .text:
+            AnalyticsManager.textMenuItemSelectedEvent()
             addTextSection()
         case .more:
             addFiletypeSection()

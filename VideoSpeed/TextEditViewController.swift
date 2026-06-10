@@ -117,8 +117,10 @@ class TextEditViewController: UIViewController {
     }
     
     @IBAction func doneButtonTapped(_ sender: Any) {
+        AnalyticsManager.textDoneButtonTappedEvent()
         if !textView.text!.isEmpty {
             if editStatus == .new {
+                AnalyticsManager.textAddedEvent()
                 UserDataManager.main.labelViewsModels.append(labelViewModel)
             }
             else if editStatus == .editing {
