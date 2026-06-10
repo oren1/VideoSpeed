@@ -99,6 +99,21 @@ class AnalyticsManager {
         Analytics.logEvent(eventName, parameters: [:])
     }
     
+    static func splitMenuItemSelectedEvent() {
+        let eventName = "split_menu_item_selected"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func splitButtonTappedEvent() {
+        let eventName = "split_button_tapped"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func splitUsedOnExportEvent(splitCount: Int) {
+        let eventName = "split_used_on_export"
+        Analytics.logEvent(eventName, parameters: ["split_count": splitCount])
+    }
+    
     static func couldntGetProductsEvent() {
         let eventName = "couldnt_get_products"
         Analytics.logEvent(eventName, parameters: [:])

@@ -52,6 +52,7 @@ class SplitSectionVC: SectionViewController {
             return
         }
 
+        AnalyticsManager.splitButtonTappedEvent()
         isSplitInProgress = true
         splitButton.isEnabled = false
         splitConfirmed?(splitTime)

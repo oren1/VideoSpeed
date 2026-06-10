@@ -290,6 +290,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         UserDataManager.main.labelViewsModels.removeAll()
         UserDataManager.main.selectedLabelViewModel = nil
         UserDataManager.main.usingSlider = false
+        UserDataManager.main.splitCount = 0
         UserDataManager.main.spidAssets = []
         UserDataManager.main.currentCaptions = nil
         UserDataManager.main.transcription = nil
@@ -1544,6 +1545,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         if fileType == .mp4 { AnalyticsManager.fileTypeUsedOnExportEvent() }
         if UserDataManager.main.isUsingCropFeature { AnalyticsManager.cropUsedOnExportEvent() }
         if await UserDataManager.main.isUsingTrimFeature() { AnalyticsManager.trimUsedOnExportEvent()}
+        if UserDataManager.main.splitCount > 0 {
+            AnalyticsManager.splitUsedOnExportEvent(splitCount: UserDataManager.main.splitCount)
+        }
     }
     
     func generateTemplateImage(asset: AVAsset, time: CMTime? = nil) async -> UIImage {

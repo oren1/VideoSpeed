@@ -42,6 +42,7 @@ extension UserDataManager {
         )
         spidAssets.insert(rightAsset, at: index + 1)
         currentSpidAsset = rightAsset
+        splitCount += 1
         return true
     }
 }
