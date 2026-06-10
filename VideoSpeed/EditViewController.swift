@@ -275,19 +275,30 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
-        spidPlayerController.player.pause()
+        spidPlayerController?.player?.pause()
     }
-    
-    deinit {
-        print("deinit")
-        NotificationCenter.default.removeObserver(self)
-        isUsingCropFeatureSubscriber = nil
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        let stillInNavStack = navigationController?.viewControllers.contains(self) ?? false
+        if !stillInNavStack {
+            clearEditSessionState()
+        }
+    }
+
+    private func clearEditSessionState() {
         UserDataManager.main.labelViewsModels.removeAll()
         UserDataManager.main.selectedLabelViewModel = nil
         UserDataManager.main.usingSlider = false
         UserDataManager.main.spidAssets = []
         UserDataManager.main.currentCaptions = nil
         UserDataManager.main.transcription = nil
+    }
+    
+    deinit {
+        print("deinit")
+        NotificationCenter.default.removeObserver(self)
+        isUsingCropFeatureSubscriber = nil
     }
     
     func createProButton() -> UIButton {
