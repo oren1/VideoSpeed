@@ -139,6 +139,41 @@ class AnalyticsManager {
         Analytics.logEvent(eventName, parameters: [:])
     }
     
+    static func captionsMenuItemSelectedEvent() {
+        let eventName = "captions_menu_item_selected"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func captionsSettingsViewShownEvent() {
+        let eventName = "captions_settings_view_shown"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func captionsGenerateButtonTappedEvent() {
+        let eventName = "captions_generate_button_tapped"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func captionsAudioExportedSuccessfullyEvent() {
+        let eventName = "captions_audio_exported_successfully"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func captionsOpenAIApiKeyLoadedSuccessfullyEvent() {
+        let eventName = "captions_open_ai_api_key_loaded_successfully"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func captionsSuccessfulTranscriptionEvent() {
+        let eventName = "captions_successful_transcription"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
+    static func captionsFailedTranscriptionEvent(error: String) {
+        let eventName = "captions_failed_transcription"
+        Analytics.logEvent(eventName, parameters: ["error": error])
+    }
+    
     static func couldntGetProductsEvent() {
         let eventName = "couldnt_get_products"
         Analytics.logEvent(eventName, parameters: [:])

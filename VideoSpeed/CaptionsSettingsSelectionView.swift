@@ -102,7 +102,7 @@ struct CaptionsSettingsSelectionView: View {
                   
                     // Bottom button
                     Button(action: {
-//                        if let selectedLanguageItem {
+                        AnalyticsManager.captionsGenerateButtonTappedEvent()
                             Task {
                                 generatingCaptions = true
                                 do {
@@ -130,7 +130,9 @@ struct CaptionsSettingsSelectionView: View {
             }
            
         }
-       
+        .onAppear {
+            AnalyticsManager.captionsSettingsViewShownEvent()
+        }
     }
     
     

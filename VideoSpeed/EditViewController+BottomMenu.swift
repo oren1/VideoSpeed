@@ -88,6 +88,7 @@ extension EditViewController: UICollectionViewDelegate {
         case .more:
             addFiletypeSection()
         case .captions:
+            AnalyticsManager.captionsMenuItemSelectedEvent()
             addCaptionsSection()
             
            
@@ -149,6 +150,7 @@ extension EditViewController: UICollectionViewDelegate {
                         // #endregion
                         do {
                             let resultURL = try await SpeechRecognizer.exportAudio(from: asset, to: audioURL)
+                            AnalyticsManager.captionsAudioExportedSuccessfullyEvent()
                             let apiKey = (Bundle.main.object(forInfoDictionaryKey: "OPEN_AI_API_KEY") as? String)?
                                 .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                             guard !apiKey.isEmpty, apiKey != "Open AI API Key Here" else {
@@ -158,7 +160,7 @@ extension EditViewController: UICollectionViewDelegate {
                                     userInfo: [NSLocalizedDescriptionKey: "OPEN_AI_API_KEY is missing from build configuration"]
                                 )
                             }
-
+                            AnalyticsManager.captionsOpenAIApiKeyLoadedSuccessfullyEvent()
                             // #region agent log
                             DebugSessionLog.write(
                                 hypothesisId: "B",
@@ -170,6 +172,7 @@ extension EditViewController: UICollectionViewDelegate {
                             let transcriptionResult = await OpenAIManager.transcribeAudioAsync(fileURL: resultURL, apiKey: apiKey, languageCode: languageItem.code)
                             switch transcriptionResult {
                                 case .success(let transcription):
+                                AnalyticsManager.captionsSuccessfulTranscriptionEvent()
                                     let segCount = transcription.segments?.count ?? 0
                                     let wordCount = transcription.words?.count ?? 0
                                     // #region agent log
@@ -183,6 +186,7 @@ extension EditViewController: UICollectionViewDelegate {
                                     UserDataManager.main.transcription = transcription
                                     print(transcription.segments!)
                                 case .failure(let error):
+                                AnalyticsManager.captionsFailedTranscriptionEvent(error: error.localizedDescription)
                                     // #region agent log
                                     DebugSessionLog.write(
                                         hypothesisId: "B",
@@ -194,6 +198,7 @@ extension EditViewController: UICollectionViewDelegate {
                                     throw error
                             }
                         } catch {
+                            AnalyticsManager.captionsFailedTranscriptionEvent(error: error.localizedDescription)
                             // #region agent log
                             DebugSessionLog.write(
                                 hypothesisId: "A",
