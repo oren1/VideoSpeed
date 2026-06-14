@@ -425,6 +425,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         videoComposition.frameDuration = CMTimeMake(value: 1, timescale: fps)
 //        videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
         videoComposition.renderSize = renderSize
+        applyVideoFilter(to: videoComposition)
 
 //        videoComposition.renderSize = croppedVideoRect.size
         //                videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
@@ -1137,6 +1138,12 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         loadingMediaVC = nil
     }
     
+    private func applyVideoFilter(to videoComposition: AVMutableVideoComposition) {
+        guard VideoFilter.current.usesCustomCompositor else { return }
+        FilterCompositor.activeFilter = VideoFilter.current
+        videoComposition.customVideoCompositorClass = FilterCompositor.self
+    }
+
     private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool, cropRect: CGRect, renderSize: CGSize) async -> AVMutableVideoCompositionLayerInstruction {
         let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
         

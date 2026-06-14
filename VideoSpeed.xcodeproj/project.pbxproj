@@ -48,6 +48,7 @@
 		6B6700942A6A6C13006F2980 /* PhotosHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6700932A6A6C13006F2980 /* PhotosHeader.swift */; };
 		6B6700972A6ABBF6006F2980 /* IAPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6700962A6ABBF6006F2980 /* IAPManager.swift */; };
 		6B6700992A6BAE36006F2980 /* VideoHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6700982A6BAE36006F2980 /* VideoHelper.swift */; };
+		6B6DC4C12F4C900100D78EA7 /* FilterCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4C02F4C900100D78EA7 /* FilterCompositor.swift */; };
 		6B67009B2A6BCAC2006F2980 /* ProgressIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B67009A2A6BCAC2006F2980 /* ProgressIndicatorView.swift */; };
 		6B67009D2A6BCAD2006F2980 /* ProgressIndicatorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B67009C2A6BCAD2006F2980 /* ProgressIndicatorView.xib */; };
 		6B6700A02A6C1D9A006F2980 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B67009F2A6C1D9A006F2980 /* StoreKit.framework */; };
@@ -239,6 +240,7 @@
 		6B6700932A6A6C13006F2980 /* PhotosHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosHeader.swift; sourceTree = "<group>"; };
 		6B6700962A6ABBF6006F2980 /* IAPManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPManager.swift; sourceTree = "<group>"; };
 		6B6700982A6BAE36006F2980 /* VideoHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoHelper.swift; sourceTree = "<group>"; };
+		6B6DC4C02F4C900100D78EA7 /* FilterCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCompositor.swift; sourceTree = "<group>"; };
 		6B67009A2A6BCAC2006F2980 /* ProgressIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressIndicatorView.swift; sourceTree = "<group>"; };
 		6B67009C2A6BCAD2006F2980 /* ProgressIndicatorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProgressIndicatorView.xib; sourceTree = "<group>"; };
 		6B67009F2A6C1D9A006F2980 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
@@ -591,6 +593,7 @@
 				6BE9A3092A618B2500FF8CB0 /* UIImageView+Extension.swift */,
 				6BE9A30B2A62809D00FF8CB0 /* PHAsset+Extension.swift */,
 				6B6700982A6BAE36006F2980 /* VideoHelper.swift */,
+				6B6DC4C02F4C900100D78EA7 /* FilterCompositor.swift */,
 				6B6700A72A6CFBF8006F2980 /* SKProduct+Utils.swift */,
 				6B6700AB2A6E6032006F2980 /* Consts.swift */,
 				6B6700AD2A6E608C006F2980 /* UIApplication+Utils.swift */,
@@ -902,6 +905,7 @@
 				6B67009B2A6BCAC2006F2980 /* ProgressIndicatorView.swift in Sources */,
 				6BCEB6112BF0C5CB00010381 /* ActivityViewController.swift in Sources */,
 				6B6700992A6BAE36006F2980 /* VideoHelper.swift in Sources */,
+				6B6DC4C12F4C900100D78EA7 /* FilterCompositor.swift in Sources */,
 				6BE9AD802E6D44C300DC6364 /* Recorder.swift in Sources */,
 				6B6700A82A6CFBF8006F2980 /* SKProduct+Utils.swift in Sources */,
 				6BC7B52C2D5C9AA100FF1CE9 /* UIView+Extension.swift in Sources */,
