@@ -9,14 +9,14 @@ import Foundation
 import UIKit
 
 enum DebugSessionLog {
-    private static let sessionId = "f617ee"
+    private static let sessionId = "45f3ba"
     private static let ingestURL = URL(string: "http://127.0.0.1:7531/ingest/08b59bce-f935-4e31-96aa-795a337948b4")!
     private static var logPath: String {
         #if targetEnvironment(simulator)
-        return "/Users/orenshalev/Desktop/VideoSpeed/.cursor/debug-f617ee.log"
+        return "/Users/orenshalev/Desktop/VideoSpeed/.cursor/debug-45f3ba.log"
         #else
         return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("debug-f617ee.log").path
+            .appendingPathComponent("debug-45f3ba.log").path
         #endif
     }
 
@@ -43,7 +43,7 @@ enum DebugSessionLog {
               let json = try? JSONSerialization.data(withJSONObject: payload),
               let line = String(data: json, encoding: .utf8) else { return }
 
-        print("[DEBUG f617ee] \(line)")
+        print("[DEBUG 45f3ba] \(line)")
 
         var request = URLRequest(url: ingestURL)
         request.httpMethod = "POST"
