@@ -5,6 +5,7 @@
 
 import AVFoundation
 import CoreImage
+import UIKit
 
 enum VideoFilter: String, CaseIterable, Identifiable {
     case none
@@ -37,9 +38,6 @@ enum VideoFilter: String, CaseIterable, Identifiable {
     case dotScreen
     case crystallize
     case edgeDetect
-
-    /// Hardcoded active filter — change to `.none` to disable.
-    static var current: VideoFilter = .sepia
 
     var id: String { rawValue }
 
@@ -85,7 +83,7 @@ enum VideoFilter: String, CaseIterable, Identifiable {
 
 class FilterCompositor: NSObject, AVVideoCompositing {
 
-    static var activeFilter: VideoFilter = VideoFilter.current
+    static var trackFilters: [CMPersistentTrackID: VideoFilter] = [:]
 
     var sourcePixelBufferAttributes: [String: Any]? = [
         kCVPixelBufferPixelFormatTypeKey as String: [kCVPixelFormatType_32BGRA]
@@ -104,7 +102,7 @@ class FilterCompositor: NSObject, AVVideoCompositing {
     private static let filterApplicators: [VideoFilter: FilterApplicator] = [
         .none: { $0 },
 
-        .sepia: applyFilter(named: "CISepiaTone") { filter in
+        .sepia: applyFilter(named: "CISepiaTone") { filter, _ in
             filter.setValue(0.85, forKey: kCIInputIntensityKey)
         },
 
@@ -117,98 +115,114 @@ class FilterCompositor: NSObject, AVVideoCompositing {
         .transfer: applyFilter(named: "CIPhotoEffectTransfer"),
         .instant: applyFilter(named: "CIPhotoEffectInstant"),
 
-        .vibrant: applyFilter(named: "CIVibrance") { filter in
+        .vibrant: applyFilter(named: "CIVibrance") { filter, _ in
             filter.setValue(0.75, forKey: "inputAmount")
         },
 
-        .warm: applyFilter(named: "CITemperatureAndTint") { filter in
+        .warm: applyFilter(named: "CITemperatureAndTint") { filter, _ in
             filter.setValue(CIVector(x: 6500, y: 0), forKey: "inputNeutral")
             filter.setValue(CIVector(x: 7200, y: 0), forKey: "inputTargetNeutral")
         },
 
-        .cool: applyFilter(named: "CITemperatureAndTint") { filter in
+        .cool: applyFilter(named: "CITemperatureAndTint") { filter, _ in
             filter.setValue(CIVector(x: 6500, y: 0), forKey: "inputNeutral")
             filter.setValue(CIVector(x: 5200, y: 0), forKey: "inputTargetNeutral")
         },
 
-        .highContrast: applyFilter(named: "CIColorControls") { filter in
+        .highContrast: applyFilter(named: "CIColorControls") { filter, _ in
             filter.setValue(1.35, forKey: kCIInputContrastKey)
             filter.setValue(1.05, forKey: kCIInputSaturationKey)
         },
 
-        .lowSaturation: applyFilter(named: "CIColorControls") { filter in
+        .lowSaturation: applyFilter(named: "CIColorControls") { filter, _ in
             filter.setValue(0.35, forKey: kCIInputSaturationKey)
             filter.setValue(1.05, forKey: kCIInputContrastKey)
         },
 
-        .highSaturation: applyFilter(named: "CIColorControls") { filter in
+        .highSaturation: applyFilter(named: "CIColorControls") { filter, _ in
             filter.setValue(1.75, forKey: kCIInputSaturationKey)
         },
 
-        .bright: applyFilter(named: "CIExposureAdjust") { filter in
+        .bright: applyFilter(named: "CIExposureAdjust") { filter, _ in
             filter.setValue(0.65, forKey: kCIInputEVKey)
         },
 
-        .dark: applyFilter(named: "CIExposureAdjust") { filter in
+        .dark: applyFilter(named: "CIExposureAdjust") { filter, _ in
             filter.setValue(-0.75, forKey: kCIInputEVKey)
         },
 
-        .gammaBoost: applyFilter(named: "CIGammaAdjust") { filter in
+        .gammaBoost: applyFilter(named: "CIGammaAdjust") { filter, _ in
             filter.setValue(0.72, forKey: "inputPower")
         },
 
-        .hueShift: applyFilter(named: "CIHueAdjust") { filter in
+        .hueShift: applyFilter(named: "CIHueAdjust") { filter, _ in
             filter.setValue(CGFloat.pi / 6, forKey: kCIInputAngleKey)
         },
 
-        .vignette: applyFilter(named: "CIVignette") { filter in
+        .vignette: applyFilter(named: "CIVignette") { filter, _ in
             filter.setValue(1.4, forKey: kCIInputIntensityKey)
             filter.setValue(1.8, forKey: kCIInputRadiusKey)
         },
 
-        .sharpen: applyFilter(named: "CISharpenLuminance") { filter in
+        .sharpen: applyFilter(named: "CISharpenLuminance") { filter, _ in
             filter.setValue(0.85, forKey: kCIInputSharpnessKey)
         },
 
-        .bloom: applyClippedFilter(named: "CIBloom") { filter in
+        .bloom: applyClippedFilter(named: "CIBloom") { filter, _ in
             filter.setValue(0.55, forKey: kCIInputIntensityKey)
             filter.setValue(12, forKey: kCIInputRadiusKey)
         },
 
-        .pixellate: applyFilter(named: "CIPixellate") { filter in
+        .pixellate: applyFilter(named: "CIPixellate") { filter, inputImage in
             filter.setValue(12, forKey: kCIInputScaleKey)
+            filter.setValue(CIVector(x: inputImage.extent.midX, y: inputImage.extent.midY), forKey: kCIInputCenterKey)
         },
 
         .comic: applyFilter(named: "CIComicEffect"),
 
         .invert: applyFilter(named: "CIColorInvert"),
 
-        .posterize: applyFilter(named: "CIColorPosterize") { filter in
+        .posterize: applyFilter(named: "CIColorPosterize") { filter, _ in
             filter.setValue(6, forKey: "inputLevels")
         },
 
-        .dotScreen: applyFilter(named: "CIDotScreen") { filter in
+        .dotScreen: applyFilter(named: "CIDotScreen") { filter, inputImage in
             filter.setValue(6, forKey: kCIInputWidthKey)
             filter.setValue(0.7, forKey: kCIInputSharpnessKey)
+            filter.setValue(CIVector(x: inputImage.extent.midX, y: inputImage.extent.midY), forKey: kCIInputCenterKey)
         },
 
-        .crystallize: applyFilter(named: "CICrystallize") { filter in
+        .crystallize: applyFilter(named: "CICrystallize") { filter, inputImage in
             filter.setValue(18, forKey: kCIInputRadiusKey)
+            filter.setValue(CIVector(x: inputImage.extent.midX, y: inputImage.extent.midY), forKey: kCIInputCenterKey)
         },
 
-        .edgeDetect: applyFilter(named: "CIEdges") { filter in
+        .edgeDetect: applyFilter(named: "CIEdges") { filter, _ in
             filter.setValue(4, forKey: kCIInputIntensityKey)
         },
     ]
 
+    static func apply(_ filter: VideoFilter, to inputImage: CIImage) -> CIImage {
+        filterApplicators[filter]?(inputImage) ?? inputImage
+    }
+
+    static func previewImage(for filter: VideoFilter, from cgImage: CGImage, context: CIContext) -> UIImage? {
+        let inputImage = CIImage(cgImage: cgImage)
+        let outputImage = apply(filter, to: inputImage)
+        guard let renderedImage = context.createCGImage(outputImage, from: inputImage.extent) else {
+            return nil
+        }
+        return UIImage(cgImage: renderedImage)
+    }
+
     private static func applyFilter(
         named name: String,
-        configure: ((CIFilter) -> Void)? = nil
+        configure: ((CIFilter, CIImage) -> Void)? = nil
     ) -> FilterApplicator {
         { inputImage in
             guard let filter = CIFilter(name: name) else { return inputImage }
             filter.setValue(inputImage, forKey: kCIInputImageKey)
-            configure?(filter)
+            configure?(filter, inputImage)
             return filter.outputImage ?? inputImage
         }
     }
@@ -216,12 +230,12 @@ class FilterCompositor: NSObject, AVVideoCompositing {
     /// For filters that expand the image extent (blur, bloom, etc.) — crop back to source bounds.
     private static func applyClippedFilter(
         named name: String,
-        configure: ((CIFilter) -> Void)? = nil
+        configure: ((CIFilter, CIImage) -> Void)? = nil
     ) -> FilterApplicator {
         { inputImage in
             guard let filter = CIFilter(name: name) else { return inputImage }
             filter.setValue(inputImage, forKey: kCIInputImageKey)
-            configure?(filter)
+            configure?(filter, inputImage)
             return filter.outputImage?.cropped(to: inputImage.extent) ?? inputImage
         }
     }
@@ -260,7 +274,7 @@ class FilterCompositor: NSObject, AVVideoCompositing {
             )
             inputImage = inputImage.transformed(by: transform)
 
-            if let filteredImage = applyFilter(to: inputImage) {
+            if let filteredImage = applyFilter(to: inputImage, trackID: layerInstruction.trackID) {
                 composedImage = filteredImage
             }
         }
@@ -280,7 +294,9 @@ class FilterCompositor: NSObject, AVVideoCompositing {
         asyncVideoCompositionRequest.finish(withComposedVideoFrame: outputPixelBuffer)
     }
 
-    private func applyFilter(to inputImage: CIImage) -> CIImage? {
-        Self.filterApplicators[Self.activeFilter]?(inputImage) ?? inputImage
+    private func applyFilter(to inputImage: CIImage, trackID: CMPersistentTrackID) -> CIImage? {
+        let filter = Self.trackFilters[trackID] ?? .none
+        guard filter != .none else { return inputImage }
+        return Self.filterApplicators[filter]?(inputImage) ?? inputImage
     }
 }

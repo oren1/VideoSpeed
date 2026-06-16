@@ -19,6 +19,7 @@ extension EditViewController {
         createFiletypeSection()
         createTrimmerSection()
         createSplitSection()
+        createFilterSection()
         createTextSection()
         createCaptionsSection()
     }
@@ -224,6 +225,22 @@ extension EditViewController {
 
         let _ = splitSectionVC.view
     }
+
+    func createFilterSection() {
+        filterSectionVC = FilterSectionVC()
+        filterSectionVC.filterDidChange = { [weak self] filter in
+            guard let self else { return }
+            Task {
+                await UserDataManager.main.currentSpidAsset.updateVideoFilter(filter)
+                await self.reloadComposition()
+                let startTime = self.getStartTimeForCurrentSpidAsset()
+                await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+                self.spidPlayerController?.player?.play()
+            }
+        }
+
+        let _ = filterSectionVC.view
+    }
     
     func createTextSection() {
         textSectionVC = TextSectionVC()
@@ -304,6 +321,14 @@ extension EditViewController {
         currentShownSection = splitSectionVC
         Task {
             await splitSectionVC.reloadTimelineFromOutside()
+        }
+    }
+
+    func addFilterSection() {
+        addSection(sectionVC: filterSectionVC)
+        currentShownSection = filterSectionVC
+        Task {
+            await filterSectionVC.reloadFromCurrentAsset()
         }
     }
 

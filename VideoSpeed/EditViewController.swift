@@ -69,6 +69,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     let menuItems: [MenuItem] = [MenuItem(id: .speed , title: "SPEED", imageName: "timer"),
                                  MenuItem(id: .trim , title: "TRIM", imageName: "timeline.selection"),
                                  MenuItem(id: .split , title: "SPLIT", imageName: "square.fill.and.line.vertical.square.fill"),
+                                 MenuItem(id: .filter , title: "FILTER", imageName: "camera.filters"),
 //                                 MenuItem(id: .crop , title: "CROP", imageName: "crop"),
                                  MenuItem(id: .text , title: "TEXT", imageName: "textformat.alt"),
                                  MenuItem(id: .captions , title: "CAPTIONS", imageName: "captions.bubble"),
@@ -115,6 +116,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var cropSectionVC: CropSectioVC!
     var trimmerSectionVC: TrimmerSectionVC!
     var splitSectionVC: SplitSectionVC!
+    var filterSectionVC: FilterSectionVC!
     var textSectionVC: TextSectionVC!
     var captionsSectionVC: CaptionsSectionVC!
     var captionsViewModel: CaptionsViewModel!
@@ -331,9 +333,22 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         let newScale: CMTimeScale = 600
         var startTime: CMTime = .zero.converted(toScale: newScale)
         videosStartTimes = []
+        FilterCompositor.trackFilters = [:]
+        var needsFilterCompositor = false
         // map the spidAssets to an array of AVMutableCompositions
         for (index, spidAsset) in UserDataManager.main.spidAssets.enumerated() {
-            let (asset, timeRange, speed, soundOn) = await (spidAsset.getAsset(), spidAsset.timeRange.convertTimeRange(toScale: newScale), spidAsset.speed, spidAsset.soundOn)
+            let (asset, timeRange, speed, soundOn, videoFilter) = await (
+                spidAsset.getAsset(),
+                spidAsset.timeRange.convertTimeRange(toScale: newScale),
+                spidAsset.speed,
+                spidAsset.soundOn,
+                spidAsset.videoFilter
+            )
+
+            if videoFilter.usesCustomCompositor {
+                FilterCompositor.trackFilters[CMPersistentTrackID(index)] = videoFilter
+                needsFilterCompositor = true
+            }
 
             videosStartTimes.append(startTime)
             let compositionVideoTrack = mainComposition.addMutableTrack(withMediaType: .video, preferredTrackID: CMPersistentTrackID(index))!
@@ -425,7 +440,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         videoComposition.frameDuration = CMTimeMake(value: 1, timescale: fps)
 //        videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
         videoComposition.renderSize = renderSize
-        applyVideoFilter(to: videoComposition)
+        if needsFilterCompositor {
+            videoComposition.customVideoCompositorClass = FilterCompositor.self
+        }
 
 //        videoComposition.renderSize = croppedVideoRect.size
         //                videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
@@ -1138,12 +1155,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         loadingMediaVC = nil
     }
     
-    private func applyVideoFilter(to videoComposition: AVMutableVideoComposition) {
-        guard VideoFilter.current.usesCustomCompositor else { return }
-        FilterCompositor.activeFilter = VideoFilter.current
-        videoComposition.customVideoCompositorClass = FilterCompositor.self
-    }
-
     private func compositionLayerInstruction(for track: AVCompositionTrack, assetTrack: AVAssetTrack, videoSize: CGSize, isPortrait: Bool, cropRect: CGRect, renderSize: CGSize) async -> AVMutableVideoCompositionLayerInstruction {
         let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
         
