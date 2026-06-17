@@ -345,18 +345,18 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 spidAsset.videoFilter
             )
 
+            videosStartTimes.append(startTime)
+            let compositionVideoTrack = mainComposition.addMutableTrack(withMediaType: .video, preferredTrackID: CMPersistentTrackID(index + 1))!
+
             if videoFilter.usesCustomCompositor {
-                FilterCompositor.trackFilters[CMPersistentTrackID(index)] = videoFilter
+                FilterCompositor.trackFilters[compositionVideoTrack.trackID] = videoFilter
                 needsFilterCompositor = true
             }
-
-            videosStartTimes.append(startTime)
-            let compositionVideoTrack = mainComposition.addMutableTrack(withMediaType: .video, preferredTrackID: CMPersistentTrackID(index))!
             
             if let audioTracks = try? await asset.loadTracks(withMediaType: .audio),
                soundOn && audioTracks.count > 0 {
                 let audioTrack = audioTracks[0]
-                let compositionAudioTrack = mainComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: CMPersistentTrackID(index))!
+                let compositionAudioTrack = mainComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: CMPersistentTrackID(index + 100))!
                 let audioDuration = try! await asset.load(.duration)
                 
                 try? compositionAudioTrack.insertTimeRange(timeRange,
