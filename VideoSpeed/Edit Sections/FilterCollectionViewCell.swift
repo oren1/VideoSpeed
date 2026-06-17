@@ -9,6 +9,8 @@ final class FilterCollectionViewCell: UICollectionViewCell {
 
     static let reuseIdentifier = "FilterCollectionViewCell"
 
+    private(set) var representedFilter: VideoFilter?
+
     private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -50,12 +52,20 @@ final class FilterCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        representedFilter = nil
+        imageView.image = nil
+        titleLabel.text = nil
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
         imageView.layer.cornerRadius = 8
     }
 
-    func configure(title: String, image: UIImage?, isSelected: Bool) {
+    func configure(filter: VideoFilter, title: String, image: UIImage?, isSelected: Bool) {
+        representedFilter = filter
         titleLabel.text = title
         imageView.image = image
 

@@ -239,6 +239,19 @@ extension EditViewController {
             }
         }
 
+        filterSectionVC.applyToAllTapped = { [weak self] filter in
+            guard let self else { return }
+            Task {
+                for spidAsset in UserDataManager.main.spidAssets {
+                    await spidAsset.updateVideoFilter(filter)
+                }
+                await self.reloadComposition()
+                let startTime = self.getStartTimeForCurrentSpidAsset()
+                await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+                self.spidPlayerController?.player?.play()
+            }
+        }
+
         let _ = filterSectionVC.view
     }
     
