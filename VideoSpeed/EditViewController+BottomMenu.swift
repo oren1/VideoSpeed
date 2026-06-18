@@ -75,6 +75,8 @@ extension EditViewController: UICollectionViewDelegate {
         case .split:
             AnalyticsManager.splitMenuItemSelectedEvent()
             addSplitSection()
+        case .filter:
+            addFilterSection()
         case .crop:
             addCropSection()
             addCropViewControllerToTop()
