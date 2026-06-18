@@ -13,7 +13,7 @@ final class FilterSectionVC: SectionViewController {
     var filterDidChange: FilterSelectionClosure?
     var applyToAllTapped: FilterSelectionClosure?
 
-    private let filters = VideoFilter.allCases
+    private let filters = VideoFilter.displayOrder
     private var previewImages: [VideoFilter: UIImage] = [:]
     private var previewTasks: [VideoFilter: Task<Void, Never>] = [:]
     private var thumbnailImage: CGImage?

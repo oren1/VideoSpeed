@@ -11,6 +11,13 @@ enum VideoFilter: String, CaseIterable, Identifiable {
     // Original
     case none
 
+    // Natural (preview group — shown first)
+    case naturalBalanced
+    case naturalRosy
+    case naturalFresh
+    case naturalClean
+    case naturalLush
+
     // Photo Effects
     case noir
     case mono
@@ -58,7 +65,6 @@ enum VideoFilter: String, CaseIterable, Identifiable {
     case highContrast
     case lowContrast
     case punchy
-    case flat
     case fadedColor
 
     // Hue
@@ -74,13 +80,6 @@ enum VideoFilter: String, CaseIterable, Identifiable {
     case gammaCrush
     case gammaLight
     case gammaDark
-
-    // Sharpen
-    case sharpenLight
-    case sharpen
-    case sharpenHeavy
-    case unsharpMask
-    case definition
 
     // Blur & Glow
     case bloomSoft
@@ -109,14 +108,11 @@ enum VideoFilter: String, CaseIterable, Identifiable {
     // Halftone
     case dotScreen
     case lineScreen
-    case hatchedScreen
     case circularScreen
 
     // Edges & Sketch
-    case edgeDetectSoft
     case edgeDetect
     case edgeWork
-    case lineOverlay
     case sketch
     case comic
 
@@ -128,15 +124,10 @@ enum VideoFilter: String, CaseIterable, Identifiable {
 
     // Invert & Monochrome
     case invert
-    case photoNegative
     case falseColor
     case monochromeRed
     case monochromeBlue
 
-    // Emboss
-    case embossLight
-    case emboss
-    case embossHeavy
     case gloom
 
     // Distortion
@@ -158,6 +149,11 @@ enum VideoFilter: String, CaseIterable, Identifiable {
     var displayName: String {
         switch self {
         case .none: "Original"
+        case .naturalBalanced: "Balanced"
+        case .naturalRosy: "Rosy"
+        case .naturalFresh: "Fresh"
+        case .naturalClean: "Clean"
+        case .naturalLush: "Lush"
         case .noir: "Noir"
         case .mono: "Mono"
         case .fade: "Fade"
@@ -196,7 +192,6 @@ enum VideoFilter: String, CaseIterable, Identifiable {
         case .highContrast: "High Contrast"
         case .lowContrast: "Low Contrast"
         case .punchy: "Punchy"
-        case .flat: "Flat"
         case .fadedColor: "Faded"
         case .hueShift15: "Hue +15°"
         case .hueShift30: "Hue +30°"
@@ -208,11 +203,6 @@ enum VideoFilter: String, CaseIterable, Identifiable {
         case .gammaCrush: "Gamma Crush"
         case .gammaLight: "Gamma Light"
         case .gammaDark: "Gamma Dark"
-        case .sharpenLight: "Sharpen Light"
-        case .sharpen: "Sharpen"
-        case .sharpenHeavy: "Sharpen Heavy"
-        case .unsharpMask: "Unsharp"
-        case .definition: "Definition"
         case .bloomSoft: "Bloom Soft"
         case .bloom: "Bloom"
         case .bloomStrong: "Bloom Strong"
@@ -233,12 +223,9 @@ enum VideoFilter: String, CaseIterable, Identifiable {
         case .crystallize: "Crystallize"
         case .dotScreen: "Dot Screen"
         case .lineScreen: "Line Screen"
-        case .hatchedScreen: "Hatched"
         case .circularScreen: "Circular"
-        case .edgeDetectSoft: "Edges Soft"
         case .edgeDetect: "Edges"
         case .edgeWork: "Edge Work"
-        case .lineOverlay: "Line Art"
         case .sketch: "Sketch"
         case .comic: "Comic"
         case .posterizeLight: "Poster Light"
@@ -246,13 +233,9 @@ enum VideoFilter: String, CaseIterable, Identifiable {
         case .posterizeHeavy: "Poster Heavy"
         case .colorQuantize: "Quantize"
         case .invert: "Invert"
-        case .photoNegative: "Negative"
         case .falseColor: "False Color"
         case .monochromeRed: "Mono Red"
         case .monochromeBlue: "Mono Blue"
-        case .embossLight: "Emboss Light"
-        case .emboss: "Emboss"
-        case .embossHeavy: "Emboss Heavy"
         case .gloom: "Gloom"
         case .bumpDistortion: "Bump"
         case .pinch: "Pinch"
@@ -269,6 +252,22 @@ enum VideoFilter: String, CaseIterable, Identifiable {
 
     var usesCustomCompositor: Bool {
         self != .none
+    }
+
+    static let naturalFilters: [VideoFilter] = [
+        .naturalBalanced,
+        .naturalRosy,
+        .naturalFresh,
+        .naturalClean,
+        .naturalLush,
+    ]
+
+    static var displayOrder: [VideoFilter] {
+        var ordered: [VideoFilter] = [.none]
+        ordered.append(contentsOf: naturalFilters)
+        let grouped = Set(naturalFilters)
+        ordered.append(contentsOf: allCases.filter { $0 != .none && !grouped.contains($0) })
+        return ordered
     }
 }
 
@@ -294,6 +293,31 @@ class FilterCompositor: NSObject, AVVideoCompositing {
         var map: [VideoFilter: FilterApplicator] = [:]
 
         map[.none] = { $0 }
+
+        // Natural — subtle, close-to-original looks
+        map[.naturalBalanced] = { input in
+            let adjusted = colorControls(brightness: 0.01, saturation: 1.02, contrast: 1.03)(input) ?? input
+            return applyFilter(named: "CIVibrance") { filter, _ in
+                filter.setValue(0.12, forKey: "inputAmount")
+            }(adjusted) ?? adjusted
+        }
+        map[.naturalRosy] = { input in
+            let adjusted = temperature(targetKelvin: 7000)(input) ?? input
+            return colorControls(brightness: 0.02, saturation: 1.05)(adjusted) ?? adjusted
+        }
+        map[.naturalFresh] = { input in
+            let adjusted = temperature(targetKelvin: 6100)(input) ?? input
+            return applyFilter(named: "CIVibrance") { filter, _ in
+                filter.setValue(0.18, forKey: "inputAmount")
+            }(adjusted) ?? adjusted
+        }
+        map[.naturalClean] = colorControls(brightness: 0.01, saturation: 1.03, contrast: 1.06)
+        map[.naturalLush] = { input in
+            let adjusted = applyFilter(named: "CIVibrance") { filter, _ in
+                filter.setValue(0.28, forKey: "inputAmount")
+            }(input) ?? input
+            return colorControls(saturation: 1.06, contrast: 1.04)(adjusted) ?? adjusted
+        }
 
         // Photo Effects
         map[.noir] = applyFilter(named: "CIPhotoEffectNoir")
@@ -345,7 +369,6 @@ class FilterCompositor: NSObject, AVVideoCompositing {
         map[.highContrast] = colorControls(saturation: 1.05, contrast: 1.4)
         map[.lowContrast] = colorControls(saturation: 0.95, contrast: 0.7)
         map[.punchy] = colorControls(brightness: 0.02, saturation: 1.35, contrast: 1.25)
-        map[.flat] = colorControls(brightness: 0.03, saturation: 0.8, contrast: 0.85)
 
         // Hue
         map[.hueShift15] = hue(.pi / 12)
@@ -360,18 +383,6 @@ class FilterCompositor: NSObject, AVVideoCompositing {
         map[.gammaCrush] = gamma(1.35)
         map[.gammaLight] = gamma(0.85)
         map[.gammaDark] = gamma(1.15)
-
-        // Sharpen
-        map[.sharpenLight] = sharpen(0.4)
-        map[.sharpen] = sharpen(0.85)
-        map[.sharpenHeavy] = sharpen(1.4)
-        map[.unsharpMask] = applyFilter(named: "CIUnsharpMask") { filter, _ in
-            filter.setValue(2.5, forKey: kCIInputRadiusKey)
-            filter.setValue(0.65, forKey: kCIInputIntensityKey)
-        }
-        map[.definition] = applyClippedFilter(named: "CIDefinition") { filter, _ in
-            filter.setValue(1.2, forKey: kCIInputIntensityKey)
-        }
 
         // Blur & Glow
         map[.bloomSoft] = applyClippedFilter(named: "CIBloom") { filter, _ in
@@ -423,19 +434,12 @@ class FilterCompositor: NSObject, AVVideoCompositing {
         // Halftone
         map[.dotScreen] = screen("CIDotScreen", width: 6, sharpness: 0.7)
         map[.lineScreen] = screen("CILineScreen", width: 6, sharpness: 0.7)
-        map[.hatchedScreen] = screen("CIHatchedScreen", width: 6, sharpness: 0.7)
         map[.circularScreen] = screen("CICircularScreen", width: 6, sharpness: 0.7)
 
         // Edges & Sketch
-        map[.edgeDetectSoft] = edges(intensity: 2)
         map[.edgeDetect] = edges(intensity: 4)
         map[.edgeWork] = applyFilter(named: "CIEdgeWork") { filter, _ in
             filter.setValue(2.5, forKey: kCIInputRadiusKey)
-        }
-        map[.lineOverlay] = applyFilter(named: "CILineOverlay") { filter, _ in
-            filter.setValue(0.07, forKey: "inputNRNoiseLevel")
-            filter.setValue(0.71, forKey: "inputNRSharpness")
-            filter.setValue(1.0, forKey: "inputThreshold")
         }
         map[.comic] = applyFilter(named: "CIComicEffect")
 
@@ -462,10 +466,6 @@ class FilterCompositor: NSObject, AVVideoCompositing {
             intensity: 1.0
         )
 
-        // Emboss
-        map[.embossLight] = emboss(intensity: 0.8)
-        map[.emboss] = emboss(intensity: 1.6)
-        map[.embossHeavy] = emboss(intensity: 2.8)
         map[.gloom] = applyFilter(named: "CIGloom") { filter, _ in
             filter.setValue(0.75, forKey: kCIInputIntensityKey)
             filter.setValue(12, forKey: kCIInputRadiusKey)
@@ -517,7 +517,6 @@ class FilterCompositor: NSObject, AVVideoCompositing {
         map[.fadedColor] = compose(map, [.muted, .bright])
         map[.vividVignette] = compose(map, [.saturated, .vignetteStrong])
         map[.sketch] = compose(map, [.edgeDetect, .mono])
-        map[.photoNegative] = compose(map, [.invert, .highContrast])
 
         return map
     }()
@@ -615,12 +614,6 @@ class FilterCompositor: NSObject, AVVideoCompositing {
         }
     }
 
-    private static func sharpen(_ amount: CGFloat) -> FilterApplicator {
-        applyFilter(named: "CISharpenLuminance") { filter, _ in
-            filter.setValue(amount, forKey: kCIInputSharpnessKey)
-        }
-    }
-
     private static func vignette(intensity: CGFloat, radius: CGFloat) -> FilterApplicator {
         applyFilter(named: "CIVignette") { filter, _ in
             filter.setValue(intensity, forKey: kCIInputIntensityKey)
@@ -669,16 +662,6 @@ class FilterCompositor: NSObject, AVVideoCompositing {
         }
     }
 
-    private static func emboss(intensity: CGFloat) -> FilterApplicator {
-        applyClippedFilter(named: "CIConvolution3X3") { filter, _ in
-            filter.setValue(
-                CIVector(values: [-2, -1, 0, -1, 1, 1, 0, 1, 2], count: 9),
-                forKey: "inputWeights"
-            )
-            filter.setValue(intensity, forKey: kCIInputBiasKey)
-        }
-    }
-
     private static func distortion(
         _ name: String,
         radius: CGFloat,
@@ -720,8 +703,6 @@ class FilterCompositor: NSObject, AVVideoCompositing {
                 continue
             }
 
-            var inputImage = CIImage(cvPixelBuffer: sourcePixelBuffer)
-
             var transform = CGAffineTransform.identity
             layerInstruction.getTransformRamp(
                 for: asyncVideoCompositionRequest.compositionTime,
@@ -729,17 +710,30 @@ class FilterCompositor: NSObject, AVVideoCompositing {
                 end: nil,
                 timeRange: nil
             )
-            inputImage = inputImage.transformed(by: transform)
+
+            // Core Image uses a bottom-left origin; AVFoundation layer transforms assume top-left.
+            var ciTransform = transform
+            ciTransform.b *= -1
+            ciTransform.c *= -1
+
+            let rawImage = CIImage(cvPixelBuffer: sourcePixelBuffer)
+            var inputImage = rawImage.transformed(by: ciTransform)
 
             if let filteredImage = applyFilter(to: inputImage, trackID: layerInstruction.trackID) {
                 composedImage = filteredImage
             }
         }
 
-        guard let outputImage = composedImage else {
+        guard var outputImage = composedImage else {
             asyncVideoCompositionRequest.finish(with: NSError(domain: "FilterCompositor", code: -3))
             return
         }
+
+        let preTranslateExtent = outputImage.extent.integral
+        outputImage = outputImage.transformed(by: CGAffineTransform(
+            translationX: -preTranslateExtent.origin.x,
+            y: -preTranslateExtent.origin.y
+        ))
 
         ciContext.render(
             outputImage,
