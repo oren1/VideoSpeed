@@ -32,6 +32,7 @@ actor SpidAsset {
     var leftHandleConstraintConstant: CGFloat?
     var videoRect: CGRect = .zero
     var sliderValue: Float = 19.5
+    var videoFilter: VideoFilter = .none
     
     
     private enum CodingKeys: String, CodingKey {
@@ -114,6 +115,10 @@ actor SpidAsset {
         self.sliderValue = value
     }
 
+    func updateVideoFilter(_ filter: VideoFilter) {
+        videoFilter = filter
+    }
+
     func clearTrimmerHandleConstants() {
         rightHandleConstraintConstant = nil
         leftHandleConstraintConstant = nil
@@ -131,6 +136,7 @@ actor SpidAsset {
         await newAsset.updateSound(soundOn: soundOn)
         await newAsset.updateVideoRect(videoRect)
         await newAsset.updateSliderValue(value: sliderValue)
+        await newAsset.updateVideoFilter(videoFilter)
         if assetHasBeenRotated, let rotatedAsset {
             await newAsset.updateRotatedAsset(rotatedAsset: rotatedAsset)
         }

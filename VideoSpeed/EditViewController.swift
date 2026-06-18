@@ -69,6 +69,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     let menuItems: [MenuItem] = [MenuItem(id: .speed , title: "SPEED", imageName: "timer"),
                                  MenuItem(id: .trim , title: "TRIM", imageName: "timeline.selection"),
                                  MenuItem(id: .split , title: "SPLIT", imageName: "square.fill.and.line.vertical.square.fill"),
+                                 MenuItem(id: .filter , title: "FILTER", imageName: "camera.filters"),
 //                                 MenuItem(id: .crop , title: "CROP", imageName: "crop"),
                                  MenuItem(id: .text , title: "TEXT", imageName: "textformat.alt"),
                                  MenuItem(id: .captions , title: "CAPTIONS", imageName: "captions.bubble"),
@@ -115,6 +116,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var cropSectionVC: CropSectioVC!
     var trimmerSectionVC: TrimmerSectionVC!
     var splitSectionVC: SplitSectionVC!
+    var filterSectionVC: FilterSectionVC!
     var textSectionVC: TextSectionVC!
     var captionsSectionVC: CaptionsSectionVC!
     var captionsViewModel: CaptionsViewModel!
@@ -370,17 +372,30 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         let newScale: CMTimeScale = 600
         var startTime: CMTime = .zero.converted(toScale: newScale)
         videosStartTimes = []
+        FilterCompositor.trackFilters = [:]
+        var needsFilterCompositor = false
         // map the spidAssets to an array of AVMutableCompositions
         for (index, spidAsset) in UserDataManager.main.spidAssets.enumerated() {
-            let (asset, timeRange, speed, soundOn) = await (spidAsset.getAsset(), spidAsset.timeRange.convertTimeRange(toScale: newScale), spidAsset.speed, spidAsset.soundOn)
+            let (asset, timeRange, speed, soundOn, videoFilter) = await (
+                spidAsset.getAsset(),
+                spidAsset.timeRange.convertTimeRange(toScale: newScale),
+                spidAsset.speed,
+                spidAsset.soundOn,
+                spidAsset.videoFilter
+            )
 
             videosStartTimes.append(startTime)
-            let compositionVideoTrack = mainComposition.addMutableTrack(withMediaType: .video, preferredTrackID: CMPersistentTrackID(index))!
+            let compositionVideoTrack = mainComposition.addMutableTrack(withMediaType: .video, preferredTrackID: CMPersistentTrackID(index + 1))!
+
+            if videoFilter.usesCustomCompositor {
+                FilterCompositor.trackFilters[compositionVideoTrack.trackID] = videoFilter
+                needsFilterCompositor = true
+            }
             
             if let audioTracks = try? await asset.loadTracks(withMediaType: .audio),
                soundOn && audioTracks.count > 0 {
                 let audioTrack = audioTracks[0]
-                let compositionAudioTrack = mainComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: CMPersistentTrackID(index))!
+                let compositionAudioTrack = mainComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: CMPersistentTrackID(index + 100))!
                 let audioDuration = try! await asset.load(.duration)
                 
                 try? compositionAudioTrack.insertTimeRange(timeRange,
@@ -464,6 +479,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         videoComposition.frameDuration = CMTimeMake(value: 1, timescale: fps)
 //        videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
         videoComposition.renderSize = renderSize
+        if needsFilterCompositor {
+            videoComposition.customVideoCompositorClass = FilterCompositor.self
+        }
 
 //        videoComposition.renderSize = croppedVideoRect.size
         //                videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
@@ -1656,6 +1674,16 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         }
         if !UserDataManager.main.labelViewsModels.isEmpty {
             AnalyticsManager.textUsedOnExportEvent()
+        }
+        var usedFilters = Set<VideoFilter>()
+        for spidAsset in UserDataManager.main.spidAssets {
+            let filter = await spidAsset.videoFilter
+            if filter != .none {
+                usedFilters.insert(filter)
+            }
+        }
+        for filter in usedFilters {
+            AnalyticsManager.filterUsedOnExportEvent(filterName: filter.rawValue)
         }
     }
     
