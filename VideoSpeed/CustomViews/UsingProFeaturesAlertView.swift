@@ -51,7 +51,7 @@ class UsingProFeaturesAlertView: UIView {
         continueButton.layer.cornerRadius = 8
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
-        let productIdentifier = SpidProducts.freeTrialYearlySubscription
+        let productIdentifier = SpidProducts.store.bussinessProductIdentifier()
         let product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier }
         priceLabel.text = "3 days free, then \(product!.localizedPrice) / year"
         continueButton.setTitle("Start 3 Days Free Trial", for: .normal)

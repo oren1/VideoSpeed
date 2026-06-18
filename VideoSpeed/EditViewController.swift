@@ -1425,7 +1425,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 AnalyticsManager.getProAndSaveVideoTapped()
                 Task {
                     self.hideProFeatureAlert()
-                    let productIdentifier = SpidProducts.freeTrialYearlySubscription
+                    
+                    let productIdentifier = SpidProducts.store.bussinessProductIdentifier()
                     await IAPManager.startPurchase(productIdentifier: productIdentifier, on: self) { [weak self] in
                         Task {@MainActor in
                             self?.hideLoading()
@@ -1577,13 +1578,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
         
-        // A/B Test for watermark use
-        let useWatermark = RemoteConfig.remoteConfig().configValue(forKey: "useWatermark").boolValue
-        if useWatermark {
-            purchaseViewController.productIdentifier = SpidProducts.yearlyWatermark
-        } else {
-            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
-        }
+        let productItentifier = SpidProducts.store.bussinessProductIdentifier()
+        purchaseViewController.productIdentifier = productItentifier
+
         // A/B Test for yearly price of $19.99 or $9.99
 //        let pricing = Pricing(rawValue: pricingRaw)
 //        switch pricing {

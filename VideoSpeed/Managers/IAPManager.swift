@@ -10,6 +10,7 @@ import Foundation
 import Foundation
 import StoreKit
 import FirebaseAnalytics
+import FirebaseRemoteConfig
 
 enum StoreError: Int {
     case paymentCancelled = 2
@@ -177,6 +178,18 @@ class IAPManager: NSObject {
       return SKPaymentQueue.canMakePayments()
     }
     
+    public func bussinessProductIdentifier() -> ProductIdentifier {
+        // A/B Test for watermark use
+        let bussinessProductIdentifier: ProductIdentifier
+        
+        let useWatermark = RemoteConfig.remoteConfig().configValue(forKey: "useWatermark").boolValue
+        if useWatermark {
+            bussinessProductIdentifier = SpidProducts.yearlyWatermark
+        } else {
+            bussinessProductIdentifier = SpidProducts.yearlySubscription
+        }
+        return bussinessProductIdentifier
+    }
     
     enum IAPManagerError: Error {
         case noProductIDsFound

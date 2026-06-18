@@ -48,7 +48,6 @@
 		6B6700942A6A6C13006F2980 /* PhotosHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6700932A6A6C13006F2980 /* PhotosHeader.swift */; };
 		6B6700972A6ABBF6006F2980 /* IAPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6700962A6ABBF6006F2980 /* IAPManager.swift */; };
 		6B6700992A6BAE36006F2980 /* VideoHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6700982A6BAE36006F2980 /* VideoHelper.swift */; };
-		6B6DC4C12F4C900100D78EA7 /* FilterCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4C02F4C900100D78EA7 /* FilterCompositor.swift */; };
 		6B67009B2A6BCAC2006F2980 /* ProgressIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B67009A2A6BCAC2006F2980 /* ProgressIndicatorView.swift */; };
 		6B67009D2A6BCAD2006F2980 /* ProgressIndicatorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B67009C2A6BCAD2006F2980 /* ProgressIndicatorView.xib */; };
 		6B6700A02A6C1D9A006F2980 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B67009F2A6C1D9A006F2980 /* StoreKit.framework */; };
@@ -86,6 +85,7 @@
 		6B6DC4B12F4C500000D78EA7 /* SpidFont+Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4B02F4C500000D78EA7 /* SpidFont+Catalog.swift */; };
 		6B6DC4B22F4C700000D78EA7 /* CaptionsEditTextSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4B12F4C700000D78EA7 /* CaptionsEditTextSheetView.swift */; };
 		6B6DC4B32F4C800000D78EA7 /* DebugSessionLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4B22F4C800000D78EA7 /* DebugSessionLog.swift */; };
+		6B6DC4C12F4C900100D78EA7 /* FilterCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4C02F4C900100D78EA7 /* FilterCompositor.swift */; };
 		6B6E266C2E03E0AD004F736B /* CGSize+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */; };
 		6B6E266E2E0D0B52004F736B /* EditViewController+VideosMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E266D2E0D0B52004F736B /* EditViewController+VideosMenu.swift */; };
 		6B71AAC42A9098A000C06619 /* SoundSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */; };
@@ -242,7 +242,6 @@
 		6B6700932A6A6C13006F2980 /* PhotosHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosHeader.swift; sourceTree = "<group>"; };
 		6B6700962A6ABBF6006F2980 /* IAPManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPManager.swift; sourceTree = "<group>"; };
 		6B6700982A6BAE36006F2980 /* VideoHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoHelper.swift; sourceTree = "<group>"; };
-		6B6DC4C02F4C900100D78EA7 /* FilterCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCompositor.swift; sourceTree = "<group>"; };
 		6B67009A2A6BCAC2006F2980 /* ProgressIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressIndicatorView.swift; sourceTree = "<group>"; };
 		6B67009C2A6BCAD2006F2980 /* ProgressIndicatorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProgressIndicatorView.xib; sourceTree = "<group>"; };
 		6B67009F2A6C1D9A006F2980 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
@@ -281,6 +280,7 @@
 		6B6DC4B02F4C500000D78EA7 /* SpidFont+Catalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpidFont+Catalog.swift"; sourceTree = "<group>"; };
 		6B6DC4B12F4C700000D78EA7 /* CaptionsEditTextSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionsEditTextSheetView.swift; sourceTree = "<group>"; };
 		6B6DC4B22F4C800000D78EA7 /* DebugSessionLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSessionLog.swift; sourceTree = "<group>"; };
+		6B6DC4C02F4C900100D78EA7 /* FilterCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCompositor.swift; sourceTree = "<group>"; };
 		6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGSize+Extension.swift"; sourceTree = "<group>"; };
 		6B6E266D2E0D0B52004F736B /* EditViewController+VideosMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditViewController+VideosMenu.swift"; sourceTree = "<group>"; };
 		6B71AAC22A9098A000C06619 /* SoundSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSectionVC.swift; sourceTree = "<group>"; };
@@ -1200,7 +1200,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenSSL/lib",
 				);
-				MARKETING_VERSION = 5.3.0;
+				MARKETING_VERSION = 5.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -1249,7 +1249,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenSSL/lib",
 				);
-				MARKETING_VERSION = 5.3.0;
+				MARKETING_VERSION = 5.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

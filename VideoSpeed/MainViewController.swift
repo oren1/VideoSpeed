@@ -129,25 +129,8 @@ class MainViewController: UIViewController {
         // A/B Test for watermark use
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
        
-        let useWatermark = RemoteConfig.remoteConfig().configValue(forKey: "useWatermark").boolValue
-        if useWatermark {
-            purchaseViewController.productIdentifier = SpidProducts.yearlyWatermark
-        } else {
-            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
-        }
-        
-        // A/B Test for yearly price of $19.99 or $9.99
-//        let pricing = Pricing(rawValue: pricingRaw)
-//        switch pricing {
-//        case .normal:
-//            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
-//        case .higher:
-//            purchaseViewController.productIdentifier = SpidProducts.yearlyTwenty
-//        default:
-//            purchaseViewController.productIdentifier = SpidProducts.yearlySubscription
-//        }
-        
-//        purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
+        let productItentifier = SpidProducts.store.bussinessProductIdentifier()
+        purchaseViewController.productIdentifier = productItentifier
         
         
         if UIDevice.current.userInterfaceIdiom == .phone {
