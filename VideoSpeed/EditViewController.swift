@@ -123,6 +123,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var captionsSettingsHostingVC: UIHostingController<CaptionsSettingsSelectionView>?
     var editSections: [SectionViewController] = []
     var videosMenuDelegate: VideosMenuDelegate!
+    private var trashDropView: UIView!
+    private var trashImageView: UIImageView!
+    private var trashDropViewWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var dashboardContainerView: UIView!
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -197,6 +200,35 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 }
             }
         }
+        
+        videosMenuDelegate.itemDidDelete = { [weak self] focusIndex, selectionChanged in
+            guard let self else { return }
+            self.updateTrashVisibility()
+            Task {
+                await self.reloadComposition()
+                let startTime = self.videosStartTimes[focusIndex]
+                await self.spidPlayerController?.player?.seek(
+                    to: startTime,
+                    toleranceBefore: CMTime.zero,
+                    toleranceAfter: CMTime.zero
+                )
+                if self.spidPlayerController?.videoState == .isPaused {
+                    Task { @MainActor [weak self] in
+                        await self?.spidPlayerController?.updateSliderFor(time: startTime)
+                    }
+                }
+                if selectionChanged {
+                    await self.createCropViewController()
+                    NotificationCenter.default.post(name: Notification.Name.VideoSelectionChanged, object: nil)
+                }
+                await MainActor.run {
+                    self.videosCollectionView.reloadData()
+                    self.showProButtonIfNeeded()
+                }
+            }
+        }
+        videosMenuDelegate.canDeleteItems = { UserDataManager.main.spidAssets.count > 1 }
+        
         selectedMenuItem = menuItems.first
         videosMenuDelegate.selectedMenuItem = selectedMenuItem
         videosCollectionView.delegate = videosMenuDelegate
@@ -204,6 +236,13 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         videosCollectionView.dragDelegate = videosMenuDelegate
         videosCollectionView.dropDelegate = videosMenuDelegate
         videosCollectionView.dragInteractionEnabled = true
+        setupTrashDropView()
+        videosMenuDelegate.collectionView = videosCollectionView
+        videosMenuDelegate.trashDropView = trashDropView
+        videosMenuDelegate.setTrashDragState = { [weak self] isDragging, isHovering in
+            self?.applyTrashAppearance(isDragging: isDragging, isHovering: isHovering)
+        }
+        updateTrashVisibility()
 
         bottomMenuCollectionView.delegate = self
         bottomMenuCollectionView.dataSource = self
@@ -1464,6 +1503,73 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         videosCollectionView.layer.borderWidth = 0
         videosContainerView.isUserInteractionEnabled = true
         videosContainerView.layer.opacity = 1
+    }
+    
+    func setupTrashDropView() {
+        trashDropView = UIView()
+        trashDropView.translatesAutoresizingMaskIntoConstraints = false
+        trashDropView.backgroundColor = .clear
+        videosContainerView.addSubview(trashDropView)
+        
+        trashImageView = UIImageView()
+        trashImageView.image = UIImage(systemName: "trash")?.withRenderingMode(.alwaysTemplate)
+        trashImageView.tintColor = .white
+        trashImageView.contentMode = .scaleAspectFit
+        trashImageView.translatesAutoresizingMaskIntoConstraints = false
+        trashDropView.addSubview(trashImageView)
+        
+        for constraint in videosContainerView.constraints {
+            let involvesCollectionView =
+                (constraint.firstItem as? UICollectionView === videosCollectionView) ||
+                (constraint.secondItem as? UICollectionView === videosCollectionView)
+            guard involvesCollectionView else { continue }
+            
+            if constraint.firstAttribute == .trailing || constraint.secondAttribute == .trailing {
+                constraint.isActive = false
+            }
+        }
+        
+        trashDropViewWidthConstraint = trashDropView.widthAnchor.constraint(equalToConstant: 44)
+        
+        NSLayoutConstraint.activate([
+            trashDropView.trailingAnchor.constraint(equalTo: videosContainerView.trailingAnchor, constant: -12),
+            trashDropView.centerYAnchor.constraint(equalTo: videosContainerView.centerYAnchor),
+            trashDropView.heightAnchor.constraint(equalToConstant: 44),
+            trashDropViewWidthConstraint,
+            
+            trashImageView.centerXAnchor.constraint(equalTo: trashDropView.centerXAnchor),
+            trashImageView.centerYAnchor.constraint(equalTo: trashDropView.centerYAnchor),
+            trashImageView.widthAnchor.constraint(equalToConstant: 24),
+            trashImageView.heightAnchor.constraint(equalToConstant: 24),
+            
+            videosCollectionView.trailingAnchor.constraint(equalTo: trashDropView.leadingAnchor, constant: -8),
+        ])
+        
+        trashDropView.addInteraction(UIDropInteraction(delegate: videosMenuDelegate))
+    }
+    
+    func updateTrashVisibility() {
+        let showTrash = UserDataManager.main.spidAssets.count > 1
+        trashDropViewWidthConstraint.constant = showTrash ? 44 : 0
+        trashDropView.isHidden = !showTrash
+        trashDropView.alpha = showTrash ? 1 : 0
+    }
+    
+    func applyTrashAppearance(isDragging: Bool, isHovering: Bool) {
+        let tint: UIColor = isDragging ? .systemRed : .white
+        let scale: CGFloat = (isDragging && isHovering) ? 1.15 : 1.0
+        let symbolName = isDragging ? "trash.fill" : "trash"
+        
+        trashImageView.tintColor = tint
+        trashImageView.image = UIImage(systemName: symbolName)?.withRenderingMode(.alwaysTemplate)
+        trashDropView.backgroundColor = isDragging
+            ? UIColor.systemRed.withAlphaComponent(0.15)
+            : .clear
+        trashDropView.layer.cornerRadius = 8
+        
+        UIView.animate(withDuration: 0.15) {
+            self.trashImageView.transform = CGAffineTransform(scaleX: scale, y: scale)
+        }
     }
     
     // MARK: - Custom Logic

@@ -210,6 +210,7 @@ extension EditViewController {
                 await self.reloadComposition()
                 await MainActor.run {
                     self.videosCollectionView.reloadData()
+                    self.updateTrashVisibility()
                 }
                 NotificationCenter.default.post(name: Notification.Name.VideoSelectionChanged, object: nil)
                 let startTime = self.getStartTimeForCurrentSpidAsset()

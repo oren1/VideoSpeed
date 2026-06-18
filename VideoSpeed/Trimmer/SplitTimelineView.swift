@@ -19,6 +19,7 @@ class SplitTimelineView: AVAssetTimeSelector {
     }
 
     var minSegmentDuration: Double = 1.0
+    var minimumClipDuration: Double = 3.0
 
     private(set) var currentSplitTime: CMTime?
 
@@ -39,14 +40,16 @@ class SplitTimelineView: AVAssetTimeSelector {
     }
 
     func configure(asset: AVAsset, trimTimeRange: CMTimeRange) {
-        self.trimTimeRange = trimTimeRange
+        currentSplitTime = nil
         clipTimeRange = trimTimeRange
         self.asset = asset
         assetPreview.contentOffset = .zero
+        applyTrimTimeRange(trimTimeRange)
         layoutIfNeeded()
 
         let initialTime = defaultSplitTime()
         updateMarkerPosition(for: initialTime, notifyDelegate: false)
+        updateSplitMarkerVisibility()
     }
 
     func generateClipThumbnails(completion: @escaping ([CGImage]) -> Void) {
@@ -63,7 +66,17 @@ class SplitTimelineView: AVAssetTimeSelector {
     }
 
     var canSplit: Bool {
-        trimTimeRange.duration.seconds > (minSegmentDuration * 2)
+        trimTimeRange.duration.isValid && trimTimeRange.duration.seconds > minimumClipDuration
+    }
+
+    func updateSplitMarkerVisibility() {
+        splitMarkerContainer.isHidden = !canSplit
+        splitMarkerContainer.isUserInteractionEnabled = canSplit
+    }
+
+    private func applyTrimTimeRange(_ range: CMTimeRange) {
+        trimTimeRange = range
+        clipTimeRange = range
     }
 
     override func assetDidChange(newAsset: AVAsset?) {
@@ -116,6 +129,9 @@ class SplitTimelineView: AVAssetTimeSelector {
         let location = gesture.location(in: self)
         let absoluteTime = absoluteTime(forViewX: location.x)
         updateMarkerPosition(for: absoluteTime, notifyDelegate: gesture.state == .changed)
+        if gesture.state == .changed {
+            layoutIfNeeded()
+        }
 
         switch gesture.state {
         case .ended, .cancelled, .failed:
@@ -133,6 +149,7 @@ class SplitTimelineView: AVAssetTimeSelector {
         let location = gesture.location(in: self)
         let absoluteTime = absoluteTime(forViewX: location.x)
         updateMarkerPosition(for: absoluteTime, notifyDelegate: false)
+        layoutIfNeeded()
         if let time = currentSplitTime {
             splitDelegate?.splitTimeDidSettle(time)
         }
@@ -152,7 +169,6 @@ class SplitTimelineView: AVAssetTimeSelector {
 
         guard let position = contentPosition(for: clamped) else { return }
         markerLeadingConstraint?.constant = position - (markerTouchWidth / 2)
-        layoutIfNeeded()
 
         if notifyDelegate {
             splitDelegate?.splitTimeDidChange(clamped)

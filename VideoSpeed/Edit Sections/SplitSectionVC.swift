@@ -60,7 +60,7 @@ class SplitSectionVC: SectionViewController {
         Task { @MainActor in
             try? await Task.sleep(nanoseconds: 500_000_000)
             isSplitInProgress = false
-            updateSplitButtonState()
+            updateSplitButtonState(clipDurationSeconds: splitTimelineView.trimTimeRange.duration.seconds)
         }
     }
 
@@ -68,27 +68,32 @@ class SplitSectionVC: SectionViewController {
     private func reloadTimeline() async {
         guard let spidAsset = UserDataManager.main.currentSpidAsset else { return }
 
+        isSplitInProgress = false
+
         let clipAsset = await spidAsset.getAsset()
         let timeRange = await spidAsset.timeRange
+        let clipDurationSeconds = timeRange.duration.seconds
         playerItem = AVPlayerItem(asset: clipAsset)
 
         splitTimelineView.configure(asset: clipAsset, trimTimeRange: timeRange)
         splitTimelineView.generateClipThumbnails { _ in
             Task { @MainActor in
-                self.updateSplitButtonState()
+                self.updateSplitButtonState(clipDurationSeconds: clipDurationSeconds)
             }
         }
 
-        updateSplitButtonState()
+        updateSplitButtonState(clipDurationSeconds: clipDurationSeconds)
     }
 
-    private func updateSplitButtonState() {
-        let canSplit = splitTimelineView.canSplit
-        splitButton.isEnabled = canSplit && !isSplitInProgress
-        splitButton.alpha = splitButton.isEnabled ? 1 : 0.4
+    private func updateSplitButtonState(clipDurationSeconds: Double) {
+        let canSplit = clipDurationSeconds > splitTimelineView.minimumClipDuration && !isSplitInProgress
+        splitButton.isEnabled = canSplit
+        splitButton.alpha = canSplit ? 1 : 0.4
+        splitTimelineView.updateSplitMarkerVisibility()
+        let minimumSeconds = Int(splitTimelineView.minimumClipDuration)
         hintLabel.text = canSplit
             ? "Drag to choose split point"
-            : "Clip must be at least 2 seconds to split"
+            : "Clip must be at least \(minimumSeconds) seconds to split"
     }
 }
 
