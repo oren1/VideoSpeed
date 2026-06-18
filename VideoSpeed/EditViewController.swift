@@ -1569,6 +1569,16 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         if !UserDataManager.main.labelViewsModels.isEmpty {
             AnalyticsManager.textUsedOnExportEvent()
         }
+        var usedFilters = Set<VideoFilter>()
+        for spidAsset in UserDataManager.main.spidAssets {
+            let filter = await spidAsset.videoFilter
+            if filter != .none {
+                usedFilters.insert(filter)
+            }
+        }
+        for filter in usedFilters {
+            AnalyticsManager.filterUsedOnExportEvent(filterName: filter.rawValue)
+        }
     }
     
     func generateTemplateImage(asset: AVAsset, time: CMTime? = nil) async -> UIImage {

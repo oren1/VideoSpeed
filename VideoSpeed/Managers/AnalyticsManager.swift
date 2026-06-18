@@ -94,6 +94,11 @@ class AnalyticsManager {
         Analytics.logEvent(eventName, parameters: [:])
     }
     
+    static func filterUsedOnExportEvent(filterName: String) {
+        let eventName = "filter_used_on_export_\(filterName)"
+        Analytics.logEvent(eventName, parameters: [:])
+    }
+    
     static func trimUsedOnExportEvent() {
         let eventName = "trim_used_on_export"
         Analytics.logEvent(eventName, parameters: [:])
