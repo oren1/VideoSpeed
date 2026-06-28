@@ -186,7 +186,7 @@ class IAPManager: NSObject {
         if useWatermark {
             bussinessProductIdentifier = SpidProducts.yearlyWatermark
         } else {
-            bussinessProductIdentifier = SpidProducts.yearlySubscription
+            bussinessProductIdentifier = SpidProducts.freeTrialYearlySubscription
         }
         return bussinessProductIdentifier
     }
