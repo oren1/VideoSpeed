@@ -28,17 +28,26 @@ extension UserDataManager {
         let leftThumbnail = await mediaAsset.generateThumbnailImage(at: leftRange.start)
         let rightThumbnail = await mediaAsset.generateThumbnailImage(at: rightRange.start)
 
+        let isImage = await asset.isImageClip
+        let preservedClipSourceRange = await asset.clipSourceRange
+
         await asset.updateTimeRange(timeRange: leftRange)
-        await asset.updateClipSourceRange(leftRange)
+        if !isImage {
+            await asset.updateClipSourceRange(leftRange)
+        }
         await asset.clearTrimmerHandleConstants()
-        if let leftThumbnail {
+        if isImage {
+            // 1-frame source: keep existing thumbnail
+        } else if let leftThumbnail {
             await asset.updateThumbnailImage(leftThumbnail)
         }
 
         let fallbackThumbnail = await asset.thumbnailImage
+        let rightClipSourceRange = isImage ? preservedClipSourceRange : rightRange
         let rightAsset = await asset.duplicate(
             with: rightRange,
-            thumbnailImage: rightThumbnail ?? fallbackThumbnail
+            thumbnailImage: (isImage ? fallbackThumbnail : rightThumbnail) ?? fallbackThumbnail,
+            clipSourceRange: rightClipSourceRange
         )
         spidAssets.insert(rightAsset, at: index + 1)
         currentSpidAsset = rightAsset

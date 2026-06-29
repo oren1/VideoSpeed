@@ -11,7 +11,7 @@ import FirebaseRemoteConfig
 typealias VoidClousure = () -> ()
 
 class SectionViewController: UIViewController {
-    var currentSelectedButton: UIButton!
+    var currentSelectedButton: UIButton?
     var userNeedsToPurchase: VoidClousure?
     
     override func viewDidLoad() {
@@ -35,7 +35,7 @@ class SectionViewController: UIViewController {
         currentSelectedButton = button
     }
 
-    func setButtonUnselected(button: UIButton) {
-        button.tintColor = .black
+    func setButtonUnselected(button: UIButton?) {
+        button?.tintColor = .black
     }
 }

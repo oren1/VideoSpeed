@@ -14,6 +14,10 @@ extension UTType {
     static let json = UTType(exportedAs: "public.json")
 }
 
+enum MediaKind {
+    case video
+    case image
+}
 
 actor SpidAsset {
     var id: UUID
@@ -33,7 +37,9 @@ actor SpidAsset {
     var videoRect: CGRect = .zero
     var sliderValue: Float = 19.5
     var videoFilter: VideoFilter = .none
-    
+    private(set) var mediaKind: MediaKind = .video
+
+    var isImageClip: Bool { mediaKind == .image }
     
     private enum CodingKeys: String, CodingKey {
            case id
@@ -51,12 +57,20 @@ actor SpidAsset {
 //           // Note: Actor's init can't be failable here; ensure `name` and `id` are reliable
 //       }
     
-    init(asset: AVAsset, timeRange: CMTimeRange, videoSize: CGSize, thumnbnailImage: CGImage) {
+    init(
+        asset: AVAsset,
+        timeRange: CMTimeRange,
+        videoSize: CGSize,
+        thumnbnailImage: CGImage,
+        mediaKind: MediaKind = .video,
+        clipSourceRange: CMTimeRange? = nil
+    ) {
         self.asset = asset
         self.timeRange = timeRange
-        self.clipSourceRange = timeRange
+        self.clipSourceRange = clipSourceRange ?? timeRange
         self.videoSize = videoSize
         self.thumbnailImage = thumnbnailImage
+        self.mediaKind = mediaKind
         self.id = UUID()
     }
     
@@ -125,12 +139,14 @@ actor SpidAsset {
         thumbnailImages = nil
     }
 
-    func duplicate(with timeRange: CMTimeRange, thumbnailImage: CGImage) async -> SpidAsset {
+    func duplicate(with timeRange: CMTimeRange, thumbnailImage: CGImage, clipSourceRange: CMTimeRange? = nil) async -> SpidAsset {
         let newAsset = SpidAsset(
             asset: getOriginalAsset(),
             timeRange: timeRange,
             videoSize: videoSize,
-            thumnbnailImage: thumbnailImage
+            thumnbnailImage: thumbnailImage,
+            mediaKind: mediaKind,
+            clipSourceRange: clipSourceRange ?? timeRange
         )
         await newAsset.updateSpeed(speed: speed)
         await newAsset.updateSound(soundOn: soundOn)

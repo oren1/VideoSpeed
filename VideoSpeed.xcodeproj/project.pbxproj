@@ -143,6 +143,8 @@
 		6BC7B52C2D5C9AA100FF1CE9 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC7B52B2D5C9A9200FF1CE9 /* UIView+Extension.swift */; };
 		6BCAF7EC2A63C5100039BE15 /* SpeedSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCAF7EA2A63C5100039BE15 /* SpeedSectionVC.swift */; };
 		6BCAF7ED2A63C5100039BE15 /* SpeedSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BCAF7EB2A63C5100039BE15 /* SpeedSectionVC.xib */; };
+		6B7A10022E10000100000001 /* ImageDurationSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7A10012E10000100000001 /* ImageDurationSectionVC.swift */; };
+		6B7A10042E10000100000001 /* ImageToVideoGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7A10032E10000100000001 /* ImageToVideoGenerator.swift */; };
 		6BCDCF4D2A67E5FA00D8B656 /* FPSSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCDCF4B2A67E5FA00D8B656 /* FPSSectionVC.swift */; };
 		6BCDCF4E2A67E5FA00D8B656 /* FPSSectionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6BCDCF4C2A67E5FA00D8B656 /* FPSSectionVC.xib */; };
 		6BCDCF512A67FAC800D8B656 /* MoreSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BCDCF4F2A67FAC800D8B656 /* MoreSectionVC.swift */; };
@@ -337,6 +339,8 @@
 		6BC7B52B2D5C9A9200FF1CE9 /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		6BCAF7EA2A63C5100039BE15 /* SpeedSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedSectionVC.swift; sourceTree = "<group>"; };
 		6BCAF7EB2A63C5100039BE15 /* SpeedSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SpeedSectionVC.xib; sourceTree = "<group>"; };
+		6B7A10012E10000100000001 /* ImageDurationSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDurationSectionVC.swift; sourceTree = "<group>"; };
+		6B7A10032E10000100000001 /* ImageToVideoGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageToVideoGenerator.swift; sourceTree = "<group>"; };
 		6BCDCF4B2A67E5FA00D8B656 /* FPSSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FPSSectionVC.swift; sourceTree = "<group>"; };
 		6BCDCF4C2A67E5FA00D8B656 /* FPSSectionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FPSSectionVC.xib; sourceTree = "<group>"; };
 		6BCDCF4F2A67FAC800D8B656 /* MoreSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreSectionVC.swift; sourceTree = "<group>"; };
@@ -565,6 +569,7 @@
 				6BCDCF532A67FADD00D8B656 /* SectionViewController.swift */,
 				6BCAF7EA2A63C5100039BE15 /* SpeedSectionVC.swift */,
 				6BCAF7EB2A63C5100039BE15 /* SpeedSectionVC.xib */,
+				6B7A10012E10000100000001 /* ImageDurationSectionVC.swift */,
 				6BCDCF4B2A67E5FA00D8B656 /* FPSSectionVC.swift */,
 				6BCDCF4C2A67E5FA00D8B656 /* FPSSectionVC.xib */,
 				6BCDCF4F2A67FAC800D8B656 /* MoreSectionVC.swift */,
@@ -596,6 +601,7 @@
 				6B9610132D426AF800DEE296 /* String+Extension.swift */,
 				6B45B4062D01F1500074C422 /* AssetRotator.swift */,
 				6BA101352CE0A084001780BA /* AVAsset+Extension.swift */,
+				6B7A10032E10000100000001 /* ImageToVideoGenerator.swift */,
 				6BE9A3092A618B2500FF8CB0 /* UIImageView+Extension.swift */,
 				6BE9A30B2A62809D00FF8CB0 /* PHAsset+Extension.swift */,
 				6B6700982A6BAE36006F2980 /* VideoHelper.swift */,
@@ -998,6 +1004,8 @@
 				6B92E35B2A77C72C008CB22A /* SceneDelegate.swift in Sources */,
 				6BF019532B57DB7400953AB6 /* AnalyticsManager.swift in Sources */,
 				6BCAF7EC2A63C5100039BE15 /* SpeedSectionVC.swift in Sources */,
+				6B7A10022E10000100000001 /* ImageDurationSectionVC.swift in Sources */,
+				6B7A10042E10000100000001 /* ImageToVideoGenerator.swift in Sources */,
 				6B6700AC2A6E6032006F2980 /* Consts.swift in Sources */,
 				6B96101C2D46091400DEE296 /* MenuItemCell.swift in Sources */,
 				6B9610142D426B0300DEE296 /* String+Extension.swift in Sources */,

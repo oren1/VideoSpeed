@@ -26,15 +26,17 @@ class SoundSectionVC: SectionViewController {
         setBorderAndRadius(button: offButton)
         
         setSelectedButton(button: onButton)
-    
+
+        Task { @MainActor in
+            await videoSelectionChangedAsync()
+        }
     }
 
     func updateSoundSelection(soundOn: Bool) {
         self.soundOn = soundOn
         if self.soundOn {
             setSelectedButton(button: onButton)
-        }
-        else {
+        } else {
             setSelectedButton(button: offButton)
         }
     }
@@ -46,18 +48,24 @@ class SoundSectionVC: SectionViewController {
     }
     
     @IBAction func offButtonTapped(_ sender: UIButton) {
-            soundOn = false
-            setSelectedButton(button: offButton)
-            soundStateChanged?(soundOn)
+        soundOn = false
+        setSelectedButton(button: offButton)
+        soundStateChanged?(soundOn)
     }
 
+    private func videoSelectionChangedAsync() async {
+        guard let spidAsset = UserDataManager.main.currentSpidAsset else { return }
+        let isImage = await spidAsset.isImageClip
+        view.isUserInteractionEnabled = !isImage
+        view.alpha = isImage ? 0.4 : 1.0
+        guard !isImage else { return }
+        let soundOn = await spidAsset.soundOn
+        updateSoundSelection(soundOn: soundOn)
+    }
     
     @objc private func videoSelectionChanged() {
         Task { @MainActor in
-            if let soundOn = await UserDataManager.main.currentSpidAsset?.soundOn {
-                updateSoundSelection(soundOn: soundOn)
-            }
+            await videoSelectionChangedAsync()
         }
-       
     }
 }

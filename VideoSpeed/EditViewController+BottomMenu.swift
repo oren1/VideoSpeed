@@ -48,8 +48,11 @@ extension EditViewController: UICollectionViewDataSource {
       
       cell.layer.cornerRadius = 8
 
-         
-      cell.titleLabel.text = item.title
+      var title = item.title
+      if item.id == .speed && showsDurationSectionForCurrentClip {
+          title = "DURATION"
+      }
+      cell.titleLabel.text = title
       cell.imageView.image = UIImage(systemName: item.imageName)
 
       return cell
@@ -69,7 +72,7 @@ extension EditViewController: UICollectionViewDelegate {
         
         switch menuItem.id {
         case .speed:
-            addSpeedSection()
+            addTimingSection()
         case .trim:
             addTrimmerSection()
         case .split:

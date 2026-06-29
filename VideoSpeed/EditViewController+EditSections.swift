@@ -13,6 +13,7 @@ extension EditViewController {
     
     func createEditSections() {
         createSpeedSection()
+        createImageDurationSection()
         createCropSection()
         createFPSSection()
         createSoundSection()
@@ -58,6 +59,33 @@ extension EditViewController {
             }
         }
     
+    }
+
+    func createImageDurationSection() {
+        imageDurationSectionVC = ImageDurationSectionVC()
+
+        imageDurationSectionVC.durationDidChange = { [weak self] duration in
+            self?.speedLabel.text = self?.formatDurationLabel(duration)
+        }
+
+        imageDurationSectionVC.durationDidCommit = { [weak self] duration in
+            guard let self else { return }
+            self.speedLabel.text = self.formatDurationLabel(duration)
+            Task {
+                let timescale: CMTimeScale = 600
+                let newRange = CMTimeRange(
+                    start: .zero,
+                    duration: CMTime(seconds: duration, preferredTimescale: timescale)
+                )
+                await UserDataManager.main.currentSpidAsset.updateTimeRange(timeRange: newRange)
+                await UserDataManager.main.currentSpidAsset.clearTrimmerHandleConstants()
+                await self.reloadComposition()
+                let startTime = self.getStartTimeForCurrentSpidAsset()
+                await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: .zero, toleranceAfter: .zero)
+                self.spidPlayerController?.player.play()
+                await self.textSectionVC.createTrimmerView()
+            }
+        }
     }
     
     func createCropSection() {
@@ -188,6 +216,7 @@ extension EditViewController {
                 await self.textSectionVC.createTrimmerView()
                 let startTime = self.getStartTimeForCurrentSpidAsset()
                 await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+                self.spidPlayerController?.player?.play()
             }
         }
     
@@ -299,9 +328,29 @@ extension EditViewController {
     }
     
     // MARK: Adding Sections
+    func addTimingSection() {
+        Task {
+            guard let currentSpidAsset = UserDataManager.main.currentSpidAsset else { return }
+            let isImage = await currentSpidAsset.isImageClip
+            await MainActor.run {
+                if isImage {
+                    addImageDurationSection()
+                } else {
+                    addSpeedSection()
+                }
+                refreshCurrentClipMenuState()
+            }
+        }
+    }
+
     func addSpeedSection() {
         addSection(sectionVC: speedSectionVC)
         currentShownSection = speedSectionVC
+    }
+
+    func addImageDurationSection() {
+        addSection(sectionVC: imageDurationSectionVC)
+        currentShownSection = imageDurationSectionVC
     }
     
     func addCropSection() {
@@ -354,5 +403,30 @@ extension EditViewController {
     func addCaptionsSection()  {
         addSection(sectionVC: captionsSectionVC)
         currentShownSection = captionsSectionVC
+    }
+
+    func formatDurationLabel(_ seconds: Double) -> String {
+        if seconds.truncatingRemainder(dividingBy: 1) == 0 {
+            return "\(Int(seconds))s"
+        }
+        return String(format: "%.1fs", seconds)
+    }
+
+    func refreshCurrentClipMenuState() {
+        Task {
+            guard let spidAsset = UserDataManager.main.currentSpidAsset else { return }
+            let isImage = await spidAsset.isImageClip
+            let labelText: String
+            if isImage {
+                labelText = formatDurationLabel(await spidAsset.timeRange.duration.seconds)
+            } else {
+                labelText = "\(await spidAsset.speed)x"
+            }
+            await MainActor.run {
+                self.showsDurationSectionForCurrentClip = isImage
+                self.speedLabel?.text = labelText
+                self.bottomMenuCollectionView?.reloadData()
+            }
+        }
     }
 }
