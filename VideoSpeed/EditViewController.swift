@@ -43,6 +43,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var compositionOriginalDuration: CMTime!
     var compositionVideoTrack: AVMutableCompositionTrack!
     var exportSession: AVAssetExportSession?
+    var exportBarButtonItem: UIBarButtonItem!
     var timer: Timer?
     var proButton: UIButton!
     var cropViewController: CropViewController!
@@ -458,7 +459,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             } else {
                 videoSize = naturalSize
             }
-
+            print("index: \(index) video size: \(videoSize)")
             let croppedVideoRect = aspectRatioCroppedVideoRect(videoSize)
             
             let instruction = AVMutableVideoCompositionInstruction()
@@ -895,8 +896,13 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     
     
     func setNavigationItems() {
-        
-        let exportButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), style: .plain, target: self, action: #selector(tryToExportVideo))
+        exportBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "square.and.arrow.up"),
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+        exportBarButtonItem.menu = makeExportMenu()
         
         
         speedLabel = createRightItemLabel()
@@ -922,12 +928,66 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 //        let soundItem = UIBarButtonItem(customView: soundButton)
         
         
-        navigationItem.rightBarButtonItems = [exportButton,
+        navigationItem.rightBarButtonItems = [exportBarButtonItem,
 //                                              soundItem,
                                               fileTypeItem,
                                               fpsItem,
 //                                              speedItem
         ]
+    }
+
+    private func makeExportMenu() -> UIMenu {
+        let actions = ExportQuality.allCases.map { quality in
+            let isProGated = quality == .uhd4K && !UserDataManager.main.hasPremiumAccess()
+            return UIAction(
+                title: isProGated ? "\(quality.displayTitle) · Pro Version" : quality.displayTitle,
+                subtitle: quality.menuSubtitle,
+                state: UserDataManager.main.exportQuality == quality ? .on : .off
+            ) { [weak self] _ in
+                self?.beginExport(with: quality)
+            }
+        }
+        return UIMenu(title: "Export Quality", options: .displayInline, children: actions)
+    }
+
+    func refreshExportMenu() {
+        exportBarButtonItem?.menu = makeExportMenu()
+    }
+
+    private func beginExport(with quality: ExportQuality) {
+        AnalyticsManager.exportButtonTapped()
+        UserDataManager.main.exportQuality = quality
+        refreshExportMenu()
+
+        Task {
+            await reloadComposition()
+
+            if quality == .uhd4K && !UserDataManager.main.hasPremiumAccess() {
+                await MainActor.run {
+                    showProFeatureAlert()
+                }
+                return
+            }
+
+            await continueExportAfterQualitySelection()
+        }
+    }
+
+    private func continueExportAfterQualitySelection() async {
+        guard SpidProducts.store.userPurchasedProVersion() != nil
+                || UserDataManager.main.isGiftActive()
+        else {
+            if !usingProFeatures() {
+                await exportVideo()
+                return
+            }
+            await MainActor.run {
+                showProFeatureAlert()
+            }
+            return
+        }
+
+        await exportVideo()
     }
 
     private func makeExportWatermarkLayer(videoSize: CGSize) -> CATextLayer {
@@ -997,31 +1057,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         return label
     }
     
-    
-    @objc func tryToExportVideo() {
-        AnalyticsManager.exportButtonTapped()
-        
-        guard  SpidProducts.store.userPurchasedProVersion() != nil
-                || UserDataManager.main.isGiftActive()
-        else {
-            
-            if !usingProFeatures() {
-                Task {
-                    await self.exportVideo()
-                }
-                return
-            }
-            else {
-                // show alert for purchase
-                showProFeatureAlert()
-                return
-            }
-        }
-        
-        Task {
-           await exportVideo()
-        }
-    }
     
     @objc func exportVideo() async {
         spidPlayerController.player.pause()
@@ -1208,7 +1243,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         loadingMediaVC = nil
     }
     
-    private func computeCompositionRenderSize(maxLongEdge: CGFloat = 3840) async -> CGSize {
+    private func computeCompositionRenderSize() async -> CGSize {
+        let maxLongEdge = UserDataManager.main.exportMaxLongEdge()
         let assets = UserDataManager.main.spidAssets
         guard !assets.isEmpty else {
             return CGSize(width: 1080, height: 1920)
@@ -1523,6 +1559,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                     await IAPManager.startPurchase(productIdentifier: productIdentifier, on: self) { [weak self] in
                         Task {@MainActor in
                             self?.hideLoading()
+                            self?.refreshExportMenu()
+                            self?.spidPlayerController.refreshWatermarkPreview()
+                            await self?.reloadComposition()
                         }
                     }
                 }
@@ -1690,6 +1729,10 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             if SpidProducts.store.userPurchasedProVersion() != nil {
                 self?.hideProButton()
                 self?.spidPlayerController.refreshWatermarkPreview()
+                self?.refreshExportMenu()
+                Task {
+                    await self?.reloadComposition()
+                }
             }
         }
         
@@ -1843,7 +1886,8 @@ extension NotificationObservers {
     }
     
     func usingProFeatures() -> Bool {
-            if UserDataManager.main.usingSlider ||
+            if UserDataManager.main.exportQuality == .uhd4K ||
+                UserDataManager.main.usingSlider ||
                 fps != 30 ||
                 UserDataManager.main.soundOff ||
                 fileType == .mp4 ||

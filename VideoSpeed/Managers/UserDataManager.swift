@@ -16,6 +16,32 @@ let oneMinuteInSeconds = 60.0
 let fiveMinutesInSeconds = 5.0 * 60
 let twoWeeksInSeconds = 14.0 * 24 * 60 * 60
 
+enum ExportQuality: String, CaseIterable {
+    case hd
+    case uhd4K
+
+    var displayTitle: String {
+        switch self {
+        case .hd: return "HD"
+        case .uhd4K: return "4K"
+        }
+    }
+
+    var menuSubtitle: String {
+        switch self {
+        case .hd: return "1920p"
+        case .uhd4K: return "3840p"
+        }
+    }
+
+    var maxLongEdge: CGFloat {
+        switch self {
+        case .hd: return 1920
+        case .uhd4K: return 3840
+        }
+    }
+}
+
 class UserDataManager: ObservableObject {
     
     
@@ -59,6 +85,8 @@ class UserDataManager: ObservableObject {
     @Published
     var currentCaptions: [Caption]?
     var captionsStyle = CaptionsStyle()
+
+    var exportQuality: ExportQuality = .hd
 
     var languageItems: [LanguageItem] = {
         let locales = Array(SFSpeechRecognizer.supportedLocales())
@@ -319,11 +347,22 @@ class UserDataManager: ObservableObject {
         return Date() < giftDueDate
     }
 
+    func hasPremiumAccess() -> Bool {
+        SpidProducts.store.userPurchasedProVersion() != nil || isGiftActive()
+    }
+
+    func exportMaxLongEdge() -> CGFloat {
+        switch exportQuality {
+        case .hd:
+            return ExportQuality.hd.maxLongEdge
+        case .uhd4K:
+            return hasPremiumAccess() ? ExportQuality.uhd4K.maxLongEdge : ExportQuality.hd.maxLongEdge
+        }
+    }
+
     /// Watermark on export and player preview for free users only.
     func shouldShowWatermark() -> Bool {
-        let hasPremiumAccess = SpidProducts.store.userPurchasedProVersion() != nil || isGiftActive()
         let useWatermark = RemoteConfig.remoteConfig().configValue(forKey: "useWatermark").boolValue
-
-        return !hasPremiumAccess && useWatermark
+        return !hasPremiumAccess() && useWatermark
     }
 }
