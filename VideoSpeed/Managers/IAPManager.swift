@@ -101,7 +101,7 @@ class IAPManager: NSObject {
 //            // won't be null
 //            return "test_identifier"
 //        #else
-        return nil
+//        return nil
             if let purchasedProduct = productIdentifiers.first(where: { productIdentifier in
                 return isProductPurchased(productIdentifier)
             }) {

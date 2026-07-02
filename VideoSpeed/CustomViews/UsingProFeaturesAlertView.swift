@@ -29,6 +29,7 @@ class UsingProFeaturesAlertView: UIView {
     @IBOutlet weak var proFontView: UIView!
     @IBOutlet weak var mergeVideosView: UIView!
     @IBOutlet weak var captionsView: UIView!
+    @IBOutlet weak var exportQualityView: UIView!
     
     @IBOutlet weak var sliderPrecisionViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var soundOffViewHeightConstraint: NSLayoutConstraint!
@@ -37,6 +38,7 @@ class UsingProFeaturesAlertView: UIView {
     @IBOutlet weak var proFontViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var mergeVideosViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var captionsHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var exportQualityViewHeightConstraint: NSLayoutConstraint!
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -58,10 +60,9 @@ class UsingProFeaturesAlertView: UIView {
         
     }
     
-    func updateStatus(usingSlider: Bool, soundOff: Bool, fps: Int32, fileType: AVFileType, usingProFont: Bool, mergeVideos: Bool, captions: Bool) {
+    func updateStatus(usingSlider: Bool, soundOff: Bool, fps: Int32, fileType: AVFileType, usingProFont: Bool, mergeVideos: Bool, captions: Bool, using4KExport: Bool) {
         
 //        let isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
-
         sliderPrecisionViewHeightConstraint.constant = 0
         sliderPrecisionView.isHidden = true
         
@@ -82,6 +83,9 @@ class UsingProFeaturesAlertView: UIView {
         
         captionsHeightConstraint.constant = 0
         captionsView.isHidden = true
+        
+        exportQualityViewHeightConstraint.constant = 0
+        exportQualityView.isHidden = true
         
         if usingSlider {
             sliderPrecisionViewHeightConstraint.constant = 24
@@ -114,6 +118,12 @@ class UsingProFeaturesAlertView: UIView {
             captionsHeightConstraint.constant = 24
             captionsView.isHidden = false
         }
+        
+        if using4KExport {
+            exportQualityViewHeightConstraint.constant = 24
+            exportQualityView.isHidden = false
+        }
+
     }
     
     @IBAction func cancelButtonTapped(_ sender: Any) {

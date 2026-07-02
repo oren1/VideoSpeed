@@ -955,28 +955,19 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     }
 
     private func beginExport(with quality: ExportQuality) {
-        AnalyticsManager.exportButtonTapped()
         UserDataManager.main.exportQuality = quality
         refreshExportMenu()
 
         Task {
-            await reloadComposition()
-
-            if quality == .uhd4K && !UserDataManager.main.hasPremiumAccess() {
-                await MainActor.run {
-                    showProFeatureAlert()
-                }
-                return
-            }
-
             await continueExportAfterQualitySelection()
         }
     }
 
     private func continueExportAfterQualitySelection() async {
+        AnalyticsManager.exportButtonTapped()
         guard SpidProducts.store.userPurchasedProVersion() != nil
-                || UserDataManager.main.isGiftActive()
-        else {
+                || UserDataManager.main.isGiftActive() else {
+            
             if !usingProFeatures() {
                 await exportVideo()
                 return
@@ -987,6 +978,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             return
         }
 
+        await reloadComposition()
         await exportVideo()
     }
 
@@ -1252,7 +1244,15 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 
         let referenceAsset: SpidAsset
         if let videoClip = assets.first(where: { $0.mediaKind == .video }) {
+            let renderSize: CGSize
+            if UserDataManager.main.hasPremiumAccess() {
+                if UserDataManager.main.using4KExport()  {
+                    renderSize = .init(width: 2160 , height: 3840)
+                    return Self.normalizedRenderSize(renderSize, maxLongEdge: maxLongEdge)
+                }
+            }
             referenceAsset = videoClip
+
         } else {
             // Image-only: use the smallest clip so larger images downscale instead of
             // upscaling smaller images to a bigger canvas.
@@ -1540,7 +1540,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                                                    fileType: fileType,
                                                    usingProFont: UserDataManager.main.usingProFont(),
                                                    mergeVideos: UserDataManager.main.usingMergeFeature(),
-                                                   captions: UserDataManager.main.usingCaptions())
+                                                   captions: UserDataManager.main.usingCaptions(),
+                                                   using4KExport: UserDataManager.main.using4KExport())
                                                 
             
             usingProFeaturesAlertView.layer.opacity = 0
@@ -1886,7 +1887,7 @@ extension NotificationObservers {
     }
     
     func usingProFeatures() -> Bool {
-            if UserDataManager.main.exportQuality == .uhd4K ||
+            if UserDataManager.main.using4KExport() ||
                 UserDataManager.main.usingSlider ||
                 fps != 30 ||
                 UserDataManager.main.soundOff ||

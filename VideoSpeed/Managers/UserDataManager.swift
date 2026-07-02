@@ -360,6 +360,10 @@ class UserDataManager: ObservableObject {
         }
     }
 
+    func using4KExport() -> Bool {
+        exportQuality == .uhd4K
+    }
+
     /// Watermark on export and player preview for free users only.
     func shouldShowWatermark() -> Bool {
         let useWatermark = RemoteConfig.remoteConfig().configValue(forKey: "useWatermark").boolValue
