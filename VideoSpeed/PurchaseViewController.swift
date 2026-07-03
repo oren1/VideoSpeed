@@ -49,6 +49,7 @@ class PurchaseViewController: UIViewController {
                         showLoading()
                         let products = try await Product.products(for: [productIdentifier])
                         let product =  products.first
+                        
                         let purchaseResult = try await product?.purchase()
                         switch purchaseResult {
                         case .success(let verificationResult):

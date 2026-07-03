@@ -9,7 +9,7 @@
       }
     ]
   },
-  "identifier" : "527333B3",
+  "identifier" : "36C7F9DC",
   "nonRenewingSubscriptions" : [
 
   ],
@@ -83,7 +83,7 @@
     "_developerTeamID" : "K969727JC6",
     "_disableDialogs" : false,
     "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 802509869.95901597,
+    "_lastSynchronizedDate" : 804746437.094684,
     "_locale" : "en_US",
     "_renewalBillingIssuesEnabled" : false,
     "_storefront" : "USA",
@@ -126,7 +126,7 @@
           "internalID" : "6760764723",
           "introductoryOffer" : {
             "billingPlanType" : "BILLED_UPFRONT",
-            "internalID" : "4A6CBAD0",
+            "internalID" : "BBDF7639",
             "numberOfPeriods" : 1,
             "paymentMode" : "free",
             "subscriptionPeriod" : "P3D"
@@ -134,7 +134,7 @@
           "introductoryOffers" : [
             {
               "billingPlanType" : "BILLED_UPFRONT",
-              "internalID" : "4A6CBAD0",
+              "internalID" : "BBDF7639",
               "numberOfPeriods" : 1,
               "paymentMode" : "free",
               "subscriptionPeriod" : "P3D"
@@ -178,7 +178,7 @@
           "internalID" : "6751566702",
           "introductoryOffer" : {
             "billingPlanType" : "BILLED_UPFRONT",
-            "internalID" : "50F6DE60",
+            "internalID" : "96F2EC5F",
             "numberOfPeriods" : 1,
             "paymentMode" : "free",
             "subscriptionPeriod" : "P3D"
@@ -186,7 +186,7 @@
           "introductoryOffers" : [
             {
               "billingPlanType" : "BILLED_UPFRONT",
-              "internalID" : "50F6DE60",
+              "internalID" : "96F2EC5F",
               "numberOfPeriods" : 1,
               "paymentMode" : "free",
               "subscriptionPeriod" : "P3D"
@@ -386,7 +386,7 @@
           "internalID" : "6752210983",
           "introductoryOffer" : {
             "billingPlanType" : "BILLED_UPFRONT",
-            "internalID" : "7DC7CD3E",
+            "internalID" : "BCF6C5D9",
             "numberOfPeriods" : 1,
             "paymentMode" : "free",
             "subscriptionPeriod" : "P1W"
@@ -394,7 +394,7 @@
           "introductoryOffers" : [
             {
               "billingPlanType" : "BILLED_UPFRONT",
-              "internalID" : "7DC7CD3E",
+              "internalID" : "BCF6C5D9",
               "numberOfPeriods" : 1,
               "paymentMode" : "free",
               "subscriptionPeriod" : "P1W"
@@ -516,7 +516,7 @@
           "internalID" : "6776118051",
           "introductoryOffer" : {
             "billingPlanType" : "BILLED_UPFRONT",
-            "internalID" : "CF801746",
+            "internalID" : "7E7F5CFF",
             "numberOfPeriods" : 1,
             "paymentMode" : "free",
             "subscriptionPeriod" : "P3D"
@@ -524,7 +524,7 @@
           "introductoryOffers" : [
             {
               "billingPlanType" : "BILLED_UPFRONT",
-              "internalID" : "CF801746",
+              "internalID" : "7E7F5CFF",
               "numberOfPeriods" : 1,
               "paymentMode" : "free",
               "subscriptionPeriod" : "P3D"
