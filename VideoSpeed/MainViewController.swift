@@ -283,7 +283,11 @@ class MainViewController: UIViewController {
           key: "creationDate",
           ascending: false)
       ]
-        allPhotosOptions.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.video.rawValue)
+        allPhotosOptions.predicate = NSPredicate(
+            format: "mediaType == %d || mediaType == %d",
+            PHAssetMediaType.video.rawValue,
+            PHAssetMediaType.image.rawValue
+        )
 
       videos = PHAsset.fetchAssets(with: allPhotosOptions)
     
@@ -361,38 +365,20 @@ class MainViewController: UIViewController {
         }
 
         Task {
-            //1. Iterate the assets selected
             for phAsset in phAssets {
-                    // 2. get the AVAsset object from the PHAsset
-                    let avAsset = await phAsset.getAVAsset(completion: updateProgress)
-
-                    // 3. create SpidAsset from the AVAsset
-                    guard let asset = avAsset,
-                    let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
-                    let timeRange = try? await videoTrack.load(.timeRange),
-                    let naturalSize = try? await videoTrack.load(.naturalSize),
-                    let preferredTransform = try? await videoTrack.load(.preferredTransform),
-                    let thumbnailImage = await asset.generateThumbnailImage() else {return}
-
-                    let videoInfo = VideoHelper.orientation(from: preferredTransform)
-                    let videoSize: CGSize
-                    if videoInfo.isPortrait {
-                        videoSize = CGSize(
-                            width: naturalSize.height,
-                            height: naturalSize.width)
-                    } else {
-                        videoSize = naturalSize
-                    }
-
-                let spidAsset = SpidAsset(asset: asset,timeRange: timeRange, videoSize: videoSize, thumnbnailImage: thumbnailImage)
-
-                    // 4. add the spidAsset to the UserDataManager's spidAssets array
-                    UserDataManager.main.spidAssets.append(spidAsset)
+                guard let spidAsset = await makeSpidAsset(from: phAsset, updateProgress: updateProgress) else {
+                    continue
+                }
+                UserDataManager.main.spidAssets.append(spidAsset)
             }
 
             Task {@MainActor [weak self] in
                 
                 guard let self = self else { return }
+                guard !UserDataManager.main.spidAssets.isEmpty else {
+                    self.hideLoading()
+                    return
+                }
                 if SpidProducts.store.userPurchasedProVersion() == nil &&
                     UserDataManager.main.dateToShowPurchaseScreen < Date().timeIntervalSince1970 &&
                     !UserDataManager.main.isGiftActive() {
@@ -423,6 +409,65 @@ class MainViewController: UIViewController {
             }
 
         }
+    }
+
+    private func makeSpidAsset(from phAsset: PHAsset, updateProgress: @escaping () -> Void) async -> SpidAsset? {
+        if phAsset.mediaType == .image {
+            guard let image = await phAsset.getFullSizeImage(completion: updateProgress) else {
+                return nil
+            }
+
+            do {
+                let syntheticAsset = try await ImageToVideoGenerator.makeVideo(from: image)
+                updateProgress()
+                guard let videoTrack = try? await syntheticAsset.loadTracks(withMediaType: .video).first,
+                      let sourceRange = try? await videoTrack.load(.timeRange),
+                      let naturalSize = try? await videoTrack.load(.naturalSize),
+                      let thumbnailImage = image.cgImage else {
+                    return nil
+                }
+
+                let timescale: CMTimeScale = 600
+                let defaultDuration = CMTime(seconds: ImageToVideoGenerator.defaultDurationSeconds, preferredTimescale: timescale)
+
+                return SpidAsset(
+                    asset: syntheticAsset,
+                    timeRange: CMTimeRange(start: .zero, duration: defaultDuration),
+                    videoSize: naturalSize,
+                    thumnbnailImage: thumbnailImage,
+                    mediaKind: .image,
+                    clipSourceRange: sourceRange
+                )
+            } catch {
+                print("ImageToVideoGenerator failed: \(error)")
+                return nil
+            }
+        }
+
+        let avAsset = await phAsset.getAVAsset(completion: updateProgress)
+        guard let asset = avAsset,
+              let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
+              let timeRange = try? await videoTrack.load(.timeRange),
+              let naturalSize = try? await videoTrack.load(.naturalSize),
+              let preferredTransform = try? await videoTrack.load(.preferredTransform),
+              let thumbnailImage = await asset.generateThumbnailImage() else {
+            return nil
+        }
+
+        let videoInfo = VideoHelper.orientation(from: preferredTransform)
+        let videoSize: CGSize
+        if videoInfo.isPortrait {
+            videoSize = CGSize(width: naturalSize.height, height: naturalSize.width)
+        } else {
+            videoSize = naturalSize
+        }
+
+        return SpidAsset(
+            asset: asset,
+            timeRange: timeRange,
+            videoSize: videoSize,
+            thumnbnailImage: thumbnailImage
+        )
     }
 }
 
@@ -508,7 +553,12 @@ extension MainViewController: UICollectionViewDataSource {
     // grab the photo
        let asset = videos![indexPath.row]
        cell.imageView.fetchImageAsset(asset, targetSize: cell.imageView.bounds.size, completionHandler: nil)
-       cell.timeLabel.text = String(format: "%02d:%02d",Int((asset.duration / 60)),Int(asset.duration) % 60)
+       if asset.mediaType == .image {
+           cell.timeLabel.isHidden = true
+       } else {
+           cell.timeLabel.isHidden = false
+           cell.timeLabel.text = String(format: "%02d:%02d", Int((asset.duration / 60)), Int(asset.duration) % 60)
+       }
        cell.layer.cornerRadius = 8
 
        if selectedIndexes.contains(indexPath) {

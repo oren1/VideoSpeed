@@ -7,6 +7,7 @@
 
 import Foundation
 import Photos
+import UIKit
 typealias PHAssetVideoProgressHandler = (Double, Error?, UnsafeMutablePointer<ObjCBool>, [AnyHashable : Any]?) -> Void
 
 extension PHAsset {
@@ -42,5 +43,24 @@ extension PHAsset {
             
         }
         
+    }
+
+    func getFullSizeImage(completion: @escaping () -> Void) async -> UIImage? {
+        await withCheckedContinuation { continuation in
+            let options = PHImageRequestOptions()
+            options.deliveryMode = .highQualityFormat
+            options.isNetworkAccessAllowed = true
+            options.isSynchronous = false
+
+            PHImageManager.default().requestImage(
+                for: self,
+                targetSize: PHImageManagerMaximumSize,
+                contentMode: .aspectFit,
+                options: options
+            ) { image, _ in
+                completion()
+                continuation.resume(returning: image)
+            }
+        }
     }
 }

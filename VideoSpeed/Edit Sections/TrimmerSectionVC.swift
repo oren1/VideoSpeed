@@ -46,6 +46,7 @@ class TrimmerSectionVC: SectionViewController {
 
         Task {
             await reloadTrimmer()
+            await updateInteractionForCurrentClip()
         }
     }
 
@@ -53,18 +54,51 @@ class TrimmerSectionVC: SectionViewController {
         super.viewDidAppear(animated)
         Task {
             await reloadTrimmer()
+            await updateInteractionForCurrentClip()
         }
     }
 
     @objc private func videoSelectionChanged() {
         Task {
             await reloadTrimmer()
+            await updateInteractionForCurrentClip()
         }
+    }
+
+    @MainActor
+    private func updateInteractionForCurrentClip() async {
+        guard let spidAsset = UserDataManager.main.currentSpidAsset else { return }
+        let isImage = await spidAsset.isImageClip
+        view.isUserInteractionEnabled = !isImage
+        view.alpha = isImage ? 0.4 : 1.0
     }
 
     @MainActor
     func reloadTrimmer() async {
         guard let spidAsset = UserDataManager.main.currentSpidAsset else { return }
+        let isImage = await spidAsset.isImageClip
+
+        if isImage {
+            let clipAsset = await spidAsset.getAsset()
+            let displayRange = await spidAsset.timeRange
+            let thumbnail = await spidAsset.thumbnailImage
+            let videoSize = await spidAsset.videoSize
+
+            trimmerView.clipTimeRange = displayRange
+            trimmerView.asset = clipAsset
+            trimmerView.assetPreview.contentOffset = .zero
+
+            let stripWidth = trimmerView.bounds.width > 0
+                ? trimmerView.bounds.width
+                : UIScreen.main.bounds.width - 40
+            let thumbWidth = trimmerHeight * (videoSize.width / max(videoSize.height, 1))
+            let thumbnailCount = max(1, Int(ceil(stripWidth / max(thumbWidth, 1))))
+            let thumbnails = Array(repeating: thumbnail, count: thumbnailCount)
+
+            trimmerView.replaceTo(thumbnailImages: thumbnails)
+            trimmerView.resetHandlesToFullClip()
+            return
+        }
 
         let clipAsset = await spidAsset.getAsset()
         let selectionRange = await spidAsset.timeRange
@@ -152,10 +186,7 @@ class TrimmerSectionVC: SectionViewController {
 
 extension TrimmerSectionVC: TrimmerViewDelegate {
     func positionBarStoppedMoving(_ playerTime: CMTime) {
-        delegate?.spidPlayerController?.player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-        delegate?.spidPlayerController?.player?.play()
-        
-        guard let startTime = trimmerView.startTime, let endTime = trimmerView.endTime else {return}
+        guard let startTime = trimmerView.startTime, let endTime = trimmerView.endTime else { return }
         Task { @MainActor in
             let timeRange = CMTimeRange(start: startTime, end: endTime)
             let currentSpidAsset = UserDataManager.main.currentSpidAsset
@@ -173,7 +204,5 @@ extension TrimmerSectionVC: TrimmerViewDelegate {
             delegate?.spidPlayerController?.player?.replaceCurrentItem(with: playerItem)
             await delegate?.spidPlayerController?.player?.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         }
-        
     }
-    
 }
