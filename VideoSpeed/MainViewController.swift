@@ -126,7 +126,6 @@ class MainViewController: UIViewController {
     
     @objc func showPurchaseViewController() {
        
-        // A/B Test for watermark use
         let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
        
         let productItentifier = SpidProducts.store.bussinessProductIdentifier()

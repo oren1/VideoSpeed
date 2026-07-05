@@ -67,7 +67,7 @@ class SpidPlayerViewController: UIViewController {
         super.viewDidLoad()
         videoContainerView = UIView(frame: CGRectZero)
         mainContainer.insertSubview(videoContainerView, belowSubview: timeContainerView)
-        setupWatermarkPreviewView()
+//        setupWatermarkPreviewView()
         timeContainerView?.layer.cornerRadius = 4
         setTimeFormatter()
         setGestureRecognizers()
@@ -289,7 +289,7 @@ class SpidPlayerViewController: UIViewController {
             videoContainerView.layer.addSublayer(playerLayer)
             videoContainerView.clipsToBounds = true
             playerLayer.frame = videoContainerView.bounds
-            updateWatermarkPreviewLayout()
+//            updateWatermarkPreviewLayout()
            
             player.play()
 
@@ -336,7 +336,7 @@ class SpidPlayerViewController: UIViewController {
     }
     
     func refreshWatermarkPreview() {
-        updateWatermarkPreviewLayout()
+//        updateWatermarkPreviewLayout()
     }
     
     private func updateWatermarkPreviewLayout() {

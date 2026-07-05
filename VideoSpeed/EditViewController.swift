@@ -1070,10 +1070,10 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         addLabelViews(to: overlayLayer, videoSize: exportRenderSize)
         addCaptions2(to: overlayLayer, videoSize: exportRenderSize)
 
-        if UserDataManager.main.shouldShowWatermark() {
-            let watermarkLayer = makeExportWatermarkLayer(videoSize: exportRenderSize)
-            overlayLayer.addSublayer(watermarkLayer)
-        }
+//        if UserDataManager.main.shouldShowWatermark() {
+//            let watermarkLayer = makeExportWatermarkLayer(videoSize: exportRenderSize)
+//            overlayLayer.addSublayer(watermarkLayer)
+//        }
 
         exportVideoComposition.animationTool = AVVideoCompositionCoreAnimationTool(
             postProcessingAsVideoLayer: videoLayer,
@@ -1561,7 +1561,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                         Task {@MainActor in
                             self?.hideLoading()
                             self?.refreshExportMenu()
-                            self?.spidPlayerController.refreshWatermarkPreview()
+//                            self?.spidPlayerController.refreshWatermarkPreview()
                             await self?.reloadComposition()
                         }
                     }
@@ -1729,7 +1729,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         purchaseViewController.onDismiss = { [weak self] in
             if SpidProducts.store.userPurchasedProVersion() != nil {
                 self?.hideProButton()
-                self?.spidPlayerController.refreshWatermarkPreview()
+//                self?.spidPlayerController.refreshWatermarkPreview()
                 self?.refreshExportMenu()
                 Task {
                     await self?.reloadComposition()

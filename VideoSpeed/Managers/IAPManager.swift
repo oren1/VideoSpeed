@@ -101,7 +101,7 @@ class IAPManager: NSObject {
 //            // won't be null
 //            return "test_identifier"
 //        #else
-        return nil
+//        return nil
             if let purchasedProduct = productIdentifiers.first(where: { productIdentifier in
                 return isProductPurchased(productIdentifier)
             }) {
@@ -180,12 +180,11 @@ class IAPManager: NSObject {
     }
     
     public func bussinessProductIdentifier() -> ProductIdentifier {
-        // A/B Test for watermark use
         let bussinessProductIdentifier: ProductIdentifier
         
-        let useWatermark = RemoteConfig.remoteConfig().configValue(forKey: "useWatermark").boolValue
-        if useWatermark {
-            bussinessProductIdentifier = SpidProducts.yearlyWatermark
+        let isUpfromt = RemoteConfig.remoteConfig().configValue(forKey: "upfront").boolValue
+        if isUpfromt {
+            bussinessProductIdentifier = SpidProducts.yearlySubscription
         } else {
             bussinessProductIdentifier = SpidProducts.freeTrialYearlySubscription
         }

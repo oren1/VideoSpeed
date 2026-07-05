@@ -55,8 +55,14 @@ class UsingProFeaturesAlertView: UIView {
         
         let productIdentifier = SpidProducts.store.bussinessProductIdentifier()
         let product = UserDataManager.main.products.first {$0.productIdentifier == productIdentifier }
-        priceLabel.text = "3 days free, then \(product!.localizedPrice) / year"
-        continueButton.setTitle("Start 3 Days Free Trial", for: .normal)
+        if productIdentifier == SpidProducts.yearlySubscription {
+            priceLabel.text = "\(product!.localizedPrice) / year"
+            continueButton.setTitle("Continue", for: .normal)
+        }
+        else {
+            priceLabel.text = "3 days free, then \(product!.localizedPrice) / year"
+            continueButton.setTitle("Start 3 Days Free Trial", for: .normal)
+        }
         
     }
     
