@@ -7,9 +7,10 @@ import AVFoundation
 import UIKit
 
 enum ImageToVideoGenerator {
-    static let maxDurationSeconds: Double = 60
+    static let maxDurationSeconds: Double = 30
     static let defaultDurationSeconds: Double = 5
-    static let minDurationSeconds: Double = 3
+    static let minDurationSeconds: Double = 0.1
+    static let durationStepSeconds: Double = 0.1
     static let fps: Int32 = 30
 
     enum Error: Swift.Error {

@@ -9,6 +9,8 @@ typealias DurationClosure = (Double) -> Void
 
 class ImageDurationSectionVC: SectionViewController {
 
+    private static let durationStep = ImageToVideoGenerator.durationStepSeconds
+
     private let titleLabel = UILabel()
     private let durationLabel = UILabel()
     private let slider = UISlider()
@@ -44,11 +46,11 @@ class ImageDurationSectionVC: SectionViewController {
         durationLabel.textAlignment = .center
         durationLabel.text = formatDuration(durationSeconds)
 
-        minLabel.text = "3s"
+        minLabel.text = formatDuration(ImageToVideoGenerator.minDurationSeconds)
         minLabel.font = .systemFont(ofSize: 17)
         minLabel.textColor = .white
 
-        maxLabel.text = "60s"
+        maxLabel.text = formatDuration(ImageToVideoGenerator.maxDurationSeconds)
         maxLabel.font = .systemFont(ofSize: 17)
         maxLabel.textColor = .white
 
@@ -85,18 +87,23 @@ class ImageDurationSectionVC: SectionViewController {
     }
 
     @objc private func sliderChanged() {
-        durationSeconds = Double(slider.value.rounded())
+        let snapped = snappedDuration(from: slider.value)
+        slider.value = Float(snapped)
+        durationSeconds = snapped
         durationDidChange?(durationSeconds)
     }
 
     @objc private func sliderReleased() {
-        durationSeconds = Double(slider.value.rounded())
+        let snapped = snappedDuration(from: slider.value)
+        slider.value = Float(snapped)
+        durationSeconds = snapped
         durationDidCommit?(durationSeconds)
     }
 
     private func applyDuration(_ duration: Double, notify: Bool) {
-        durationSeconds = duration
-        slider.value = Float(duration)
+        let snapped = snappedDuration(from: Float(duration))
+        durationSeconds = snapped
+        slider.value = Float(snapped)
         if notify {
             durationDidCommit?(durationSeconds)
         }
@@ -108,6 +115,14 @@ class ImageDurationSectionVC: SectionViewController {
             let seconds = await spidAsset.timeRange.duration.seconds
             applyDuration(seconds, notify: false)
         }
+    }
+
+    private func snappedDuration(from value: Float) -> Double {
+        let stepped = (Double(value) / Self.durationStep).rounded() * Self.durationStep
+        return min(
+            max(stepped, ImageToVideoGenerator.minDurationSeconds),
+            ImageToVideoGenerator.maxDurationSeconds
+        )
     }
 
     private func formatDuration(_ seconds: Double) -> String {
