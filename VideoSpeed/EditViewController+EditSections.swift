@@ -17,6 +17,7 @@ extension EditViewController {
         createCropSection()
         createFPSSection()
         createSoundSection()
+        createAudioSection()
         createFiletypeSection()
         createTrimmerSection()
         createSplitSection()
@@ -180,6 +181,88 @@ extension EditViewController {
             self?.showPurchaseViewController()
         }
         
+    }
+
+    func createAudioSection() {
+        audioSectionVC = AudioSectionVC()
+        audioSectionVC.requestAddAudio = { [weak self] in
+            self?.presentBundledAudioPicker()
+        }
+        audioSectionVC.timelineRangeDidChange = { [weak self] range in
+            guard let self else { return }
+            guard var track = UserDataManager.main.backgroundAudioTrack else { return }
+            // #region agent log
+            DebugSessionLog.write(
+                hypothesisId: "H4",
+                location: "EditSections.createAudioSection:timelineRangeDidChange:beforeUpdate",
+                message: "received timeline range change from UI",
+                data: [
+                    "incomingStart": range.start.seconds,
+                    "incomingDuration": range.duration.seconds,
+                    "oldTimelineStart": track.timelineTimeRange.start.seconds,
+                    "oldTimelineDuration": track.timelineTimeRange.duration.seconds
+                ]
+            )
+            // #endregion
+            track.updateTimelineTimeRange(range)
+            UserDataManager.main.backgroundAudioTrack = track
+            // #region agent log
+            DebugSessionLog.write(
+                hypothesisId: "H4",
+                location: "EditSections.createAudioSection:timelineRangeDidChange:afterUpdate",
+                message: "updated track and starting reloadComposition",
+                data: [
+                    "newTimelineStart": track.timelineTimeRange.start.seconds,
+                    "newTimelineDuration": track.timelineTimeRange.duration.seconds,
+                    "newSourceDuration": track.sourceTimeRange.duration.seconds
+                ]
+            )
+            // #endregion
+            Task {
+                await self.reloadComposition(refreshSectionThumbnails: false)
+                await MainActor.run {
+                    self.audioSectionVC.configure(
+                        track: UserDataManager.main.backgroundAudioTrack,
+                        compositionDuration: self.composition?.duration ?? .zero,
+                        timelineAsset: self.spidPlayerController?.player?.currentItem?.asset
+                    )
+                }
+            }
+        }
+    }
+
+    private func presentBundledAudioPicker() {
+        guard !BundledAudioCatalog.tracks.isEmpty else { return }
+
+        let alertController = UIAlertController(title: "Select Audio", message: nil, preferredStyle: .actionSheet)
+        for bundledTrack in BundledAudioCatalog.tracks {
+            alertController.addAction(UIAlertAction(title: bundledTrack.title, style: .default, handler: { [weak self] _ in
+                guard let self else { return }
+                Task {
+                    let compositionDuration = self.composition?.duration ?? .zero
+                    _ = await UserDataManager.main.setBackgroundAudioTrack(
+                        from: bundledTrack,
+                        compositionDuration: compositionDuration
+                    )
+                    await self.reloadComposition()
+                    await MainActor.run {
+                        self.audioSectionVC.configure(
+                            track: UserDataManager.main.backgroundAudioTrack,
+                            compositionDuration: self.composition?.duration ?? .zero,
+                            timelineAsset: self.spidPlayerController?.player?.currentItem?.asset
+                        )
+                    }
+                }
+            }))
+        }
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+        if let popover = alertController.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 1, height: 1)
+        }
+
+        present(alertController, animated: true)
     }
     
     func createFiletypeSection() {
@@ -366,6 +449,16 @@ extension EditViewController {
     func addSoundSection()  {
         addSection(sectionVC: soundSectionVC)
         currentShownSection = soundSectionVC
+    }
+
+    func addAudioSection() {
+        addSection(sectionVC: audioSectionVC)
+        currentShownSection = audioSectionVC
+        audioSectionVC.configure(
+            track: UserDataManager.main.backgroundAudioTrack,
+            compositionDuration: composition?.duration ?? .zero,
+            timelineAsset: spidPlayerController?.player?.currentItem?.asset
+        )
     }
     
     func addFiletypeSection() {

@@ -87,6 +87,8 @@ extension EditViewController: UICollectionViewDelegate {
             addFPSSection()
         case .sound:
             addSoundSection()
+        case .audio:
+            addAudioSection()
         case .text:
             AnalyticsManager.textMenuItemSelectedEvent()
             addTextSection()
@@ -106,7 +108,8 @@ extension EditViewController: UICollectionViewDelegate {
         videosMenuDelegate.selectedMenuItem = selectedMenuItem
         if selectedMenuItem.id == .fps ||
             selectedMenuItem.id == .more ||
-            selectedMenuItem.id == .text {
+            selectedMenuItem.id == .text ||
+            selectedMenuItem.id == .audio {
             showEntireVideoEditIndication()
         }
         else {
