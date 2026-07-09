@@ -7,7 +7,8 @@ import Foundation
 import CoreMedia
 
 struct BackgroundAudioTrackItem {
-    let bundledTrackId: String
+    let sourceId: String
+    let source: BackgroundAudioSource
     let displayName: String
     let fileURL: URL
     let fullSourceRange: CMTimeRange

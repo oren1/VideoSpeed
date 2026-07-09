@@ -87,10 +87,12 @@ class UserDataManager: ObservableObject {
 
     @discardableResult
     func setBackgroundAudioTrack(
-        from bundledTrack: BundledAudioTrack,
+        fileURL: URL,
+        displayName: String,
+        sourceId: String,
+        source: BackgroundAudioSource,
         compositionDuration: CMTime
     ) async -> BackgroundAudioTrackItem? {
-        guard let fileURL = bundledTrack.fileURL else { return nil }
         let sourceAsset = AVURLAsset(url: fileURL)
         guard let sourceDuration = try? await sourceAsset.load(.duration) else { return nil }
 
@@ -99,8 +101,9 @@ class UserDataManager: ObservableObject {
         let sourceRange = CMTimeRange(start: .zero, duration: clampedDuration)
         let timelineRange = CMTimeRange(start: .zero, duration: clampedDuration)
         let track = BackgroundAudioTrackItem(
-            bundledTrackId: bundledTrack.id,
-            displayName: bundledTrack.title,
+            sourceId: sourceId,
+            source: source,
+            displayName: displayName,
             fileURL: fileURL,
             fullSourceRange: fullRange,
             sourceTimeRange: sourceRange,
@@ -108,6 +111,21 @@ class UserDataManager: ObservableObject {
         )
         backgroundAudioTrack = track
         return track
+    }
+
+    @discardableResult
+    func setBackgroundAudioTrack(
+        fromBundledTrack bundledTrack: BundledAudioTrack,
+        compositionDuration: CMTime
+    ) async -> BackgroundAudioTrackItem? {
+        guard let fileURL = bundledTrack.fileURL else { return nil }
+        return await setBackgroundAudioTrack(
+            fileURL: fileURL,
+            displayName: bundledTrack.title,
+            sourceId: bundledTrack.id,
+            source: .bundled,
+            compositionDuration: compositionDuration
+        )
     }
 
     func clearBackgroundAudioTrack() {

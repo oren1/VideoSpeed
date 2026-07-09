@@ -126,6 +126,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var captionsSectionVC: CaptionsSectionVC!
     var captionsViewModel: CaptionsViewModel!
     var captionsSettingsHostingVC: UIHostingController<CaptionsSettingsSelectionView>?
+    var videoLibraryPickerPresenter: VideoLibraryPickerPresenter?
     var editSections: [SectionViewController] = []
     var showsDurationSectionForCurrentClip = false
     var videosMenuDelegate: VideosMenuDelegate!

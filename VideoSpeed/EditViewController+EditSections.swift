@@ -186,7 +186,7 @@ extension EditViewController {
     func createAudioSection() {
         audioSectionVC = AudioSectionVC()
         audioSectionVC.requestAddAudio = { [weak self] in
-            self?.presentBundledAudioPicker()
+            self?.presentAudioImportOptions()
         }
         audioSectionVC.timelineRangeDidChange = { [weak self] range in
             guard let self else { return }
@@ -231,38 +231,132 @@ extension EditViewController {
         }
     }
 
-    private func presentBundledAudioPicker() {
-        guard !BundledAudioCatalog.tracks.isEmpty else { return }
-
-        let alertController = UIAlertController(title: "Select Audio", message: nil, preferredStyle: .actionSheet)
-        for bundledTrack in BundledAudioCatalog.tracks {
-            alertController.addAction(UIAlertAction(title: bundledTrack.title, style: .default, handler: { [weak self] _ in
-                guard let self else { return }
-                Task {
-                    let compositionDuration = self.composition?.duration ?? .zero
-                    _ = await UserDataManager.main.setBackgroundAudioTrack(
-                        from: bundledTrack,
-                        compositionDuration: compositionDuration
-                    )
-                    await self.reloadComposition()
-                    await MainActor.run {
-                        self.audioSectionVC.configure(
-                            track: UserDataManager.main.backgroundAudioTrack,
-                            compositionDuration: self.composition?.duration ?? .zero,
-                            timelineAsset: self.spidPlayerController?.player?.currentItem?.asset
-                        )
+    private func presentAudioImportOptions() {
+        let sheetView = AudioImportOptionsSheetView(
+            onSelect: { [weak self] option in
+                self?.dismiss(animated: true) {
+                    switch option {
+                    case .extractFromVideo:
+                        self?.presentExtractAudioFromVideo()
+                    case .importFromMusic:
+                        self?.presentImportAudioFromMusic()
+                    case .record:
+                        self?.presentRecordAudio()
                     }
                 }
-            }))
-        }
-        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            },
+            onCancel: { [weak self] in
+                self?.dismiss(animated: true)
+            }
+        )
 
-        if let popover = alertController.popoverPresentationController {
-            popover.sourceView = view
-            popover.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 1, height: 1)
+        let sheetVC = UIHostingController(rootView: sheetView)
+        sheetVC.modalPresentationStyle = .pageSheet
+
+        if let sheetPresentationController = sheetVC.sheetPresentationController {
+            sheetPresentationController.detents = [.custom(resolver: { _ in 332 })]
+            sheetPresentationController.prefersGrabberVisible = true
+            sheetPresentationController.preferredCornerRadius = 16
         }
 
-        present(alertController, animated: true)
+        present(sheetVC, animated: true)
+    }
+
+    private func presentExtractAudioFromVideo() {
+        let presenter = VideoLibraryPickerPresenter()
+        videoLibraryPickerPresenter = presenter
+
+        presenter.present(from: self) { [weak self] videoURL, displayName in
+            guard let self else { return }
+            self.videoLibraryPickerPresenter = nil
+            self.extractAndApplyBackgroundAudio(from: videoURL, displayName: displayName)
+        } onCancel: { [weak self] in
+            self?.videoLibraryPickerPresenter = nil
+        }
+    }
+
+    private func extractAndApplyBackgroundAudio(from videoURL: URL, displayName: String) {
+        showLoading()
+        Task {
+            do {
+                let audioURL = try await AudioExtractor.extractAudio(from: videoURL)
+                await MainActor.run { self.hideLoading() }
+                self.applyBackgroundAudio(
+                    from: audioURL,
+                    displayName: displayName,
+                    sourceId: UUID().uuidString,
+                    source: .extractedFromVideo
+                )
+            } catch {
+                await MainActor.run {
+                    self.hideLoading()
+                    let alert = UIAlertController(
+                        title: "Could Not Extract Audio",
+                        message: error.localizedDescription,
+                        preferredStyle: .alert
+                    )
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(alert, animated: true)
+                }
+            }
+        }
+    }
+
+    private func presentImportAudioFromMusic() {
+        presentAudioImportSheet(
+            rootView: ImportAudioFromMusicView(
+                onCancel: { [weak self] in
+                    self?.dismiss(animated: true)
+                }
+            )
+        )
+    }
+
+    private func presentRecordAudio() {
+        presentAudioImportSheet(
+            rootView: RecordAudioView(
+                onCancel: { [weak self] in
+                    self?.dismiss(animated: true)
+                }
+            )
+        )
+    }
+
+    private func presentAudioImportSheet<Content: View>(rootView: Content) {
+        let sheetVC = UIHostingController(rootView: rootView)
+        sheetVC.modalPresentationStyle = .pageSheet
+                if let sheetPresentationController = sheetVC.sheetPresentationController {
+                    sheetPresentationController.detents = [.medium(), .large()]
+                    sheetPresentationController.prefersGrabberVisible = true
+                    sheetPresentationController.preferredCornerRadius = 20
+                }
+        present(sheetVC, animated: true)
+    }
+
+    private func applyBackgroundAudio(
+        from fileURL: URL,
+        displayName: String,
+        sourceId: String,
+        source: BackgroundAudioSource
+    ) {
+        Task {
+            let compositionDuration = self.composition?.duration ?? .zero
+            _ = await UserDataManager.main.setBackgroundAudioTrack(
+                fileURL: fileURL,
+                displayName: displayName,
+                sourceId: sourceId,
+                source: source,
+                compositionDuration: compositionDuration
+            )
+            await self.reloadComposition()
+            await MainActor.run {
+                self.audioSectionVC.configure(
+                    track: UserDataManager.main.backgroundAudioTrack,
+                    compositionDuration: self.composition?.duration ?? .zero,
+                    timelineAsset: self.spidPlayerController?.player?.currentItem?.asset
+                )
+            }
+        }
     }
     
     func createFiletypeSection() {
