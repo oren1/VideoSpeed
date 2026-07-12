@@ -229,6 +229,22 @@ extension EditViewController {
                 }
             }
         }
+        audioSectionVC.sourceTimeRangeDidChange = { [weak self] range in
+            guard let self else { return }
+            guard var track = UserDataManager.main.backgroundAudioTrack else { return }
+            track.updateSourceTimeRange(range)
+            UserDataManager.main.backgroundAudioTrack = track
+            Task {
+                await self.reloadComposition(refreshSectionThumbnails: false)
+                await MainActor.run {
+                    self.audioSectionVC.configure(
+                        track: UserDataManager.main.backgroundAudioTrack,
+                        compositionDuration: self.composition?.duration ?? .zero,
+                        timelineAsset: self.spidPlayerController?.player?.currentItem?.asset
+                    )
+                }
+            }
+        }
     }
 
     private func presentAudioImportOptions() {
