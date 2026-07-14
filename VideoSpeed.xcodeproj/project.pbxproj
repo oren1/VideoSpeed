@@ -27,6 +27,9 @@
 		6B0D00052FA4000300AAA001 /* AudioSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00042FA4000300AAA001 /* AudioSectionVC.swift */; };
 		6B0D00112FA4001000AAA001 /* BackgroundAudioSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00102FA4001000AAA001 /* BackgroundAudioSource.swift */; };
 		6B0D00132FA4001100AAA001 /* AudioExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00122FA4001100AAA001 /* AudioExtractor.swift */; };
+		6B0D00242FA4001900AAA001 /* AudioWaveformSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00232FA4001900AAA001 /* AudioWaveformSampler.swift */; };
+		6B0D00262FA4001A000AAA001 /* AudioSourceTrimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00252FA4001A000AAA001 /* AudioSourceTrimmerView.swift */; };
+		6B0D00282FA4001B000AAA001 /* AudioSourceTrimmerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00272FA4001B000AAA001 /* AudioSourceTrimmerVC.swift */; };
 		6B0D00162FA4001200AAA001 /* AudioImportOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00152FA4001200AAA001 /* AudioImportOption.swift */; };
 		6B0D00182FA4001300AAA001 /* ExtractAudioFromVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00172FA4001300AAA001 /* ExtractAudioFromVideoView.swift */; };
 		6B0D001A2FA4001400AAA001 /* ImportAudioFromMusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00192FA4001400AAA001 /* ImportAudioFromMusicView.swift */; };
@@ -237,6 +240,9 @@
 		6B0D00042FA4000300AAA001 /* AudioSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSectionVC.swift; sourceTree = "<group>"; };
 		6B0D00102FA4001000AAA001 /* BackgroundAudioSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundAudioSource.swift; sourceTree = "<group>"; };
 		6B0D00122FA4001100AAA001 /* AudioExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioExtractor.swift; sourceTree = "<group>"; };
+		6B0D00232FA4001900AAA001 /* AudioWaveformSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformSampler.swift; sourceTree = "<group>"; };
+		6B0D00252FA4001A000AAA001 /* AudioSourceTrimmerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSourceTrimmerView.swift; sourceTree = "<group>"; };
+		6B0D00272FA4001B000AAA001 /* AudioSourceTrimmerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSourceTrimmerVC.swift; sourceTree = "<group>"; };
 		6B0D00152FA4001200AAA001 /* AudioImportOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioImportOption.swift; sourceTree = "<group>"; };
 		6B0D00172FA4001300AAA001 /* ExtractAudioFromVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtractAudioFromVideoView.swift; sourceTree = "<group>"; };
 		6B0D00192FA4001400AAA001 /* ImportAudioFromMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportAudioFromMusicView.swift; sourceTree = "<group>"; };
@@ -601,6 +607,8 @@
 				6B0D001B2FA4001500AAA001 /* RecordAudioView.swift */,
 				6B0D001D2FA4001600AAA001 /* AudioImportOptionsSheetView.swift */,
 				6B0D001F2FA4001700AAA001 /* VideoLibraryPickerPresenter.swift */,
+				6B0D00252FA4001A000AAA001 /* AudioSourceTrimmerView.swift */,
+				6B0D00272FA4001B000AAA001 /* AudioSourceTrimmerVC.swift */,
 			);
 			path = "Audio Import";
 			sourceTree = "<group>";
@@ -646,6 +654,7 @@
 				6BA101352CE0A084001780BA /* AVAsset+Extension.swift */,
 				6B7A10032E10000100000001 /* ImageToVideoGenerator.swift */,
 				6B0D00122FA4001100AAA001 /* AudioExtractor.swift */,
+				6B0D00232FA4001900AAA001 /* AudioWaveformSampler.swift */,
 				6BE9A3092A618B2500FF8CB0 /* UIImageView+Extension.swift */,
 				6BE9A30B2A62809D00FF8CB0 /* PHAsset+Extension.swift */,
 				6B6700982A6BAE36006F2980 /* VideoHelper.swift */,
@@ -1005,6 +1014,9 @@
 				6B0D00052FA4000300AAA001 /* AudioSectionVC.swift in Sources */,
 				6B0D00112FA4001000AAA001 /* BackgroundAudioSource.swift in Sources */,
 				6B0D00132FA4001100AAA001 /* AudioExtractor.swift in Sources */,
+				6B0D00242FA4001900AAA001 /* AudioWaveformSampler.swift in Sources */,
+				6B0D00262FA4001A000AAA001 /* AudioSourceTrimmerView.swift in Sources */,
+				6B0D00282FA4001B000AAA001 /* AudioSourceTrimmerVC.swift in Sources */,
 				6B0D00162FA4001200AAA001 /* AudioImportOption.swift in Sources */,
 				6B0D00182FA4001300AAA001 /* ExtractAudioFromVideoView.swift in Sources */,
 				6B0D001A2FA4001400AAA001 /* ImportAudioFromMusicView.swift in Sources */,

@@ -188,6 +188,9 @@ extension EditViewController {
         audioSectionVC.requestAddAudio = { [weak self] in
             self?.presentAudioImportOptions()
         }
+        audioSectionVC.requestEditSource = { [weak self] in
+            self?.presentSourceAudioTrimmer()
+        }
         audioSectionVC.timelineRangeDidChange = { [weak self] range in
             guard let self else { return }
             guard var track = UserDataManager.main.backgroundAudioTrack else { return }
@@ -229,11 +232,18 @@ extension EditViewController {
                 }
             }
         }
-        audioSectionVC.sourceTimeRangeDidChange = { [weak self] range in
+    }
+
+    func presentSourceAudioTrimmer() {
+        guard let track = UserDataManager.main.backgroundAudioTrack else { return }
+
+        let sourceVC = AudioSourceTrimmerVC()
+        sourceVC.configure(track: track)
+        sourceVC.onSourceRangeChanged = { [weak self] range in
             guard let self else { return }
-            guard var track = UserDataManager.main.backgroundAudioTrack else { return }
-            track.updateSourceTimeRange(range)
-            UserDataManager.main.backgroundAudioTrack = track
+            guard var current = UserDataManager.main.backgroundAudioTrack else { return }
+            current.updateSourceTimeRange(range)
+            UserDataManager.main.backgroundAudioTrack = current
             Task {
                 await self.reloadComposition(refreshSectionThumbnails: false)
                 await MainActor.run {
@@ -245,6 +255,17 @@ extension EditViewController {
                 }
             }
         }
+        sourceVC.onDone = { [weak self] in
+            self?.dismiss(animated: true)
+        }
+
+        sourceVC.modalPresentationStyle = .pageSheet
+        if let sheet = sourceVC.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 16
+        }
+        present(sourceVC, animated: true)
     }
 
     private func presentAudioImportOptions() {
@@ -285,7 +306,7 @@ extension EditViewController {
         presenter.present(from: self) { [weak self] videoURL, displayName in
             guard let self else { return }
             self.videoLibraryPickerPresenter = nil
-            self.extractAndApplyBackgroundAudio(from: videoURL, displayName: displayName)
+            self.extractAndApplyBackgroundAudio(from: videoURL, displayName: "extracted-audio")
         } onCancel: { [weak self] in
             self?.videoLibraryPickerPresenter = nil
         }
@@ -371,6 +392,7 @@ extension EditViewController {
                     compositionDuration: self.composition?.duration ?? .zero,
                     timelineAsset: self.spidPlayerController?.player?.currentItem?.asset
                 )
+                self.presentSourceAudioTrimmer()
             }
         }
     }
