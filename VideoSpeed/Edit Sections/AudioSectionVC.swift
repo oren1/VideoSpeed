@@ -84,7 +84,7 @@ final class AudioSectionVC: SectionViewController {
         addAudioButton.setTitle(hasTrack ? "Replace Audio" : "Add Audio", for: .normal)
 
         guard let track else {
-            sourceLabel.text = "Source: -"
+            sourceLabel.text = "Set the range where the audio should play"
             return
         }
 
@@ -105,7 +105,7 @@ final class AudioSectionVC: SectionViewController {
             ]
         )
         // #endregion
-        sourceLabel.text = "Source: \(formatRange(track.sourceTimeRange))"
+        sourceLabel.text = "Set the range where the audio should play"
     }
 
     private func setupUI() {
@@ -114,8 +114,10 @@ final class AudioSectionVC: SectionViewController {
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
 
         sourceLabel.font = .systemFont(ofSize: 14, weight: .medium)
-        sourceLabel.textColor = .white
-        sourceLabel.text = "Source: -"
+        sourceLabel.textColor = UIColor.white.withAlphaComponent(0.45)
+        sourceLabel.textAlignment = .center
+        sourceLabel.numberOfLines = 2
+        sourceLabel.text = "Set the range where the audio should play"
         sourceLabel.isHidden = true
 
         configureActionButton(addAudioButton, title: "Add Audio")
@@ -179,10 +181,6 @@ final class AudioSectionVC: SectionViewController {
     @objc private func editSourceTapped() {
         guard currentTrack != nil else { return }
         requestEditSource?()
-    }
-
-    private func formatRange(_ range: CMTimeRange) -> String {
-        String(format: "%.2fs - %.2fs", range.start.seconds, range.end.seconds)
     }
 
     func recreateThumbnailsFor(asset: AVAsset, videoComposition: AVVideoComposition? = nil) async {
