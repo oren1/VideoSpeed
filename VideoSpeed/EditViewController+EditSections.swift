@@ -340,13 +340,90 @@ extension EditViewController {
     }
 
     private func presentImportAudioFromMusic() {
-        presentAudioImportSheet(
-            rootView: ImportAudioFromMusicView(
-                onCancel: { [weak self] in
-                    self?.dismiss(animated: true)
-                }
+        let presenter = MusicLibraryPickerPresenter()
+        musicLibraryPickerPresenter = presenter
+
+        presenter.present(from: self) { [weak self] libraryAssetURL, displayName in
+            guard let self else { return }
+            self.musicLibraryPickerPresenter = nil
+            self.importAndApplyBackgroundAudio(from: libraryAssetURL, displayName: displayName)
+        } onCancel: { [weak self] in
+            self?.musicLibraryPickerPresenter = nil
+        } onError: { [weak self] error in
+            // #region agent log
+            DebugSessionLog.write(
+                hypothesisId: "E",
+                location: "EditViewController.presentImportAudioFromMusic.onError",
+                message: "import error alert",
+                data: ["error": error.localizedDescription]
             )
+            // #endregion
+            self?.musicLibraryPickerPresenter = nil
+            let alert = UIAlertController(
+                title: "Could Not Import Song",
+                message: error.localizedDescription,
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            self?.present(alert, animated: true)
+        }
+    }
+
+    private func importAndApplyBackgroundAudio(from libraryAssetURL: URL, displayName: String) {
+        showLoading()
+        // #region agent log
+        DebugSessionLog.write(
+            hypothesisId: "C",
+            location: "EditViewController.importAndApplyBackgroundAudio",
+            message: "export started with loading",
+            data: ["scheme": libraryAssetURL.scheme ?? "nil", "title": displayName],
+            runId: "post-fix"
         )
+        // #endregion
+        Task {
+            do {
+                let audioURL = try await MusicLibraryAudioExporter.export(from: libraryAssetURL)
+                // #region agent log
+                DebugSessionLog.write(
+                    hypothesisId: "C",
+                    location: "EditViewController.importAndApplyBackgroundAudio",
+                    message: "export succeeded",
+                    data: [
+                        "destExists": FileManager.default.fileExists(atPath: audioURL.path),
+                        "scheme": libraryAssetURL.scheme ?? "nil"
+                    ],
+                    runId: "post-fix"
+                )
+                // #endregion
+                await MainActor.run { self.hideLoading() }
+                self.applyBackgroundAudio(
+                    from: audioURL,
+                    displayName: displayName,
+                    sourceId: UUID().uuidString,
+                    source: .musicLibrary
+                )
+            } catch {
+                // #region agent log
+                DebugSessionLog.write(
+                    hypothesisId: "C",
+                    location: "EditViewController.importAndApplyBackgroundAudio",
+                    message: "export failed",
+                    data: ["error": error.localizedDescription],
+                    runId: "post-fix"
+                )
+                // #endregion
+                await MainActor.run {
+                    self.hideLoading()
+                    let alert = UIAlertController(
+                        title: "Could Not Import Song",
+                        message: error.localizedDescription,
+                        preferredStyle: .alert
+                    )
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(alert, animated: true)
+                }
+            }
+        }
     }
 
     private func presentRecordAudio() {
