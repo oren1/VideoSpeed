@@ -431,6 +431,16 @@ extension EditViewController {
             rootView: RecordAudioView(
                 onCancel: { [weak self] in
                     self?.dismiss(animated: true)
+                },
+                onComplete: { [weak self] fileURL in
+                    self?.dismiss(animated: true) {
+                        self?.applyBackgroundAudio(
+                            from: fileURL,
+                            displayName: "Recorded Audio",
+                            sourceId: UUID().uuidString,
+                            source: .recorded
+                        )
+                    }
                 }
             )
         )

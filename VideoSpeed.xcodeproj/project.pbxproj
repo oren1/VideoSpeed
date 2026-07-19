@@ -1261,7 +1261,7 @@
 				INFOPLIST_FILE = VideoSpeed/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Spid;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allow you to take a video for editing";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow the video to be recorded with sound";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow microphone access to record video sound and background audio";
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Allow access to your music library to add background audio";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "We need to send a photo";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This will allow you to select videos for editing";
@@ -1311,7 +1311,7 @@
 				INFOPLIST_FILE = VideoSpeed/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Spid;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allow you to take a video for editing";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow the video to be recorded with sound";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow microphone access to record video sound and background audio";
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Allow access to your music library to add background audio";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "We need to send a photo";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This will allow you to select videos for editing";
