@@ -101,7 +101,6 @@ class IAPManager: NSObject {
 //            // won't be null
 //            return "test_identifier"
 //        #else
-//        return nil
             if let purchasedProduct = productIdentifiers.first(where: { productIdentifier in
                 return isProductPurchased(productIdentifier)
             }) {
@@ -180,15 +179,16 @@ class IAPManager: NSObject {
     }
     
     public func bussinessProductIdentifier() -> ProductIdentifier {
-        let bussinessProductIdentifier: ProductIdentifier
-        
-        let isUpfromt = RemoteConfig.remoteConfig().configValue(forKey: "upfront").boolValue
-        if isUpfromt {
-            bussinessProductIdentifier = SpidProducts.yearlySubscription
-        } else {
-            bussinessProductIdentifier = SpidProducts.freeTrialYearlySubscription
-        }
-        return bussinessProductIdentifier
+        return SpidProducts.freeTrialYearlySubscription
+//        let bussinessProductIdentifier: ProductIdentifier
+//        
+//        let isUpfromt = RemoteConfig.remoteConfig().configValue(forKey: "upfront").boolValue
+//        if isUpfromt {
+//            bussinessProductIdentifier = SpidProducts.yearlySubscription
+//        } else {
+//            bussinessProductIdentifier = SpidProducts.freeTrialYearlySubscription
+//        }
+//        return bussinessProductIdentifier
     }
     
     enum IAPManagerError: Error {

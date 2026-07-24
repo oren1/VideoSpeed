@@ -113,7 +113,7 @@ class MainViewController: UIViewController {
     func createProButton() -> UIButton {
         let proButton = UIButton(type: .roundedRect)
         proButton.tintColor = .white
-        proButton.backgroundColor = .systemBlue
+        proButton.backgroundColor = .clear
         proButton.setTitle("  Get Pro  ", for: .normal)
         proButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         proButton.addTarget(self, action: #selector(showPurchaseViewController), for: .touchUpInside)
