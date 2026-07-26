@@ -435,7 +435,17 @@ class UserDataManager: ObservableObject {
     func using4KExport() -> Bool {
         exportQuality == .uhd4K
     }
-
+    
+    func usingExtractFromVideo() -> Bool {
+        if let backgroundAudioTrack = UserDataManager.main.backgroundAudioTrack,
+           backgroundAudioTrack.source == .extractedFromVideo {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+    
     /// Watermark on export and player preview for free users only.
     func shouldShowWatermark() -> Bool {
         let useWatermark = RemoteConfig.remoteConfig().configValue(forKey: "useWatermark").boolValue

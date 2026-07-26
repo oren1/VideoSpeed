@@ -29,6 +29,8 @@ class SpidPlayerViewController: UIViewController {
     var playerLayer: AVPlayerLayer!
     var aspectRatio: CGFloat = 3/4
     var playbackTimeCheckerTimer: Timer?
+    /// When false, `viewDidLayoutSubviews` will not call `player.play()` (e.g. while a sheet owns audio).
+    var shouldAutoPlayOnLayout = true
     private(set) var videoState = VideoState.isPaused
     let timeFormatter = DateComponentsFormatter()
     var videoDuration = 0.0

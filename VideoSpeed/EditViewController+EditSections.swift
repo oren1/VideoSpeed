@@ -237,6 +237,9 @@ extension EditViewController {
     func presentSourceAudioTrimmer() {
         guard let track = UserDataManager.main.backgroundAudioTrack else { return }
 
+//        spidPlayerController?.shouldAutoPlayOnLayout = false
+        spidPlayerController?.player?.pause()
+
         let sourceVC = AudioSourceTrimmerVC()
         sourceVC.configure(track: track)
         sourceVC.onSourceRangeChanged = { [weak self] range in
@@ -256,6 +259,8 @@ extension EditViewController {
             }
         }
         sourceVC.onDone = { [weak self] in
+//            self?.spidPlayerController?.shouldAutoPlayOnLayout = true
+            self?.spidPlayerController?.player?.play()
             self?.dismiss(animated: true)
         }
 
@@ -266,6 +271,7 @@ extension EditViewController {
             sheet.preferredCornerRadius = 16
         }
         present(sourceVC, animated: true)
+        sourceVC.presentationController?.delegate = self
     }
 
     private func presentAudioImportOptions() {
@@ -740,5 +746,11 @@ extension EditViewController {
                 self.bottomMenuCollectionView?.reloadData()
             }
         }
+    }
+}
+
+extension EditViewController: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        self.spidPlayerController?.player?.play()
     }
 }

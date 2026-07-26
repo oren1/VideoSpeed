@@ -1630,14 +1630,16 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     }
     
     func showUsingProFeaturesAlertView()  {
-            usingProFeaturesAlertView.updateStatus(usingSlider: UserDataManager.main.usingSlider,
+        
+        usingProFeaturesAlertView.updateStatus(usingSlider: UserDataManager.main.usingSlider,
                                                    soundOff: UserDataManager.main.soundOff,
                                                    fps: fps,
                                                    fileType: fileType,
                                                    usingProFont: UserDataManager.main.usingProFont(),
                                                    mergeVideos: UserDataManager.main.usingMergeFeature(),
                                                    captions: UserDataManager.main.usingCaptions(),
-                                                   using4KExport: UserDataManager.main.using4KExport())
+                                                   using4KExport: UserDataManager.main.using4KExport(),
+                                               extractFromVideo: UserDataManager.main.usingExtractFromVideo())
                                                 
             
             usingProFeaturesAlertView.layer.opacity = 0
@@ -1991,7 +1993,7 @@ extension NotificationObservers {
                 UserDataManager.main.usingProFont() ||
                 UserDataManager.main.usingMergeFeature() ||
                 UserDataManager.main.usingCaptions() ||
-                UserDataManager.main.backgroundAudioTrack?.source == .extractedFromVideo {
+                UserDataManager.main.usingExtractFromVideo() {
                 
                 return true
             }
