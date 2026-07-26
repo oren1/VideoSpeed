@@ -1990,7 +1990,8 @@ extension NotificationObservers {
                 fileType == .mp4 ||
                 UserDataManager.main.usingProFont() ||
                 UserDataManager.main.usingMergeFeature() ||
-                UserDataManager.main.usingCaptions() {
+                UserDataManager.main.usingCaptions() ||
+                UserDataManager.main.backgroundAudioTrack?.source == .extractedFromVideo {
                 
                 return true
             }
