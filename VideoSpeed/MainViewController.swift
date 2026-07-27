@@ -111,15 +111,22 @@ class MainViewController: UIViewController {
     }
     
     func createProButton() -> UIButton {
-        let proButton = UIButton(type: .roundedRect)
-        proButton.tintColor = .white
-        proButton.backgroundColor = .systemBlue
-        proButton.setTitle("  Get Pro  ", for: .normal)
-        proButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        let proButton = UIButton(type: .system)
+        if #available(iOS 26.0, *) {
+            var config = UIButton.Configuration.prominentGlass()
+            config.title = "Get Pro"
+            config.baseBackgroundColor = .systemBlue
+            config.baseForegroundColor = .white
+            proButton.configuration = config
+        } else {
+            var config = UIButton.Configuration.filled()
+            config.title = "Get Pro"
+            config.baseBackgroundColor = .systemBlue
+            config.baseForegroundColor = .white
+            config.contentInsets = NSDirectionalEdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12)
+            proButton.configuration = config
+        }
         proButton.addTarget(self, action: #selector(showPurchaseViewController), for: .touchUpInside)
-        proButton.layer.cornerRadius = 10
-        proButton.layer.borderWidth = 0
-        proButton.layer.borderColor = UIColor.lightGray.cgColor
         return proButton
     }
     
@@ -317,6 +324,9 @@ class MainViewController: UIViewController {
     func addProButton() {
         let proButton = createProButton()
         let proBarButtonItem = UIBarButtonItem(customView: proButton)
+        if #available(iOS 26.0, *) {
+            proBarButtonItem.hidesSharedBackground = true
+        }
         navigationItem.rightBarButtonItems = [proBarButtonItem]
     }
     func createGiftBarButtonItem() {

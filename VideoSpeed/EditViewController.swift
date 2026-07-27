@@ -1666,7 +1666,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 }
             }
             let constraints = [
-                usingProFeaturesAlertView.heightAnchor.constraint(equalToConstant: 350),
+                usingProFeaturesAlertView.heightAnchor.constraint(equalToConstant: 435 ),
                 usingProFeaturesAlertView.widthAnchor.constraint(equalToConstant: 340),
                 usingProFeaturesAlertView.centerXAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerXAnchor),
                 usingProFeaturesAlertView.centerYAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerYAnchor)

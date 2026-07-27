@@ -237,7 +237,6 @@ extension EditViewController {
     func presentSourceAudioTrimmer() {
         guard let track = UserDataManager.main.backgroundAudioTrack else { return }
 
-//        spidPlayerController?.shouldAutoPlayOnLayout = false
         spidPlayerController?.player?.pause()
 
         let sourceVC = AudioSourceTrimmerVC()
@@ -259,7 +258,6 @@ extension EditViewController {
             }
         }
         sourceVC.onDone = { [weak self] in
-//            self?.spidPlayerController?.shouldAutoPlayOnLayout = true
             self?.spidPlayerController?.player?.play()
             self?.dismiss(animated: true)
         }
