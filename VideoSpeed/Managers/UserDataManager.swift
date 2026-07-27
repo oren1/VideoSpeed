@@ -9,6 +9,7 @@ import Foundation
 import StoreKit
 import Speech
 import FirebaseRemoteConfig
+import AVFoundation
 
 
 let twentyFourHoursInSeconds = 24.0 * 60 * 60
@@ -62,6 +63,11 @@ class UserDataManager: ObservableObject {
     let hasLaunchedKey = "hasLaunchedBefore"
 
     var captions: [CaptionItem] = []
+    var backgroundAudioTrack: BackgroundAudioTrackItem? {
+        didSet {
+            NotificationCenter.default.post(name: Notification.Name.BackgroundAudioTrackUpdated, object: nil)
+        }
+    }
     
     func userDontHaveCaptionsYet() -> Bool {
         guard let currentCaptions = UserDataManager.main.currentCaptions else {
@@ -77,6 +83,72 @@ class UserDataManager: ObservableObject {
         }
         
         return currentCaptions.count > 0
+    }
+
+    @discardableResult
+    func setBackgroundAudioTrack(
+        fileURL: URL,
+        displayName: String,
+        sourceId: String,
+        source: BackgroundAudioSource,
+        compositionDuration: CMTime
+    ) async -> BackgroundAudioTrackItem? {
+        let sourceAsset = AVURLAsset(url: fileURL)
+        guard let sourceDuration = try? await sourceAsset.load(.duration) else { return nil }
+
+        let clampedDuration = CMTimeMinimum(sourceDuration, compositionDuration)
+        let fullRange = CMTimeRange(start: .zero, duration: sourceDuration)
+        let sourceRange = CMTimeRange(start: .zero, duration: clampedDuration)
+        let timelineRange = CMTimeRange(start: .zero, duration: clampedDuration)
+        let track = BackgroundAudioTrackItem(
+            sourceId: sourceId,
+            source: source,
+            displayName: displayName,
+            fileURL: fileURL,
+            fullSourceRange: fullRange,
+            sourceTimeRange: sourceRange,
+            timelineTimeRange: timelineRange
+        )
+        backgroundAudioTrack = track
+        return track
+    }
+
+    @discardableResult
+    func setBackgroundAudioTrack(
+        fromBundledTrack bundledTrack: BundledAudioTrack,
+        compositionDuration: CMTime
+    ) async -> BackgroundAudioTrackItem? {
+        guard let fileURL = bundledTrack.fileURL else { return nil }
+        return await setBackgroundAudioTrack(
+            fileURL: fileURL,
+            displayName: bundledTrack.title,
+            sourceId: bundledTrack.id,
+            source: .bundled,
+            compositionDuration: compositionDuration
+        )
+    }
+
+    func clearBackgroundAudioTrack() {
+        backgroundAudioTrack = nil
+    }
+
+    @discardableResult
+    func clampBackgroundAudioToCompositionDuration(_ compositionDuration: CMTime) -> Bool {
+        guard var track = backgroundAudioTrack else { return false }
+        let beforeTimelineDuration = track.timelineTimeRange.duration.seconds
+        let beforeTimelineStart = track.timelineTimeRange.start.seconds
+        let beforeSourceDuration = track.sourceTimeRange.duration.seconds
+
+        track.clampToCompositionDuration(compositionDuration)
+
+        let changed = abs(beforeTimelineDuration - track.timelineTimeRange.duration.seconds) > 0.001
+            || abs(beforeTimelineStart - track.timelineTimeRange.start.seconds) > 0.001
+            || abs(beforeSourceDuration - track.sourceTimeRange.duration.seconds) > 0.001
+
+        if changed {
+            backgroundAudioTrack = track
+        }
+        return changed
     }
     
     @Published
@@ -363,7 +435,17 @@ class UserDataManager: ObservableObject {
     func using4KExport() -> Bool {
         exportQuality == .uhd4K
     }
-
+    
+    func usingExtractFromVideo() -> Bool {
+        if let backgroundAudioTrack = UserDataManager.main.backgroundAudioTrack,
+           backgroundAudioTrack.source == .extractedFromVideo {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+    
     /// Watermark on export and player preview for free users only.
     func shouldShowWatermark() -> Bool {
         let useWatermark = RemoteConfig.remoteConfig().configValue(forKey: "useWatermark").boolValue

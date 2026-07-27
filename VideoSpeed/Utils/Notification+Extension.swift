@@ -11,6 +11,7 @@ extension Notification.Name {
     static let OverlayLabelViewsUpdated = Notification.Name("overlayLabelViewsUpdated")
     static let SelectedLabelViewChanged = Notification.Name("selected LabelView Changed")
     static let VideoSelectionChanged = Notification.Name("video selection changed")
+    static let BackgroundAudioTrackUpdated = Notification.Name("backgroundAudioTrackUpdated")
     /// Posted while the video plays with the current playback time (seconds).
     static let captionsPlaybackTimeDidChange = Notification.Name("captionsPlaybackTimeDidChange")
 }

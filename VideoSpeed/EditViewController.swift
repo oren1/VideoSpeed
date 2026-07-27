@@ -77,6 +77,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                                  MenuItem(id: .captions , title: "CAPTIONS", imageName: "captions.bubble"),
                                  MenuItem(id: .fps , title: "FPS", imageName: "square.stack.3d.down.right.fill"),
                                  MenuItem(id: .sound , title: "SOUND", imageName: "speaker.wave.2"),
+                                 MenuItem(id: .audio , title: "AUDIO", imageName: "music.note"),
                                  MenuItem(id: .more , title: "MORE", imageName: "ellipsis")
     ]
     
@@ -115,6 +116,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var imageDurationSectionVC: ImageDurationSectionVC!
     var fpsSectionVC: FPSSectionVC!
     var soundSectionVC: SoundSectionVC!
+    var audioSectionVC: AudioSectionVC!
     var moreSectionVC: MoreSectionVC!
     var cropSectionVC: CropSectioVC!
     var trimmerSectionVC: TrimmerSectionVC!
@@ -124,6 +126,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var captionsSectionVC: CaptionsSectionVC!
     var captionsViewModel: CaptionsViewModel!
     var captionsSettingsHostingVC: UIHostingController<CaptionsSettingsSelectionView>?
+    var videoLibraryPickerPresenter: VideoLibraryPickerPresenter?
+    var musicLibraryPickerPresenter: MusicLibraryPickerPresenter?
     var editSections: [SectionViewController] = []
     var showsDurationSectionForCurrentClip = false
     var videosMenuDelegate: VideosMenuDelegate!
@@ -349,6 +353,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         UserDataManager.main.spidAssets = []
         UserDataManager.main.currentCaptions = nil
         UserDataManager.main.transcription = nil
+        UserDataManager.main.clearBackgroundAudioTrack()
     }
     
     deinit {
@@ -484,6 +489,66 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             // setting the start time for the the next video,
             // which is the end time of the entire composition built until now
             startTime = mainComposition.duration.converted(toScale: newScale)
+        }
+
+        if var backgroundAudioTrack = UserDataManager.main.backgroundAudioTrack {
+            let videoDuration = mainComposition.duration
+            let beforeTimelineDuration = backgroundAudioTrack.timelineTimeRange.duration.seconds
+            let beforeSourceDuration = backgroundAudioTrack.sourceTimeRange.duration.seconds
+            let beforeTimelineStart = backgroundAudioTrack.timelineTimeRange.start.seconds
+
+            backgroundAudioTrack.clampToCompositionDuration(videoDuration)
+            UserDataManager.main.backgroundAudioTrack = backgroundAudioTrack
+
+            let didClamp = abs(beforeTimelineDuration - backgroundAudioTrack.timelineTimeRange.duration.seconds) > 0.001
+                || abs(beforeTimelineStart - backgroundAudioTrack.timelineTimeRange.start.seconds) > 0.001
+                || abs(beforeSourceDuration - backgroundAudioTrack.sourceTimeRange.duration.seconds) > 0.001
+            // #region agent log
+            DebugSessionLog.write(
+                hypothesisId: "H7",
+                location: "EditViewController.createCompositionWith:backgroundAudioClamp",
+                message: "clamped background audio to video duration before insert",
+                data: [
+                    "videoDuration": videoDuration.seconds,
+                    "beforeTimelineDuration": beforeTimelineDuration,
+                    "beforeSourceDuration": beforeSourceDuration,
+                    "afterTimelineStart": backgroundAudioTrack.timelineTimeRange.start.seconds,
+                    "afterTimelineDuration": backgroundAudioTrack.timelineTimeRange.duration.seconds,
+                    "afterSourceDuration": backgroundAudioTrack.sourceTimeRange.duration.seconds,
+                    "didClamp": didClamp
+                ]
+            )
+            // #endregion
+
+            let backgroundAsset = AVURLAsset(url: backgroundAudioTrack.fileURL)
+            if let sourceTrack = try? await backgroundAsset.loadTracks(withMediaType: .audio).first {
+                let compositionAudioTrack = mainComposition.addMutableTrack(
+                    withMediaType: .audio,
+                    preferredTrackID: CMPersistentTrackID(500)
+                )!
+                let timelineStart = backgroundAudioTrack.timelineTimeRange.start.converted(toScale: newScale)
+                let insertRange = backgroundAudioTrack.sourceTimeRange.convertTimeRange(toScale: newScale)
+                let insertSucceeded = (try? compositionAudioTrack.insertTimeRange(
+                    insertRange,
+                    of: sourceTrack,
+                    at: timelineStart
+                )) != nil
+                // #region agent log
+                DebugSessionLog.write(
+                    hypothesisId: "H8",
+                    location: "EditViewController.createCompositionWith:backgroundAudioInsert",
+                    message: "inserted background audio track",
+                    data: [
+                        "videoDuration": videoDuration.seconds,
+                        "compositionDurationAfterInsert": mainComposition.duration.seconds,
+                        "timelineStart": timelineStart.seconds,
+                        "insertDuration": insertRange.duration.seconds,
+                        "insertSucceeded": insertSucceeded,
+                        "compositionExtendedBeyondVideo": mainComposition.duration.seconds > videoDuration.seconds + 0.001
+                    ]
+                )
+                // #endregion
+            }
         }
        
       
@@ -872,7 +937,16 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     }
     
     @MainActor
-    func reloadComposition() async {
+    func reloadComposition(refreshSectionThumbnails: Bool = true) async {
+        let reloadStart = Date().timeIntervalSince1970
+        // #region agent log
+        DebugSessionLog.write(
+            hypothesisId: "H6",
+            location: "EditViewController.reloadComposition:entry",
+            message: "reloadComposition started",
+            data: ["refreshSectionThumbnails": refreshSectionThumbnails]
+        )
+        // #endregion
         let asset = await UserDataManager.main.currentSpidAsset.getAsset()
         guard let (composition, videoComposition) = await createCompositionWith(asset1: asset, speed1: speed, fps: fps, soundOn1: soundOn) else {
             return showNoTracksError()
@@ -887,10 +961,32 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         playerItem.audioTimePitchAlgorithm = .spectral
         playerItem.videoComposition = videoCompositionCopy
         spidPlayerController.player?.replaceCurrentItem(with: playerItem)
-            
-        Task {
-            await textSectionVC.recreateThumbnailsFor(asset: compositionCopy, videoComposition: videoCompositionCopy)
+
+        if refreshSectionThumbnails {
+            Task {
+                await textSectionVC.recreateThumbnailsFor(asset: compositionCopy, videoComposition: videoCompositionCopy)
+                await audioSectionVC.recreateThumbnailsFor(asset: compositionCopy, videoComposition: videoCompositionCopy)
+            }
+        } else if UserDataManager.main.backgroundAudioTrack != nil {
+            await MainActor.run {
+                self.audioSectionVC.configure(
+                    track: UserDataManager.main.backgroundAudioTrack,
+                    compositionDuration: composition.duration,
+                    timelineAsset: compositionCopy
+                )
+            }
         }
+        // #region agent log
+        DebugSessionLog.write(
+            hypothesisId: "H6",
+            location: "EditViewController.reloadComposition:exit",
+            message: "reloadComposition finished",
+            data: [
+                "refreshSectionThumbnails": refreshSectionThumbnails,
+                "elapsedMs": Int((Date().timeIntervalSince1970 - reloadStart) * 1000)
+            ]
+        )
+        // #endregion
     }
     
     
@@ -1534,14 +1630,16 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     }
     
     func showUsingProFeaturesAlertView()  {
-            usingProFeaturesAlertView.updateStatus(usingSlider: UserDataManager.main.usingSlider,
+        
+        usingProFeaturesAlertView.updateStatus(usingSlider: UserDataManager.main.usingSlider,
                                                    soundOff: UserDataManager.main.soundOff,
                                                    fps: fps,
                                                    fileType: fileType,
                                                    usingProFont: UserDataManager.main.usingProFont(),
                                                    mergeVideos: UserDataManager.main.usingMergeFeature(),
                                                    captions: UserDataManager.main.usingCaptions(),
-                                                   using4KExport: UserDataManager.main.using4KExport())
+                                                   using4KExport: UserDataManager.main.using4KExport(),
+                                               extractFromVideo: UserDataManager.main.usingExtractFromVideo())
                                                 
             
             usingProFeaturesAlertView.layer.opacity = 0
@@ -1568,7 +1666,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 }
             }
             let constraints = [
-                usingProFeaturesAlertView.heightAnchor.constraint(equalToConstant: 350),
+                usingProFeaturesAlertView.heightAnchor.constraint(equalToConstant: 435 ),
                 usingProFeaturesAlertView.widthAnchor.constraint(equalToConstant: 340),
                 usingProFeaturesAlertView.centerXAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerXAnchor),
                 usingProFeaturesAlertView.centerYAnchor.constraint(equalTo: navigationController!.view.safeAreaLayoutGuide.centerYAnchor)
@@ -1894,7 +1992,8 @@ extension NotificationObservers {
                 fileType == .mp4 ||
                 UserDataManager.main.usingProFont() ||
                 UserDataManager.main.usingMergeFeature() ||
-                UserDataManager.main.usingCaptions() {
+                UserDataManager.main.usingCaptions() ||
+                UserDataManager.main.usingExtractFromVideo() {
                 
                 return true
             }

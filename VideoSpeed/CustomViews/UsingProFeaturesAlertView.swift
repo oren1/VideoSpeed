@@ -30,6 +30,7 @@ class UsingProFeaturesAlertView: UIView {
     @IBOutlet weak var mergeVideosView: UIView!
     @IBOutlet weak var captionsView: UIView!
     @IBOutlet weak var exportQualityView: UIView!
+    @IBOutlet weak var extractFromVideoView: UIView!
     
     @IBOutlet weak var sliderPrecisionViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var soundOffViewHeightConstraint: NSLayoutConstraint!
@@ -39,6 +40,7 @@ class UsingProFeaturesAlertView: UIView {
     @IBOutlet weak var mergeVideosViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var captionsHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var exportQualityViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var extractFromVideoViewHeightConstraint: NSLayoutConstraint!
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -60,7 +62,7 @@ class UsingProFeaturesAlertView: UIView {
         
     }
     
-    func updateStatus(usingSlider: Bool, soundOff: Bool, fps: Int32, fileType: AVFileType, usingProFont: Bool, mergeVideos: Bool, captions: Bool, using4KExport: Bool) {
+    func updateStatus(usingSlider: Bool, soundOff: Bool, fps: Int32, fileType: AVFileType, usingProFont: Bool, mergeVideos: Bool, captions: Bool, using4KExport: Bool, extractFromVideo: Bool) {
         
 //        let isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
         sliderPrecisionViewHeightConstraint.constant = 0
@@ -86,6 +88,9 @@ class UsingProFeaturesAlertView: UIView {
         
         exportQualityViewHeightConstraint.constant = 0
         exportQualityView.isHidden = true
+        
+        extractFromVideoViewHeightConstraint.constant = 0
+        extractFromVideoView.isHidden = true
         
         if usingSlider {
             sliderPrecisionViewHeightConstraint.constant = 24
@@ -122,6 +127,11 @@ class UsingProFeaturesAlertView: UIView {
         if using4KExport {
             exportQualityViewHeightConstraint.constant = 24
             exportQualityView.isHidden = false
+        }
+        
+        if extractFromVideo {
+            extractFromVideoViewHeightConstraint.constant = 24
+            extractFromVideoView.isHidden = false
         }
 
     }
