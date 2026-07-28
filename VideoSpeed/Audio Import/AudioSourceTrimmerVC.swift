@@ -9,15 +9,20 @@ import CoreMedia
 
 final class AudioSourceTrimmerVC: UIViewController {
     var onSourceRangeChanged: ((CMTimeRange) -> Void)?
+    var onVolumeChanged: ((Float) -> Void)?
     var onDone: VoidClousure?
 
     private let titleLabel = UILabel()
     private let rangeLabel = UILabel()
     private let trimmerView = AudioSourceTrimmerView()
+    private let volumeTitleLabel = UILabel()
+    private let volumeValueLabel = UILabel()
+    private let volumeSlider = UISlider()
     private let doneButton = UIButton(type: .system)
 
     private var track: BackgroundAudioTrackItem?
     private var currentRange: CMTimeRange = .zero
+    private var currentVolume: Float = 1.0
 
     private var previewPlayer: AVPlayer?
     private var timeObserver: Any?
@@ -53,7 +58,11 @@ final class AudioSourceTrimmerVC: UIViewController {
     private func apply(track: BackgroundAudioTrackItem) {
         titleLabel.text = track.displayName
         currentRange = track.sourceTimeRange
+        currentVolume = track.volume
         rangeLabel.text = formatRange(currentRange)
+        volumeSlider.value = track.volume
+        updateVolumeLabel(track.volume)
+        previewPlayer?.volume = track.volume
         trimmerView.configure(
             fileURL: track.fileURL,
             fullDuration: track.fullSourceRange.duration.seconds,
@@ -83,6 +92,21 @@ final class AudioSourceTrimmerVC: UIViewController {
             }
         }
 
+        volumeTitleLabel.text = "Volume"
+        volumeTitleLabel.font = .systemFont(ofSize: 14, weight: .medium)
+        volumeTitleLabel.textColor = .white
+
+        volumeValueLabel.font = .systemFont(ofSize: 14, weight: .medium)
+        volumeValueLabel.textColor = UIColor.white.withAlphaComponent(0.75)
+        volumeValueLabel.textAlignment = .right
+        updateVolumeLabel(currentVolume)
+
+        volumeSlider.minimumValue = 0
+        volumeSlider.maximumValue = 1
+        volumeSlider.value = currentVolume
+        volumeSlider.addTarget(self, action: #selector(volumeSliderChanged), for: .valueChanged)
+        volumeSlider.addTarget(self, action: #selector(volumeSliderReleased), for: [.touchUpInside, .touchUpOutside])
+
         doneButton.setTitle("Done", for: .normal)
         doneButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
         doneButton.backgroundColor = .systemBlue
@@ -90,15 +114,10 @@ final class AudioSourceTrimmerVC: UIViewController {
         doneButton.layer.cornerRadius = 10
         doneButton.addTarget(self, action: #selector(doneTapped), for: .touchUpInside)
 
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        rangeLabel.translatesAutoresizingMaskIntoConstraints = false
-        trimmerView.translatesAutoresizingMaskIntoConstraints = false
-        doneButton.translatesAutoresizingMaskIntoConstraints = false
-
-        view.addSubview(titleLabel)
-        view.addSubview(rangeLabel)
-        view.addSubview(trimmerView)
-        view.addSubview(doneButton)
+        [titleLabel, rangeLabel, trimmerView, volumeTitleLabel, volumeValueLabel, volumeSlider, doneButton].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
 
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
@@ -114,12 +133,40 @@ final class AudioSourceTrimmerVC: UIViewController {
             trimmerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             trimmerView.heightAnchor.constraint(equalToConstant: 96),
 
-            doneButton.topAnchor.constraint(equalTo: trimmerView.bottomAnchor, constant: 24),
+            volumeTitleLabel.topAnchor.constraint(equalTo: trimmerView.bottomAnchor, constant: 20),
+            volumeTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+
+            volumeValueLabel.centerYAnchor.constraint(equalTo: volumeTitleLabel.centerYAnchor),
+            volumeValueLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            volumeValueLabel.leadingAnchor.constraint(greaterThanOrEqualTo: volumeTitleLabel.trailingAnchor, constant: 8),
+
+            volumeSlider.topAnchor.constraint(equalTo: volumeTitleLabel.bottomAnchor, constant: 8),
+            volumeSlider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            volumeSlider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+
+            doneButton.topAnchor.constraint(equalTo: volumeSlider.bottomAnchor, constant: 20),
             doneButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             doneButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             doneButton.heightAnchor.constraint(equalToConstant: 44),
             doneButton.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
         ])
+    }
+
+    @objc private func volumeSliderChanged() {
+        currentVolume = volumeSlider.value
+        updateVolumeLabel(currentVolume)
+        previewPlayer?.volume = currentVolume
+    }
+
+    @objc private func volumeSliderReleased() {
+        currentVolume = volumeSlider.value
+        updateVolumeLabel(currentVolume)
+        previewPlayer?.volume = currentVolume
+        onVolumeChanged?(currentVolume)
+    }
+
+    private func updateVolumeLabel(_ volume: Float) {
+        volumeValueLabel.text = "\(Int((volume * 100).rounded()))%"
     }
 
     // MARK: - Preview playback
@@ -129,6 +176,7 @@ final class AudioSourceTrimmerVC: UIViewController {
         stopPreviewPlayback()
 
         let player = AVPlayer(url: track.fileURL)
+        player.volume = currentVolume
         previewPlayer = player
         isPreviewActive = true
 

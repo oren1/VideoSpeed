@@ -257,6 +257,15 @@ extension EditViewController {
                 }
             }
         }
+        sourceVC.onVolumeChanged = { [weak self] volume in
+            guard let self else { return }
+            guard var current = UserDataManager.main.backgroundAudioTrack else { return }
+            current.updateVolume(volume)
+            UserDataManager.main.backgroundAudioTrack = current
+            Task {
+                await self.reloadComposition(refreshSectionThumbnails: false)
+            }
+        }
         sourceVC.onDone = { [weak self] in
             self?.spidPlayerController?.player?.play()
             self?.dismiss(animated: true)

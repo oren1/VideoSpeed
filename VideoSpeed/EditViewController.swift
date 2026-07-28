@@ -539,9 +539,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                     at: timelineStart
                 )) != nil
 
-                // Hard-coded background volume for Step 1 (replace with BackgroundAudioTrackItem.volume later).
                 let mixParameters = AVMutableAudioMixInputParameters(track: compositionAudioTrack)
-                mixParameters.setVolume(0.1, at: .zero)
+                mixParameters.setVolume(backgroundAudioTrack.volume, at: .zero)
                 let mix = AVMutableAudioMix()
                 mix.inputParameters = [mixParameters]
                 backgroundAudioMix = mix
