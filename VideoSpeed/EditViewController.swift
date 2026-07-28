@@ -34,6 +34,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     
     var composition: AVMutableComposition!
     var videoComposition: AVMutableVideoComposition!
+    var audioMix: AVMutableAudioMix?
     var speed: Float = 1
     var fps: Int32 = 30
     var fileType: AVFileType = .mov
@@ -286,11 +287,12 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             await createCropViewController()
             refreshCurrentClipMenuState()
             let asset = await UserDataManager.main.currentSpidAsset.getAsset()
-            guard let (composition, videoComposition) = await createCompositionWith(asset1: asset, speed1: speed, fps: fps, soundOn1: soundOn) else {
+            guard let (composition, videoComposition, audioMix) = await createCompositionWith(asset1: asset, speed1: speed, fps: fps, soundOn1: soundOn) else {
                 return showNoTracksError()
             }
             self.composition = composition
             self.videoComposition = videoComposition
+            self.audioMix = audioMix
             
             let compositionCopy = self.composition.copy() as! AVComposition
             let videoCompositionCopy = self.videoComposition.copy() as! AVVideoComposition
@@ -298,6 +300,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             let playerItem = AVPlayerItem(asset: compositionCopy)
             playerItem.audioTimePitchAlgorithm = .spectral
             playerItem.videoComposition = videoCompositionCopy
+            playerItem.audioMix = audioMix
             
             
             let player = AVPlayer(playerItem: playerItem)
@@ -375,7 +378,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         return proButton
     }
     
-    func createCompositionWith(asset1: AVAsset, speed1: Float, fps: Int32, soundOn1: Bool) async -> (composition: AVMutableComposition, videoComposition: AVMutableVideoComposition)? {
+    func createCompositionWith(asset1: AVAsset, speed1: Float, fps: Int32, soundOn1: Bool) async -> (composition: AVMutableComposition, videoComposition: AVMutableVideoComposition, audioMix: AVMutableAudioMix?)? {
             
         guard let spidAsset = UserDataManager.main.currentSpidAsset else {return nil}
         
@@ -491,6 +494,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             startTime = mainComposition.duration.converted(toScale: newScale)
         }
 
+        var backgroundAudioMix: AVMutableAudioMix?
+
         if var backgroundAudioTrack = UserDataManager.main.backgroundAudioTrack {
             let videoDuration = mainComposition.duration
             let beforeTimelineDuration = backgroundAudioTrack.timelineTimeRange.duration.seconds
@@ -533,6 +538,14 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                     of: sourceTrack,
                     at: timelineStart
                 )) != nil
+
+                // Hard-coded background volume for Step 1 (replace with BackgroundAudioTrackItem.volume later).
+                let mixParameters = AVMutableAudioMixInputParameters(track: compositionAudioTrack)
+                mixParameters.setVolume(0.1, at: .zero)
+                let mix = AVMutableAudioMix()
+                mix.inputParameters = [mixParameters]
+                backgroundAudioMix = mix
+
                 // #region agent log
                 DebugSessionLog.write(
                     hypothesisId: "H8",
@@ -550,9 +563,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 // #endregion
             }
         }
-       
-      
-        
+
         let videoTrack = mainComposition.tracks.first!
         let videoInfo = VideoHelper.orientation(from: videoTrack.preferredTransform)
         let videoSize: CGSize
@@ -575,7 +586,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         //                videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
         //                videoComposition.renderSize = CGSize(width: naturalSize.width, height: naturalSize.height)
         
-        return (mainComposition,videoComposition)
+        return (mainComposition, videoComposition, backgroundAudioMix)
         
     }
     
@@ -948,11 +959,12 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         )
         // #endregion
         let asset = await UserDataManager.main.currentSpidAsset.getAsset()
-        guard let (composition, videoComposition) = await createCompositionWith(asset1: asset, speed1: speed, fps: fps, soundOn1: soundOn) else {
+        guard let (composition, videoComposition, audioMix) = await createCompositionWith(asset1: asset, speed1: speed, fps: fps, soundOn1: soundOn) else {
             return showNoTracksError()
         }
         self.composition = composition
         self.videoComposition = videoComposition
+        self.audioMix = audioMix
         let compositionCopy = self.composition.copy() as! AVComposition
         let videoCompositionCopy = self.videoComposition.copy() as! AVVideoComposition
         
@@ -960,6 +972,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         let playerItem = AVPlayerItem(asset: compositionCopy)
         playerItem.audioTimePitchAlgorithm = .spectral
         playerItem.videoComposition = videoCompositionCopy
+        playerItem.audioMix = audioMix
         spidPlayerController.player?.replaceCurrentItem(with: playerItem)
 
         if refreshSectionThumbnails {
@@ -1194,6 +1207,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             .appendingPathExtension(fileExtension)
         
         exportSession.videoComposition = exportVideoComposition
+        exportSession.audioMix = audioMix
         exportSession.outputFileType = outputFileType
         exportSession.outputURL = exportURL
         
