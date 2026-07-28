@@ -27,15 +27,15 @@
 		6B0D00052FA4000300AAA001 /* AudioSectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00042FA4000300AAA001 /* AudioSectionVC.swift */; };
 		6B0D00112FA4001000AAA001 /* BackgroundAudioSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00102FA4001000AAA001 /* BackgroundAudioSource.swift */; };
 		6B0D00132FA4001100AAA001 /* AudioExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00122FA4001100AAA001 /* AudioExtractor.swift */; };
-		6B0D00242FA4001900AAA001 /* AudioWaveformSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00232FA4001900AAA001 /* AudioWaveformSampler.swift */; };
-		6B0D00262FA4001A000AAA001 /* AudioSourceTrimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00252FA4001A000AAA001 /* AudioSourceTrimmerView.swift */; };
-		6B0D00282FA4001B000AAA001 /* AudioSourceTrimmerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00272FA4001B000AAA001 /* AudioSourceTrimmerVC.swift */; };
 		6B0D00162FA4001200AAA001 /* AudioImportOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00152FA4001200AAA001 /* AudioImportOption.swift */; };
 		6B0D00182FA4001300AAA001 /* ExtractAudioFromVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00172FA4001300AAA001 /* ExtractAudioFromVideoView.swift */; };
 		6B0D001A2FA4001400AAA001 /* MusicLibraryPickerPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00192FA4001400AAA001 /* MusicLibraryPickerPresenter.swift */; };
 		6B0D001C2FA4001500AAA001 /* RecordAudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D001B2FA4001500AAA001 /* RecordAudioView.swift */; };
 		6B0D001E2FA4001600AAA001 /* AudioImportOptionsSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D001D2FA4001600AAA001 /* AudioImportOptionsSheetView.swift */; };
 		6B0D00202FA4001700AAA001 /* VideoLibraryPickerPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D001F2FA4001700AAA001 /* VideoLibraryPickerPresenter.swift */; };
+		6B0D00242FA4001900AAA001 /* AudioWaveformSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00232FA4001900AAA001 /* AudioWaveformSampler.swift */; };
+		6B0D00262FA4001A000AAA001 /* AudioSourceTrimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00252FA4001A000AAA001 /* AudioSourceTrimmerView.swift */; };
+		6B0D00282FA4001B000AAA001 /* AudioSourceTrimmerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D00272FA4001B000AAA001 /* AudioSourceTrimmerVC.swift */; };
 		6B1CF4722D6B27B1005BB89E /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1CF4712D6B27A6005BB89E /* Notification+Extension.swift */; };
 		6B23C1DD2BF629DC001C4F24 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23C1DC2BF629DC001C4F24 /* NetworkManager.swift */; };
 		6B23C1E02BF62F11001C4F24 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23C1DF2BF62F11001C4F24 /* User.swift */; };
@@ -240,15 +240,15 @@
 		6B0D00042FA4000300AAA001 /* AudioSectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSectionVC.swift; sourceTree = "<group>"; };
 		6B0D00102FA4001000AAA001 /* BackgroundAudioSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundAudioSource.swift; sourceTree = "<group>"; };
 		6B0D00122FA4001100AAA001 /* AudioExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioExtractor.swift; sourceTree = "<group>"; };
-		6B0D00232FA4001900AAA001 /* AudioWaveformSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformSampler.swift; sourceTree = "<group>"; };
-		6B0D00252FA4001A000AAA001 /* AudioSourceTrimmerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSourceTrimmerView.swift; sourceTree = "<group>"; };
-		6B0D00272FA4001B000AAA001 /* AudioSourceTrimmerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSourceTrimmerVC.swift; sourceTree = "<group>"; };
 		6B0D00152FA4001200AAA001 /* AudioImportOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioImportOption.swift; sourceTree = "<group>"; };
 		6B0D00172FA4001300AAA001 /* ExtractAudioFromVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtractAudioFromVideoView.swift; sourceTree = "<group>"; };
 		6B0D00192FA4001400AAA001 /* MusicLibraryPickerPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicLibraryPickerPresenter.swift; sourceTree = "<group>"; };
 		6B0D001B2FA4001500AAA001 /* RecordAudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordAudioView.swift; sourceTree = "<group>"; };
 		6B0D001D2FA4001600AAA001 /* AudioImportOptionsSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioImportOptionsSheetView.swift; sourceTree = "<group>"; };
 		6B0D001F2FA4001700AAA001 /* VideoLibraryPickerPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoLibraryPickerPresenter.swift; sourceTree = "<group>"; };
+		6B0D00232FA4001900AAA001 /* AudioWaveformSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformSampler.swift; sourceTree = "<group>"; };
+		6B0D00252FA4001A000AAA001 /* AudioSourceTrimmerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSourceTrimmerView.swift; sourceTree = "<group>"; };
+		6B0D00272FA4001B000AAA001 /* AudioSourceTrimmerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSourceTrimmerVC.swift; sourceTree = "<group>"; };
 		6B1CF4712D6B27A6005BB89E /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
 		6B23C1DC2BF629DC001C4F24 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		6B23C1DF2BF62F11001C4F24 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -465,6 +465,21 @@
 			path = "Text Edit Sections";
 			sourceTree = "<group>";
 		};
+		6B0D00142FA4001200AAA001 /* Audio Import */ = {
+			isa = PBXGroup;
+			children = (
+				6B0D00152FA4001200AAA001 /* AudioImportOption.swift */,
+				6B0D00172FA4001300AAA001 /* ExtractAudioFromVideoView.swift */,
+				6B0D00192FA4001400AAA001 /* MusicLibraryPickerPresenter.swift */,
+				6B0D001B2FA4001500AAA001 /* RecordAudioView.swift */,
+				6B0D001D2FA4001600AAA001 /* AudioImportOptionsSheetView.swift */,
+				6B0D001F2FA4001700AAA001 /* VideoLibraryPickerPresenter.swift */,
+				6B0D00252FA4001A000AAA001 /* AudioSourceTrimmerView.swift */,
+				6B0D00272FA4001B000AAA001 /* AudioSourceTrimmerVC.swift */,
+			);
+			path = "Audio Import";
+			sourceTree = "<group>";
+		};
 		6B23C1DE2BF62EF8001C4F24 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
@@ -596,21 +611,6 @@
 				6BAFED872DDD87EE00AF13E1 /* VerticalLabelsView.swift */,
 			);
 			path = CustomViews;
-			sourceTree = "<group>";
-		};
-		6B0D00142FA4001200AAA001 /* Audio Import */ = {
-			isa = PBXGroup;
-			children = (
-				6B0D00152FA4001200AAA001 /* AudioImportOption.swift */,
-				6B0D00172FA4001300AAA001 /* ExtractAudioFromVideoView.swift */,
-				6B0D00192FA4001400AAA001 /* MusicLibraryPickerPresenter.swift */,
-				6B0D001B2FA4001500AAA001 /* RecordAudioView.swift */,
-				6B0D001D2FA4001600AAA001 /* AudioImportOptionsSheetView.swift */,
-				6B0D001F2FA4001700AAA001 /* VideoLibraryPickerPresenter.swift */,
-				6B0D00252FA4001A000AAA001 /* AudioSourceTrimmerView.swift */,
-				6B0D00272FA4001B000AAA001 /* AudioSourceTrimmerVC.swift */,
-			);
-			path = "Audio Import";
 			sourceTree = "<group>";
 		};
 		6BCAF7E42A63B6360039BE15 /* Edit Sections */ = {
@@ -1252,7 +1252,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = VideoSpeed/VideoSpeed.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = K969727JC6;
 				ENABLE_DEBUG_DYLIB = YES;
@@ -1260,9 +1260,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VideoSpeed/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Spid;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Allow access to your music library to add background audio";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allow you to take a video for editing";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow microphone access to record video sound and background audio";
-				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Allow access to your music library to add background audio";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "We need to send a photo";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This will allow you to select videos for editing";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -1281,8 +1281,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenSSL/lib",
 				);
-
-				MARKETING_VERSION = 5.6.1;
+				MARKETING_VERSION = 5.8.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -1303,7 +1302,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = VideoSpeed/VideoSpeed.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = K969727JC6;
 				ENABLE_DEBUG_DYLIB = YES;
@@ -1311,9 +1310,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VideoSpeed/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Spid;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Allow access to your music library to add background audio";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allow you to take a video for editing";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow microphone access to record video sound and background audio";
-				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Allow access to your music library to add background audio";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "We need to send a photo";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This will allow you to select videos for editing";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -1332,8 +1331,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/OpenSSL/lib",
 				);
-                
-				MARKETING_VERSION = 5.6.1;
+				MARKETING_VERSION = 5.8.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.spid.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

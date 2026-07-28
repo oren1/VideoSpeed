@@ -76,7 +76,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                                  MenuItem(id: .text , title: "TEXT", imageName: "textformat.alt"),
                                  MenuItem(id: .captions , title: "CAPTIONS", imageName: "captions.bubble"),
                                  MenuItem(id: .fps , title: "FPS", imageName: "square.stack.3d.down.right.fill"),
-                                 MenuItem(id: .sound , title: "SOUND", imageName: "speaker.wave.2"),
+                                 MenuItem(id: .sound , title: "VOLUME", imageName: "speaker.wave.2"),
                                  MenuItem(id: .audio , title: "AUDIO", imageName: "music.note"),
                                  MenuItem(id: .more , title: "MORE", imageName: "ellipsis")
     ]
