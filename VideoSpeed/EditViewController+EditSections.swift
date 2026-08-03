@@ -40,6 +40,10 @@ extension EditViewController {
             guard let self = self else { return }
             Task {
                 await UserDataManager.main.currentSpidAsset.updateSpeed(speed: speed)
+                let assetID = await UserDataManager.main.currentSpidAsset.id
+                await MainActor.run {
+                    SwiftDataManager.shared.updateSpeed(speed, forAssetID: assetID)
+                }
                 /* Updating whether at least one 'SpidAsset' is using the slider.
                  i.e it's speed value is different from 0.25, 0.5, 1, 1.5 or 2 */
                 UserDataManager.main.usingSlider = await UserDataManager.main.isUsingSliderPrecision()

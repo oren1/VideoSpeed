@@ -63,7 +63,8 @@ actor SpidAsset {
         videoSize: CGSize,
         thumnbnailImage: CGImage,
         mediaKind: MediaKind = .video,
-        clipSourceRange: CMTimeRange? = nil
+        clipSourceRange: CMTimeRange? = nil,
+        id: UUID = UUID()
     ) {
         self.asset = asset
         self.timeRange = timeRange
@@ -71,7 +72,7 @@ actor SpidAsset {
         self.videoSize = videoSize
         self.thumbnailImage = thumnbnailImage
         self.mediaKind = mediaKind
-        self.id = UUID()
+        self.id = id
     }
     
     func getOriginalAsset() -> AVAsset {

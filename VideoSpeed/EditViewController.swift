@@ -13,6 +13,7 @@ import Photos
 import FirebaseRemoteConfig
 import SwiftUI
 import Combine
+import SwiftData
 
 enum PermissionLocation: String {
     case mainScreen = "mainScreen"
@@ -60,6 +61,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var selectedMenuItem: MenuItem!
     var videosStartTimes: [CMTime] = [.zero]
     var subscribers: [AnyCancellable] = []
+    private var spidAssetModelSaveObserver: NSObjectProtocol?
+    private var loadSpidAssetsTask: Task<Void, Never>?
 
     
     
@@ -270,6 +273,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         createEditSections()
         addTimingSection()
+        startObservingSpidAssetModels()
         
         
 //        isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
@@ -284,6 +288,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         })
         
         Task {
+            await loadSpidAssetsTask?.value
             await createCropViewController()
             refreshCurrentClipMenuState()
             let asset = await UserDataManager.main.currentSpidAsset.getAsset()
@@ -357,12 +362,69 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         UserDataManager.main.currentCaptions = nil
         UserDataManager.main.transcription = nil
         UserDataManager.main.clearBackgroundAudioTrack()
+//        SwiftDataManager.shared.deleteAllSpidAssetModels()
+        stopObservingSpidAssetModels()
     }
     
     deinit {
         print("deinit")
         NotificationCenter.default.removeObserver(self)
+        if let spidAssetModelSaveObserver {
+            NotificationCenter.default.removeObserver(spidAssetModelSaveObserver)
+        }
         isUsingCropFeatureSubscriber = nil
+    }
+
+    // MARK: - SwiftData (SpidAssetModel)
+
+    private func startObservingSpidAssetModels() {
+        loadSpidAssetsTask = Task { @MainActor in
+            await self.loadSpidAssetsFromSwiftDataIfNeeded()
+        }
+
+        spidAssetModelSaveObserver = NotificationCenter.default.addObserver(
+            forName: ModelContext.didSave,
+            object: SwiftDataManager.shared.modelContext,
+            queue: .main
+        ) { [weak self] _ in
+//            self?.handleSpidAssetModelsDidSave()
+        }
+    }
+
+    private func loadSpidAssetsFromSwiftDataIfNeeded() async {
+        let models = SwiftDataManager.shared.fetchSpidAssetModels()
+        guard !models.isEmpty else { return }
+
+        let assets = await SwiftDataManager.shared.makeSpidAssets(from: models)
+        guard !assets.isEmpty else { return }
+
+        UserDataManager.main.spidAssets = assets
+        UserDataManager.main.currentSpidAsset = assets.first
+        asset = await assets[0].getAsset()
+        videosCollectionView.reloadData()
+    }
+
+    private func stopObservingSpidAssetModels() {
+        if let spidAssetModelSaveObserver {
+            NotificationCenter.default.removeObserver(spidAssetModelSaveObserver)
+            self.spidAssetModelSaveObserver = nil
+        }
+    }
+
+    private func handleSpidAssetModelsDidSave() {
+        Task { @MainActor in
+            guard let currentAsset = UserDataManager.main.currentSpidAsset else { return }
+            let assetID = await currentAsset.id
+            guard let model = SwiftDataManager.shared.spidAssetModel(id: assetID) else { return }
+
+            // Apply model → UI when the persisted speed diverges (e.g. future undo/redo).
+            if speed != model.speed {
+                speed = model.speed
+                speedLabel?.text = "\(model.speed)x"
+                speedSectionVC?.speed = model.speed
+                await reloadComposition()
+            }
+        }
     }
     
     func createProButton() -> UIButton {

@@ -380,14 +380,18 @@ class MainViewController: UIViewController {
                 }
                 UserDataManager.main.spidAssets.append(spidAsset)
             }
-
+            
+            
             Task {@MainActor [weak self] in
-                
-                guard let self = self else { return }
+                guard let self else { return }
                 guard !UserDataManager.main.spidAssets.isEmpty else {
                     self.hideLoading()
                     return
                 }
+                
+                await SwiftDataManager.shared.syncSpidAssetModels(from: UserDataManager.main.spidAssets)
+
+                
                 if SpidProducts.store.userPurchasedProVersion() == nil &&
                     UserDataManager.main.dateToShowPurchaseScreen < Date().timeIntervalSince1970 &&
                     !UserDataManager.main.isGiftActive() {
