@@ -53,6 +53,7 @@ class UserDataManager: ObservableObject {
    
     var currentSpidAsset: SpidAsset!
     var spidAssets: [SpidAsset] = []
+    var currentProject: VideoProject?
     var splitCount: Int = 0
     func usingMergeFeature() -> Bool { spidAssets.count > 1 }
     var usingSlider: Bool = false {

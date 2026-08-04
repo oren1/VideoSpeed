@@ -6,6 +6,7 @@
 import Foundation
 import SwiftData
 import AVFoundation
+import UIKit
 
 @MainActor
 final class SwiftDataManager {
@@ -31,7 +32,50 @@ final class SwiftDataManager {
         }
     }
 
+    // MARK: - VideoProject
+
+    func fetchVideoProjects() -> [VideoProject] {
+        (try? modelContext.fetch(FetchDescriptor<VideoProject>())) ?? []
+    }
+
+    /// Creates a new `VideoProject` from the selected base videos and sets it as `UserDataManager.currentProject`.
+    @discardableResult
+    func createVideoProject(from assets: [SpidAsset]) async -> VideoProject {
+        var models: [SpidAssetModel] = []
+        for (index, asset) in assets.enumerated() {
+            let snapshot = await asset.makePersistableSnapshot()
+            models.append(makeSpidAssetModel(from: snapshot, sortIndex: index))
+        }
+
+        let thumbnailImage = await thumbnailData(from: assets.first)
+        let project = VideoProject(thumbnailImage: thumbnailImage, spidAssets: models)
+        modelContext.insert(project)
+        save()
+
+        UserDataManager.main.currentProject = project
+        return project
+    }
+
+    /// Upserts `UserDataManager.spidAssets` into `UserDataManager.currentProject`.
+    @discardableResult
+    func upsertVideoProject() async -> VideoProject? {
+        guard let project = UserDataManager.main.currentProject else { return nil }
+
+        let assets = UserDataManager.main.spidAssets
+        var models: [SpidAssetModel] = []
+        for (index, asset) in assets.enumerated() {
+            let snapshot = await asset.makePersistableSnapshot()
+            models.append(upsertSpidAssetModel(from: snapshot, sortIndex: index))
+        }
+
+        project.thumbnailImage = await thumbnailData(from: assets.first)
+        project.spidAssets = models
+        save()
+        return project
+    }
+
     // MARK: - SpidAssetModel
+
     func fetchSpidAssetModels() -> [SpidAssetModel] {
         let descriptor = FetchDescriptor<SpidAssetModel>(
             sortBy: [SortDescriptor(\.sortIndex)]
@@ -57,15 +101,35 @@ final class SwiftDataManager {
         return try? modelContext.fetch(descriptor).first
     }
 
-    func syncSpidAssetModels(from assets: [SpidAsset]) async {
-        for (index, asset) in assets.enumerated() {
-            let snapshot = await asset.makePersistableSnapshot()
-            upsertSpidAssetModel(from: snapshot, sortIndex: index)
-        }
-        save()
+    /// Builds a new `SpidAssetModel` without inserting it; ownership comes from the parent `VideoProject`.
+    func makeSpidAssetModel(from snapshot: SpidAsset.PersistableSnapshot, sortIndex: Int) -> SpidAssetModel {
+        let timeRangeCM = CMTimeRange(
+            start: CMTime(value: snapshot.timeRangeStartValue, timescale: snapshot.timeRangeStartTimescale),
+            duration: CMTime(value: snapshot.timeRangeDurationValue, timescale: snapshot.timeRangeDurationTimescale)
+        )
+        let clipSourceRangeCM = CMTimeRange(
+            start: CMTime(value: snapshot.clipSourceStartValue, timescale: snapshot.clipSourceStartTimescale),
+            duration: CMTime(value: snapshot.clipSourceDurationValue, timescale: snapshot.clipSourceDurationTimescale)
+        )
+
+        return SpidAssetModel(
+            id: snapshot.id,
+            assetURLString: snapshot.assetURLString,
+            timeRange: StoredCMTimeRange(timeRangeCM),
+            clipSourceRange: StoredCMTimeRange(clipSourceRangeCM),
+            videoWidth: snapshot.videoWidth,
+            videoHeight: snapshot.videoHeight,
+            speed: snapshot.speed,
+            soundOn: snapshot.soundOn,
+            sliderValue: snapshot.sliderValue,
+            mediaKindRawValue: snapshot.mediaKindRawValue,
+            videoFilterRawValue: snapshot.videoFilterRawValue,
+            sortIndex: sortIndex
+        )
     }
 
-    func upsertSpidAssetModel(from snapshot: SpidAsset.PersistableSnapshot, sortIndex: Int) {
+    @discardableResult
+    func upsertSpidAssetModel(from snapshot: SpidAsset.PersistableSnapshot, sortIndex: Int) -> SpidAssetModel {
         let timeRangeCM = CMTimeRange(
             start: CMTime(value: snapshot.timeRangeStartValue, timescale: snapshot.timeRangeStartTimescale),
             duration: CMTime(value: snapshot.timeRangeDurationValue, timescale: snapshot.timeRangeDurationTimescale)
@@ -95,23 +159,10 @@ final class SwiftDataManager {
             existing.mediaKindRawValue = snapshot.mediaKindRawValue
             existing.videoFilterRawValue = snapshot.videoFilterRawValue
             existing.sortIndex = sortIndex
-        } else {
-            let model = SpidAssetModel(
-                id: snapshot.id,
-                assetURLString: snapshot.assetURLString,
-                timeRange: StoredCMTimeRange(timeRangeCM),
-                clipSourceRange: StoredCMTimeRange(clipSourceRangeCM),
-                videoWidth: snapshot.videoWidth,
-                videoHeight: snapshot.videoHeight,
-                speed: snapshot.speed,
-                soundOn: snapshot.soundOn,
-                sliderValue: snapshot.sliderValue,
-                mediaKindRawValue: snapshot.mediaKindRawValue,
-                videoFilterRawValue: snapshot.videoFilterRawValue,
-                sortIndex: sortIndex
-            )
-            modelContext.insert(model)
+            return existing
         }
+
+        return makeSpidAssetModel(from: snapshot, sortIndex: sortIndex)
     }
 
     func updateSpeed(_ speed: Float, forAssetID id: UUID) {
@@ -139,5 +190,11 @@ final class SwiftDataManager {
         } catch {
             print("Failed to save ModelContext: \(error)")
         }
+    }
+
+    private func thumbnailData(from asset: SpidAsset?) async -> Data {
+        guard let asset else { return Data() }
+        let cgImage = await asset.thumbnailImage
+        return UIImage(cgImage: cgImage).jpegData(compressionQuality: 0.85) ?? Data()
     }
 }

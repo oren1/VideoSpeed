@@ -25,6 +25,7 @@ final class SpidAssetModel {
     var mediaKindRawValue: String
     var videoFilterRawValue: String
     var sortIndex: Int
+    var project: VideoProject?
 
     init(
         id: UUID,
@@ -38,7 +39,8 @@ final class SpidAssetModel {
         sliderValue: Float = 19.5,
         mediaKindRawValue: String = "video",
         videoFilterRawValue: String = VideoFilter.none.rawValue,
-        sortIndex: Int = 0
+        sortIndex: Int = 0,
+        project: VideoProject? = nil
     ) {
         self.id = id
         self.assetURLString = assetURLString
@@ -52,5 +54,6 @@ final class SpidAssetModel {
         self.mediaKindRawValue = mediaKindRawValue
         self.videoFilterRawValue = videoFilterRawValue
         self.sortIndex = sortIndex
+        self.project = project
     }
 }

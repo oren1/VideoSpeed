@@ -359,6 +359,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         UserDataManager.main.usingSlider = false
         UserDataManager.main.splitCount = 0
         UserDataManager.main.spidAssets = []
+        UserDataManager.main.currentProject = nil
         UserDataManager.main.currentCaptions = nil
         UserDataManager.main.transcription = nil
         UserDataManager.main.clearBackgroundAudioTrack()

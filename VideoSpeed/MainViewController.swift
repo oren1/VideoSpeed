@@ -389,7 +389,7 @@ class MainViewController: UIViewController {
                     return
                 }
                 
-                await SwiftDataManager.shared.syncSpidAssetModels(from: UserDataManager.main.spidAssets)
+                await SwiftDataManager.shared.createVideoProject(from: UserDataManager.main.spidAssets)
 
                 
                 if SpidProducts.store.userPurchasedProVersion() == nil &&
