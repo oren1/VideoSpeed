@@ -10,7 +10,8 @@ extension SpidAsset {
     /// Snapshot of persistable fields for syncing into `SpidAssetModel`.
     struct PersistableSnapshot: Sendable {
         let id: UUID
-        let assetURLString: String
+        let videoData: Data
+        let fileExtension: String
         let timeRangeStartValue: Int64
         let timeRangeStartTimescale: Int32
         let timeRangeDurationValue: Int64
@@ -29,10 +30,11 @@ extension SpidAsset {
     }
 
     func makePersistableSnapshot() -> PersistableSnapshot {
-        let urlString = (getOriginalAsset() as? AVURLAsset)?.url.absoluteString ?? ""
+        let ext = (getOriginalAsset() as? AVURLAsset)?.url.pathExtension ?? ""
         return PersistableSnapshot(
             id: id,
-            assetURLString: urlString,
+            videoData: Data(),
+            fileExtension: ext.isEmpty ? "mov" : ext,
             timeRangeStartValue: timeRange.start.value,
             timeRangeStartTimescale: timeRange.start.timescale,
             timeRangeDurationValue: timeRange.duration.value,
@@ -51,10 +53,46 @@ extension SpidAsset {
         )
     }
 
+    func makePersistableSnapshot(videoData: Data) -> PersistableSnapshot {
+        let base = makePersistableSnapshot()
+        return PersistableSnapshot(
+            id: base.id,
+            videoData: videoData,
+            fileExtension: base.fileExtension,
+            timeRangeStartValue: base.timeRangeStartValue,
+            timeRangeStartTimescale: base.timeRangeStartTimescale,
+            timeRangeDurationValue: base.timeRangeDurationValue,
+            timeRangeDurationTimescale: base.timeRangeDurationTimescale,
+            clipSourceStartValue: base.clipSourceStartValue,
+            clipSourceStartTimescale: base.clipSourceStartTimescale,
+            clipSourceDurationValue: base.clipSourceDurationValue,
+            clipSourceDurationTimescale: base.clipSourceDurationTimescale,
+            videoWidth: base.videoWidth,
+            videoHeight: base.videoHeight,
+            speed: base.speed,
+            soundOn: base.soundOn,
+            sliderValue: base.sliderValue,
+            mediaKindRawValue: base.mediaKindRawValue,
+            videoFilterRawValue: base.videoFilterRawValue
+        )
+    }
+
     /// Rebuilds a runtime `SpidAsset` from a persisted `SpidAssetModel`.
     static func make(from model: SpidAssetModel) async -> SpidAsset? {
-        guard !model.assetURLString.isEmpty,
-              let url = URL(string: model.assetURLString) else {
+        guard !model.videoData.isEmpty else {
+            print("SpidAsset.make: empty videoData for \(model.id)")
+            return nil
+        }
+
+        let url: URL
+        do {
+            url = try ProjectMediaStore.materialize(
+                model.videoData,
+                assetID: model.id,
+                fileExtension: model.fileExtension
+            )
+        } catch {
+            print("SpidAsset.make: failed to materialize videoData for \(model.id): \(error)")
             return nil
         }
 
@@ -63,8 +101,10 @@ extension SpidAsset {
         let clipSourceRange = model.clipSourceRange?.cmTimeRange ?? timeRange
         let videoSize = CGSize(width: model.videoWidth, height: model.videoHeight)
         let mediaKind: MediaKind = model.mediaKindRawValue == "image" ? .image : .video
+        let thumbnailTime = timeRange.start.isValid && !timeRange.start.isIndefinite ? timeRange.start : .zero
 
-        guard let thumbnailImage = await avAsset.generateThumbnailImage(at: timeRange.start) else {
+        guard let thumbnailImage = await avAsset.generateThumbnailImage(at: thumbnailTime) else {
+            print("SpidAsset.make: thumbnail failed for \(url.path)")
             return nil
         }
 

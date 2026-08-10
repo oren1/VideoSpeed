@@ -7,12 +7,14 @@ import Foundation
 import SwiftData
 
 /// SwiftData counterpart of runtime `SpidAsset`. Holds persistable fields only;
-/// AVFoundation objects stay on the actor and are rebuilt from `assetURLString` when needed.
+/// AVFoundation objects stay on the actor and are rebuilt from `videoData` when needed.
 @Model
 final class SpidAssetModel {
     @Attribute(.unique) var id: UUID
-    /// Underlying video file URL (`AVURLAsset.url.absoluteString`). Empty when the asset has no file URL.
-    var assetURLString: String
+    /// Raw bytes of the underlying video, stored on disk via SwiftData external storage.
+    @Attribute(.externalStorage) var videoData: Data
+    /// File extension of the original video (e.g. `mov`, `mp4`), used when materializing for playback.
+    var fileExtension: String
     @Relationship(deleteRule: .cascade)
     var timeRange: StoredCMTimeRange?
     @Relationship(deleteRule: .cascade)
@@ -29,7 +31,8 @@ final class SpidAssetModel {
 
     init(
         id: UUID,
-        assetURLString: String,
+        videoData: Data,
+        fileExtension: String,
         timeRange: StoredCMTimeRange,
         clipSourceRange: StoredCMTimeRange,
         videoWidth: Double,
@@ -43,7 +46,8 @@ final class SpidAssetModel {
         project: VideoProject? = nil
     ) {
         self.id = id
-        self.assetURLString = assetURLString
+        self.videoData = videoData
+        self.fileExtension = fileExtension
         self.timeRange = timeRange
         self.clipSourceRange = clipSourceRange
         self.videoWidth = videoWidth

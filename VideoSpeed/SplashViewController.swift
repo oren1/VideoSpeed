@@ -13,6 +13,8 @@ import StoreKit
 import CurlDSL
 import AVFoundation
 import Alamofire
+import SwiftUI
+import SwiftData
 
 class SplashViewController: UIViewController, GADFullScreenContentDelegate {
     
@@ -81,7 +83,7 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
         
         
         downloadGroup.notify(queue: DispatchQueue.main) { [weak self] in
-                self?.pushMainViewController()
+                self?.pushProjectsViewController()
         }
        
     }
@@ -137,8 +139,18 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
     }
 
     func pushMainViewController() {
-        let mainViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MainViewController") as! MainViewController
-        navigationController?.pushViewController(mainViewController, animated: false)
+        pushProjectsViewController()
+    }
+
+    func pushProjectsViewController() {
+        let hostingController = UIHostingController(
+            rootView: ProjectsView()
+                .modelContainer(SwiftDataManager.shared.container)
+        )
+        hostingController.view.backgroundColor = .black
+//        hostingController.navigationItem.hidesBackButton = true
+        // Replace splash so Projects is the root and has no back navigation.
+        navigationController?.setViewControllers([hostingController], animated: false)
     }
     
     func getRemoteConfig(completion: @escaping VoidClosure) {

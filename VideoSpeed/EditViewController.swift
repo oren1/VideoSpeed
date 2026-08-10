@@ -273,7 +273,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         createEditSections()
         addTimingSection()
-        startObservingSpidAssetModels()
+//        startObservingSpidAssetModels()
         
         
 //        isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
@@ -288,7 +288,11 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         })
         
         Task {
-            await loadSpidAssetsTask?.value
+//            await loadSpidAssetsFromSwiftDataIfNeeded()
+            print("currentSpidAsset 2")
+            guard UserDataManager.main.currentSpidAsset != nil else {
+                return showNoTracksError()
+            }
             await createCropViewController()
             refreshCurrentClipMenuState()
             let asset = await UserDataManager.main.currentSpidAsset.getAsset()
@@ -364,7 +368,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         UserDataManager.main.transcription = nil
         UserDataManager.main.clearBackgroundAudioTrack()
 //        SwiftDataManager.shared.deleteAllSpidAssetModels()
-        stopObservingSpidAssetModels()
+        /*stopObservingSpidAssetModels*/()
     }
     
     deinit {
@@ -377,41 +381,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     }
 
     // MARK: - SwiftData (SpidAssetModel)
-
-    private func startObservingSpidAssetModels() {
-        loadSpidAssetsTask = Task { @MainActor in
-            await self.loadSpidAssetsFromSwiftDataIfNeeded()
-        }
-
-        spidAssetModelSaveObserver = NotificationCenter.default.addObserver(
-            forName: ModelContext.didSave,
-            object: SwiftDataManager.shared.modelContext,
-            queue: .main
-        ) { [weak self] _ in
-//            self?.handleSpidAssetModelsDidSave()
-        }
-    }
-
-    private func loadSpidAssetsFromSwiftDataIfNeeded() async {
-        let models = SwiftDataManager.shared.fetchSpidAssetModels()
-        guard !models.isEmpty else { return }
-
-        let assets = await SwiftDataManager.shared.makeSpidAssets(from: models)
-        guard !assets.isEmpty else { return }
-
-        UserDataManager.main.spidAssets = assets
-        UserDataManager.main.currentSpidAsset = assets.first
-        asset = await assets[0].getAsset()
-        videosCollectionView.reloadData()
-    }
-
-    private func stopObservingSpidAssetModels() {
-        if let spidAssetModelSaveObserver {
-            NotificationCenter.default.removeObserver(spidAssetModelSaveObserver)
-            self.spidAssetModelSaveObserver = nil
-        }
-    }
-
     private func handleSpidAssetModelsDidSave() {
         Task { @MainActor in
             guard let currentAsset = UserDataManager.main.currentSpidAsset else { return }

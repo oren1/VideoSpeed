@@ -20,13 +20,12 @@ final class SwiftDataManager {
 
     private init() {
         do {
-            let schema = Schema([
-                VideoProject.self,
+            container = try ModelContainer(
+                for: VideoProject.self,
                 SpidAssetModel.self,
                 StoredCMTimeRange.self,
                 StoredCMTime.self
-            ])
-            container = try ModelContainer(for: schema)
+            )
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
@@ -43,7 +42,7 @@ final class SwiftDataManager {
     func createVideoProject(from assets: [SpidAsset]) async -> VideoProject {
         var models: [SpidAssetModel] = []
         for (index, asset) in assets.enumerated() {
-            let snapshot = await asset.makePersistableSnapshot()
+            let snapshot = await makePersistedSnapshot(from: asset)
             models.append(makeSpidAssetModel(from: snapshot, sortIndex: index))
         }
 
@@ -64,7 +63,7 @@ final class SwiftDataManager {
         let assets = UserDataManager.main.spidAssets
         var models: [SpidAssetModel] = []
         for (index, asset) in assets.enumerated() {
-            let snapshot = await asset.makePersistableSnapshot()
+            let snapshot = await makePersistedSnapshot(from: asset)
             models.append(upsertSpidAssetModel(from: snapshot, sortIndex: index))
         }
 
@@ -72,6 +71,19 @@ final class SwiftDataManager {
         project.spidAssets = models
         save()
         return project
+    }
+
+    /// Reads the clip's raw bytes so they can be stored directly on the `SpidAssetModel`.
+    private func makePersistedSnapshot(from asset: SpidAsset) async -> SpidAsset.PersistableSnapshot {
+        let base = await asset.makePersistableSnapshot()
+        let avAsset = await asset.getOriginalAsset()
+        guard let urlAsset = avAsset as? AVURLAsset,
+              urlAsset.url.isFileURL,
+              let data = try? Data(contentsOf: urlAsset.url, options: .mappedIfSafe) else {
+            print("Failed to read video data for asset \(base.id)")
+            return base
+        }
+        return await asset.makePersistableSnapshot(videoData: data)
     }
 
     // MARK: - SpidAssetModel
@@ -114,7 +126,8 @@ final class SwiftDataManager {
 
         return SpidAssetModel(
             id: snapshot.id,
-            assetURLString: snapshot.assetURLString,
+            videoData: snapshot.videoData,
+            fileExtension: snapshot.fileExtension,
             timeRange: StoredCMTimeRange(timeRangeCM),
             clipSourceRange: StoredCMTimeRange(clipSourceRangeCM),
             videoWidth: snapshot.videoWidth,
@@ -140,7 +153,10 @@ final class SwiftDataManager {
         )
 
         if let existing = spidAssetModel(id: snapshot.id) {
-            existing.assetURLString = snapshot.assetURLString
+            if !snapshot.videoData.isEmpty {
+                existing.videoData = snapshot.videoData
+                existing.fileExtension = snapshot.fileExtension
+            }
             if let existingTimeRange = existing.timeRange {
                 existingTimeRange.update(from: timeRangeCM)
             } else {

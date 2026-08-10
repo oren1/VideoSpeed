@@ -9,18 +9,18 @@ import UIKit
 
 @Model
 final class VideoProject {
-//    var speed: Float
-    var thumbnailImage: Data
+    var thumbnailImage: Data = Data()
+    var createdAt: Date = Date()
     @Relationship(deleteRule: .cascade, inverse: \SpidAssetModel.project)
-    var spidAssets: [SpidAssetModel]
+    var spidAssets: [SpidAssetModel] = []
 
     init(
-//        speed: Float = 1.0,
         thumbnailImage: Data = Data(),
+        createdAt: Date = Date(),
         spidAssets: [SpidAssetModel] = []
     ) {
-//        self.speed = speed
         self.thumbnailImage = thumbnailImage
+        self.createdAt = createdAt
         self.spidAssets = spidAssets
     }
 
