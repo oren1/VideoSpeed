@@ -73,6 +73,49 @@ final class SwiftDataManager {
         return project
     }
 
+    func deleteVideoProject(_ project: VideoProject) {
+        modelContext.delete(project)
+        save()
+    }
+
+    /// Inserts a deep copy of `project` (new asset IDs) and returns it.
+    @discardableResult
+    func duplicateVideoProject(_ project: VideoProject) -> VideoProject {
+        let copiedAssets = project.spidAssets
+            .sorted { $0.sortIndex < $1.sortIndex }
+            .map(copySpidAssetModel)
+        let duplicate = VideoProject(
+            thumbnailImage: project.thumbnailImage,
+            createdAt: Date(),
+            spidAssets: copiedAssets
+        )
+        modelContext.insert(duplicate)
+        save()
+        return duplicate
+    }
+
+    private func copySpidAssetModel(_ model: SpidAssetModel) -> SpidAssetModel {
+        let timeRange = StoredCMTimeRange(model.timeRange?.cmTimeRange ?? .zero)
+        let clipSourceRange = StoredCMTimeRange(
+            model.clipSourceRange?.cmTimeRange ?? model.timeRange?.cmTimeRange ?? .zero
+        )
+        return SpidAssetModel(
+            id: UUID(),
+            videoData: model.videoData,
+            fileExtension: model.fileExtension,
+            timeRange: timeRange,
+            clipSourceRange: clipSourceRange,
+            videoWidth: model.videoWidth,
+            videoHeight: model.videoHeight,
+            speed: model.speed,
+            soundOn: model.soundOn,
+            sliderValue: model.sliderValue,
+            mediaKindRawValue: model.mediaKindRawValue,
+            videoFilterRawValue: model.videoFilterRawValue,
+            sortIndex: model.sortIndex
+        )
+    }
+
     /// Reads the clip's raw bytes so they can be stored directly on the `SpidAssetModel`.
     private func makePersistedSnapshot(from asset: SpidAsset) async -> SpidAsset.PersistableSnapshot {
         let base = await asset.makePersistableSnapshot()
