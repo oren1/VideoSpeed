@@ -230,6 +230,16 @@ final class SwiftDataManager {
         save()
     }
 
+    func updateTimeRange(_ timeRange: CMTimeRange, forAssetID id: UUID) {
+        guard let model = spidAssetModel(id: id) else { return }
+        if let existingTimeRange = model.timeRange {
+            existingTimeRange.update(from: timeRange)
+        } else {
+            model.timeRange = StoredCMTimeRange(timeRange)
+        }
+        save()
+    }
+
     func deleteAllSpidAssetModels() {
         do {
             let models = try modelContext.fetch(FetchDescriptor<SpidAssetModel>())
