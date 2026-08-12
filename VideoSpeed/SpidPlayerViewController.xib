@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -27,7 +26,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="eU1-Xg-5Sg">
-                    <rect key="frame" x="29" y="454" width="335" height="30"/>
+                    <rect key="frame" x="31" y="454" width="331" height="29"/>
                     <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="29" id="YcU-KH-ohy"/>
@@ -90,17 +89,39 @@
                         <constraint firstItem="ngg-uI-YQ4" firstAttribute="centerX" secondItem="Drf-jK-7pp" secondAttribute="centerX" id="mCd-zw-lnC"/>
                     </constraints>
                 </view>
+                <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="g8w-wl-4co">
+                    <rect key="frame" x="284.66666666666669" y="419" width="99.333333333333314" height="34.333333333333314"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mx6-zO-pnK">
+                            <rect key="frame" x="0.0" y="0.0" width="49.666666666666664" height="34.333333333333336"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" image="arrow.uturn.left" catalog="system">
+                                <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </buttonConfiguration>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VGI-fC-S8H">
+                            <rect key="frame" x="49.666666666666629" y="0.0" width="49.666666666666657" height="34.333333333333336"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" image="arrow.uturn.right" catalog="system">
+                                <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </buttonConfiguration>
+                        </button>
+                    </subviews>
+                </stackView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="eU1-Xg-5Sg" secondAttribute="bottom" constant="1" id="1xX-TX-qZc"/>
                 <constraint firstItem="1dV-Ju-JP0" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="3D3-GO-Udo"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="g8w-wl-4co" secondAttribute="trailing" constant="9" id="7zU-CS-Jvj"/>
+                <constraint firstItem="g8w-wl-4co" firstAttribute="top" secondItem="Drf-jK-7pp" secondAttribute="bottom" id="8rC-JO-B8S"/>
                 <constraint firstItem="Drf-jK-7pp" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="MeA-J0-ez0"/>
                 <constraint firstItem="Drf-jK-7pp" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="S2G-Pf-HLw"/>
                 <constraint firstAttribute="trailing" secondItem="eU1-Xg-5Sg" secondAttribute="trailing" constant="31" id="SV4-j9-yqJ"/>
                 <constraint firstItem="eU1-Xg-5Sg" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="31" id="YSM-Lj-rc1"/>
                 <constraint firstItem="Drf-jK-7pp" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="aHT-ox-KRI"/>
+                <constraint firstItem="eU1-Xg-5Sg" firstAttribute="top" secondItem="g8w-wl-4co" secondAttribute="bottom" constant="0.66666666666668561" id="dsi-G4-FFI"/>
                 <constraint firstItem="eU1-Xg-5Sg" firstAttribute="top" secondItem="1dV-Ju-JP0" secondAttribute="bottom" id="stA-q9-UBI"/>
                 <constraint firstItem="1dV-Ju-JP0" firstAttribute="top" secondItem="Drf-jK-7pp" secondAttribute="bottom" id="wbT-vj-XB8"/>
             </constraints>
@@ -109,9 +130,11 @@
         </view>
     </objects>
     <resources>
+        <image name="arrow.uturn.left" catalog="system" width="128" height="113"/>
+        <image name="arrow.uturn.right" catalog="system" width="128" height="113"/>
         <image name="pause.fill" catalog="system" width="114" height="128"/>
         <systemColor name="tintColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.53333333329999999" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
