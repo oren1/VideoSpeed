@@ -26,6 +26,7 @@ final class SwiftDataManager {
                 StoredCMTimeRange.self,
                 StoredCMTime.self
             )
+            container.mainContext.undoManager = UndoManager()
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }

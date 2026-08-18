@@ -144,21 +144,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        segmentedControl.setTitle("SPEED", forSegmentAt: 0)
-//        segmentedControl.setTitle("TRIM", forSegmentAt: 1)
-//        segmentedControl.setTitle("CROP", forSegmentAt: 2)
-//        segmentedControl.setTitle("FPS", forSegmentAt: 3)
-//        segmentedControl.setTitle("SOUND", forSegmentAt: 4)
-//        segmentedControl.insertSegment(withTitle: "MORE", at: 5, animated: false)
-//        
-//        
-//        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 14)], for: .selected)
-//        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
-//                                                 .font: UIFont.boldSystemFont(ofSize: 14)], for: .normal)
-        
-       
-        
+    
         videosMenuDelegate = VideosMenuDelegate()
         videosMenuDelegate.didSelectVideo = { [weak self] spidAsset in
             guard let self = self else { return }
@@ -203,10 +189,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                     self.refreshCurrentClipMenuState()
                 }
             }
-            NotificationCenter.default.post(name: Notification.Name.VideoSelectionChanged, object: nil)
+            notifyCurrentSpidAssetDidChange()
 
         }
-        
         videosMenuDelegate.itemDidDrop = { [weak self] index in
             guard let self = self else{ return }
         
@@ -221,7 +206,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 }
             }
         }
-        
         videosMenuDelegate.itemDidDelete = { [weak self] focusIndex, selectionChanged in
             guard let self else { return }
             self.updateTrashVisibility()
@@ -240,7 +224,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 }
                 if selectionChanged {
                     await self.createCropViewController()
-                    NotificationCenter.default.post(name: Notification.Name.VideoSelectionChanged, object: nil)
+                    self.notifyCurrentSpidAssetDidChange()
                 }
                 await MainActor.run {
                     self.videosCollectionView.reloadData()
@@ -325,6 +309,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             }
             addSpidPlayerTop()
             loopVideo()
+            notifyCurrentSpidAssetDidChange()
             
             Task {
                 await textSectionVC.recreateThumbnailsFor(asset: compositionCopy, videoComposition: videoCompositionCopy)
@@ -1035,6 +1020,10 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     
     
     
+    func notifyCurrentSpidAssetDidChange() {
+        NotificationCenter.default.post(name: .CurrentSpidAssetDidChange, object: nil)
+    }
+
     func setNavigationItems() {
         exportBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "square.and.arrow.up"),

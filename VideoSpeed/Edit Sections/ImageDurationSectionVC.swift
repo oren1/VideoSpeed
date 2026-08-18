@@ -29,11 +29,11 @@ class ImageDurationSectionVC: SectionViewController {
         setupViews()
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(videoSelectionChanged),
-            name: Notification.Name.VideoSelectionChanged,
+            selector: #selector(currentSpidAssetDidChange),
+            name: Notification.Name.CurrentSpidAssetDidChange,
             object: nil
         )
-        applyDuration(durationSeconds, notify: false)
+        currentSpidAssetDidChange()
     }
 
     private func setupViews() {
@@ -109,7 +109,7 @@ class ImageDurationSectionVC: SectionViewController {
         }
     }
 
-    @objc private func videoSelectionChanged() {
+    @objc private func currentSpidAssetDidChange() {
         Task { @MainActor in
             guard let spidAsset = UserDataManager.main.currentSpidAsset else { return }
             let seconds = await spidAsset.timeRange.duration.seconds

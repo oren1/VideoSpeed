@@ -73,8 +73,8 @@ final class FilterSectionVC: SectionViewController {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(videoSelectionChanged),
-            name: Notification.Name.VideoSelectionChanged,
+            selector: #selector(currentSpidAssetDidChange),
+            name: Notification.Name.CurrentSpidAssetDidChange,
             object: nil
         )
 
@@ -87,7 +87,7 @@ final class FilterSectionVC: SectionViewController {
         cancelAllPreviewTasks()
     }
 
-    @objc private func videoSelectionChanged() {
+    @objc private func currentSpidAssetDidChange() {
         Task {
             await reloadFromCurrentAsset()
         }

@@ -36,7 +36,7 @@ class TrimmerSectionVC: SectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(videoSelectionChanged), name: Notification.Name.VideoSelectionChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(currentSpidAssetDidChange), name: Notification.Name.CurrentSpidAssetDidChange, object: nil)
         
         trimmerView.delegate = self
         trimmerView.handleColor = UIColor.white
@@ -58,7 +58,7 @@ class TrimmerSectionVC: SectionViewController {
         }
     }
 
-    @objc private func videoSelectionChanged() {
+    @objc private func currentSpidAssetDidChange() {
         Task {
             await reloadTrimmer()
             await updateInteractionForCurrentClip()

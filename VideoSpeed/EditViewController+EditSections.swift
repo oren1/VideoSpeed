@@ -556,7 +556,7 @@ extension EditViewController {
                     self.videosCollectionView.reloadData()
                     self.updateTrashVisibility()
                 }
-                NotificationCenter.default.post(name: Notification.Name.VideoSelectionChanged, object: nil)
+                self.notifyCurrentSpidAssetDidChange()
                 let startTime = self.getStartTimeForCurrentSpidAsset()
                 await self.spidPlayerController?.player?.seek(
                     to: startTime,

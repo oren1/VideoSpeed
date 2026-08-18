@@ -14,9 +14,11 @@
                 <outlet property="durationLabel" destination="Vn4-bQ-WZc" id="ZNx-8L-S16"/>
                 <outlet property="mainContainer" destination="Drf-jK-7pp" id="zIQ-kX-uy2"/>
                 <outlet property="playButton" destination="1dV-Ju-JP0" id="U8K-dl-UJ6"/>
+                <outlet property="redoButton" destination="VGI-fC-S8H" id="9Mb-nN-qnl"/>
                 <outlet property="slider" destination="eU1-Xg-5Sg" id="Axe-Dn-Hv7"/>
                 <outlet property="timeContainerView" destination="ngg-uI-YQ4" id="C95-hA-8Vj"/>
                 <outlet property="timeLabel" destination="TQB-Wr-rem" id="KAl-2G-7Zz"/>
+                <outlet property="undoButton" destination="mx6-zO-pnK" id="uzV-FQ-kfG"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -98,6 +100,9 @@
                             <buttonConfiguration key="configuration" style="plain" image="arrow.uturn.left" catalog="system">
                                 <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </buttonConfiguration>
+                            <connections>
+                                <action selector="undoButtonTapped:" destination="-1" eventType="touchUpInside" id="7cd-1O-1je"/>
+                            </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VGI-fC-S8H">
                             <rect key="frame" x="49.666666666666629" y="0.0" width="49.666666666666657" height="34.333333333333336"/>
@@ -105,6 +110,9 @@
                             <buttonConfiguration key="configuration" style="plain" image="arrow.uturn.right" catalog="system">
                                 <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </buttonConfiguration>
+                            <connections>
+                                <action selector="redoButtonTapped:" destination="-1" eventType="touchUpInside" id="8MF-gu-yCt"/>
+                            </connections>
                         </button>
                     </subviews>
                 </stackView>

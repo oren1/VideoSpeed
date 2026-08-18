@@ -24,6 +24,9 @@ class SpidPlayerViewController: UIViewController {
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var slider: UISlider!
     
+    @IBOutlet weak var undoButton: UIButton!
+    @IBOutlet weak var redoButton: UIButton!
+    
     var videoContainerView: UIView!
     var player: AVPlayer!
     var playerLayer: AVPlayerLayer!
@@ -709,6 +712,13 @@ class SpidPlayerViewController: UIViewController {
     
     @objc private func watermarkPreviewCloseTapped() {
         onWatermarkPreviewCloseTapped?()
+    }
+    
+    @IBAction func undoButtonTapped(_ sender: Any) {
+    }
+    
+    @IBAction func redoButtonTapped(_ sender: Any) {
+        
     }
     
 }
