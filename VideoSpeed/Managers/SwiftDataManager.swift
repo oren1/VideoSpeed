@@ -74,6 +74,42 @@ final class SwiftDataManager {
         return project
     }
 
+    /// Copies persistable fields from `project`'s `SpidAssetModel`s onto in-memory `SpidAsset`s.
+    /// Recreates assets that exist only in SwiftData and drops in-memory assets that no longer exist.
+    /// Uses `UserDataManager.currentProject` when `project` is omitted.
+    func applySpidAssetModelsToInMemoryAssets(from project: VideoProject? = nil) async {
+        guard let project = project ?? UserDataManager.main.currentProject else { return }
+
+        let models = project.spidAssets.sorted { $0.sortIndex < $1.sortIndex }
+        let currentID = await UserDataManager.main.currentSpidAsset?.id
+
+        var assetsByID: [UUID: SpidAsset] = [:]
+        for asset in UserDataManager.main.spidAssets {
+            assetsByID[await asset.id] = asset
+        }
+
+        var updated: [SpidAsset] = []
+        var matchedCurrent: SpidAsset?
+        updated.reserveCapacity(models.count)
+        for model in models {
+            let asset: SpidAsset?
+            if let existing = assetsByID[model.id] {
+                await existing.apply(from: model)
+                asset = existing
+            } else {
+                asset = await SpidAsset.make(from: model)
+            }
+            guard let asset else { continue }
+            updated.append(asset)
+            if model.id == currentID {
+                matchedCurrent = asset
+            }
+        }
+
+        UserDataManager.main.spidAssets = updated
+        UserDataManager.main.currentSpidAsset = matchedCurrent ?? updated.first
+    }
+
     func deleteVideoProject(_ project: VideoProject) {
         modelContext.delete(project)
         save()

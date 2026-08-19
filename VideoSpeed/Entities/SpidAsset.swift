@@ -134,6 +134,14 @@ actor SpidAsset {
         videoFilter = filter
     }
 
+    func updateMediaKind(_ kind: MediaKind) {
+        mediaKind = kind
+    }
+
+    func updateVideoSize(_ size: CGSize) {
+        videoSize = size
+    }
+
     func clearTrimmerHandleConstants() {
         rightHandleConstraintConstant = nil
         leftHandleConstraintConstant = nil

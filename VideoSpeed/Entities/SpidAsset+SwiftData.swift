@@ -125,4 +125,24 @@ extension SpidAsset {
         }
         return spidAsset
     }
+
+    /// Copies persistable fields from `model` onto this runtime asset.
+    /// Trimmer handle caches are cleared when the time range changes so UI rebuilds from the model.
+    func apply(from model: SpidAssetModel) {
+        let newTimeRange = model.timeRange?.cmTimeRange ?? timeRange
+        let newClipSourceRange = model.clipSourceRange?.cmTimeRange ?? clipSourceRange
+        if !CMTimeRangeEqual(newTimeRange, timeRange) || !CMTimeRangeEqual(newClipSourceRange, clipSourceRange) {
+            clearTrimmerHandleConstants()
+        }
+        timeRange = newTimeRange
+        clipSourceRange = newClipSourceRange
+        updateVideoSize(CGSize(width: model.videoWidth, height: model.videoHeight))
+        speed = model.speed
+        soundOn = model.soundOn
+        sliderValue = model.sliderValue
+        updateMediaKind(model.mediaKindRawValue == "image" ? .image : .video)
+        if let filter = VideoFilter(rawValue: model.videoFilterRawValue) {
+            videoFilter = filter
+        }
+    }
 }
