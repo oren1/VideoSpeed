@@ -74,10 +74,10 @@ final class SwiftDataManager {
         return project
     }
 
-    /// Copies persistable fields from `project`'s `SpidAssetModel`s onto in-memory `SpidAsset`s.
+    /// Syncs the current `VideoProject` and its `SpidAssetModel`s onto in-memory `SpidAsset`s.
     /// Recreates assets that exist only in SwiftData and drops in-memory assets that no longer exist.
     /// Uses `UserDataManager.currentProject` when `project` is omitted.
-    func applySpidAssetModelsToInMemoryAssets(from project: VideoProject? = nil) async {
+    func applyProjectToInMemoryState(from project: VideoProject? = nil) async {
         guard let project = project ?? UserDataManager.main.currentProject else { return }
 
         let models = project.spidAssets.sorted { $0.sortIndex < $1.sortIndex }
@@ -296,6 +296,147 @@ final class SwiftDataManager {
         } catch {
             print("Failed to save ModelContext: \(error)")
         }
+    }
+
+    /// Persists the context without registering a new undo group, so redo survives undo+save.
+    func saveWithoutRegisteringUndo() {
+        let undoManager = modelContext.undoManager
+        undoManager?.disableUndoRegistration()
+        defer { undoManager?.enableUndoRegistration() }
+        save()
+    }
+
+    /// Undoes or redoes the last SwiftData save, persists it, maps History, then syncs project to in-memory state.
+    @discardableResult
+    func performUndoOrRedo(undo: Bool) async -> ProjectHistoryDiff {
+        let before = try? latestHistoryToken()
+        if undo {
+            modelContext.undoManager?.undo()
+        } else {
+            modelContext.undoManager?.redo()
+        }
+        saveWithoutRegisteringUndo()
+        let transactions = (try? fetchHistory(after: before)) ?? []
+        let diff = projectHistoryDiff(from: transactions)
+        print("ProjectHistoryDiff: \(diff)")
+        await applyProjectToInMemoryState()
+        return diff
+    }
+
+    func latestHistoryToken() throws -> DefaultHistoryToken? {
+        let descriptor = HistoryDescriptor<DefaultHistoryTransaction>()
+        return try modelContext.fetchHistory(descriptor).last?.token
+    }
+
+    func fetchHistory(after token: DefaultHistoryToken?) throws -> [DefaultHistoryTransaction] {
+        var descriptor = HistoryDescriptor<DefaultHistoryTransaction>()
+        if let token {
+            descriptor.predicate = #Predicate { $0.token > token }
+            return try modelContext.fetchHistory(descriptor)
+        }
+        let all = try modelContext.fetchHistory(descriptor)
+        if let last = all.last {
+            return [last]
+        }
+        return []
+    }
+
+    func projectHistoryDiff(from transactions: [DefaultHistoryTransaction]) -> ProjectHistoryDiff {
+        var diff = ProjectHistoryDiff()
+        for transaction in transactions {
+            for change in transaction.changes {
+                applyHistoryChange(change, to: &diff)
+            }
+        }
+        return diff
+    }
+
+    private func applyHistoryChange(_ change: HistoryChange, to diff: inout ProjectHistoryDiff) {
+        switch change {
+        case .update(let update as DefaultHistoryUpdate<VideoProject>):
+            diff.projectUpdated.formUnion(videoProjectFields(from: update.updatedAttributes))
+        case .insert(_ as DefaultHistoryInsert<VideoProject>),
+             .delete(_ as DefaultHistoryDelete<VideoProject>):
+            diff.projectUpdated.insert(.other)
+        case .insert(_ as DefaultHistoryInsert<SpidAssetModel>):
+            if let model: SpidAssetModel = modelContext.registeredModel(for: change.changedPersistentIdentifier) {
+                diff.insertedAssetIDs.insert(model.id)
+            }
+        case .update(let update as DefaultHistoryUpdate<SpidAssetModel>):
+            if let model: SpidAssetModel = modelContext.registeredModel(for: change.changedPersistentIdentifier) {
+                let fields = spidAssetFields(from: update.updatedAttributes)
+                diff.updatedAssets[model.id, default: []].formUnion(fields)
+            }
+        case .delete(_ as DefaultHistoryDelete<SpidAssetModel>):
+            diff.deletedAssetPersistentIDs.insert(change.changedPersistentIdentifier)
+        default:
+            if let (model, field) = spidAssetModel(owningTimeModel: change.changedPersistentIdentifier) {
+                diff.updatedAssets[model.id, default: []].insert(field)
+            }
+        }
+    }
+
+    private func videoProjectFields(from attributes: [any PartialKeyPath<VideoProject> & Sendable]) -> Set<VideoProjectField> {
+        var fields: Set<VideoProjectField> = []
+        for path in attributes {
+            let keyPath = path as PartialKeyPath<VideoProject>
+            if keyPath == \.thumbnailImage {
+                fields.insert(.thumbnailImage)
+            } else if keyPath == \.spidAssets {
+                fields.insert(.spidAssets)
+            } else if keyPath == \.createdAt {
+                fields.insert(.createdAt)
+            } else {
+                fields.insert(.other)
+            }
+        }
+        return fields
+    }
+
+    private func spidAssetFields(from attributes: [any PartialKeyPath<SpidAssetModel> & Sendable]) -> Set<SpidAssetField> {
+        var fields: Set<SpidAssetField> = []
+        for path in attributes {
+            let keyPath = path as PartialKeyPath<SpidAssetModel>
+            if keyPath == \.speed {
+                fields.insert(.speed)
+            } else if keyPath == \.soundOn {
+                fields.insert(.soundOn)
+            } else if keyPath == \.sliderValue {
+                fields.insert(.sliderValue)
+            } else if keyPath == \.videoFilterRawValue {
+                fields.insert(.videoFilter)
+            } else if keyPath == \.sortIndex {
+                fields.insert(.sortIndex)
+            } else if keyPath == \.videoWidth || keyPath == \.videoHeight {
+                fields.insert(.videoSize)
+            } else if keyPath == \.mediaKindRawValue {
+                fields.insert(.mediaKind)
+            } else {
+                fields.insert(.other)
+            }
+        }
+        return fields
+    }
+
+    private func spidAssetModel(owningTimeModel id: PersistentIdentifier) -> (SpidAssetModel, SpidAssetField)? {
+        guard let project = UserDataManager.main.currentProject else { return nil }
+        for model in project.spidAssets {
+            if matchesTimeModel(model.timeRange, id: id) {
+                return (model, .timeRange)
+            }
+            if matchesTimeModel(model.clipSourceRange, id: id) {
+                return (model, .clipSourceRange)
+            }
+        }
+        return nil
+    }
+
+    private func matchesTimeModel(_ range: StoredCMTimeRange?, id: PersistentIdentifier) -> Bool {
+        guard let range else { return false }
+        if range.persistentModelID == id { return true }
+        if range.start?.persistentModelID == id { return true }
+        if range.duration?.persistentModelID == id { return true }
+        return false
     }
 
     private func thumbnailData(from asset: SpidAsset?) async -> Data {

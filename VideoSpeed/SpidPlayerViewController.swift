@@ -716,16 +716,14 @@ class SpidPlayerViewController: UIViewController {
     
     @IBAction func undoButtonTapped(_ sender: Any) {
         Task {
-            SwiftDataManager.shared.modelContext.undoManager?.undo()
-            await SwiftDataManager.shared.applySpidAssetModelsToInMemoryAssets()
+            await SwiftDataManager.shared.performUndoOrRedo(undo: true)
             NotificationCenter.default.post(name: .CurrentSpidAssetDidChange, object: nil)
         }
     }
     
     @IBAction func redoButtonTapped(_ sender: Any) {
         Task {
-            SwiftDataManager.shared.modelContext.undoManager?.redo()
-            await SwiftDataManager.shared.applySpidAssetModelsToInMemoryAssets()
+            await SwiftDataManager.shared.performUndoOrRedo(undo: false)
             NotificationCenter.default.post(name: .CurrentSpidAssetDidChange, object: nil)
         }
     }
