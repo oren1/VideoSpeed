@@ -266,7 +266,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 
         NotificationCenter.default.addObserver(self, selector: #selector(labelViewsUpdated), name: Notification.Name.OverlayLabelViewsUpdated, object: nil)
 
-        
+        startObservingProjectHistoryDiff()
         isUsingCropFeatureSubscriber = UserDataManager.main.$isUsingCropFeature.sink(receiveValue: { [weak self] isUsingCropFeature in
             self?.showProButtonIfNeeded()
         })

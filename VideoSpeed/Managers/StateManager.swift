@@ -17,6 +17,7 @@ final class StateManager {
     /// Updates speed on the runtime asset and persists it to SwiftData.
     func updateSpeed(_ speed: Float, for asset: SpidAsset? = nil) async {
         guard let target = asset ?? UserDataManager.main.currentSpidAsset else { return }
+        let speedSliderValue = SpidAsset.convertSpeedToSliderValue(speed: speed)
         await target.updateSpeed(speed: speed)
         let assetId = await target.id
         SwiftDataManager.shared.updateSpeed(speed, forAssetID: assetId)

@@ -175,9 +175,11 @@ class SpeedSectionVC: SectionViewController {
             return newValue
         }
     }
+
+    
     
    
-    @objc private func currentSpidAssetDidChange() {
+    @objc func currentSpidAssetDidChange() {
         Task { @MainActor in
             if let speed = await UserDataManager.main.currentSpidAsset?.speed {
                 /* if the speed is one of the speeds that are allowed in the free version

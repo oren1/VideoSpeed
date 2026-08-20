@@ -147,7 +147,33 @@ actor SpidAsset {
         leftHandleConstraintConstant = nil
         thumbnailImages = nil
     }
-
+    
+    /// Inverse of `convertSliderValue`: maps a speed back to the UISlider value.
+    static func convertSpeedToSliderValue(speed: Float) -> Float {
+        if speed == 0.25 {
+            return 5
+        }
+        if speed < 1 {
+            let tenths = Int(round(speed * 10))
+            switch tenths {
+            case 1: return 1
+            case 2: return 3
+            case 3: return 5
+            case 4: return 7
+            case 5: return 9
+            case 6: return 11
+            case 7: return 13
+            case 8: return 15
+            case 9: return 17
+            default: return 19
+            }
+        }
+        if speed == 1 {
+            return 19
+        }
+        return speed + 19
+    }
+    
     func duplicate(with timeRange: CMTimeRange, thumbnailImage: CGImage, clipSourceRange: CMTimeRange? = nil) async -> SpidAsset {
         let newAsset = SpidAsset(
             asset: getOriginalAsset(),

@@ -716,15 +716,23 @@ class SpidPlayerViewController: UIViewController {
     
     @IBAction func undoButtonTapped(_ sender: Any) {
         Task {
-            await SwiftDataManager.shared.performUndoOrRedo(undo: true)
-            NotificationCenter.default.post(name: .CurrentSpidAssetDidChange, object: nil)
+            let diff = await SwiftDataManager.shared.performUndoOrRedo(undo: true)
+            NotificationCenter.default.post(
+                name: .ProjectHistoryDiffDidChange,
+                object: nil,
+                userInfo: [ProjectHistoryDiffNotification.diffKey: diff]
+            )
         }
     }
     
     @IBAction func redoButtonTapped(_ sender: Any) {
         Task {
-            await SwiftDataManager.shared.performUndoOrRedo(undo: false)
-            NotificationCenter.default.post(name: .CurrentSpidAssetDidChange, object: nil)
+            let diff = await SwiftDataManager.shared.performUndoOrRedo(undo: false)
+            NotificationCenter.default.post(
+                name: .ProjectHistoryDiffDidChange,
+                object: nil,
+                userInfo: [ProjectHistoryDiffNotification.diffKey: diff]
+            )
         }
     }
     

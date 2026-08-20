@@ -264,6 +264,7 @@ final class SwiftDataManager {
     func updateSpeed(_ speed: Float, forAssetID id: UUID) {
         guard let model = spidAssetModel(id: id) else { return }
         model.speed = speed
+        model.sliderValue = SpidAsset.convertSpeedToSliderValue(speed: speed)
         save()
     }
 
