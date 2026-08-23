@@ -79,7 +79,7 @@ extension EditViewController {
                     duration: CMTime(seconds: duration, preferredTimescale: timescale)
                 )
                 await StateManager.shared.updateTimeRange(newRange)
-                await UserDataManager.main.currentSpidAsset.clearTrimmerHandleConstants()
+//                await UserDataManager.main.currentSpidAsset.clearTrimmerHandleConstants()
                 await self.reloadComposition()
                 let startTime = self.getStartTimeForCurrentSpidAsset()
                 await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: .zero, toleranceAfter: .zero)

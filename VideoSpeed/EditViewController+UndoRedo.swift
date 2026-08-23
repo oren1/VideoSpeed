@@ -36,6 +36,10 @@ extension EditViewController {
         let speedOrSliderChanged = diff.updatedAssets.values.contains {
             $0.contains(.speed) || $0.contains(.sliderValue)
         }
+        let timeRangeChanged = diff.updatedAssets.values.contains {
+            $0.contains(.timeRange)
+        }
+        
         
         if speedOrSliderChanged {
             /* Updating whether at least one 'SpidAsset' is using the slider.
@@ -45,5 +49,9 @@ extension EditViewController {
             speedSectionVC.currentSpidAssetDidChange()
         }
         
+        if timeRangeChanged {
+            imageDurationSectionVC.currentSpidAssetDidChange()
+            await self.textSectionVC.createTrimmerView()
+        }
     }
 }

@@ -109,7 +109,7 @@ class ImageDurationSectionVC: SectionViewController {
         }
     }
 
-    @objc private func currentSpidAssetDidChange() {
+    @objc func currentSpidAssetDidChange() {
         Task { @MainActor in
             guard let spidAsset = UserDataManager.main.currentSpidAsset else { return }
             let seconds = await spidAsset.timeRange.duration.seconds
