@@ -318,6 +318,12 @@ final class SwiftDataManager {
         }
         saveWithoutRegisteringUndo()
         let transactions = (try? fetchHistory(after: before)) ?? []
+        guard !transactions.isEmpty else {
+            let transactions = try! fetchHistory(after: nil)
+            let diff = projectHistoryDiff(from: transactions)
+            await applyProjectToInMemoryState()
+            return diff
+        }
         let diff = projectHistoryDiff(from: transactions)
         print("ProjectHistoryDiff: \(diff)")
         await applyProjectToInMemoryState()

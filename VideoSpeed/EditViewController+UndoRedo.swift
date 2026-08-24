@@ -33,25 +33,34 @@ extension EditViewController {
         await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         self.spidPlayerController?.player.play()
         
-        let speedOrSliderChanged = diff.updatedAssets.values.contains {
-            $0.contains(.speed) || $0.contains(.sliderValue)
-        }
-        let timeRangeChanged = diff.updatedAssets.values.contains {
-            $0.contains(.timeRange)
+       
+        
+        for (assetId, fields) in diff.updatedAssets {
+           var speedOrSliderChanged = false
+           var timeRangeChanged = false
+            
+            if fields.contains(.speed) || fields.contains(.sliderValue) {
+                speedOrSliderChanged = true
+            }
+            if fields.contains(.timeRange) {
+                timeRangeChanged = true
+            }
+            
+            let assetIndex = await UserDataManager.main.assetIndex(for: assetId)!
+            
+            if speedOrSliderChanged {
+               
+            }
+            
+            if timeRangeChanged {
+            
+            }
+            
+
+            break
+
         }
         
-        
-        if speedOrSliderChanged {
-            /* Updating whether at least one 'SpidAsset' is using the slider.
-             i.e it's speed value is different from 0.25, 0.5, 1, 1.5 or 2 */
-            UserDataManager.main.usingSlider = await UserDataManager.main.isUsingSliderPrecision()
-            await self.textSectionVC.createTrimmerView()
-            speedSectionVC.currentSpidAssetDidChange()
-        }
-        
-        if timeRangeChanged {
-            imageDurationSectionVC.currentSpidAssetDidChange()
-            await self.textSectionVC.createTrimmerView()
-        }
+       
     }
 }
