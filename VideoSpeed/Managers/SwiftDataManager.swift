@@ -371,14 +371,14 @@ final class SwiftDataManager {
             }
         case .update(let update as DefaultHistoryUpdate<SpidAssetModel>):
             if let model: SpidAssetModel = modelContext.registeredModel(for: change.changedPersistentIdentifier) {
-                let fields = spidAssetFields(from: update.updatedAttributes)
-                diff.updatedAssets[model.id, default: []].formUnion(fields)
+                let changes = spidAssetFieldChanges(from: update.updatedAttributes, model: model)
+                diff.upsertAssetChanges(assetID: model.id, changes)
             }
         case .delete(_ as DefaultHistoryDelete<SpidAssetModel>):
             diff.deletedAssetPersistentIDs.insert(change.changedPersistentIdentifier)
         default:
-            if let (model, field) = spidAssetModel(owningTimeModel: change.changedPersistentIdentifier) {
-                diff.updatedAssets[model.id, default: []].insert(field)
+            if let (model, change) = spidAssetFieldChange(owningTimeModel: change.changedPersistentIdentifier) {
+                diff.upsertAssetChange(assetID: model.id, change)
             }
         }
     }
@@ -400,39 +400,46 @@ final class SwiftDataManager {
         return fields
     }
 
-    private func spidAssetFields(from attributes: [any PartialKeyPath<SpidAssetModel> & Sendable]) -> Set<SpidAssetField> {
-        var fields: Set<SpidAssetField> = []
+    private func spidAssetFieldChanges(
+        from attributes: [any PartialKeyPath<SpidAssetModel> & Sendable],
+        model: SpidAssetModel
+    ) -> [SpidAssetFieldChange] {
+        var changes: [SpidAssetFieldChange] = []
+        var didAddVideoSize = false
         for path in attributes {
             let keyPath = path as PartialKeyPath<SpidAssetModel>
             if keyPath == \.speed {
-                fields.insert(.speed)
+                changes.append(.speed(model.speed))
             } else if keyPath == \.soundOn {
-                fields.insert(.soundOn)
+                changes.append(.soundOn(model.soundOn))
             } else if keyPath == \.sliderValue {
-                fields.insert(.sliderValue)
+                changes.append(.sliderValue(model.sliderValue))
             } else if keyPath == \.videoFilterRawValue {
-                fields.insert(.videoFilter)
+                changes.append(.videoFilter(model.videoFilterRawValue))
             } else if keyPath == \.sortIndex {
-                fields.insert(.sortIndex)
+                changes.append(.sortIndex(model.sortIndex))
             } else if keyPath == \.videoWidth || keyPath == \.videoHeight {
-                fields.insert(.videoSize)
+                if !didAddVideoSize {
+                    changes.append(.videoSize(CGSize(width: model.videoWidth, height: model.videoHeight)))
+                    didAddVideoSize = true
+                }
             } else if keyPath == \.mediaKindRawValue {
-                fields.insert(.mediaKind)
+                changes.append(.mediaKind(model.mediaKindRawValue))
             } else {
-                fields.insert(.other)
+                changes.append(.other)
             }
         }
-        return fields
+        return changes
     }
 
-    private func spidAssetModel(owningTimeModel id: PersistentIdentifier) -> (SpidAssetModel, SpidAssetField)? {
+    private func spidAssetFieldChange(owningTimeModel id: PersistentIdentifier) -> (SpidAssetModel, SpidAssetFieldChange)? {
         guard let project = UserDataManager.main.currentProject else { return nil }
         for model in project.spidAssets {
             if matchesTimeModel(model.timeRange, id: id) {
-                return (model, .timeRange)
+                return (model, .timeRange(model.timeRange?.cmTimeRange ?? .zero))
             }
             if matchesTimeModel(model.clipSourceRange, id: id) {
-                return (model, .clipSourceRange)
+                return (model, .clipSourceRange(model.clipSourceRange?.cmTimeRange ?? .zero))
             }
         }
         return nil

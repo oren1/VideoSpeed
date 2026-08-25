@@ -35,29 +35,22 @@ extension EditViewController {
         
        
         
-        for (assetId, fields) in diff.updatedAssets {
-           var speedOrSliderChanged = false
-           var timeRangeChanged = false
-            
-            if fields.contains(.speed) || fields.contains(.sliderValue) {
-                speedOrSliderChanged = true
-            }
-            if fields.contains(.timeRange) {
-                timeRangeChanged = true
-            }
-            
-            let assetIndex = await UserDataManager.main.assetIndex(for: assetId)!
-            
-            if speedOrSliderChanged {
-               
-            }
-            
-            if timeRangeChanged {
-            
-            }
-            
+        for (assetId, changes) in diff.updatedAssets {
+            for change in changes {
+                switch change {
+                case .speed(let speed):
+                     /* 1. show a simple alert message for 1 second with the type of change and the value
+                     2. reload the videos collectionView and apply a flickering effect on the updated asset.
+                     the current 'assetId'
+                     3. if the UserDataManager.currentSpidAsset is the asset that was changed('assetId') then call
+                     'spidSectionVC.currentSpidAssetDidChange' */
+                    
+                    print("speed: \(speed)")
+                default:
+                    print("default")
 
-            break
+                }
+            }
 
         }
         
