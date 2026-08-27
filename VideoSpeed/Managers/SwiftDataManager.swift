@@ -23,8 +23,7 @@ final class SwiftDataManager {
             container = try ModelContainer(
                 for: VideoProject.self,
                 SpidAssetModel.self,
-                StoredCMTimeRange.self,
-                StoredCMTime.self
+                StoredCMTimeRange.self
             )
             container.mainContext.undoManager = UndoManager()
         } catch {
@@ -237,16 +236,18 @@ final class SwiftDataManager {
                 existing.videoData = snapshot.videoData
                 existing.fileExtension = snapshot.fileExtension
             }
-            if let existingTimeRange = existing.timeRange {
-                existingTimeRange.update(from: timeRangeCM)
-            } else {
-                existing.timeRange = StoredCMTimeRange(timeRangeCM)
-            }
+//            if let existingTimeRange = existing.timeRange {
+//                existingTimeRange.update(from: timeRangeCM)
+//            } else {
+//                existing.timeRange = StoredCMTimeRange(timeRangeCM)
+//            }
             if let existingClipSourceRange = existing.clipSourceRange {
                 existingClipSourceRange.update(from: clipSourceRangeCM)
             } else {
                 existing.clipSourceRange = StoredCMTimeRange(clipSourceRangeCM)
             }
+            print("sortIndex \(sortIndex) upsertSpidAssetModel timeRangeCM: \(timeRangeCM)")
+            existing.timeRange = StoredCMTimeRange(timeRangeCM)
             existing.videoWidth = snapshot.videoWidth
             existing.videoHeight = snapshot.videoHeight
             existing.speed = snapshot.speed
@@ -270,8 +271,8 @@ final class SwiftDataManager {
 
     func updateTimeRange(_ timeRange: CMTimeRange, forAssetID id: UUID) {
         guard let model = spidAssetModel(id: id) else { return }
-        if let existingTimeRange = model.timeRange {
-            existingTimeRange.update(from: timeRange)
+        if let existing = model.timeRange {
+            existing.update(from: timeRange)
         } else {
             model.timeRange = StoredCMTimeRange(timeRange)
         }
@@ -376,6 +377,13 @@ final class SwiftDataManager {
             }
         case .delete(_ as DefaultHistoryDelete<SpidAssetModel>):
             diff.deletedAssetPersistentIDs.insert(change.changedPersistentIdentifier)
+        case .update(_ as DefaultHistoryUpdate<StoredCMTimeRange>):
+            if let range: StoredCMTimeRange = modelContext.registeredModel(for: change.changedPersistentIdentifier) {
+                let assetId = range.timeRangeOwner!.id
+                diff.upsertAssetChange(assetID: assetId, .timeRange(range.cmTimeRange))
+                // Changed StoredCMTimeRange model — further mapping TBD
+                _ = range
+            }
         default:
             if let (model, change) = spidAssetFieldChange(owningTimeModel: change.changedPersistentIdentifier) {
                 diff.upsertAssetChange(assetID: model.id, change)
@@ -425,6 +433,11 @@ final class SwiftDataManager {
                 }
             } else if keyPath == \.mediaKindRawValue {
                 changes.append(.mediaKind(model.mediaKindRawValue))
+            } else if keyPath == \.timeRange {
+                print("spidAssetFieldChanges - timeRange: \(model.timeRange?.cmTimeRange)")
+                changes.append(.timeRange(model.timeRange?.cmTimeRange ?? .zero))
+            } else if keyPath == \.clipSourceRange {
+                changes.append(.clipSourceRange(model.clipSourceRange?.cmTimeRange ?? .zero))
             } else {
                 changes.append(.other)
             }
@@ -447,10 +460,7 @@ final class SwiftDataManager {
 
     private func matchesTimeModel(_ range: StoredCMTimeRange?, id: PersistentIdentifier) -> Bool {
         guard let range else { return false }
-        if range.persistentModelID == id { return true }
-        if range.start?.persistentModelID == id { return true }
-        if range.duration?.persistentModelID == id { return true }
-        return false
+        return range.persistentModelID == id
     }
 
     private func thumbnailData(from asset: SpidAsset?) async -> Data {

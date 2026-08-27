@@ -15,9 +15,9 @@ final class SpidAssetModel {
     @Attribute(.externalStorage) var videoData: Data
     /// File extension of the original video (e.g. `mov`, `mp4`), used when materializing for playback.
     var fileExtension: String
-    @Relationship(deleteRule: .cascade)
+    @Relationship(deleteRule: .nullify, inverse: \StoredCMTimeRange.timeRangeOwner)
     var timeRange: StoredCMTimeRange?
-    @Relationship(deleteRule: .cascade)
+    @Relationship(deleteRule: .nullify, inverse: \StoredCMTimeRange.clipSourceRangeOwner)
     var clipSourceRange: StoredCMTimeRange?
     var videoWidth: Double
     var videoHeight: Double

@@ -98,6 +98,7 @@ extension SpidAsset {
 
         let avAsset = AVURLAsset(url: url)
         let timeRange = model.timeRange?.cmTimeRange ?? .zero
+        print("make - model index = \(model.sortIndex) timeRange = \(timeRange)")
         let clipSourceRange = model.clipSourceRange?.cmTimeRange ?? timeRange
         let videoSize = CGSize(width: model.videoWidth, height: model.videoHeight)
         let mediaKind: MediaKind = model.mediaKindRawValue == "image" ? .image : .video

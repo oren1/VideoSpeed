@@ -46,6 +46,7 @@ extension EditViewController {
                         speedSectionVC.currentSpidAssetDidChange()
                     }
                 case .timeRange(let cmTimeRange):
+                    print("cmTimeRange \(cmTimeRange)")
                     // 1. differentiate between video and image asset
                     // 2. in image case show an alert with duration type
                     

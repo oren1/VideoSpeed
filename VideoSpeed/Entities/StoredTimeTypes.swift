@@ -7,67 +7,49 @@ import Foundation
 import AVFoundation
 import SwiftData
 
-/// Persistable mapping of `CMTime` (value + timescale).
-@Model
-final class StoredCMTime {
-    var value: Int64
-    var timescale: Int32
-
-    init(value: Int64 = 0, timescale: Int32 = 600) {
-        self.value = value
-        self.timescale = timescale
-    }
-
-    init(_ time: CMTime) {
-        self.value = time.value
-        self.timescale = time.timescale
-    }
-
-    var cmTime: CMTime {
-        CMTime(value: value, timescale: timescale)
-    }
-
-    func update(from time: CMTime) {
-        value = time.value
-        timescale = time.timescale
-    }
-}
-
-/// Persistable mapping of `CMTimeRange` (start + duration).
+/// Persistable mapping of `CMTimeRange` (start + duration as plain attributes).
 @Model
 final class StoredCMTimeRange {
-    @Relationship(deleteRule: .cascade)
-    var start: StoredCMTime?
+    var startValue: Int64
+    var startTimescale: Int32
+    var durationValue: Int64
+    var durationTimescale: Int32
 
-    @Relationship(deleteRule: .cascade)
-    var duration: StoredCMTime?
+    var timeRangeOwner: SpidAssetModel?
+    var clipSourceRangeOwner: SpidAssetModel?
 
-    init(start: StoredCMTime, duration: StoredCMTime) {
-        self.start = start
-        self.duration = duration
+    init(
+        startValue: Int64 = 0,
+        startTimescale: Int32 = 600,
+        durationValue: Int64 = 0,
+        durationTimescale: Int32 = 600
+    ) {
+        self.startValue = startValue
+        self.startTimescale = startTimescale
+        self.durationValue = durationValue
+        self.durationTimescale = durationTimescale
     }
 
     convenience init(_ range: CMTimeRange) {
-        self.init(start: StoredCMTime(range.start), duration: StoredCMTime(range.duration))
+        self.init(
+            startValue: range.start.value,
+            startTimescale: range.start.timescale,
+            durationValue: range.duration.value,
+            durationTimescale: range.duration.timescale
+        )
     }
 
     var cmTimeRange: CMTimeRange {
         CMTimeRange(
-            start: start?.cmTime ?? .zero,
-            duration: duration?.cmTime ?? .zero
+            start: CMTime(value: startValue, timescale: startTimescale),
+            duration: CMTime(value: durationValue, timescale: durationTimescale)
         )
     }
 
     func update(from range: CMTimeRange) {
-        if let start {
-            start.update(from: range.start)
-        } else {
-            start = StoredCMTime(range.start)
-        }
-        if let duration {
-            duration.update(from: range.duration)
-        } else {
-            duration = StoredCMTime(range.duration)
-        }
+        startValue = range.start.value
+        startTimescale = range.start.timescale
+        durationValue = range.duration.value
+        durationTimescale = range.duration.timescale
     }
 }
