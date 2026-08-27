@@ -40,16 +40,24 @@ extension EditViewController {
             for change in changes {
                 switch change {
                 case .speed(let speed):
-                    await flickerAsset(assetID: assetId)
                     showBriefChangeAlert(type: "speed", value: "\(speed)")
                     if await UserDataManager.main.currentSpidAsset?.id == assetId {
                         speedSectionVC.currentSpidAssetDidChange()
                     }
                 case .timeRange(let cmTimeRange):
-                    print("cmTimeRange \(cmTimeRange)")
-                    // 1. differentiate between video and image asset
-                    // 2. in image case show an alert with duration type
-                    
+                    guard let asset = await UserDataManager.main.spidAsset(for: assetId) else { break }
+                    if await asset.isImageClip {
+                        showBriefChangeAlert(type: "duration", value: String(format: "%.1f", cmTimeRange.duration.seconds))
+                        if await UserDataManager.main.currentSpidAsset?.id == assetId {
+                            imageDurationSectionVC.currentSpidAssetDidChange()
+                        }
+                    } else {
+                        showBriefChangeAlert(type: "Trim", value: "")
+                        if await UserDataManager.main.currentSpidAsset?.id == assetId {
+                            trimmerSectionVC.currentSpidAssetDidChange()
+                        }
+                    }
+                   
                 default:
                     print("default")
                 }
@@ -58,9 +66,10 @@ extension EditViewController {
     }
 
     private func showBriefChangeAlert(type: String, value: String) {
+        let message = value.isEmpty ? type : "\(type): \(value)"
         let rootView = ZStack {
             BriefChangeAlertView(
-                message: "\(type): \(value)",
+                message: message,
                 size: CGSize(width: 180, height: 56)
             )
         }

@@ -263,6 +263,15 @@ class UserDataManager: ObservableObject {
         }
         return nil
     }
+
+    func spidAsset(for assetID: UUID) async -> SpidAsset? {
+        for asset in spidAssets {
+            if await asset.id == assetID {
+                return asset
+            }
+        }
+        return nil
+    }
     
     func isUsingSliderPrecision() async -> Bool {
         let allowedSpeeds: [Float] = [0.25, 0.5, 1, 1.5, 2]

@@ -381,8 +381,6 @@ final class SwiftDataManager {
             if let range: StoredCMTimeRange = modelContext.registeredModel(for: change.changedPersistentIdentifier) {
                 let assetId = range.timeRangeOwner!.id
                 diff.upsertAssetChange(assetID: assetId, .timeRange(range.cmTimeRange))
-                // Changed StoredCMTimeRange model — further mapping TBD
-                _ = range
             }
         default:
             if let (model, change) = spidAssetFieldChange(owningTimeModel: change.changedPersistentIdentifier) {

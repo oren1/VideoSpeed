@@ -58,7 +58,7 @@ class TrimmerSectionVC: SectionViewController {
         }
     }
 
-    @objc private func currentSpidAssetDidChange() {
+    @objc func currentSpidAssetDidChange() {
         Task {
             await reloadTrimmer()
             await updateInteractionForCurrentClip()
