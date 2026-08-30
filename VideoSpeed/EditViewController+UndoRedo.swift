@@ -63,6 +63,11 @@ extension EditViewController {
                 }
             }
         }
+        
+        /* 1. loop trough the diff.insertedAssetIds
+           2. if there's an asset there, then either an asset was splitted or a new asset was added
+           so we need to update the in-memory UserDataManager.spidAssets and add that asset to the array
+           3. reder the changes to the UI showing the additional asset */
     }
 
     private func showBriefChangeAlert(type: String, value: String) {

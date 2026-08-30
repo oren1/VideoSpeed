@@ -236,18 +236,18 @@ final class SwiftDataManager {
                 existing.videoData = snapshot.videoData
                 existing.fileExtension = snapshot.fileExtension
             }
-//            if let existingTimeRange = existing.timeRange {
-//                existingTimeRange.update(from: timeRangeCM)
-//            } else {
-//                existing.timeRange = StoredCMTimeRange(timeRangeCM)
-//            }
+            if let existingTimeRange = existing.timeRange {
+                existingTimeRange.update(from: timeRangeCM)
+            } else {
+                existing.timeRange = StoredCMTimeRange(timeRangeCM)
+            }
             if let existingClipSourceRange = existing.clipSourceRange {
                 existingClipSourceRange.update(from: clipSourceRangeCM)
             } else {
                 existing.clipSourceRange = StoredCMTimeRange(clipSourceRangeCM)
             }
             print("sortIndex \(sortIndex) upsertSpidAssetModel timeRangeCM: \(timeRangeCM)")
-            existing.timeRange = StoredCMTimeRange(timeRangeCM)
+//            existing.timeRange = StoredCMTimeRange(timeRangeCM)
             existing.videoWidth = snapshot.videoWidth
             existing.videoHeight = snapshot.videoHeight
             existing.speed = snapshot.speed

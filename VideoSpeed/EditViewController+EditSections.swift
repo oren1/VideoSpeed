@@ -551,6 +551,12 @@ extension EditViewController {
                     await self.splitSectionVC.reloadTimelineFromOutside()
                     return
                 }
+                
+                /* Split adds a new asset to the in-memory spidAssets array,
+                // calling 'upsertVideoProject' adds that new asset as a model to the SwiftData context
+                 and saves the modelContext state. */
+                await SwiftDataManager.shared.upsertVideoProject()
+                
                 await self.reloadComposition()
                 await MainActor.run {
                     self.videosCollectionView.reloadData()
