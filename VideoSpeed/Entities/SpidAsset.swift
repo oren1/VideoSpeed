@@ -20,7 +20,7 @@ enum MediaKind {
 }
 
 actor SpidAsset {
-    var id: UUID
+    let id: UUID
     private var asset: AVAsset
     private var rotatedAsset: AVAsset?
     private(set) var assetHasBeenRotated: Bool = false
@@ -88,6 +88,10 @@ actor SpidAsset {
     
     func updateTimeRange(timeRange: CMTimeRange) {
         self.timeRange = timeRange
+        Task{
+            
+           let _ = await SwiftDataManager.shared.upsertVideoProject()
+        }
     }
 
     func updateClipSourceRange(_ range: CMTimeRange) {
@@ -96,6 +100,9 @@ actor SpidAsset {
     
     func updateSpeed(speed: Float) {
         self.speed = speed
+        Task{
+           let _ = await SwiftDataManager.shared.upsertVideoProject()
+        }
     }
     
     func videoDuration() -> Double {
@@ -215,6 +222,12 @@ actor SpidAsset {
 //        return instruction
 //    }
     
+}
+
+extension SpidAsset: Equatable {
+    nonisolated static func == (lhs: SpidAsset, rhs: SpidAsset) -> Bool {
+        lhs.id == rhs.id
+    }
 }
 
 //extension SpidAsset: NSItemProviderWriting {

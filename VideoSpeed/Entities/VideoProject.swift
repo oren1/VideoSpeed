@@ -29,4 +29,17 @@ final class VideoProject {
               let uiImage = UIImage(data: thumbnailImage) else { return nil }
         return uiImage.cgImage
     }
+
+    /// Fresh fetch of this project's assets from the model context, sorted by `sortIndex`.
+    var fetchedSpidAssets: [SpidAssetModel] {
+        guard let modelContext else { return spidAssets }
+        let projectID = persistentModelID
+        let descriptor = FetchDescriptor<SpidAssetModel>(
+            predicate: #Predicate { asset in
+                asset.project?.persistentModelID == projectID
+            },
+            sortBy: [SortDescriptor(\.sortIndex)]
+        )
+        return (try? modelContext.fetch(descriptor)) ?? spidAssets
+    }
 }

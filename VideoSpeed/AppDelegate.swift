@@ -100,7 +100,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
         PushNotificationManager.main.registerForRemoteNotificationIfAuthorized()
         
     }
-   
+    
     
     // MARK: - MessagingDelegate
         func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
@@ -148,4 +148,5 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
         print("userInfo: \(userInfo)")
     }
+    
 }

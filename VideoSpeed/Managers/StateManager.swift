@@ -17,17 +17,39 @@ final class StateManager {
     /// Updates speed on the runtime asset and persists it to SwiftData.
     func updateSpeed(_ speed: Float, for asset: SpidAsset? = nil) async {
         guard let target = asset ?? UserDataManager.main.currentSpidAsset else { return }
-        let speedSliderValue = SpidAsset.convertSpeedToSliderValue(speed: speed)
+//        let oldSpeed = await target.speed
+//        let undoManager = UserDataManager.main.undoManager
+//        undoManager.registerUndo(withTarget: target) { spidAsset in
+//           Task {
+//                await spidAsset.updateSpeed(speed: oldSpeed)
+//                NotificationCenter.default.post(
+//                name: .UndoManagerDidChangeField,
+//                              object: nil,
+//                userInfo: [UndoManagerNotification.fieldKey: UndoField.speed(oldSpeed, target)])
+//               
+//            }
+//        }
         await target.updateSpeed(speed: speed)
-        let assetId = await target.id
-        SwiftDataManager.shared.updateSpeed(speed, forAssetID: assetId)
     }
 
     /// Updates time range on the runtime asset and persists it to SwiftData.
     func updateTimeRange(_ timeRange: CMTimeRange, for asset: SpidAsset? = nil) async {
         guard let target = asset ?? UserDataManager.main.currentSpidAsset else { return }
+        let oldTimeRange = await target.timeRange
+        let undoManager = UserDataManager.main.undoManager
+      
+        undoManager.registerUndo(withTarget: target) { spidAsset in
+            Task {
+                await spidAsset.updateTimeRange(timeRange: oldTimeRange)
+                NotificationCenter.default.post(
+                 name: .UndoManagerDidChangeField,
+                               object: nil,
+                 userInfo: [UndoManagerNotification.fieldKey: UndoField.timeRange(oldTimeRange, target)])
+            }
+        }
+    
+
         await target.updateTimeRange(timeRange: timeRange)
-        let assetId = await target.id
-        SwiftDataManager.shared.updateTimeRange(timeRange, forAssetID: assetId)
+       
     }
 }

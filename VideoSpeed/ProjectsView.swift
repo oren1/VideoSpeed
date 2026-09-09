@@ -240,8 +240,7 @@ private struct ProjectGridCell: View {
 #Preview {
     let schema = Schema([
         VideoProject.self,
-        SpidAssetModel.self,
-        StoredCMTimeRange.self
+        SpidAssetModel.self
     ])
     let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: schema, configurations: [configuration])

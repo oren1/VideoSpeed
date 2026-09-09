@@ -12,6 +12,7 @@ extension Notification.Name {
     static let SelectedLabelViewChanged = Notification.Name("selected LabelView Changed")
     static let CurrentSpidAssetDidChange = Notification.Name("currentSpidAssetDidChange")
     static let ProjectHistoryDiffDidChange = Notification.Name("projectHistoryDiffDidChange")
+    static let UndoManagerDidChangeField = Notification.Name("undoManagerDidChangeField")
     static let BackgroundAudioTrackUpdated = Notification.Name("backgroundAudioTrackUpdated")
     /// Posted while the video plays with the current playback time (seconds).
     static let captionsPlaybackTimeDidChange = Notification.Name("captionsPlaybackTimeDidChange")
@@ -23,4 +24,8 @@ enum CaptionsPlaybackTimeNotification {
 
 enum ProjectHistoryDiffNotification {
     static let diffKey = "projectHistoryDiff"
+}
+
+enum UndoManagerNotification {
+    static let fieldKey = "field"
 }

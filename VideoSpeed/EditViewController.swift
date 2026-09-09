@@ -64,7 +64,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     private var spidAssetModelSaveObserver: NSObjectProtocol?
     private var loadSpidAssetsTask: Task<Void, Never>?
 
-    
+
     
     @IBOutlet weak var videosContainerView: UIView!
     @IBOutlet weak var videosCollectionView: UICollectionView!
@@ -210,6 +210,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             guard let self else { return }
             self.updateTrashVisibility()
             Task {
+                print("itemDidDelete focusIndex: \(focusIndex)")
+                await SwiftDataManager.shared.upsertVideoProject()
                 await self.reloadComposition()
                 let startTime = self.videosStartTimes[focusIndex]
                 await self.spidPlayerController?.player?.seek(
@@ -266,7 +268,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 
         NotificationCenter.default.addObserver(self, selector: #selector(labelViewsUpdated), name: Notification.Name.OverlayLabelViewsUpdated, object: nil)
 
-        startObservingProjectHistoryDiff()
+        startObservingUndoManagerChanges()
         isUsingCropFeatureSubscriber = UserDataManager.main.$isUsingCropFeature.sink(receiveValue: { [weak self] isUsingCropFeature in
             self?.showProButtonIfNeeded()
         })
@@ -326,20 +328,28 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false;
+    
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        print("viewDidDisappear")
         super.viewWillDisappear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
         spidPlayerController?.player?.pause()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
+        print("viewDidDisappear")
         super.viewDidDisappear(animated)
         let stillInNavStack = navigationController?.viewControllers.contains(self) ?? false
         if !stillInNavStack {
-            clearEditSessionState()
+            Task {
+               let _ = await SwiftDataManager.shared.upsertVideoProject()
+                clearEditSessionState()
+            }
+
         }
+
     }
 
     private func clearEditSessionState() {

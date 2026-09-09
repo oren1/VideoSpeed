@@ -44,9 +44,8 @@ enum ExportQuality: String, CaseIterable {
 }
 
 class UserDataManager: ObservableObject {
-    
-    
-    
+    var undoManager = UndoManager()
+
     static let main: UserDataManager = UserDataManager()
     var products: [SKProduct]!
     var subscriptionProducts: [Product]!

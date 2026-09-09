@@ -16,7 +16,7 @@ enum VideoProjectField: String, Hashable {
 }
 
 /// A SpidAsset field that changed, carrying the post-change value.
-enum SpidAssetFieldChange: Equatable {
+enum SpidAssetFieldChange {
     case speed(Float)
     case soundOn(Bool)
     case sliderValue(Float)

@@ -8,68 +8,55 @@ import SwiftUI
 import CoreMedia
 
 extension EditViewController {
-    func startObservingProjectHistoryDiff() {
+    func startObservingUndoManagerChanges() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(projectHistoryDiffDidChange(_:)),
-            name: .ProjectHistoryDiffDidChange,
+            selector: #selector(undoManagerDidChangeField(_:)),
+            name: .UndoManagerDidChangeField,
             object: nil
         )
     }
 
-    @objc private func projectHistoryDiffDidChange(_ notification: Notification) {
-        guard let diff = notification.userInfo?[ProjectHistoryDiffNotification.diffKey] as? ProjectHistoryDiff else {
+    @objc private func undoManagerDidChangeField(_ notification: Notification) {
+        guard let undoField = notification.userInfo?[UndoManagerNotification.fieldKey] as? UndoField else {
             return
         }
         Task { @MainActor in
-            await handleProjectHistoryDiff(diff)
-        }
-    }
-
-    func handleProjectHistoryDiff(_ diff: ProjectHistoryDiff) async {
-        print(diff)
-
-        await self.reloadComposition()
-        let startTime = self.getStartTimeForCurrentSpidAsset()
-        await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-        self.spidPlayerController?.player.play()
-
-        for (assetId, changes) in diff.updatedAssets {
-            await flickerAsset(assetID: assetId)
-
-            for change in changes {
-                switch change {
-                case .speed(let speed):
-                    showBriefChangeAlert(type: "speed", value: "\(speed)")
-                    if await UserDataManager.main.currentSpidAsset?.id == assetId {
-                        speedSectionVC.currentSpidAssetDidChange()
-                    }
-                case .timeRange(let cmTimeRange):
-                    guard let asset = await UserDataManager.main.spidAsset(for: assetId) else { break }
-                    if await asset.isImageClip {
-                        showBriefChangeAlert(type: "duration", value: String(format: "%.1f", cmTimeRange.duration.seconds))
-                        if await UserDataManager.main.currentSpidAsset?.id == assetId {
-                            imageDurationSectionVC.currentSpidAssetDidChange()
-                        }
-                    } else {
-                        showBriefChangeAlert(type: "Trim", value: "")
-                        if await UserDataManager.main.currentSpidAsset?.id == assetId {
-                            trimmerSectionVC.currentSpidAssetDidChange()
-                        }
-                    }
-                   
-                default:
-                    print("default")
+            switch undoField {
+            case .speed(let speed, let spidAsset):
+                let assetId = spidAsset.id
+                await flickerAsset(assetID: assetId)
+                showBriefChangeAlert(type: "speed", value: "\(speed)")
+                if UserDataManager.main.currentSpidAsset == spidAsset {
+                    speedSectionVC.currentSpidAssetDidChange()
                 }
+            case .timeRange(let cmTimeRange, let spidAsset):
+                let assetId = spidAsset.id
+                await flickerAsset(assetID: assetId)
+                if await spidAsset.mediaKind == .video {
+                    showBriefChangeAlert(type: "trim", value: "")
+                    if UserDataManager.main.currentSpidAsset == spidAsset {
+                        trimmerSectionVC.currentSpidAssetDidChange()
+                    }
+                }
+                else {
+                    showBriefChangeAlert(type: "duration", value: "\(cmTimeRange.duration.seconds)")
+                    if UserDataManager.main.currentSpidAsset == spidAsset {
+                        imageDurationSectionVC.currentSpidAssetDidChange()
+                    }
+                }
+            default:
+                print("undoManagerDidChangeFielddefault")
             }
+            
+//            await SwiftDataManager.shared.upsertVideoProject()
         }
         
-        /* 1. loop trough the diff.insertedAssetIds
-           2. if there's an asset there, then either an asset was splitted or a new asset was added
-           so we need to update the in-memory UserDataManager.spidAssets and add that asset to the array
-           3. reder the changes to the UI showing the additional asset */
     }
+    
+   
 
+    
     private func showBriefChangeAlert(type: String, value: String) {
         let message = value.isEmpty ? type : "\(type): \(value)"
         let rootView = ZStack {

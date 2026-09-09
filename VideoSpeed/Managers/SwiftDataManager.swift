@@ -22,8 +22,7 @@ final class SwiftDataManager {
         do {
             container = try ModelContainer(
                 for: VideoProject.self,
-                SpidAssetModel.self,
-                StoredCMTimeRange.self
+                SpidAssetModel.self
             )
             container.mainContext.undoManager = UndoManager()
         } catch {
@@ -73,12 +72,36 @@ final class SwiftDataManager {
         return project
     }
 
+//    /// Mutates `project.spidAssets` in place: removes missing models, appends new ones, reorders to match `models`.
+//    private func syncSpidAssetModels(_ models: [SpidAssetModel], into project: VideoProject) {
+//        let targetIDs = Set(models.map(\.id))
+//
+//        for existing in project.spidAssets where !targetIDs.contains(existing.id) {
+//            modelContext.delete(existing)
+//        }
+//        project.spidAssets.removeAll { !targetIDs.contains($0.id) }
+//
+//        for model in models {
+//            model.project = project
+//            if model.modelContext == nil {
+//                modelContext.insert(model)
+//            }
+//            if !project.spidAssets.contains(where: { $0.id == model.id }) {
+//                project.spidAssets.append(model)
+//            }
+//        }
+//
+//        let order = models.map(\.id)
+//        project.spidAssets.sort { lhs, rhs in
+//            (order.firstIndex(of: lhs.id) ?? 0) < (order.firstIndex(of: rhs.id) ?? 0)
+//        }
+//    }
+
     /// Syncs the current `VideoProject` and its `SpidAssetModel`s onto in-memory `SpidAsset`s.
     /// Recreates assets that exist only in SwiftData and drops in-memory assets that no longer exist.
     /// Uses `UserDataManager.currentProject` when `project` is omitted.
     func applyProjectToInMemoryState(from project: VideoProject? = nil) async {
         guard let project = project ?? UserDataManager.main.currentProject else { return }
-
         let models = project.spidAssets.sorted { $0.sortIndex < $1.sortIndex }
         let currentID = await UserDataManager.main.currentSpidAsset?.id
 
@@ -131,10 +154,8 @@ final class SwiftDataManager {
     }
 
     private func copySpidAssetModel(_ model: SpidAssetModel) -> SpidAssetModel {
-        let timeRange = StoredCMTimeRange(model.timeRange?.cmTimeRange ?? .zero)
-        let clipSourceRange = StoredCMTimeRange(
-            model.clipSourceRange?.cmTimeRange ?? model.timeRange?.cmTimeRange ?? .zero
-        )
+        let timeRange = model.timeRange
+        let clipSourceRange = model.clipSourceRange
         return SpidAssetModel(
             id: UUID(),
             videoData: model.videoData,
@@ -207,8 +228,8 @@ final class SwiftDataManager {
             id: snapshot.id,
             videoData: snapshot.videoData,
             fileExtension: snapshot.fileExtension,
-            timeRange: StoredCMTimeRange(timeRangeCM),
-            clipSourceRange: StoredCMTimeRange(clipSourceRangeCM),
+            timeRange: timeRangeCM,
+            clipSourceRange: clipSourceRangeCM,
             videoWidth: snapshot.videoWidth,
             videoHeight: snapshot.videoHeight,
             speed: snapshot.speed,
@@ -236,18 +257,8 @@ final class SwiftDataManager {
                 existing.videoData = snapshot.videoData
                 existing.fileExtension = snapshot.fileExtension
             }
-            if let existingTimeRange = existing.timeRange {
-                existingTimeRange.update(from: timeRangeCM)
-            } else {
-                existing.timeRange = StoredCMTimeRange(timeRangeCM)
-            }
-            if let existingClipSourceRange = existing.clipSourceRange {
-                existingClipSourceRange.update(from: clipSourceRangeCM)
-            } else {
-                existing.clipSourceRange = StoredCMTimeRange(clipSourceRangeCM)
-            }
-            print("sortIndex \(sortIndex) upsertSpidAssetModel timeRangeCM: \(timeRangeCM)")
-//            existing.timeRange = StoredCMTimeRange(timeRangeCM)
+            existing.timeRange = timeRangeCM
+            existing.clipSourceRange = clipSourceRangeCM
             existing.videoWidth = snapshot.videoWidth
             existing.videoHeight = snapshot.videoHeight
             existing.speed = snapshot.speed
@@ -271,11 +282,7 @@ final class SwiftDataManager {
 
     func updateTimeRange(_ timeRange: CMTimeRange, forAssetID id: UUID) {
         guard let model = spidAssetModel(id: id) else { return }
-        if let existing = model.timeRange {
-            existing.update(from: timeRange)
-        } else {
-            model.timeRange = StoredCMTimeRange(timeRange)
-        }
+        model.timeRange = timeRange
         save()
     }
 
@@ -311,23 +318,42 @@ final class SwiftDataManager {
     /// Undoes or redoes the last SwiftData save, persists it, maps History, then syncs project to in-memory state.
     @discardableResult
     func performUndoOrRedo(undo: Bool) async -> ProjectHistoryDiff {
+        print("[performUndoOrRedo] start undo=\(undo)")
+
         let before = try? latestHistoryToken()
+        print("[performUndoOrRedo] latestHistoryToken before=\(String(describing: before))")
+
         if undo {
+            print("[performUndoOrRedo] calling undoManager.undo()")
             modelContext.undoManager?.undo()
         } else {
+            print("[performUndoOrRedo] calling undoManager.redo()")
             modelContext.undoManager?.redo()
         }
+
+        print("[performUndoOrRedo] saving without registering undo")
         saveWithoutRegisteringUndo()
+
         let transactions = (try? fetchHistory(after: before)) ?? []
+        print("[performUndoOrRedo] fetched \(transactions.count) history transaction(s) after token")
+
         guard !transactions.isEmpty else {
+            print("[performUndoOrRedo] no transactions after token — falling back to last transaction")
             let transactions = try! fetchHistory(after: nil)
+            print("[performUndoOrRedo] fallback fetched \(transactions.count) transaction(s)")
             let diff = projectHistoryDiff(from: transactions)
+            print("[performUndoOrRedo] diff (fallback): \(diff)")
+            print("[performUndoOrRedo] applying project to in-memory state")
             await applyProjectToInMemoryState()
+            print("[performUndoOrRedo] done (fallback path)")
             return diff
         }
+
         let diff = projectHistoryDiff(from: transactions)
-        print("ProjectHistoryDiff: \(diff)")
+        print("[performUndoOrRedo] diff: \(diff)")
+        print("[performUndoOrRedo] applying project to in-memory state")
         await applyProjectToInMemoryState()
+        print("[performUndoOrRedo] done")
         return diff
     }
 
@@ -356,6 +382,8 @@ final class SwiftDataManager {
                 applyHistoryChange(change, to: &diff)
             }
         }
+        print("diff \(diff)")
+
         return diff
     }
 
@@ -377,15 +405,8 @@ final class SwiftDataManager {
             }
         case .delete(_ as DefaultHistoryDelete<SpidAssetModel>):
             diff.deletedAssetPersistentIDs.insert(change.changedPersistentIdentifier)
-        case .update(_ as DefaultHistoryUpdate<StoredCMTimeRange>):
-            if let range: StoredCMTimeRange = modelContext.registeredModel(for: change.changedPersistentIdentifier) {
-                let assetId = range.timeRangeOwner!.id
-                diff.upsertAssetChange(assetID: assetId, .timeRange(range.cmTimeRange))
-            }
         default:
-            if let (model, change) = spidAssetFieldChange(owningTimeModel: change.changedPersistentIdentifier) {
-                diff.upsertAssetChange(assetID: model.id, change)
-            }
+            break
         }
     }
 
@@ -412,6 +433,8 @@ final class SwiftDataManager {
     ) -> [SpidAssetFieldChange] {
         var changes: [SpidAssetFieldChange] = []
         var didAddVideoSize = false
+        var didAddTimeRange = false
+        var didAddClipSourceRange = false
         for path in attributes {
             let keyPath = path as PartialKeyPath<SpidAssetModel>
             if keyPath == \.speed {
@@ -431,11 +454,16 @@ final class SwiftDataManager {
                 }
             } else if keyPath == \.mediaKindRawValue {
                 changes.append(.mediaKind(model.mediaKindRawValue))
-            } else if keyPath == \.timeRange {
-                print("spidAssetFieldChanges - timeRange: \(model.timeRange?.cmTimeRange)")
-                changes.append(.timeRange(model.timeRange?.cmTimeRange ?? .zero))
-            } else if keyPath == \.clipSourceRange {
-                changes.append(.clipSourceRange(model.clipSourceRange?.cmTimeRange ?? .zero))
+            } else if isTimeRangeScalar(keyPath) {
+                if !didAddTimeRange {
+                    changes.append(.timeRange(model.timeRange))
+                    didAddTimeRange = true
+                }
+            } else if isClipSourceRangeScalar(keyPath) {
+                if !didAddClipSourceRange {
+                    changes.append(.clipSourceRange(model.clipSourceRange))
+                    didAddClipSourceRange = true
+                }
             } else {
                 changes.append(.other)
             }
@@ -443,22 +471,18 @@ final class SwiftDataManager {
         return changes
     }
 
-    private func spidAssetFieldChange(owningTimeModel id: PersistentIdentifier) -> (SpidAssetModel, SpidAssetFieldChange)? {
-        guard let project = UserDataManager.main.currentProject else { return nil }
-        for model in project.spidAssets {
-            if matchesTimeModel(model.timeRange, id: id) {
-                return (model, .timeRange(model.timeRange?.cmTimeRange ?? .zero))
-            }
-            if matchesTimeModel(model.clipSourceRange, id: id) {
-                return (model, .clipSourceRange(model.clipSourceRange?.cmTimeRange ?? .zero))
-            }
-        }
-        return nil
+    private func isTimeRangeScalar(_ keyPath: PartialKeyPath<SpidAssetModel>) -> Bool {
+        keyPath == \.timeRangeStartValue
+            || keyPath == \.timeRangeStartTimescale
+            || keyPath == \.timeRangeDurationValue
+            || keyPath == \.timeRangeDurationTimescale
     }
 
-    private func matchesTimeModel(_ range: StoredCMTimeRange?, id: PersistentIdentifier) -> Bool {
-        guard let range else { return false }
-        return range.persistentModelID == id
+    private func isClipSourceRangeScalar(_ keyPath: PartialKeyPath<SpidAssetModel>) -> Bool {
+        keyPath == \.clipSourceStartValue
+            || keyPath == \.clipSourceStartTimescale
+            || keyPath == \.clipSourceDurationValue
+            || keyPath == \.clipSourceDurationTimescale
     }
 
     private func thumbnailData(from asset: SpidAsset?) async -> Data {
