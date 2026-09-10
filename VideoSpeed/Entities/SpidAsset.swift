@@ -89,7 +89,6 @@ actor SpidAsset {
     func updateTimeRange(timeRange: CMTimeRange) {
         self.timeRange = timeRange
         Task{
-            
            let _ = await SwiftDataManager.shared.upsertVideoProject()
         }
     }
