@@ -8,6 +8,7 @@ import Foundation
 import AVFoundation
 
 enum UndoField {
+    case none
     case speed(Float, SpidAsset)
     case soundOn(Bool, SpidAsset)
     case sliderValue(Float, SpidAsset)
@@ -22,6 +23,7 @@ enum UndoField {
     /// Case identity used to keep at most one change per field.
     var fieldID: String {
         switch self {
+        case .none: return "none"
         case .speed: return "speed"
         case .soundOn: return "soundOn"
         case .sliderValue: return "sliderValue"
