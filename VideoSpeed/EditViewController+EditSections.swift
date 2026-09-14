@@ -546,17 +546,12 @@ extension EditViewController {
         splitSectionVC.splitConfirmed = { [weak self] splitTime in
             guard let self else { return }
             Task {
-                let didSplit = await UserDataManager.main.splitCurrentAsset(at: splitTime)
+                let didSplit = await StateManager.shared.split(at: splitTime)
                 guard didSplit else {
                     await self.splitSectionVC.reloadTimelineFromOutside()
                     return
                 }
-                
-                /* Split adds a new asset to the in-memory spidAssets array,
-                // calling 'upsertVideoProject' adds that new asset as a model to the SwiftData context
-                 and saves the modelContext state. */
-                await SwiftDataManager.shared.upsertVideoProject()
-                
+
                 await self.reloadComposition()
                 await MainActor.run {
                     self.videosCollectionView.reloadData()

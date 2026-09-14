@@ -42,6 +42,21 @@ final class StateManager {
         await spidAsset.updateTimeRange(timeRange: timeRange)
     }
 
+    /// Splits the current clip at `splitTime` and registers undo/redo snapshots.
+    @discardableResult
+    func split(at splitTime: CMTime) async -> Bool {
+        guard let sourceAsset = UserDataManager.main.currentSpidAsset else { return false }
+
+        let before = await makeSplitSnapshot(sourceAsset: sourceAsset)
+        let didSplit = await UserDataManager.main.splitCurrentAsset(at: splitTime)
+        guard didSplit else { return false }
+
+        let after = await makeSplitSnapshot(sourceAsset: sourceAsset)
+        registerUndo(previous: .split(before), current: .split(after))
+        await SwiftDataManager.shared.upsertVideoProject()
+        return true
+    }
+
     /// Registers undo that restores `previous`. While undoing/redoing, re-registers
     /// with `previous`/`current` swapped so the opposite stack entry is created.
     private func registerUndo(previous: UndoField, current: UndoField) {
@@ -69,7 +84,22 @@ final class StateManager {
             userInfo: [UndoManagerNotification.fieldKey: field]
         )
     }
-    
+
+    private func makeSplitSnapshot(sourceAsset: SpidAsset) async -> SplitUndoSnapshot {
+        SplitUndoSnapshot(
+            assets: UserDataManager.main.spidAssets,
+            currentAsset: UserDataManager.main.currentSpidAsset,
+            sourceAsset: sourceAsset,
+            sourceTimeRange: await sourceAsset.timeRange,
+            sourceClipSourceRange: await sourceAsset.clipSourceRange,
+            sourceThumbnail: await sourceAsset.thumbnailImage,
+            sourceThumbnailImages: await sourceAsset.thumbnailImages,
+            sourceLeftHandle: await sourceAsset.leftHandleConstraintConstant,
+            sourceRightHandle: await sourceAsset.rightHandleConstraintConstant,
+            splitCount: UserDataManager.main.splitCount
+        )
+    }
+
     private func apply(_ field: UndoField) async {
         switch field {
         case .none, .other:
@@ -95,6 +125,24 @@ final class StateManager {
             await asset.updateMediaKind(kind)
         case .spidAssets:
             break
+        case .split(let snapshot):
+            UserDataManager.main.spidAssets = snapshot.assets
+            UserDataManager.main.currentSpidAsset = snapshot.currentAsset
+            UserDataManager.main.splitCount = snapshot.splitCount
+
+            await snapshot.sourceAsset.updateTimeRange(timeRange: snapshot.sourceTimeRange)
+            await snapshot.sourceAsset.updateClipSourceRange(snapshot.sourceClipSourceRange)
+            await snapshot.sourceAsset.updateThumbnailImage(snapshot.sourceThumbnail)
+            await snapshot.sourceAsset.updateThumbnailImages(images: snapshot.sourceThumbnailImages)
+            await snapshot.sourceAsset.clearHandleConstraintConstants()
+            if let left = snapshot.sourceLeftHandle {
+                await snapshot.sourceAsset.updateLeftHandleConstraintConstant(constant: left)
+            }
+            if let right = snapshot.sourceRightHandle {
+                await snapshot.sourceAsset.updateRightHandleConstraintConstant(constant: right)
+            }
+
+            await SwiftDataManager.shared.upsertVideoProject()
         }
     }
 }

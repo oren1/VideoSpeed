@@ -6,6 +6,21 @@
 //
 import Foundation
 import AVFoundation
+import CoreGraphics
+
+/// Captures enough project + source-clip state to undo/redo a split.
+struct SplitUndoSnapshot {
+    let assets: [SpidAsset]
+    let currentAsset: SpidAsset
+    let sourceAsset: SpidAsset
+    let sourceTimeRange: CMTimeRange
+    let sourceClipSourceRange: CMTimeRange
+    let sourceThumbnail: CGImage
+    let sourceThumbnailImages: [CGImage]?
+    let sourceLeftHandle: CGFloat?
+    let sourceRightHandle: CGFloat?
+    let splitCount: Int
+}
 
 enum UndoField {
     case none
@@ -18,6 +33,7 @@ enum UndoField {
     case videoSize(CGSize, SpidAsset)
     case mediaKind(String, SpidAsset)
     case spidAssets([SpidAsset])
+    case split(SplitUndoSnapshot)
     case other
 
     /// Case identity used to keep at most one change per field.
@@ -33,6 +49,7 @@ enum UndoField {
         case .videoSize: return "videoSize"
         case .mediaKind: return "mediaKind"
         case .spidAssets: return "spidAssets"
+        case .split: return "split"
         case .other: return "other"
         }
     }

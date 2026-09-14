@@ -45,6 +45,15 @@ extension EditViewController {
                         imageDurationSectionVC.currentSpidAssetDidChange()
                     }
                 }
+            case .split(let snapshot):
+                showBriefChangeAlert(type: "split", value: "")
+
+                videosCollectionView.reloadData()
+                updateTrashVisibility()
+                await reloadComposition()
+                notifyCurrentSpidAssetDidChange()
+                await splitSectionVC.reloadTimelineFromOutside()
+
             default:
                 print("undoManagerDidChangeFielddefault")
             }
