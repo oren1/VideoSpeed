@@ -85,7 +85,7 @@ final class StateManager {
             await asset.updateVideoFilter(filter)
         case .timeRange(let timeRange, let asset):
             await asset.updateTimeRange(timeRange: timeRange)
-            await asset.clearTrimmerHandleConstants()
+            await asset.clearHandleConstraintConstants()
         case .clipSourceRange(let range, let asset):
             await asset.updateClipSourceRange(range)
         case .videoSize(let size, let asset):

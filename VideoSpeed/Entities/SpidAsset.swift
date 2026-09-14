@@ -148,9 +148,13 @@ actor SpidAsset {
         videoSize = size
     }
 
-    func clearTrimmerHandleConstants() {
+    func clearHandleConstraintConstants() {
         rightHandleConstraintConstant = nil
         leftHandleConstraintConstant = nil
+    }
+
+    func clearTrimmerHandleConstants() {
+        clearHandleConstraintConstants()
         thumbnailImages = nil
     }
     

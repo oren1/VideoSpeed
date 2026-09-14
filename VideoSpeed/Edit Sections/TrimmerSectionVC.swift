@@ -110,26 +110,26 @@ class TrimmerSectionVC: SectionViewController {
         trimmerView.asset = clipAsset
         trimmerView.assetPreview.contentOffset = .zero
 
-        let applyHandles: () -> Void = { [weak self] in
-            guard let self else { return }
-            Task { @MainActor in
-                await self.applyHandlePositions(
-                    for: spidAsset,
-                    selectionRange: selectionRange,
-                    clipSourceRange: clipSourceRange
-                )
-            }
-        }
-
         if let thumbnailImages = await spidAsset.thumbnailImages {
             trimmerView.replaceTo(thumbnailImages: thumbnailImages)
-            applyHandles()
+            await applyHandlePositions(
+                for: spidAsset,
+                selectionRange: selectionRange,
+                clipSourceRange: clipSourceRange
+            )
         } else {
-            trimmerView.generateClipThumbnails(for: clipSourceRange, trimmerHeight: trimmerHeight) { images in
+            trimmerView.generateClipThumbnails(for: clipSourceRange, trimmerHeight: trimmerHeight) { [weak self] images in
                 Task {
                     await UserDataManager.main.currentSpidAsset?.updateThumbnailImages(images: images)
                 }
-                applyHandles()
+                guard let self else { return }
+                Task { @MainActor in
+                    await self.applyHandlePositions(
+                        for: spidAsset,
+                        selectionRange: selectionRange,
+                        clipSourceRange: clipSourceRange
+                    )
+                }
             }
         }
     }
