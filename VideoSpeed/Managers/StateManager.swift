@@ -50,13 +50,14 @@ final class StateManager {
         undoManager.registerUndo(withTarget: self) { stateManager in
             // setting the undoField to the previous
             stateManager.undoField = previous
-            // Register a reverse undo operation. While inside an undo operation, adding another operation
+            // Register a reverse undo operation.
+            // While we're inside an undo operation, adding another operation
             // adds it to the opposite stack and allows to redo
             stateManager.registerUndo(previous: current, current: previous)
-            stateManager.notifyUndoFieldChanged(field: previous)
-           
+
             Task { @MainActor in
                 await stateManager.apply(previous)
+                stateManager.notifyUndoFieldChanged(field: previous)
             }
         }
     }
@@ -84,6 +85,7 @@ final class StateManager {
             await asset.updateVideoFilter(filter)
         case .timeRange(let timeRange, let asset):
             await asset.updateTimeRange(timeRange: timeRange)
+            await asset.clearTrimmerHandleConstants()
         case .clipSourceRange(let range, let asset):
             await asset.updateClipSourceRange(range)
         case .videoSize(let size, let asset):
