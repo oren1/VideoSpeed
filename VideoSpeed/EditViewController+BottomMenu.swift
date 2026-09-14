@@ -122,6 +122,12 @@ extension EditViewController: UICollectionViewDelegate {
         if previousMenuItem?.id == .split, menuItem.id != .split {
             Task {
                 await reloadComposition()
+                let startTime = getStartTimeForCurrentSpidAsset()
+                await spidPlayerController?.player?.seek(
+                    to: startTime,
+                    toleranceBefore: .zero,
+                    toleranceAfter: .zero
+                )
             }
         }
     }
