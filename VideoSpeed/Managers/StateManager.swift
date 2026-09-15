@@ -42,6 +42,20 @@ final class StateManager {
         await spidAsset.updateTimeRange(timeRange: timeRange)
     }
 
+    /// Updates video filter on the runtime asset and persists it to SwiftData.
+    func updateVideoFilter(_ filter: VideoFilter, for asset: SpidAsset? = nil) async {
+        guard let spidAsset = asset ?? UserDataManager.main.currentSpidAsset else { return }
+        let oldFilter = await spidAsset.videoFilter
+        guard oldFilter != filter else { return }
+
+        registerUndo(
+            previous: .videoFilter(oldFilter.rawValue, spidAsset),
+            current: .videoFilter(filter.rawValue, spidAsset)
+        )
+        await spidAsset.updateVideoFilter(filter)
+        await SwiftDataManager.shared.upsertVideoProject()
+    }
+
     /// Splits the current clip at `splitTime` and registers undo/redo snapshots.
     @discardableResult
     func split(at splitTime: CMTime) async -> Bool {
@@ -113,6 +127,7 @@ final class StateManager {
         case .videoFilter(let filterName, let asset):
             guard let filter = VideoFilter(rawValue: filterName) else { return }
             await asset.updateVideoFilter(filter)
+            await SwiftDataManager.shared.upsertVideoProject()
         case .timeRange(let timeRange, let asset):
             await asset.updateTimeRange(timeRange: timeRange)
             await asset.clearHandleConstraintConstants()

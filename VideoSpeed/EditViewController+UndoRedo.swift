@@ -45,6 +45,14 @@ extension EditViewController {
                         imageDurationSectionVC.currentSpidAssetDidChange()
                     }
                 }
+            case .videoFilter(let filterName, let spidAsset):
+                await flickerAsset(assetID: spidAsset.id)
+                let displayName = VideoFilter(rawValue: filterName)?.displayName ?? filterName
+                showBriefChangeAlert(type: "filter", value: displayName)
+                if UserDataManager.main.currentSpidAsset == spidAsset {
+                    await filterSectionVC.reloadFromCurrentAsset()
+                }
+                await reloadComposition()
             case .split(let snapshot):
                 showBriefChangeAlert(type: "split", value: "")
 

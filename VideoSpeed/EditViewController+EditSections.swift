@@ -577,7 +577,7 @@ extension EditViewController {
         filterSectionVC.filterDidChange = { [weak self] filter in
             guard let self else { return }
             Task {
-                await UserDataManager.main.currentSpidAsset.updateVideoFilter(filter)
+                await StateManager.shared.updateVideoFilter(filter)
                 await self.reloadComposition()
                 let startTime = self.getStartTimeForCurrentSpidAsset()
                 await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
