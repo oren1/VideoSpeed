@@ -22,7 +22,8 @@ final class SwiftDataManager {
         do {
             container = try ModelContainer(
                 for: VideoProject.self,
-                SpidAssetModel.self
+                SpidAssetModel.self,
+                SDLabelViewModel.self
             )
             container.mainContext.undoManager = UndoManager()
         } catch {

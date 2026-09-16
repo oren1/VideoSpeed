@@ -39,6 +39,7 @@
 		6B0D01012FA5000100AAA101 /* VideoProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01002FA5000100AAA101 /* VideoProject.swift */; };
 		6B0D01032FA5000200AAA102 /* SwiftDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01022FA5000200AAA102 /* SwiftDataManager.swift */; };
 		6B0D01072FA5000400AAA104 /* SpidAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01062FA5000400AAA104 /* SpidAssetModel.swift */; };
+		6B0D010B2FA5000600AAA106 /* SDLabelViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D010A2FA5000600AAA106 /* SDLabelViewModel.swift */; };
 		6B0D01092FA5000500AAA105 /* SpidAsset+SwiftData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01082FA5000500AAA105 /* SpidAsset+SwiftData.swift */; };
 		6B0D01112FA6000100AAA201 /* ProjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01102FA6000100AAA201 /* ProjectsView.swift */; };
 		6B0D01152FA8000100AAA401 /* ProjectMediaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01142FA8000100AAA401 /* ProjectMediaStore.swift */; };
@@ -263,6 +264,7 @@
 		6B0D01002FA5000100AAA101 /* VideoProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoProject.swift; sourceTree = "<group>"; };
 		6B0D01022FA5000200AAA102 /* SwiftDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataManager.swift; sourceTree = "<group>"; };
 		6B0D01062FA5000400AAA104 /* SpidAssetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidAssetModel.swift; sourceTree = "<group>"; };
+		6B0D010A2FA5000600AAA106 /* SDLabelViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDLabelViewModel.swift; sourceTree = "<group>"; };
 		6B0D01082FA5000500AAA105 /* SpidAsset+SwiftData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpidAsset+SwiftData.swift"; sourceTree = "<group>"; };
 		6B0D01102FA6000100AAA201 /* ProjectsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsView.swift; sourceTree = "<group>"; };
 		6B0D01142FA8000100AAA401 /* ProjectMediaStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectMediaStore.swift; sourceTree = "<group>"; };
@@ -517,6 +519,7 @@
 				6B6801262D17F31F002B5454 /* SpidAsset.swift */,
 				6B0D01082FA5000500AAA105 /* SpidAsset+SwiftData.swift */,
 				6B0D01062FA5000400AAA104 /* SpidAssetModel.swift */,
+				6B0D010A2FA5000600AAA106 /* SDLabelViewModel.swift */,
 				6B0D01002FA5000100AAA101 /* VideoProject.swift */,
 				6B9610172D44CD8D00DEE296 /* SpidLabel.swift */,
 				6B09449E2DC0A900009FBFB2 /* TextEditMenuItem.swift */,
@@ -1127,6 +1130,7 @@
 				6B0D01212FAB010100AAA801 /* ProjectHistoryDiff.swift in Sources */,
 				6B0D01232FAB020100AAA802 /* BriefChangeAlertView.swift in Sources */,
 				6B0D01072FA5000400AAA104 /* SpidAssetModel.swift in Sources */,
+				6B0D010B2FA5000600AAA106 /* SDLabelViewModel.swift in Sources */,
 				6B0D01092FA5000500AAA105 /* SpidAsset+SwiftData.swift in Sources */,
 				6B09449F2DC0A900009FBFB2 /* TextEditMenuItem.swift in Sources */,
 				6B6700A62A6CF77E006F2980 /* PurchaseViewController.swift in Sources */,

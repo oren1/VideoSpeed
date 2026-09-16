@@ -67,6 +67,7 @@ class SpidPlayerViewController: UIViewController {
     private let transcriptionUserDefaultsKey = "transcriptionResponse"
     /// Ensures we rebuild captions once after layout so container width matches `videoContainerView`.
     private var didApplyCaptionsFromUserDefaultsAfterLayout = false
+    private var didApplySmokeTestLabel = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -253,6 +254,7 @@ class SpidPlayerViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
         if UserDefaults.standard.data(forKey: transcriptionUserDefaultsKey) == nil {
             print("No transcription response data found in UserDefaults")
             return
@@ -302,6 +304,20 @@ class SpidPlayerViewController: UIViewController {
 
             await MainActor.run { [weak self] in
                 self?.applyCaptionsFromUserDefaultsAfterLayoutIfPossible()
+            }
+            
+            if !didApplySmokeTestLabel {
+                didApplySmokeTestLabel = true
+                view.layoutIfNeeded()
+                var mockLabel = SDLabelViewModel.makeMock().makeLabelViewModel()
+                mockLabel.backgroundStyle = .full
+                mockLabel.selected = true
+                mockLabel.center = CGPoint(
+                    x: videoContainerView.bounds.midX,
+                    y: videoContainerView.bounds.midY
+                )
+                UserDataManager.main.labelViewsModels = [mockLabel]
+                addLabelViews(labelViewsModels: UserDataManager.main.labelViewsModels)
             }
 //            let fontSize = CaptionStyleGenerator.basicFontSize
 //            let labelHeight: CGFloat = text.height(withConstrainedWidth: videoContainerView.frame.width, font: UIFont.systemFont(ofSize: fontSize))
