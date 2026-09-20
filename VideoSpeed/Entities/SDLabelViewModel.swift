@@ -27,7 +27,15 @@ final class SDLabelViewModel {
     var backgroundColorA: Double
     var centerX: Double
     var centerY: Double
+    var fontName: String
     var fontSize: Double
+    var textAlignmentRawValue: Int
+    var backgroundStyleRawValue: String
+    var strokeColorR: Double
+    var strokeColorG: Double
+    var strokeColorB: Double
+    var strokeColorA: Double
+    var strokeWidth: Double
     var labelFrameWidth: Double
     var labelFrameHeight: Double
 
@@ -41,7 +49,12 @@ final class SDLabelViewModel {
         textColor: UIColor,
         backgroundColor: UIColor,
         center: CGPoint,
+        fontName: String,
         fontSize: Double,
+        textAlignmentRawValue: Int,
+        backgroundStyleRawValue: String,
+        strokeColor: UIColor,
+        strokeWidth: Double,
         labelFrame: CGRect
     ) {
         self.id = id
@@ -51,23 +64,32 @@ final class SDLabelViewModel {
         self.height = height
         self.text = text
 
-        var tr: CGFloat = 0, tg: CGFloat = 0, tb: CGFloat = 0, ta: CGFloat = 0
-        textColor.getRed(&tr, green: &tg, blue: &tb, alpha: &ta)
-        self.textColorR = Double(tr)
-        self.textColorG = Double(tg)
-        self.textColorB = Double(tb)
-        self.textColorA = Double(ta)
+        let textComponents = textColor.rgbaComponents()
+        self.textColorR = textComponents.r
+        self.textColorG = textComponents.g
+        self.textColorB = textComponents.b
+        self.textColorA = textComponents.a
 
-        var br: CGFloat = 0, bg: CGFloat = 0, bb: CGFloat = 0, ba: CGFloat = 0
-        backgroundColor.getRed(&br, green: &bg, blue: &bb, alpha: &ba)
-        self.backgroundColorR = Double(br)
-        self.backgroundColorG = Double(bg)
-        self.backgroundColorB = Double(bb)
-        self.backgroundColorA = Double(ba)
+        let backgroundComponents = backgroundColor.rgbaComponents()
+        self.backgroundColorR = backgroundComponents.r
+        self.backgroundColorG = backgroundComponents.g
+        self.backgroundColorB = backgroundComponents.b
+        self.backgroundColorA = backgroundComponents.a
 
         self.centerX = center.x
         self.centerY = center.y
+        self.fontName = fontName
         self.fontSize = fontSize
+        self.textAlignmentRawValue = textAlignmentRawValue
+        self.backgroundStyleRawValue = backgroundStyleRawValue
+
+        let strokeComponents = strokeColor.rgbaComponents()
+        self.strokeColorR = strokeComponents.r
+        self.strokeColorG = strokeComponents.g
+        self.strokeColorB = strokeComponents.b
+        self.strokeColorA = strokeComponents.a
+        self.strokeWidth = strokeWidth
+
         self.labelFrameWidth = labelFrame.width
         self.labelFrameHeight = labelFrame.height
     }
@@ -82,13 +104,18 @@ final class SDLabelViewModel {
             textColor: .white,
             backgroundColor: UIColor.black.withAlphaComponent(0.6),
             center: .zero,
+            fontName: UIFont.systemFont(ofSize: 18).fontName,
             fontSize: 18,
+            textAlignmentRawValue: NSTextAlignment.center.rawValue,
+            backgroundStyleRawValue: BackgroundStyle.fragmented.rawValue,
+            strokeColor: .clear,
+            strokeWidth: 0,
             labelFrame: CGRect(x: 0, y: 0, width: 136, height: 24)
         )
     }
 
     func makeLabelViewModel() -> LabelViewModel {
-        LabelViewModel(
+        let viewModel = LabelViewModel(
             id: id,
             labelFrame: CGRect(x: 0, y: 0, width: labelFrameWidth, height: labelFrameHeight),
             text: text,
@@ -99,9 +126,22 @@ final class SDLabelViewModel {
                 blue: backgroundColorB,
                 alpha: backgroundColorA
             ),
-            textAlignment: .center,
+            textAlignment: NSTextAlignment(rawValue: textAlignmentRawValue) ?? .center,
             center: CGPoint(x: centerX, y: centerY)
         )
+        viewModel.width = width
+        viewModel.height = height
+        viewModel.fontSize = fontSize
+        viewModel.font = UIFont(name: fontName, size: fontSize) ?? UIFont.systemFont(ofSize: fontSize)
+        viewModel.backgroundStyle = BackgroundStyle(rawValue: backgroundStyleRawValue) ?? .fragmented
+        viewModel.strokeColor = UIColor(
+            red: strokeColorR,
+            green: strokeColorG,
+            blue: strokeColorB,
+            alpha: strokeColorA
+        )
+        viewModel.strokeWidth = strokeWidth
+        return viewModel
     }
 
     static func make(from viewModel: LabelViewModel, sortIndex: Int, project: VideoProject? = nil) -> SDLabelViewModel {
@@ -115,7 +155,12 @@ final class SDLabelViewModel {
             textColor: viewModel.textColor,
             backgroundColor: viewModel.backgroundColor,
             center: viewModel.center,
+            fontName: viewModel.font.fontName,
             fontSize: Double(viewModel.fontSize),
+            textAlignmentRawValue: viewModel.textAlignment.rawValue,
+            backgroundStyleRawValue: viewModel.backgroundStyle.rawValue,
+            strokeColor: viewModel.strokeColor,
+            strokeWidth: Double(viewModel.strokeWidth),
             labelFrame: viewModel.labelFrame
         )
     }
@@ -126,24 +171,43 @@ final class SDLabelViewModel {
         self.height = Double(viewModel.height)
         self.text = viewModel.text
 
-        var tr: CGFloat = 0, tg: CGFloat = 0, tb: CGFloat = 0, ta: CGFloat = 0
-        viewModel.textColor.getRed(&tr, green: &tg, blue: &tb, alpha: &ta)
-        self.textColorR = Double(tr)
-        self.textColorG = Double(tg)
-        self.textColorB = Double(tb)
-        self.textColorA = Double(ta)
+        let textComponents = viewModel.textColor.rgbaComponents()
+        self.textColorR = textComponents.r
+        self.textColorG = textComponents.g
+        self.textColorB = textComponents.b
+        self.textColorA = textComponents.a
 
-        var br: CGFloat = 0, bg: CGFloat = 0, bb: CGFloat = 0, ba: CGFloat = 0
-        viewModel.backgroundColor.getRed(&br, green: &bg, blue: &bb, alpha: &ba)
-        self.backgroundColorR = Double(br)
-        self.backgroundColorG = Double(bg)
-        self.backgroundColorB = Double(bb)
-        self.backgroundColorA = Double(ba)
+        let backgroundComponents = viewModel.backgroundColor.rgbaComponents()
+        self.backgroundColorR = backgroundComponents.r
+        self.backgroundColorG = backgroundComponents.g
+        self.backgroundColorB = backgroundComponents.b
+        self.backgroundColorA = backgroundComponents.a
 
         self.centerX = viewModel.center.x
         self.centerY = viewModel.center.y
+        self.fontName = viewModel.font.fontName
         self.fontSize = Double(viewModel.fontSize)
+        self.textAlignmentRawValue = viewModel.textAlignment.rawValue
+        self.backgroundStyleRawValue = viewModel.backgroundStyle.rawValue
+
+        let strokeComponents = viewModel.strokeColor.rgbaComponents()
+        self.strokeColorR = strokeComponents.r
+        self.strokeColorG = strokeComponents.g
+        self.strokeColorB = strokeComponents.b
+        self.strokeColorA = strokeComponents.a
+        self.strokeWidth = Double(viewModel.strokeWidth)
+
         self.labelFrameWidth = viewModel.labelFrame.width
         self.labelFrameHeight = viewModel.labelFrame.height
+    }
+}
+
+private extension UIColor {
+    func rgbaComponents() -> (r: Double, g: Double, b: Double, a: Double) {
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        if getRed(&r, green: &g, blue: &b, alpha: &a) {
+            return (Double(r), Double(g), Double(b), Double(a))
+        }
+        return (1, 1, 1, 1)
     }
 }

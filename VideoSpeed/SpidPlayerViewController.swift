@@ -338,7 +338,6 @@ class SpidPlayerViewController: UIViewController {
 
         let labels = sdLabels.map { sdLabel -> LabelViewModel in
             let label = sdLabel.makeLabelViewModel()
-            label.backgroundStyle = .full
             if label.center == .zero {
                 label.center = containerCenter
             }

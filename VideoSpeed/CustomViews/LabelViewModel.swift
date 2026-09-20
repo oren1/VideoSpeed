@@ -11,7 +11,7 @@ import AVFoundation
 let LabelViewExtraWidth = 24.0
 let LabelViewExtraHeight = 24.0
 
-enum BackgroundStyle {
+enum BackgroundStyle: String {
     case full, fragmented
 }
 
