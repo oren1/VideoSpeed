@@ -519,7 +519,7 @@ class SpidPlayerViewController: UIViewController {
         selectedLabelViewModel.fullRotation += gesture.rotation
 //        selectedLabelView.viewModel.updateRotation(rotation: gesture.rotation)
         gesture.rotation = 0
-    
+        SwiftDataManager.shared.upsertLabelViewModels()
     }
     
     @objc func didPinch(_ gesture: UIPinchGestureRecognizer) {
@@ -531,6 +531,8 @@ class SpidPlayerViewController: UIViewController {
         selectedLabelViewModel.height *= gesture.scale
         
         gesture.scale = 1
+        SwiftDataManager.shared.upsertLabelViewModels()
+
     }
     
     
@@ -545,6 +547,8 @@ class SpidPlayerViewController: UIViewController {
           )
           selectedLabelViewModel.center = center
           gesture.setTranslation(.zero, in: view)
+        SwiftDataManager.shared.upsertLabelViewModels()
+
     }
     
     func videoContainerRect() -> CGRect{

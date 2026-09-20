@@ -27,6 +27,10 @@ final class SDLabelViewModel {
     var backgroundColorA: Double
     var centerX: Double
     var centerY: Double
+    var scale: Double
+    var fullScale: Double
+    var rotation: Double
+    var fullRotation: Double
     var fontName: String
     var fontSize: Double
     var textAlignmentRawValue: Int
@@ -49,6 +53,10 @@ final class SDLabelViewModel {
         textColor: UIColor,
         backgroundColor: UIColor,
         center: CGPoint,
+        scale: Double = 1,
+        fullScale: Double = 1,
+        rotation: Double = 0,
+        fullRotation: Double = 0,
         fontName: String,
         fontSize: Double,
         textAlignmentRawValue: Int,
@@ -78,6 +86,10 @@ final class SDLabelViewModel {
 
         self.centerX = center.x
         self.centerY = center.y
+        self.scale = scale
+        self.fullScale = fullScale
+        self.rotation = rotation
+        self.fullRotation = fullRotation
         self.fontName = fontName
         self.fontSize = fontSize
         self.textAlignmentRawValue = textAlignmentRawValue
@@ -104,6 +116,10 @@ final class SDLabelViewModel {
             textColor: .white,
             backgroundColor: UIColor.black.withAlphaComponent(0.6),
             center: .zero,
+            scale: 1,
+            fullScale: 1,
+            rotation: 0,
+            fullRotation: 0,
             fontName: UIFont.systemFont(ofSize: 18).fontName,
             fontSize: 18,
             textAlignmentRawValue: NSTextAlignment.center.rawValue,
@@ -127,10 +143,14 @@ final class SDLabelViewModel {
                 alpha: backgroundColorA
             ),
             textAlignment: NSTextAlignment(rawValue: textAlignmentRawValue) ?? .center,
-            center: CGPoint(x: centerX, y: centerY)
+            center: CGPoint(x: centerX, y: centerY),
+            rotation: rotation
         )
         viewModel.width = width
         viewModel.height = height
+        viewModel.scale = scale
+        viewModel.fullScale = fullScale
+        viewModel.fullRotation = fullRotation
         viewModel.fontSize = fontSize
         viewModel.font = UIFont(name: fontName, size: fontSize) ?? UIFont.systemFont(ofSize: fontSize)
         viewModel.backgroundStyle = BackgroundStyle(rawValue: backgroundStyleRawValue) ?? .fragmented
@@ -155,6 +175,10 @@ final class SDLabelViewModel {
             textColor: viewModel.textColor,
             backgroundColor: viewModel.backgroundColor,
             center: viewModel.center,
+            scale: Double(viewModel.scale),
+            fullScale: Double(viewModel.fullScale),
+            rotation: Double(viewModel.rotation),
+            fullRotation: Double(viewModel.fullRotation),
             fontName: viewModel.font.fontName,
             fontSize: Double(viewModel.fontSize),
             textAlignmentRawValue: viewModel.textAlignment.rawValue,
@@ -185,6 +209,10 @@ final class SDLabelViewModel {
 
         self.centerX = viewModel.center.x
         self.centerY = viewModel.center.y
+        self.scale = Double(viewModel.scale)
+        self.fullScale = Double(viewModel.fullScale)
+        self.rotation = Double(viewModel.rotation)
+        self.fullRotation = Double(viewModel.fullRotation)
         self.fontName = viewModel.font.fontName
         self.fontSize = Double(viewModel.fontSize)
         self.textAlignmentRawValue = viewModel.textAlignment.rawValue
