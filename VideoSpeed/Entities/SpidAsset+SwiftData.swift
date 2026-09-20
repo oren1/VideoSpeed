@@ -115,14 +115,12 @@ extension SpidAsset {
             thumnbnailImage: thumbnailImage,
             mediaKind: mediaKind,
             clipSourceRange: clipSourceRange,
-            id: model.id
+            id: model.id,
+            speed: model.speed,
+            soundOn: model.soundOn,
+            sliderValue: model.sliderValue,
+            videoFilter: VideoFilter(rawValue: model.videoFilterRawValue) ?? .none
         )
-        await spidAsset.updateSpeed(speed: model.speed)
-        await spidAsset.updateSound(soundOn: model.soundOn)
-        await spidAsset.updateSliderValue(value: model.sliderValue)
-        if let filter = VideoFilter(rawValue: model.videoFilterRawValue) {
-            await spidAsset.updateVideoFilter(filter)
-        }
         return spidAsset
     }
 

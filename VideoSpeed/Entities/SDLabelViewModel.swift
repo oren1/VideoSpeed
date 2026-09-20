@@ -12,6 +12,7 @@ import UIKit
 final class SDLabelViewModel {
     @Attribute(.unique) var id: UUID
     var sortIndex: Int
+    var project: VideoProject?
 
     var width: Double
     var height: Double
@@ -33,6 +34,7 @@ final class SDLabelViewModel {
     init(
         id: UUID,
         sortIndex: Int,
+        project: VideoProject? = nil,
         width: Double,
         height: Double,
         text: String,
@@ -44,6 +46,7 @@ final class SDLabelViewModel {
     ) {
         self.id = id
         self.sortIndex = sortIndex
+        self.project = project
         self.width = width
         self.height = height
         self.text = text
@@ -86,6 +89,7 @@ final class SDLabelViewModel {
 
     func makeLabelViewModel() -> LabelViewModel {
         LabelViewModel(
+            id: id,
             labelFrame: CGRect(x: 0, y: 0, width: labelFrameWidth, height: labelFrameHeight),
             text: text,
             textColor: UIColor(red: textColorR, green: textColorG, blue: textColorB, alpha: textColorA),
@@ -98,5 +102,48 @@ final class SDLabelViewModel {
             textAlignment: .center,
             center: CGPoint(x: centerX, y: centerY)
         )
+    }
+
+    static func make(from viewModel: LabelViewModel, sortIndex: Int, project: VideoProject? = nil) -> SDLabelViewModel {
+        SDLabelViewModel(
+            id: viewModel.id,
+            sortIndex: sortIndex,
+            project: project,
+            width: Double(viewModel.width),
+            height: Double(viewModel.height),
+            text: viewModel.text,
+            textColor: viewModel.textColor,
+            backgroundColor: viewModel.backgroundColor,
+            center: viewModel.center,
+            fontSize: Double(viewModel.fontSize),
+            labelFrame: viewModel.labelFrame
+        )
+    }
+
+    func update(from viewModel: LabelViewModel, sortIndex: Int) {
+        self.sortIndex = sortIndex
+        self.width = Double(viewModel.width)
+        self.height = Double(viewModel.height)
+        self.text = viewModel.text
+
+        var tr: CGFloat = 0, tg: CGFloat = 0, tb: CGFloat = 0, ta: CGFloat = 0
+        viewModel.textColor.getRed(&tr, green: &tg, blue: &tb, alpha: &ta)
+        self.textColorR = Double(tr)
+        self.textColorG = Double(tg)
+        self.textColorB = Double(tb)
+        self.textColorA = Double(ta)
+
+        var br: CGFloat = 0, bg: CGFloat = 0, bb: CGFloat = 0, ba: CGFloat = 0
+        viewModel.backgroundColor.getRed(&br, green: &bg, blue: &bb, alpha: &ba)
+        self.backgroundColorR = Double(br)
+        self.backgroundColorG = Double(bg)
+        self.backgroundColorB = Double(bb)
+        self.backgroundColorA = Double(ba)
+
+        self.centerX = viewModel.center.x
+        self.centerY = viewModel.center.y
+        self.fontSize = Double(viewModel.fontSize)
+        self.labelFrameWidth = viewModel.labelFrame.width
+        self.labelFrameHeight = viewModel.labelFrame.height
     }
 }

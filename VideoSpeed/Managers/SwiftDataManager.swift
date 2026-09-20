@@ -29,6 +29,16 @@ final class SwiftDataManager {
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
+
+        NotificationCenter.default.addObserver(
+            forName: .OverlayLabelViewsUpdated,
+            object: nil,
+            queue: .main
+        ) { _ in
+            Task { @MainActor in
+                SwiftDataManager.shared.upsertLabelViewModels()
+            }
+        }
     }
 
     // MARK: - VideoProject
@@ -59,18 +69,57 @@ final class SwiftDataManager {
     @discardableResult
     func upsertVideoProject() async -> VideoProject? {
         guard let project = UserDataManager.main.currentProject else { return nil }
-
+    
         let assets = UserDataManager.main.spidAssets
+        if assets.count == 0 {
+            print("upsertVideoProject: no assets to upsert")
+        }
         var models: [SpidAssetModel] = []
         for (index, asset) in assets.enumerated() {
             let snapshot = await makePersistedSnapshot(from: asset)
             models.append(upsertSpidAssetModel(from: snapshot, sortIndex: index))
         }
+        print("upsertVideoProject: after iteration")
 
         project.thumbnailImage = await thumbnailData(from: assets.first)
         project.spidAssets = models
         save()
         return project
+    }
+
+    /// Upserts `UserDataManager.labelViewsModels` into the current project's labels.
+    @discardableResult
+    func upsertLabelViewModels() -> [SDLabelViewModel]? {
+        guard let project = UserDataManager.main.currentProject else { return nil }
+
+        let viewModels = UserDataManager.main.labelViewsModels
+        let targetIDs = Set(viewModels.map(\.id))
+        for existing in project.labelViewModels where !targetIDs.contains(existing.id) {
+            modelContext.delete(existing)
+        }
+
+        var existingByID = Dictionary(
+            uniqueKeysWithValues: project.labelViewModels.map { ($0.id, $0) }
+        )
+
+        var models: [SDLabelViewModel] = []
+        models.reserveCapacity(viewModels.count)
+        for (index, viewModel) in viewModels.enumerated() {
+            if let existing = existingByID[viewModel.id] {
+                existing.update(from: viewModel, sortIndex: index)
+                existing.project = project
+                models.append(existing)
+            } else {
+                let model = SDLabelViewModel.make(from: viewModel, sortIndex: index, project: project)
+                modelContext.insert(model)
+                existingByID[model.id] = model
+                models.append(model)
+            }
+        }
+
+        project.labelViewModels = models
+        save()
+        return models
     }
 
 //    /// Mutates `project.spidAssets` in place: removes missing models, appends new ones, reorders to match `models`.

@@ -16,6 +16,7 @@ enum BackgroundStyle {
 }
 
 class LabelViewModel: ObservableObject {
+    let id: UUID
     var width: CGFloat
     var height: CGFloat
     var numberOfLines = 0
@@ -75,8 +76,9 @@ class LabelViewModel: ObservableObject {
     var strokeWidth: CGFloat = 0
     
     
-    init(width: CGFloat = 0.0, height: CGFloat = 0.0, labelFrame: CGRect, text: String, textColor: UIColor, backgroundColor: UIColor, numberOfLines: Int = 0, masksToBounds: Bool = true, textAlignment: NSTextAlignment, center: CGPoint = .zero, borderWidth: Double = 1.0, borderColor: CGColor = UIColor.orange.cgColor, rotation: CGFloat = 0.0, timeRange: CMTimeRange? = nil, selected: Bool = false) {
+    init(id: UUID = UUID(), width: CGFloat = 0.0, height: CGFloat = 0.0, labelFrame: CGRect, text: String, textColor: UIColor, backgroundColor: UIColor, numberOfLines: Int = 0, masksToBounds: Bool = true, textAlignment: NSTextAlignment, center: CGPoint = .zero, borderWidth: Double = 1.0, borderColor: CGColor = UIColor.orange.cgColor, rotation: CGFloat = 0.0, timeRange: CMTimeRange? = nil, selected: Bool = false) {
        
+        self.id = id
         self.width = labelFrame.size.width + LabelViewExtraWidth
         self.height = labelFrame.size.height + LabelViewExtraHeight
 //        self.width = labelFrame.size.width

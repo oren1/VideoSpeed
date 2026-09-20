@@ -67,7 +67,7 @@ class SpidPlayerViewController: UIViewController {
     private let transcriptionUserDefaultsKey = "transcriptionResponse"
     /// Ensures we rebuild captions once after layout so container width matches `videoContainerView`.
     private var didApplyCaptionsFromUserDefaultsAfterLayout = false
-    private var didApplySmokeTestLabel = false
+    private var didApplyProjectLabels = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -304,20 +304,7 @@ class SpidPlayerViewController: UIViewController {
 
             await MainActor.run { [weak self] in
                 self?.applyCaptionsFromUserDefaultsAfterLayoutIfPossible()
-            }
-            
-            if !didApplySmokeTestLabel {
-                didApplySmokeTestLabel = true
-                view.layoutIfNeeded()
-                var mockLabel = SDLabelViewModel.makeMock().makeLabelViewModel()
-                mockLabel.backgroundStyle = .full
-                mockLabel.selected = true
-                mockLabel.center = CGPoint(
-                    x: videoContainerView.bounds.midX,
-                    y: videoContainerView.bounds.midY
-                )
-                UserDataManager.main.labelViewsModels = [mockLabel]
-                addLabelViews(labelViewsModels: UserDataManager.main.labelViewsModels)
+                self?.applyProjectLabelsIfNeeded()
             }
 //            let fontSize = CaptionStyleGenerator.basicFontSize
 //            let labelHeight: CGFloat = text.height(withConstrainedWidth: videoContainerView.frame.width, font: UIFont.systemFont(ofSize: fontSize))
@@ -333,6 +320,35 @@ class SpidPlayerViewController: UIViewController {
         
     }
     
+    /// Loads persisted project labels once after the video container has a real size.
+    private func applyProjectLabelsIfNeeded() {
+        guard !didApplyProjectLabels else { return }
+        guard videoContainerView.bounds.width > 0, videoContainerView.bounds.height > 0 else { return }
+        guard let project = UserDataManager.main.currentProject else { return }
+
+        didApplyProjectLabels = true
+
+        let sdLabels = project.labelViewModels.sorted { $0.sortIndex < $1.sortIndex }
+        guard !sdLabels.isEmpty else { return }
+
+        let containerCenter = CGPoint(
+            x: videoContainerView.bounds.midX,
+            y: videoContainerView.bounds.midY
+        )
+
+        let labels = sdLabels.map { sdLabel -> LabelViewModel in
+            let label = sdLabel.makeLabelViewModel()
+            label.backgroundStyle = .full
+            if label.center == .zero {
+                label.center = containerCenter
+            }
+            return label
+        }
+
+        UserDataManager.main.labelViewsModels = labels
+        addLabelViews(labelViewsModels: UserDataManager.main.labelViewsModels)
+    }
+
     private func setupWatermarkPreviewView() {
         watermarkPreviewContainer.backgroundColor = .clear
         watermarkPreviewContainer.isUserInteractionEnabled = true

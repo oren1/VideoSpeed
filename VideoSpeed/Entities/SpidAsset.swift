@@ -64,7 +64,12 @@ actor SpidAsset {
         thumnbnailImage: CGImage,
         mediaKind: MediaKind = .video,
         clipSourceRange: CMTimeRange? = nil,
-        id: UUID = UUID()
+        id: UUID = UUID(),
+        speed: Float = 1,
+        soundOn: Bool = true,
+        sliderValue: Float = 19.5,
+        videoFilter: VideoFilter = .none,
+        videoRect: CGRect = .zero
     ) {
         self.asset = asset
         self.timeRange = timeRange
@@ -73,6 +78,11 @@ actor SpidAsset {
         self.thumbnailImage = thumnbnailImage
         self.mediaKind = mediaKind
         self.id = id
+        self.speed = speed
+        self.soundOn = soundOn
+        self.sliderValue = sliderValue
+        self.videoFilter = videoFilter
+        self.videoRect = videoRect
     }
     
     func getOriginalAsset() -> AVAsset {
@@ -191,13 +201,13 @@ actor SpidAsset {
             videoSize: videoSize,
             thumnbnailImage: thumbnailImage,
             mediaKind: mediaKind,
-            clipSourceRange: clipSourceRange ?? timeRange
+            clipSourceRange: clipSourceRange ?? timeRange,
+            speed: speed,
+            soundOn: soundOn,
+            sliderValue: sliderValue,
+            videoFilter: videoFilter,
+            videoRect: videoRect
         )
-        await newAsset.updateSpeed(speed: speed)
-        await newAsset.updateSound(soundOn: soundOn)
-        await newAsset.updateVideoRect(videoRect)
-        await newAsset.updateSliderValue(value: sliderValue)
-        await newAsset.updateVideoFilter(videoFilter)
         if assetHasBeenRotated, let rotatedAsset {
             await newAsset.updateRotatedAsset(rotatedAsset: rotatedAsset)
         }

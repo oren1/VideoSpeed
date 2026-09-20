@@ -97,6 +97,7 @@ struct ProjectsView: View {
 
     private func openProject(_ project: VideoProject) async {
         UserDataManager.main.currentProject = project
+        print("project.labelViewModels: \(project.labelViewModels)")
         let sortedModels = project.spidAssets.sorted { $0.sortIndex < $1.sortIndex }
         guard !sortedModels.isEmpty else { return }
 

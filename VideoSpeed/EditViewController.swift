@@ -344,10 +344,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         let stillInNavStack = navigationController?.viewControllers.contains(self) ?? false
         if !stillInNavStack {
             Task {
-               let _ = await SwiftDataManager.shared.upsertVideoProject()
                 clearEditSessionState()
             }
-
         }
 
     }
