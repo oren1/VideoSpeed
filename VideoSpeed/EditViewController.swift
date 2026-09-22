@@ -629,9 +629,10 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             // The original labelView size before any transform applied
             let originalSize = labelView.bounds.size
             
+            let labelViewScaleX = viewModel.width / originalSize.width
+            let labelViewScaleY = viewModel.height / originalSize.height
             // The labelView size after applying the user scale transform
-            
-            let labelViewScaledSize = CGSize(width: originalSize.width * viewModel.fullScale, height: originalSize.height * viewModel.fullScale)
+            let labelViewScaledSize = CGSize(width: originalSize.width * labelViewScaleX, height: originalSize.height * labelViewScaleY)
             
             // The size needed for rendering the labelView in the video actual size
             let size = CGSize(width: labelViewScaledSize.width * scaleX, height: labelViewScaledSize.height * scaleY)

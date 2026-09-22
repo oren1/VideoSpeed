@@ -473,14 +473,17 @@ class SpidPlayerViewController: UIViewController {
                 UserDataManager.main.setSelectedLabeViewModel(labelView.viewModel)
             }
             
-            let scale = viewModel.fullScale
+            // scale is calculated by dividing the last saved 'width' with the currently created labelView
+            // which is created with text size. same for scale y.
+            let scaleX = viewModel.width / labelView.frame.width
+            let scaley = viewModel.height / labelView.frame.height
             let rotation = viewModel.fullRotation
             
 
             self.videoContainerView.addSubview(labelView)
             
-            labelView.transform = labelView.transform.scaledBy(x: scale, y: scale)
-            labelView.cancelButton.transform = labelView.cancelButton.transform.scaledBy(x: 1/scale, y: 1/scale)
+            labelView.transform = labelView.transform.scaledBy(x: scaleX, y: scaley)
+            labelView.cancelButton.transform = labelView.cancelButton.transform.scaledBy(x: 1/scaleX, y: 1/scaley)
 
             labelView.transform = labelView.transform.rotated(by: rotation)
         }
@@ -529,6 +532,10 @@ class SpidPlayerViewController: UIViewController {
         selectedLabelViewModel.scale = gesture.scale
         selectedLabelViewModel.width *= gesture.scale
         selectedLabelViewModel.height *= gesture.scale
+        
+        print("selectedLabelViewModel.scale \(selectedLabelViewModel.scale)")
+        print("selectedLabelViewModel.width \(selectedLabelViewModel.width)")
+        print("selectedLabelViewModel.height \(selectedLabelViewModel.height)")
         
         gesture.scale = 1
         SwiftDataManager.shared.upsertLabelViewModels()
