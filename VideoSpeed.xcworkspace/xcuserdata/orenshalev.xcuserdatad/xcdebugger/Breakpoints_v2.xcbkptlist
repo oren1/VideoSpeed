@@ -130,36 +130,6 @@
             endingLineNumber = "160"
             landmarkName = "apply(_:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "715EAA2A-36BA-49B9-AEB4-2EDD393B4E78 - 7cebaed44f4a5197"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/Managers/StateManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "161"
-                  endingLineNumber = "161">
-               </Location>
-               <Location
-                  uuid = "715EAA2A-36BA-49B9-AEB4-2EDD393B4E78 - 51c450d6fef685d4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(21) suspend resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/Managers/StateManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "161"
-                  endingLineNumber = "161">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -176,36 +146,6 @@
             endingLineNumber = "42"
             landmarkName = "createSpeedSection()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "87951AA1-DB60-4E1E-8B81-13C3C03AAEEB - debe0139ebb958c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for closure #1 () async -&gt; () in closure #2 (Swift.Float) -&gt; () in VideoSpeed.EditViewController.createSpeedSection() -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/EditViewController+EditSections.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "42"
-                  endingLineNumber = "42">
-               </Location>
-               <Location
-                  uuid = "87951AA1-DB60-4E1E-8B81-13C3C03AAEEB - b8fd3ceba96db28f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(2) await resume partial function for closure #1 () async -&gt; () in closure #2 (Swift.Float) -&gt; () in VideoSpeed.EditViewController.createSpeedSection() -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/EditViewController+EditSections.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "42"
-                  endingLineNumber = "42">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -222,36 +162,6 @@
             endingLineNumber = "214"
             landmarkName = "viewDidLoad()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "10622828-54C0-4CC5-B24C-94FDAAD688D1 - 36b2f880427923b3"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for closure #1 () async -&gt; () in closure #3 (Swift.Int, Swift.Bool) -&gt; () in VideoSpeed.EditViewController.viewDidLoad() -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/EditViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "214"
-                  endingLineNumber = "214">
-               </Location>
-               <Location
-                  uuid = "10622828-54C0-4CC5-B24C-94FDAAD688D1 - eff22a9c89835895"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(2) await resume partial function for closure #1 () async -&gt; () in closure #3 (Swift.Int, Swift.Bool) -&gt; () in VideoSpeed.EditViewController.viewDidLoad() -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/EditViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "214"
-                  endingLineNumber = "214">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

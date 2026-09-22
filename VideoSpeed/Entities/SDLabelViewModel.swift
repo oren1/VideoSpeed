@@ -43,6 +43,43 @@ final class SDLabelViewModel {
     var labelFrameWidth: Double
     var labelFrameHeight: Double
 
+    var timeRangeStartValue: Int64?
+    var timeRangeStartTimescale: Int32?
+    var timeRangeDurationValue: Int64?
+    var timeRangeDurationTimescale: Int32?
+    var rightHandleConstraintConstant: Double?
+    var leftHandleConstraintConstant: Double?
+    var selected: Bool
+    var isHidden: Bool
+
+    var timeRange: CMTimeRange? {
+        get {
+            guard
+                let startValue = timeRangeStartValue,
+                let startTimescale = timeRangeStartTimescale,
+                let durationValue = timeRangeDurationValue,
+                let durationTimescale = timeRangeDurationTimescale
+            else { return nil }
+            return CMTimeRange(
+                start: CMTime(value: startValue, timescale: startTimescale),
+                duration: CMTime(value: durationValue, timescale: durationTimescale)
+            )
+        }
+        set {
+            if let newValue {
+                timeRangeStartValue = newValue.start.value
+                timeRangeStartTimescale = newValue.start.timescale
+                timeRangeDurationValue = newValue.duration.value
+                timeRangeDurationTimescale = newValue.duration.timescale
+            } else {
+                timeRangeStartValue = nil
+                timeRangeStartTimescale = nil
+                timeRangeDurationValue = nil
+                timeRangeDurationTimescale = nil
+            }
+        }
+    }
+
     init(
         id: UUID,
         sortIndex: Int,
@@ -63,7 +100,12 @@ final class SDLabelViewModel {
         backgroundStyleRawValue: String,
         strokeColor: UIColor,
         strokeWidth: Double,
-        labelFrame: CGRect
+        labelFrame: CGRect,
+        timeRange: CMTimeRange? = nil,
+        rightHandleConstraintConstant: Double? = nil,
+        leftHandleConstraintConstant: Double? = nil,
+        selected: Bool = false,
+        isHidden: Bool = false
     ) {
         self.id = id
         self.sortIndex = sortIndex
@@ -104,6 +146,22 @@ final class SDLabelViewModel {
 
         self.labelFrameWidth = labelFrame.width
         self.labelFrameHeight = labelFrame.height
+
+        if let timeRange {
+            self.timeRangeStartValue = timeRange.start.value
+            self.timeRangeStartTimescale = timeRange.start.timescale
+            self.timeRangeDurationValue = timeRange.duration.value
+            self.timeRangeDurationTimescale = timeRange.duration.timescale
+        } else {
+            self.timeRangeStartValue = nil
+            self.timeRangeStartTimescale = nil
+            self.timeRangeDurationValue = nil
+            self.timeRangeDurationTimescale = nil
+        }
+        self.rightHandleConstraintConstant = rightHandleConstraintConstant
+        self.leftHandleConstraintConstant = leftHandleConstraintConstant
+        self.selected = selected
+        self.isHidden = isHidden
     }
 
     static func makeMock() -> SDLabelViewModel {
@@ -126,7 +184,12 @@ final class SDLabelViewModel {
             backgroundStyleRawValue: BackgroundStyle.fragmented.rawValue,
             strokeColor: .clear,
             strokeWidth: 0,
-            labelFrame: CGRect(x: 0, y: 0, width: 136, height: 24)
+            labelFrame: CGRect(x: 0, y: 0, width: 136, height: 24),
+            timeRange: nil,
+            rightHandleConstraintConstant: nil,
+            leftHandleConstraintConstant: nil,
+            selected: false,
+            isHidden: false
         )
     }
 
@@ -144,7 +207,9 @@ final class SDLabelViewModel {
             ),
             textAlignment: NSTextAlignment(rawValue: textAlignmentRawValue) ?? .center,
             center: CGPoint(x: centerX, y: centerY),
-            rotation: rotation
+            rotation: rotation,
+            timeRange: timeRange,
+            selected: selected
         )
         viewModel.width = width
         viewModel.height = height
@@ -161,6 +226,9 @@ final class SDLabelViewModel {
             alpha: strokeColorA
         )
         viewModel.strokeWidth = strokeWidth
+        viewModel.rightHandleConstraintConstant = rightHandleConstraintConstant.map { CGFloat($0) }
+        viewModel.leftHandleConstraintConstant = leftHandleConstraintConstant.map { CGFloat($0) }
+        viewModel.isHidden = isHidden
         return viewModel
     }
 
@@ -185,7 +253,12 @@ final class SDLabelViewModel {
             backgroundStyleRawValue: viewModel.backgroundStyle.rawValue,
             strokeColor: viewModel.strokeColor,
             strokeWidth: Double(viewModel.strokeWidth),
-            labelFrame: viewModel.labelFrame
+            labelFrame: viewModel.labelFrame,
+            timeRange: viewModel.timeRange,
+            rightHandleConstraintConstant: viewModel.rightHandleConstraintConstant.map { Double($0) },
+            leftHandleConstraintConstant: viewModel.leftHandleConstraintConstant.map { Double($0) },
+            selected: viewModel.selected,
+            isHidden: viewModel.isHidden
         )
     }
 
@@ -227,6 +300,12 @@ final class SDLabelViewModel {
 
         self.labelFrameWidth = viewModel.labelFrame.width
         self.labelFrameHeight = viewModel.labelFrame.height
+
+        self.timeRange = viewModel.timeRange
+        self.rightHandleConstraintConstant = viewModel.rightHandleConstraintConstant.map { Double($0) }
+        self.leftHandleConstraintConstant = viewModel.leftHandleConstraintConstant.map { Double($0) }
+        self.selected = viewModel.selected
+        self.isHidden = viewModel.isHidden
     }
 }
 
