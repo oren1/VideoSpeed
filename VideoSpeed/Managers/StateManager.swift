@@ -71,6 +71,19 @@ final class StateManager {
         return true
     }
 
+    /// Runs a labels mutation and registers undo/redo from deep-copied before/after snapshots.
+    func performLabelsChange(_ change: () -> Void) {
+        let before = LabelsUndoSnapshot.capture()
+        change()
+        registerLabelsChange(before: before)
+    }
+
+    /// Registers undo from a previously captured `before` snapshot to the current labels state.
+    func registerLabelsChange(before: LabelsUndoSnapshot) {
+        let after = LabelsUndoSnapshot.capture()
+        registerUndo(previous: .labels(before), current: .labels(after))
+    }
+
     /// Registers undo that restores `previous`. While undoing/redoing, re-registers
     /// with `previous`/`current` swapped so the opposite stack entry is created.
     private func registerUndo(previous: UndoField, current: UndoField) {
@@ -158,6 +171,17 @@ final class StateManager {
             }
 
             await SwiftDataManager.shared.upsertVideoProject()
+        case .labels(let snapshot):
+            let restored = snapshot.labels.map { $0.copyForUndo() }
+            UserDataManager.main.labelViewsModels = restored
+            if let selectedID = snapshot.selectedID,
+               let selected = restored.first(where: { $0.id == selectedID }) {
+                UserDataManager.main.setSelectedLabeViewModel(selected)
+            } else {
+                restored.forEach { $0.selected = false }
+                UserDataManager.main.selectedLabelViewModel = nil
+            }
+            SwiftDataManager.shared.upsertLabelViewModels()
         }
     }
 }

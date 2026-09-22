@@ -22,6 +22,19 @@ struct SplitUndoSnapshot {
     let splitCount: Int
 }
 
+/// Deep-copied overlay labels (+ selection) for undo/redo.
+struct LabelsUndoSnapshot {
+    let labels: [LabelViewModel]
+    let selectedID: UUID?
+
+    static func capture() -> LabelsUndoSnapshot {
+        LabelsUndoSnapshot(
+            labels: UserDataManager.main.labelViewsModels.map { $0.copyForUndo() },
+            selectedID: UserDataManager.main.selectedLabelViewModel?.id
+        )
+    }
+}
+
 enum UndoField {
     case none
     case speed(Float, SpidAsset)
@@ -34,6 +47,7 @@ enum UndoField {
     case mediaKind(String, SpidAsset)
     case spidAssets([SpidAsset])
     case split(SplitUndoSnapshot)
+    case labels(LabelsUndoSnapshot)
     case other
 
     /// Case identity used to keep at most one change per field.
@@ -50,6 +64,7 @@ enum UndoField {
         case .mediaKind: return "mediaKind"
         case .spidAssets: return "spidAssets"
         case .split: return "split"
+        case .labels: return "labels"
         case .other: return "other"
         }
     }

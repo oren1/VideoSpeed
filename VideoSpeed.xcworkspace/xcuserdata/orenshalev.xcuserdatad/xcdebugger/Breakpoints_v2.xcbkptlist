@@ -132,74 +132,32 @@
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "715EAA2A-36BA-49B9-AEB4-2EDD393B4E78 - cc12c97e5c15d32c"
+                  uuid = "715EAA2A-36BA-49B9-AEB4-2EDD393B4E78 - 7cebaed44f4a5197"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "(26) suspend resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
+                  symbolName = "(1) suspend resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
                   moduleName = "VideoSpeed.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/Managers/StateManager.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "160"
-                  endingLineNumber = "160">
+                  startingLineNumber = "161"
+                  endingLineNumber = "161">
                </Location>
                <Location
-                  uuid = "715EAA2A-36BA-49B9-AEB4-2EDD393B4E78 - a4c5c55b327f172a"
+                  uuid = "715EAA2A-36BA-49B9-AEB4-2EDD393B4E78 - 51c450d6fef685d4"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "(28) suspend resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
+                  symbolName = "(21) suspend resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
                   moduleName = "VideoSpeed.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/Managers/StateManager.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "160"
-                  endingLineNumber = "160">
-               </Location>
-               <Location
-                  uuid = "715EAA2A-36BA-49B9-AEB4-2EDD393B4E78 - c4a66898a288633"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(30) suspend resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/Managers/StateManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "160"
-                  endingLineNumber = "160">
-               </Location>
-               <Location
-                  uuid = "715EAA2A-36BA-49B9-AEB4-2EDD393B4E78 - 9222766b6fb0d9b7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(31) await resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/Managers/StateManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "160"
-                  endingLineNumber = "160">
-               </Location>
-               <Location
-                  uuid = "715EAA2A-36BA-49B9-AEB4-2EDD393B4E78 - e43d62e66071faf7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(32) suspend resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/Managers/StateManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "162"
-                  endingLineNumber = "162">
+                  startingLineNumber = "161"
+                  endingLineNumber = "161">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -299,66 +257,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "9862F4C1-BB8A-4B66-9237-51C4C03D8E27"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "VideoSpeed/Managers/StateManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "130"
-            endingLineNumber = "130"
-            landmarkName = "apply(_:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "9862F4C1-BB8A-4B66-9237-51C4C03D8E27 - 298fe612f9a7498e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(9) suspend resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/Managers/StateManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "130"
-                  endingLineNumber = "130">
-               </Location>
-               <Location
-                  uuid = "9862F4C1-BB8A-4B66-9237-51C4C03D8E27 - ac80455de754031e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(10) await resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/Managers/StateManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "130"
-                  endingLineNumber = "130">
-               </Location>
-               <Location
-                  uuid = "9862F4C1-BB8A-4B66-9237-51C4C03D8E27 - 6eabc715be67e6f4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(11) suspend resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/Managers/StateManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "162"
-                  endingLineNumber = "162">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "C9E82E63-1089-40FD-A83B-3731805A70E7"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -370,66 +268,6 @@
             endingLineNumber = "327"
             landmarkName = "updateSpeed(_:forAssetID:)"
             landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "3DF1D88E-DC74-4473-9E3C-0F14AB34B2B0"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "VideoSpeed/Managers/StateManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "122"
-            endingLineNumber = "122"
-            landmarkName = "apply(_:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "3DF1D88E-DC74-4473-9E3C-0F14AB34B2B0 - 7cebaed44f4a5a9e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/Managers/StateManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "122"
-                  endingLineNumber = "122">
-               </Location>
-               <Location
-                  uuid = "3DF1D88E-DC74-4473-9E3C-0F14AB34B2B0 - 554737cc0677fc1f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(2) suspend resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/Managers/StateManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "122"
-                  endingLineNumber = "122">
-               </Location>
-               <Location
-                  uuid = "3DF1D88E-DC74-4473-9E3C-0F14AB34B2B0 - 3320b8e4313596a8"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for VideoSpeed.StateManager.apply(VideoSpeed.UndoField) async -&gt; ()"
-                  moduleName = "VideoSpeed.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/orenshalev/Desktop/VideoSpeed/VideoSpeed/Managers/StateManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "162"
-                  endingLineNumber = "162">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

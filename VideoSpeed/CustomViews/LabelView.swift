@@ -110,7 +110,12 @@ class LabelView: UIView {
     @IBAction func cancelButtonTapped(_ sender: Any) {
         print("cancelButtonTapped")
         self.removeFromSuperview()
-        UserDataManager.main.labelViewsModels.removeAll(where: {$0 === self.viewModel})
+        StateManager.shared.performLabelsChange {
+            UserDataManager.main.labelViewsModels.removeAll(where: { $0 === self.viewModel })
+            if UserDataManager.main.selectedLabelViewModel === self.viewModel {
+                UserDataManager.main.selectedLabelViewModel = nil
+            }
+        }
     }
      
     

@@ -143,4 +143,15 @@ class LabelViewModel: ObservableObject {
         
         return CGSize(width: verticalLabelsViewWidth, height: verticalLabelsViewHeight)
     }
+
+    /// Deep copy for undo/redo snapshots (same id, independent property values).
+    func copyForUndo() -> LabelViewModel {
+        let copy = SDLabelViewModel.make(from: self, sortIndex: 0).makeLabelViewModel()
+        copy.timeRange = timeRange
+        copy.rightHandleConstraintConstant = rightHandleConstraintConstant
+        copy.leftHandleConstraintConstant = leftHandleConstraintConstant
+        copy.selected = selected
+        copy.isHidden = isHidden
+        return copy
+    }
 }

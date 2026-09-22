@@ -62,6 +62,11 @@ extension EditViewController {
                 notifyCurrentSpidAssetDidChange()
                 await splitSectionVC.reloadTimelineFromOutside()
 
+            case .labels:
+                showBriefChangeAlert(type: "text", value: "")
+                // `labelViewsModels` didSet already posts OverlayLabelViewsUpdated;
+                // TextSectionVC / SpidPlayer refresh from that notification.
+
             default:
                 print("undoManagerDidChangeFielddefault")
             }

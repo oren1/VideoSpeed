@@ -68,6 +68,8 @@ class SpidPlayerViewController: UIViewController {
     /// Ensures we rebuild captions once after layout so container width matches `videoContainerView`.
     private var didApplyCaptionsFromUserDefaultsAfterLayout = false
     private var didApplyProjectLabels = false
+    /// Captured at gesture `.began` so pan/pinch/rotate register one undo entry on `.ended`.
+    private var labelsGestureBefore: LabelsUndoSnapshot?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -514,20 +516,22 @@ class SpidPlayerViewController: UIViewController {
     @objc func didRotate(_ gesture: UIRotationGestureRecognizer) {
 
         guard let selectedLabelViewModel = UserDataManager.main.selectedLabelViewModel else {return}
-//        selectedLabelView.transform = selectedLabelView.transform.rotated(
-//          by: gesture.rotation
-//        )
-//        fullRotation += gesture.rotation
+        if gesture.state == .began {
+            labelsGestureBefore = LabelsUndoSnapshot.capture()
+        }
         selectedLabelViewModel.rotation = gesture.rotation
         selectedLabelViewModel.fullRotation += gesture.rotation
-//        selectedLabelView.viewModel.updateRotation(rotation: gesture.rotation)
         gesture.rotation = 0
-        SwiftDataManager.shared.upsertLabelViewModels()
+        
+        finishLabelsGestureIfNeeded(gesture.state)
     }
     
     @objc func didPinch(_ gesture: UIPinchGestureRecognizer) {
 
         guard let selectedLabelViewModel = UserDataManager.main.selectedLabelViewModel else {return}
+        if gesture.state == .began {
+            labelsGestureBefore = LabelsUndoSnapshot.capture()
+        }
 
         selectedLabelViewModel.scale = gesture.scale
         selectedLabelViewModel.width *= gesture.scale
@@ -538,8 +542,7 @@ class SpidPlayerViewController: UIViewController {
         print("selectedLabelViewModel.height \(selectedLabelViewModel.height)")
         
         gesture.scale = 1
-        SwiftDataManager.shared.upsertLabelViewModels()
-
+        finishLabelsGestureIfNeeded(gesture.state)
     }
     
     
@@ -548,14 +551,29 @@ class SpidPlayerViewController: UIViewController {
          let translation = gesture.translation(in: self.videoContainerView)
         
         guard let selectedLabelViewModel = UserDataManager.main.selectedLabelViewModel else { return }
+        if gesture.state == .began {
+            labelsGestureBefore = LabelsUndoSnapshot.capture()
+        }
           let center = CGPoint(
             x: selectedLabelViewModel.center.x + translation.x,
             y: selectedLabelViewModel.center.y + translation.y
           )
           selectedLabelViewModel.center = center
           gesture.setTranslation(.zero, in: view)
-        SwiftDataManager.shared.upsertLabelViewModels()
+        finishLabelsGestureIfNeeded(gesture.state)
+    }
 
+    private func finishLabelsGestureIfNeeded(_ state: UIGestureRecognizer.State) {
+        switch state {
+        case .ended, .cancelled, .failed:
+            if let before = labelsGestureBefore {
+                StateManager.shared.registerLabelsChange(before: before)
+                labelsGestureBefore = nil
+            }
+            SwiftDataManager.shared.upsertLabelViewModels()
+        default:
+            break
+        }
     }
     
     func videoContainerRect() -> CGRect{
