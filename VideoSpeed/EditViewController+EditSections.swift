@@ -194,33 +194,8 @@ extension EditViewController {
         audioSectionVC.timelineRangeDidChange = { [weak self] range in
             guard let self else { return }
             guard var track = UserDataManager.main.backgroundAudioTrack else { return }
-            // #region agent log
-            DebugSessionLog.write(
-                hypothesisId: "H4",
-                location: "EditSections.createAudioSection:timelineRangeDidChange:beforeUpdate",
-                message: "received timeline range change from UI",
-                data: [
-                    "incomingStart": range.start.seconds,
-                    "incomingDuration": range.duration.seconds,
-                    "oldTimelineStart": track.timelineTimeRange.start.seconds,
-                    "oldTimelineDuration": track.timelineTimeRange.duration.seconds
-                ]
-            )
-            // #endregion
             track.updateTimelineTimeRange(range)
             UserDataManager.main.backgroundAudioTrack = track
-            // #region agent log
-            DebugSessionLog.write(
-                hypothesisId: "H4",
-                location: "EditSections.createAudioSection:timelineRangeDidChange:afterUpdate",
-                message: "updated track and starting reloadComposition",
-                data: [
-                    "newTimelineStart": track.timelineTimeRange.start.seconds,
-                    "newTimelineDuration": track.timelineTimeRange.duration.seconds,
-                    "newSourceDuration": track.sourceTimeRange.duration.seconds
-                ]
-            )
-            // #endregion
             Task {
                 await self.reloadComposition(refreshSectionThumbnails: false)
                 await MainActor.run {
@@ -363,14 +338,6 @@ extension EditViewController {
         } onCancel: { [weak self] in
             self?.musicLibraryPickerPresenter = nil
         } onError: { [weak self] error in
-            // #region agent log
-            DebugSessionLog.write(
-                hypothesisId: "E",
-                location: "EditViewController.presentImportAudioFromMusic.onError",
-                message: "import error alert",
-                data: ["error": error.localizedDescription]
-            )
-            // #endregion
             self?.musicLibraryPickerPresenter = nil
             let alert = UIAlertController(
                 title: "Could Not Import Song",
@@ -384,30 +351,9 @@ extension EditViewController {
 
     private func importAndApplyBackgroundAudio(from libraryAssetURL: URL, displayName: String) {
         showLoading()
-        // #region agent log
-        DebugSessionLog.write(
-            hypothesisId: "C",
-            location: "EditViewController.importAndApplyBackgroundAudio",
-            message: "export started with loading",
-            data: ["scheme": libraryAssetURL.scheme ?? "nil", "title": displayName],
-            runId: "post-fix"
-        )
-        // #endregion
         Task {
             do {
                 let audioURL = try await MusicLibraryAudioExporter.export(from: libraryAssetURL)
-                // #region agent log
-                DebugSessionLog.write(
-                    hypothesisId: "C",
-                    location: "EditViewController.importAndApplyBackgroundAudio",
-                    message: "export succeeded",
-                    data: [
-                        "destExists": FileManager.default.fileExists(atPath: audioURL.path),
-                        "scheme": libraryAssetURL.scheme ?? "nil"
-                    ],
-                    runId: "post-fix"
-                )
-                // #endregion
                 await MainActor.run { self.hideLoading() }
                 self.applyBackgroundAudio(
                     from: audioURL,
@@ -416,15 +362,6 @@ extension EditViewController {
                     source: .musicLibrary
                 )
             } catch {
-                // #region agent log
-                DebugSessionLog.write(
-                    hypothesisId: "C",
-                    location: "EditViewController.importAndApplyBackgroundAudio",
-                    message: "export failed",
-                    data: ["error": error.localizedDescription],
-                    runId: "post-fix"
-                )
-                // #endregion
                 await MainActor.run {
                     self.hideLoading()
                     let alert = UIAlertController(

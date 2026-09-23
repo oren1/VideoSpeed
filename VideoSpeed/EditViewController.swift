@@ -64,7 +64,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     private var spidAssetModelSaveObserver: NSObjectProtocol?
     private var loadSpidAssetsTask: Task<Void, Never>?
 
-
     
     @IBOutlet weak var videosContainerView: UIView!
     @IBOutlet weak var videosCollectionView: UICollectionView!
@@ -343,9 +342,11 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         super.viewDidDisappear(animated)
         let stillInNavStack = navigationController?.viewControllers.contains(self) ?? false
         if !stillInNavStack {
-            Task {
-                clearEditSessionState()
-            }
+            // Selector-based NC observers retain `self` until removed — must clear before deinit.
+            NotificationCenter.default.removeObserver(self)
+            spidPlayerController?.tearDownForSessionEnd()
+            clearEditSessionState()
+            spidPlayerController = nil
         }
 
     }
@@ -534,22 +535,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             let didClamp = abs(beforeTimelineDuration - backgroundAudioTrack.timelineTimeRange.duration.seconds) > 0.001
                 || abs(beforeTimelineStart - backgroundAudioTrack.timelineTimeRange.start.seconds) > 0.001
                 || abs(beforeSourceDuration - backgroundAudioTrack.sourceTimeRange.duration.seconds) > 0.001
-            // #region agent log
-            DebugSessionLog.write(
-                hypothesisId: "H7",
-                location: "EditViewController.createCompositionWith:backgroundAudioClamp",
-                message: "clamped background audio to video duration before insert",
-                data: [
-                    "videoDuration": videoDuration.seconds,
-                    "beforeTimelineDuration": beforeTimelineDuration,
-                    "beforeSourceDuration": beforeSourceDuration,
-                    "afterTimelineStart": backgroundAudioTrack.timelineTimeRange.start.seconds,
-                    "afterTimelineDuration": backgroundAudioTrack.timelineTimeRange.duration.seconds,
-                    "afterSourceDuration": backgroundAudioTrack.sourceTimeRange.duration.seconds,
-                    "didClamp": didClamp
-                ]
-            )
-            // #endregion
 
             let backgroundAsset = AVURLAsset(url: backgroundAudioTrack.fileURL)
             if let sourceTrack = try? await backgroundAsset.loadTracks(withMediaType: .audio).first {
@@ -571,21 +556,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 mix.inputParameters = [mixParameters]
                 backgroundAudioMix = mix
 
-                // #region agent log
-                DebugSessionLog.write(
-                    hypothesisId: "H8",
-                    location: "EditViewController.createCompositionWith:backgroundAudioInsert",
-                    message: "inserted background audio track",
-                    data: [
-                        "videoDuration": videoDuration.seconds,
-                        "compositionDurationAfterInsert": mainComposition.duration.seconds,
-                        "timelineStart": timelineStart.seconds,
-                        "insertDuration": insertRange.duration.seconds,
-                        "insertSucceeded": insertSucceeded,
-                        "compositionExtendedBeyondVideo": mainComposition.duration.seconds > videoDuration.seconds + 0.001
-                    ]
-                )
-                // #endregion
             }
         }
 
@@ -976,14 +946,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     @MainActor
     func reloadComposition(refreshSectionThumbnails: Bool = true) async {
         let reloadStart = Date().timeIntervalSince1970
-        // #region agent log
-        DebugSessionLog.write(
-            hypothesisId: "H6",
-            location: "EditViewController.reloadComposition:entry",
-            message: "reloadComposition started",
-            data: ["refreshSectionThumbnails": refreshSectionThumbnails]
-        )
-        // #endregion
         let asset = await UserDataManager.main.currentSpidAsset.getAsset()
         guard let (composition, videoComposition, audioMix) = await createCompositionWith(asset1: asset, speed1: speed, fps: fps, soundOn1: soundOn) else {
             return showNoTracksError()
@@ -1015,17 +977,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 )
             }
         }
-        // #region agent log
-        DebugSessionLog.write(
-            hypothesisId: "H6",
-            location: "EditViewController.reloadComposition:exit",
-            message: "reloadComposition finished",
-            data: [
-                "refreshSectionThumbnails": refreshSectionThumbnails,
-                "elapsedMs": Int((Date().timeIntervalSince1970 - reloadStart) * 1000)
-            ]
-        )
-        // #endregion
     }
     
     

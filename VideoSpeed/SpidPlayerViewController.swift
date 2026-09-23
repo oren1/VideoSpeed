@@ -10,7 +10,6 @@ import AVFoundation
 import Combine
 import SwiftUI
 
-
 enum VideoState: Int {
     case isPlayed = 0, isPaused
 }
@@ -86,52 +85,31 @@ class SpidPlayerViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] transcription in
                 guard let self else { return }
-                let segCount = transcription?.segments?.count ?? -1
-                // #region agent log
-                DebugSessionLog.write(
-                    hypothesisId: "E",
-                    location: "SpidPlayerViewController:transcriptionSink",
-                    message: "transcription publisher fired",
-                    data: [
-                        "hasTranscription": transcription != nil,
-                        "segmentCount": segCount,
-                        "videoContainerWidth": videoContainerView.frame.width,
-                        "videoContainerHeight": videoContainerView.frame.height
-                    ]
-                )
-                // #endregion
                 guard let transcription,
                       let segments = transcription.segments,
                       !segments.isEmpty else {
-                    // #region agent log
-                    DebugSessionLog.write(
-                        hypothesisId: "D",
-                        location: "SpidPlayerViewController:transcriptionSink:cleared",
-                        message: "transcription missing or empty segments — removing container",
-                        data: [
-                            "hasTranscription": transcription != nil,
-                            "segmentCount": transcription?.segments?.count ?? -1
-                        ]
-                    )
-                    // #endregion
                     self.captionsTextContainer?.removeFromSuperview()
                     self.captionsTextContainer = nil
                     UserDataManager.main.currentCaptions = nil
                     return
                 }
+                // Only the on-screen player should react — leaked SpidPlayers stay subscribed otherwise.
+                guard self.view.window != nil else { return }
                 self.rebuildCaptionsTextContainer(shouldSeekToFirstSegment: true)
             }
             .store(in: &subscriptions)
 
         CaptionStyleGenerator.subscribeCaptionsStyleChanges { [weak self] in
-            self?.rebuildCaptionsTextContainer(shouldSeekToFirstSegment: false)
+            guard let self, self.view.window != nil else { return }
+            self.rebuildCaptionsTextContainer(shouldSeekToFirstSegment: false)
         }
         .store(in: &subscriptions)
         
         slider.setThumbImage(UIImage(), for: .normal)
                slider.setThumbImage(UIImage(), for: .highlighted)
         
-        cancellable = player?.publisher(for: \.timeControlStatus).sink(receiveValue: { timeControlStatus in
+        cancellable = player?.publisher(for: \.timeControlStatus).sink(receiveValue: { [weak self] timeControlStatus in
+            guard let self else { return }
             switch timeControlStatus {
             case .paused:
                 self.stopPlaybackTimeChecker()
@@ -203,24 +181,14 @@ class SpidPlayerViewController: UIViewController {
         )
 
         UserDataManager.main.currentCaptions = CaptionStyleGenerator.generateCaptions(from: segments)
-        // #region agent log
-        DebugSessionLog.write(
-            hypothesisId: "E",
-            location: "SpidPlayerViewController:rebuildCaptionsTextContainer",
-            message: "captions container rebuilt",
-            data: [
-                "segmentCount": segments.count,
-                "containerWidth": containerWidth,
-                "labelHeight": labelHeight,
-                "captionsCount": UserDataManager.main.currentCaptions?.count ?? 0
-            ]
-        )
-        // #endregion
 
         guard shouldSeekToFirstSegment else { return }
 
         Task { [weak self] in
             guard let self else { return }
+            guard self.view.window != nil else {
+                return
+            }
             let scale: CMTimeScale = 600
             let startTime = firstSegment.start
             let cmTime = CMTime(value: CMTimeValue(startTime), timescale: 1).converted(toScale: scale)
@@ -264,6 +232,16 @@ class SpidPlayerViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         stopPlaybackTimeChecker()
+        stopCaptionsTimer()
+    }
+
+    /// Called when the hosting Edit session is permanently leaving the navigation stack.
+    func tearDownForSessionEnd() {
+        player?.pause()
+        player?.replaceCurrentItem(with: nil)
+        cancellable?.cancel()
+        cancellable = nil
+        subscriptions.removeAll()
     }
     
     override func viewDidLayoutSubviews() {
@@ -301,7 +279,6 @@ class SpidPlayerViewController: UIViewController {
 //            captionsTextContainer = CaptionsTextContainer(frame: CGRect(origin: .zero, size: CGSize(width: videoContainerView.frame.width, height: labelHeight)))
 //            videoContainerView.addSubview(captionsTextContainer)
 //            captionsTextContainer.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height * 0.75)
-
 
 //            captionsTextContainer.label.attributedText = CaptionStyleGenerator.generateOneWordCaptionStyle()
 

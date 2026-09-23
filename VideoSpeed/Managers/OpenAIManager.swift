@@ -56,7 +56,6 @@ class OpenAIManager {
             case .success(let transcriptionResponse):
                 print("response text: \(transcriptionResponse.text)")
                 
-                // #endregion
 //                do {
 //                    // For debugging purposes, saving the transcription data to save time sending transcription requests
 //                    let encoder = JSONEncoder()
@@ -73,25 +72,9 @@ class OpenAIManager {
                     completion(.success(transcription))
                 }
                 else {
-                    // #region agent log
-                    DebugSessionLog.write(
-                        hypothesisId: "C",
-                        location: "OpenAIManager:transcriptionInitNil",
-                        message: "Transcription init returned nil (missing words?)",
-                        data: [:]
-                    )
-                    // #endregion
                     completion(.failure(NSError(domain: "transcription", code: 1, userInfo: [NSLocalizedDescriptionKey: "Couldn't initialine Transcription object"])))
                 }
                case .failure(let error):
-                   // #region agent log
-                   DebugSessionLog.write(
-                       hypothesisId: "B",
-                       location: "OpenAIManager:responseFailure",
-                       message: "API request failed",
-                       data: ["error": error.localizedDescription]
-                   )
-                   // #endregion
                    completion(.failure(error))
                }
            }

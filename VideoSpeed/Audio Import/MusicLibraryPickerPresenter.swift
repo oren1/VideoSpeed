@@ -74,14 +74,6 @@ final class MusicLibraryPickerPresenter: NSObject {
         self.onError = onError
 
         let status = MPMediaLibrary.authorizationStatus()
-        // #region agent log
-        DebugSessionLog.write(
-            hypothesisId: "B",
-            location: "MusicLibraryPickerPresenter.present",
-            message: "auth status on present",
-            data: ["status": String(describing: status.rawValue)]
-        )
-        // #endregion
         switch status {
         case .authorized, .restricted:
             presentPicker(from: viewController)
@@ -89,14 +81,6 @@ final class MusicLibraryPickerPresenter: NSObject {
             MPMediaLibrary.requestAuthorization { [weak self] newStatus in
                 DispatchQueue.main.async {
                     guard let self else { return }
-                    // #region agent log
-                    DebugSessionLog.write(
-                        hypothesisId: "B",
-                        location: "MusicLibraryPickerPresenter.requestAuthorization",
-                        message: "auth result after prompt",
-                        data: ["status": String(describing: newStatus.rawValue)]
-                    )
-                    // #endregion
                     if newStatus == .authorized || newStatus == .restricted {
                         self.presentPicker(from: viewController)
                     } else {
@@ -106,14 +90,6 @@ final class MusicLibraryPickerPresenter: NSObject {
                 }
             }
         case .denied:
-            // #region agent log
-            DebugSessionLog.write(
-                hypothesisId: "B",
-                location: "MusicLibraryPickerPresenter.present",
-                message: "auth denied — showing unavailable",
-                data: [:]
-            )
-            // #endregion
             onError?(MusicLibraryPickerError.unavailable)
             clearHandlers()
         @unknown default:
@@ -140,14 +116,6 @@ final class MusicLibraryPickerPresenter: NSObject {
 extension MusicLibraryPickerPresenter: MPMediaPickerControllerDelegate {
     func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
         guard let item = mediaItemCollection.items.first else {
-            // #region agent log
-            DebugSessionLog.write(
-                hypothesisId: "D",
-                location: "MusicLibraryPickerPresenter.didPickMediaItems",
-                message: "empty collection — treating as cancel",
-                data: ["itemCount": mediaItemCollection.items.count]
-            )
-            // #endregion
             mediaPicker.dismiss(animated: true) { [weak self] in
                 self?.onCancel?()
                 self?.clearHandlers()
@@ -160,32 +128,7 @@ extension MusicLibraryPickerPresenter: MPMediaPickerControllerDelegate {
         let isCloud = item.isCloudItem
         let hasProtected = item.hasProtectedAsset
 
-        // #region agent log
-        DebugSessionLog.write(
-            hypothesisId: "A",
-            location: "MusicLibraryPickerPresenter.didPickMediaItems",
-            message: "picked item diagnostics",
-            data: [
-                "title": displayName,
-                "hasAssetURL": item.assetURL != nil,
-                "assetURLScheme": item.assetURL?.scheme ?? "nil",
-                "assetExt": item.assetURL?.pathExtension ?? "nil",
-                "isCloudItem": isCloud,
-                "hasProtectedAsset": hasProtected,
-                "mediaType": item.mediaType.rawValue
-            ]
-        )
-        // #endregion
-
         guard let assetURL = item.assetURL else {
-            // #region agent log
-            DebugSessionLog.write(
-                hypothesisId: "A",
-                location: "MusicLibraryPickerPresenter.didPickMediaItems",
-                message: "assetURL nil — noExportableFile",
-                data: ["title": displayName, "isCloudItem": isCloud, "hasProtectedAsset": hasProtected]
-            )
-            // #endregion
             mediaPicker.dismiss(animated: true) { [weak self] in
                 self?.onError?(MusicLibraryPickerError.noExportableFile)
                 self?.clearHandlers()

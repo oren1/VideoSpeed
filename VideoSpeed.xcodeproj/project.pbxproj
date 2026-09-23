@@ -110,7 +110,6 @@
 		6B6DC4AD2F4C2D0000D78EA7 /* CaptionsTemplatePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4AC2F4C2D0000D78EA7 /* CaptionsTemplatePreviewView.swift */; };
 		6B6DC4B12F4C500000D78EA7 /* SpidFont+Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4B02F4C500000D78EA7 /* SpidFont+Catalog.swift */; };
 		6B6DC4B22F4C700000D78EA7 /* CaptionsEditTextSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4B12F4C700000D78EA7 /* CaptionsEditTextSheetView.swift */; };
-		6B6DC4B32F4C800000D78EA7 /* DebugSessionLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4B22F4C800000D78EA7 /* DebugSessionLog.swift */; };
 		6B6DC4C12F4C900100D78EA7 /* FilterCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4C02F4C900100D78EA7 /* FilterCompositor.swift */; };
 		6B6E266C2E03E0AD004F736B /* CGSize+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */; };
 		6B6E266E2E0D0B52004F736B /* EditViewController+VideosMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6E266D2E0D0B52004F736B /* EditViewController+VideosMenu.swift */; };
@@ -336,7 +335,6 @@
 		6B6DC4AC2F4C2D0000D78EA7 /* CaptionsTemplatePreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionsTemplatePreviewView.swift; sourceTree = "<group>"; };
 		6B6DC4B02F4C500000D78EA7 /* SpidFont+Catalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpidFont+Catalog.swift"; sourceTree = "<group>"; };
 		6B6DC4B12F4C700000D78EA7 /* CaptionsEditTextSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionsEditTextSheetView.swift; sourceTree = "<group>"; };
-		6B6DC4B22F4C800000D78EA7 /* DebugSessionLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSessionLog.swift; sourceTree = "<group>"; };
 		6B6DC4C02F4C900100D78EA7 /* FilterCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCompositor.swift; sourceTree = "<group>"; };
 		6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGSize+Extension.swift"; sourceTree = "<group>"; };
 		6B6E266D2E0D0B52004F736B /* EditViewController+VideosMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditViewController+VideosMenu.swift"; sourceTree = "<group>"; };
@@ -707,7 +705,6 @@
 				6B55F3072E01446100259275 /* CMTime+Extension.swift */,
 				6B6E266B2E03E0AD004F736B /* CGSize+Extension.swift */,
 				6B4F7E732E51C75200564302 /* SpeechRecognizer.swift */,
-				6B6DC4B22F4C800000D78EA7 /* DebugSessionLog.swift */,
 				6B6C941D2EC2282300ED232D /* CaptionStyleGenerator.swift */,
 				6B6DC4962F330CBC00D78EA7 /* Date+Extension.swift */,
 			);
@@ -1085,7 +1082,6 @@
 				6BAFED8A2DDDC1EF00AF13E1 /* BGStyleEditSectionVC.swift in Sources */,
 				6BC7B5242D537C1200FF1CE9 /* LabelView.swift in Sources */,
 				6B4F7E742E51C75200564302 /* SpeechRecognizer.swift in Sources */,
-				6B6DC4B32F4C800000D78EA7 /* DebugSessionLog.swift in Sources */,
 				6BCDCF512A67FAC800D8B656 /* MoreSectionVC.swift in Sources */,
 				6BCDCF4D2A67E5FA00D8B656 /* FPSSectionVC.swift in Sources */,
 				6BAC9BC12A666EEA0071A41B /* TopIndicatorView.swift in Sources */,

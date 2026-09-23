@@ -114,7 +114,6 @@ struct ProjectsView: View {
         editVC.speed = await assets[0].speed
         editVC.soundOn = await assets[0].soundOn
 
-
         Task { @MainActor in
             navigationController?.pushViewController(editVC, animated: true)
         }
