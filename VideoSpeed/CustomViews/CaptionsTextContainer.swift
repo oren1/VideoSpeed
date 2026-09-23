@@ -215,50 +215,60 @@ class CaptionsTextContainer: UIView {
             viewModel.fullScale *= gesture.scale
             print("viewModel.fullScale \(viewModel.fullScale)")
             applyTransform(scale: viewModel.fullScale, rotation: viewModel.fullRotation)
-
-//            currentScale *= gesture.scale
-//            applyTransform(scale: currentScale, rotation: currentRotation)
-            
             gesture.scale = 1
         }
+        finishCaptionsGestureIfNeeded(gesture.state)
     }
     
     @objc private func handleRotation(_ gesture: UIRotationGestureRecognizer) {
         if gesture.state == .began || gesture.state == .changed {
             viewModel.fullRotation += gesture.rotation
             applyTransform(scale: viewModel.fullScale, rotation: viewModel.fullRotation)
-//            currentRotation += gesture.rotation
-//            applyTransform(scale: currentScale, rotation: currentRotation)
             gesture.rotation = 0
         }
+        finishCaptionsGestureIfNeeded(gesture.state)
     }
     
     @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
-        
-//        let translation = gesture.translation(in: self.videoContainerView)
-//       
-//       guard let selectedLabelViewModel = UserDataManager.main.selectedLabelViewModel else { return }
-//         let center = CGPoint(
-//           x: selectedLabelViewModel.center.x + translation.x,
-//           y: selectedLabelViewModel.center.y + translation.y
-//         )
-//         selectedLabelViewModel.center = center
-//         gesture.setTranslation(.zero, in: view)
-        
         let translation = gesture.translation(in: superview)
         viewModel.center = CGPoint(x: center.x + translation.x, y: center.y + translation.y)
         gesture.setTranslation(.zero, in: superview)
+        finishCaptionsGestureIfNeeded(gesture.state)
+    }
+
+    private func finishCaptionsGestureIfNeeded(_ state: UIGestureRecognizer.State) {
+        switch state {
+        case .ended, .cancelled, .failed:
+            syncOverlayPoseToUserData()
+            SwiftDataManager.shared.upsertCaptions()
+        default:
+            break
+        }
+    }
+
+    private func syncOverlayPoseToUserData() {
+        UserDataManager.main.captionsOverlayPose = CaptionsOverlayPose(
+            centerX: Double(viewModel.center.x),
+            centerY: Double(viewModel.center.y),
+            fullScale: Double(viewModel.fullScale),
+            fullRotation: Double(viewModel.fullRotation)
+        )
+    }
+
+    func applyRestoredTransformIfNeeded() {
+        applyTransform(scale: viewModel.fullScale, rotation: viewModel.fullRotation)
     }
 
     // MARK: - Helpers
     private func applyTransform(scale: CGFloat, rotation: CGFloat) {
+        currentScale = scale
+        currentRotation = rotation
         let transform = CGAffineTransform.identity
             .scaledBy(x: scale, y: scale)
             .rotated(by: rotation)
         self.transform = transform
-        
-        // Keep the ✕ button same size (not scaled) but rotated
-        let inverseScale = 1 / currentScale
+
+        let inverseScale = scale == 0 ? 1 : 1 / scale
         closeButton.transform = CGAffineTransform.identity
             .scaledBy(x: inverseScale, y: inverseScale)
             .rotated(by: rotation)
@@ -269,6 +279,8 @@ class CaptionsTextContainer: UIView {
         userData.transcription = nil
         userData.currentCaptions = nil
         userData.captions = []
+        userData.captionsOverlayPose = .default
+        SwiftDataManager.shared.upsertCaptions()
         removeFromSuperview()
     }
     

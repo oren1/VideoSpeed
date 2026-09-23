@@ -201,6 +201,7 @@ struct CaptionsEditTextSheetView: View {
         userData.transcription = transcription
         guard let segments = transcription.segments else { return }
         userData.currentCaptions = CaptionStyleGenerator.generateCaptions(from: segments)
+        SwiftDataManager.shared.upsertCaptions()
     }
 
     private func updateActiveSegment(for time: Double) {

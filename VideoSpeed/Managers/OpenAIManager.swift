@@ -55,17 +55,7 @@ class OpenAIManager {
             switch response.result {
             case .success(let transcriptionResponse):
                 print("response text: \(transcriptionResponse.text)")
-                // #region agent log
-                DebugSessionLog.write(
-                    hypothesisId: "C",
-                    location: "OpenAIManager:responseSuccess",
-                    message: "API response decoded",
-                    data: [
-                        "wordCount": transcriptionResponse.words?.count ?? -1,
-                        "hasWords": transcriptionResponse.words != nil,
-                        "textLength": transcriptionResponse.text.count
-                    ]
-                )
+                
                 // #endregion
 //                do {
 //                    // For debugging purposes, saving the transcription data to save time sending transcription requests

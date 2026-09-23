@@ -9,6 +9,11 @@ import UIKit
 
 extension SpidFont {
 
+    /// Looks up a catalog font by PostScript `name`, falling back to `CaptionsStyle.defaultSpidFont`.
+    static func font(named name: String, size: CGFloat = 18) -> SpidFont {
+        loadAllPrioritized(size: size).first { $0.name == name } ?? CaptionsStyle.defaultSpidFont
+    }
+
     /// Prioritized caption/text fonts with display names and pro flags.
     static func loadAllPrioritized(size: CGFloat = 18) -> [SpidFont] {
         var spidFonts: [SpidFont] = []

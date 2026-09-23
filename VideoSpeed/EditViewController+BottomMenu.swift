@@ -198,6 +198,7 @@ extension EditViewController: UICollectionViewDelegate {
                                     )
                                     // #endregion
                                     UserDataManager.main.transcription = transcription
+                                    SwiftDataManager.shared.upsertCaptions()
                                     print(transcription.segments!)
                                 case .failure(let error):
                                 AnalyticsManager.captionsFailedTranscriptionEvent(error: error.localizedDescription)

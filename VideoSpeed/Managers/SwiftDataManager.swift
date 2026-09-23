@@ -23,7 +23,8 @@ final class SwiftDataManager {
             container = try ModelContainer(
                 for: VideoProject.self,
                 SpidAssetModel.self,
-                SDLabelViewModel.self
+                SDLabelViewModel.self,
+                SDCaptions.self
             )
             container.mainContext.undoManager = UndoManager()
         } catch {
@@ -36,7 +37,7 @@ final class SwiftDataManager {
             queue: .main
         ) { _ in
             Task { @MainActor in
-                SwiftDataManager.shared.upsertLabelViewModels()
+              let _ =  SwiftDataManager.shared.upsertLabelViewModels()
             }
         }
     }
@@ -122,6 +123,73 @@ final class SwiftDataManager {
         return models
     }
 
+    /// Upserts captions from in-memory transcription + style + overlay pose onto the current project.
+    /// Clears `project.captions` when there is no transcription.
+    @discardableResult
+    func upsertCaptions() -> SDCaptions? {
+        guard let project = UserDataManager.main.currentProject else { return nil }
+
+        guard let transcription = UserDataManager.main.transcription else {
+            if let existing = project.captions {
+                modelContext.delete(existing)
+                project.captions = nil
+                save()
+            }
+            return nil
+        }
+
+        let style = CaptionStyleGenerator.captionsStyle
+        let pose = UserDataManager.main.captionsOverlayPose
+
+        do {
+            if let existing = project.captions {
+                try existing.update(from: transcription, style: style, pose: pose)
+                existing.project = project
+                save()
+                return existing
+            } else {
+                let model = try SDCaptions.make(
+                    from: transcription,
+                    style: style,
+                    pose: pose,
+                    project: project
+                )
+                modelContext.insert(model)
+                project.captions = model
+                save()
+                return model
+            }
+        } catch {
+            print("upsertCaptions failed: \(error)")
+            return nil
+        }
+    }
+
+    /// Restores transcription, style, and overlay pose from `project.captions` into in-memory state.
+    func applyCaptionsFromProject(from project: VideoProject? = nil) {
+        let project = project ?? UserDataManager.main.currentProject
+        guard let sdCaptions = project?.captions else {
+            UserDataManager.main.transcription = nil
+            UserDataManager.main.currentCaptions = nil
+            UserDataManager.main.captionsOverlayPose = .default
+            return
+        }
+
+        do {
+            let transcription = try sdCaptions.makeTranscription()
+            CaptionStyleGenerator.applyStyleFromStore {
+                sdCaptions.apply(to: CaptionStyleGenerator.captionsStyle)
+            }
+            UserDataManager.main.captionsOverlayPose = sdCaptions.overlayPose
+            UserDataManager.main.transcription = transcription
+        } catch {
+            print("applyCaptionsFromProject failed: \(error)")
+            UserDataManager.main.transcription = nil
+            UserDataManager.main.currentCaptions = nil
+            UserDataManager.main.captionsOverlayPose = .default
+        }
+    }
+
 //    /// Mutates `project.spidAssets` in place: removes missing models, appends new ones, reorders to match `models`.
 //    private func syncSpidAssetModels(_ models: [SpidAssetModel], into project: VideoProject) {
 //        let targetIDs = Set(models.map(\.id))
@@ -180,6 +248,7 @@ final class SwiftDataManager {
 
         UserDataManager.main.spidAssets = updated
         UserDataManager.main.currentSpidAsset = matchedCurrent ?? updated.first
+        applyCaptionsFromProject(from: project)
     }
 
     func deleteVideoProject(_ project: VideoProject) {
@@ -198,6 +267,25 @@ final class SwiftDataManager {
             createdAt: Date(),
             spidAssets: copiedAssets
         )
+        if let captions = project.captions {
+            do {
+                let transcription = try captions.makeTranscription()
+                let copied = try SDCaptions.make(
+                    from: transcription,
+                    style: {
+                        let style = CaptionsStyle()
+                        captions.apply(to: style)
+                        return style
+                    }(),
+                    pose: captions.overlayPose,
+                    project: duplicate
+                )
+                modelContext.insert(copied)
+                duplicate.captions = copied
+            } catch {
+                print("duplicateVideoProject captions copy failed: \(error)")
+            }
+        }
         modelContext.insert(duplicate)
         save()
         return duplicate

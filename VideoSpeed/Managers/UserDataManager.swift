@@ -157,6 +157,8 @@ class UserDataManager: ObservableObject {
     @Published
     var currentCaptions: [Caption]?
     var captionsStyle = CaptionsStyle()
+    /// Restored / live overlay pose for captions (center optional until first layout).
+    var captionsOverlayPose = CaptionsOverlayPose.default
 
     var exportQuality: ExportQuality = .hd
 

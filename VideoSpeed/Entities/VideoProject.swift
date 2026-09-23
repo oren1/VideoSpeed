@@ -15,17 +15,21 @@ final class VideoProject {
     var spidAssets: [SpidAssetModel] = []
     @Relationship(deleteRule: .cascade, inverse: \SDLabelViewModel.project)
     var labelViewModels: [SDLabelViewModel] = []
+    @Relationship(deleteRule: .cascade, inverse: \SDCaptions.project)
+    var captions: SDCaptions?
 
     init(
         thumbnailImage: Data = Data(),
         createdAt: Date = Date(),
         spidAssets: [SpidAssetModel] = [],
-        labelViewModels: [SDLabelViewModel] = []
+        labelViewModels: [SDLabelViewModel] = [],
+        captions: SDCaptions? = nil
     ) {
         self.thumbnailImage = thumbnailImage
         self.createdAt = createdAt
         self.spidAssets = spidAssets
         self.labelViewModels = labelViewModels
+        self.captions = captions
     }
 
     var thumbnailCGImage: CGImage? {

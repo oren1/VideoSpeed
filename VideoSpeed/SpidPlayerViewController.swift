@@ -63,8 +63,6 @@ class SpidPlayerViewController: UIViewController {
     private var sourceVideoSizeForWatermarkPreview: CGSize = .zero
     var onWatermarkPreviewCloseTapped: (() -> Void)?
 
-    /// UserDefaults key for persisted API transcription (testing / dev convenience).
-    private let transcriptionUserDefaultsKey = "transcriptionResponse"
     /// Ensures we rebuild captions once after layout so container width matches `videoContainerView`.
     private var didApplyCaptionsFromUserDefaultsAfterLayout = false
     private var didApplyProjectLabels = false
@@ -184,7 +182,25 @@ class SpidPlayerViewController: UIViewController {
         let container = CaptionsTextContainer(frame: CGRect(origin: .zero, size: CGSize(width: containerWidth, height: labelHeight)))
         captionsTextContainer = container
         videoContainerView.addSubview(container)
-        container.viewModel.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height * 0.75)
+
+        let pose = UserDataManager.main.captionsOverlayPose
+        if let center = pose.center {
+            container.viewModel.center = center
+        } else {
+            container.viewModel.center = CGPoint(
+                x: videoContainerView.frame.width / 2,
+                y: videoContainerView.frame.height * 0.75
+            )
+        }
+        container.viewModel.fullScale = CGFloat(pose.fullScale)
+        container.viewModel.fullRotation = CGFloat(pose.fullRotation)
+        container.applyRestoredTransformIfNeeded()
+        UserDataManager.main.captionsOverlayPose = CaptionsOverlayPose(
+            centerX: Double(container.viewModel.center.x),
+            centerY: Double(container.viewModel.center.y),
+            fullScale: Double(container.viewModel.fullScale),
+            fullRotation: Double(container.viewModel.fullRotation)
+        )
 
         UserDataManager.main.currentCaptions = CaptionStyleGenerator.generateCaptions(from: segments)
         // #region agent log
@@ -217,33 +233,11 @@ class SpidPlayerViewController: UIViewController {
         }
     }
 
-    /// Loads persisted transcription from UserDefaults (`transcriptionResponse`) when valid (words → segments).
-    @discardableResult
-    private func applyTranscriptionFromUserDefaultsIfAvailable() -> Bool {
-        guard let data = UserDefaults.standard.data(forKey: transcriptionUserDefaultsKey) else {
-            return false
-        }
-        do {
-            let response = try JSONDecoder().decode(TranscriptionResponse.self, from: data)
-            guard let transcription = Transcription(transcriptionResponse: response),
-                  let segments = transcription.segments,
-                  !segments.isEmpty else {
-                return false
-            }
-            UserDataManager.main.transcription = transcription
-            return true
-        } catch {
-            print("Error decoding transcription response: \(error)")
-            return false
-        }
-    }
-
-    /// After layout: if UserDefaults holds `transcriptionResponse`, reload and rebuild captions container with correct width (testing; avoids zero-width rebuild from `viewDidAppear`).
-    private func applyCaptionsFromUserDefaultsAfterLayoutIfPossible() {
+    /// After layout: rebuild captions from restored project transcription once the container has a real width.
+    private func applyCaptionsFromProjectAfterLayoutIfPossible() {
         guard !didApplyCaptionsFromUserDefaultsAfterLayout else { return }
         guard videoContainerView.frame.width > 2 else { return }
-        guard UserDefaults.standard.data(forKey: transcriptionUserDefaultsKey) != nil else { return }
-        guard applyTranscriptionFromUserDefaultsIfAvailable() else { return }
+        guard UserDataManager.main.transcription?.segments?.isEmpty == false else { return }
         rebuildCaptionsTextContainer(shouldSeekToFirstSegment: false)
         didApplyCaptionsFromUserDefaultsAfterLayout = true
     }
@@ -256,14 +250,7 @@ class SpidPlayerViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        if UserDefaults.standard.data(forKey: transcriptionUserDefaultsKey) == nil {
-            print("No transcription response data found in UserDefaults")
-            return
-        }
-        if !applyTranscriptionFromUserDefaultsIfAvailable() {
-            print("transcriptionResponse data present but transcription could not be loaded (missing words or decode error)")
-        }
+        applyCaptionsFromProjectAfterLayoutIfPossible()
     }
     
     deinit {
@@ -305,7 +292,7 @@ class SpidPlayerViewController: UIViewController {
             startPlaybackTimeChecker()
 
             await MainActor.run { [weak self] in
-                self?.applyCaptionsFromUserDefaultsAfterLayoutIfPossible()
+                self?.applyCaptionsFromProjectAfterLayoutIfPossible()
                 self?.applyProjectLabelsIfNeeded()
             }
 //            let fontSize = CaptionStyleGenerator.basicFontSize
