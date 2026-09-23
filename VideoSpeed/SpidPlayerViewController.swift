@@ -173,12 +173,17 @@ class SpidPlayerViewController: UIViewController {
         container.viewModel.fullScale = CGFloat(pose.fullScale)
         container.viewModel.fullRotation = CGFloat(pose.fullRotation)
         container.applyRestoredTransformIfNeeded()
+        let previousCenter = UserDataManager.main.captionsOverlayPose.center
         UserDataManager.main.captionsOverlayPose = CaptionsOverlayPose(
             centerX: Double(container.viewModel.center.x),
             centerY: Double(container.viewModel.center.y),
             fullScale: Double(container.viewModel.fullScale),
             fullRotation: Double(container.viewModel.fullRotation)
         )
+        // Generate upserts before the container exists; persist once the default pose is applied.
+        if previousCenter == nil {
+            SwiftDataManager.shared.upsertCaptions()
+        }
 
         UserDataManager.main.currentCaptions = CaptionStyleGenerator.generateCaptions(from: segments)
 
