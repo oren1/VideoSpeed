@@ -42,7 +42,7 @@ struct PersistedTranscription: Codable {
 }
 
 /// Overlay pose for `CaptionsTextContainer` (persisted with captions).
-struct CaptionsOverlayPose {
+struct CaptionsOverlayPose: Equatable {
     var centerX: Double?
     var centerY: Double?
     var fullScale: Double = 1

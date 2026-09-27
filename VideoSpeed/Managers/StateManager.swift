@@ -84,6 +84,21 @@ final class StateManager {
         registerUndo(previous: .labels(before), current: .labels(after))
     }
 
+    /// Runs a captions mutation and registers undo/redo from before/after snapshots.
+    func performCaptionsChange(_ change: () -> Void) {
+        let before = CaptionsUndoSnapshot.capture()
+        change()
+        registerCaptionsChange(before: before)
+    }
+
+    /// Registers undo from a previously captured `before` snapshot to the current captions state.
+    func registerCaptionsChange(before: CaptionsUndoSnapshot) {
+        let after = CaptionsUndoSnapshot.capture()
+        guard before != after else { return }
+        registerUndo(previous: .captions(before), current: .captions(after))
+        SwiftDataManager.shared.upsertCaptions()
+    }
+
     /// Registers undo that restores `previous`. While undoing/redoing, re-registers
     /// with `previous`/`current` swapped so the opposite stack entry is created.
     private func registerUndo(previous: UndoField, current: UndoField) {
@@ -182,6 +197,25 @@ final class StateManager {
                 UserDataManager.main.selectedLabelViewModel = nil
             }
             SwiftDataManager.shared.upsertLabelViewModels()
+        case .captions(let snapshot):
+            CaptionStyleGenerator.applyStyleFromStore {
+                snapshot.style.apply(to: CaptionStyleGenerator.captionsStyle)
+            }
+            UserDataManager.main.captionsOverlayPose = snapshot.pose
+            if let data = snapshot.transcriptionData,
+               let transcription = try? PersistedTranscription.decode(data) {
+                UserDataManager.main.transcription = transcription
+                if let segments = transcription.segments {
+                    UserDataManager.main.currentCaptions = CaptionStyleGenerator.generateCaptions(from: segments)
+                } else {
+                    UserDataManager.main.currentCaptions = nil
+                }
+            } else {
+                UserDataManager.main.transcription = nil
+                UserDataManager.main.currentCaptions = nil
+                UserDataManager.main.captions = []
+            }
+            SwiftDataManager.shared.upsertCaptions()
         }
     }
 }

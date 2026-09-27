@@ -15,6 +15,7 @@ struct CaptionsEditTextSheetView: View {
     @State private var segmentTexts: [String] = []
     @State private var activeSegmentIndex: Int?
     @FocusState private var focusedSegmentIndex: Int?
+    @State private var captionsUndoBefore: CaptionsUndoSnapshot?
 
     var body: some View {
         NavigationStack {
@@ -48,7 +49,16 @@ struct CaptionsEditTextSheetView: View {
             }
         }
         .preferredColorScheme(.dark)
-        .onAppear(perform: syncSegmentTextsFromTranscription)
+        .onAppear {
+            captionsUndoBefore = CaptionsUndoSnapshot.capture()
+            syncSegmentTextsFromTranscription()
+        }
+        .onDisappear {
+            if let before = captionsUndoBefore {
+                StateManager.shared.registerCaptionsChange(before: before)
+                captionsUndoBefore = nil
+            }
+        }
         .onReceive(NotificationCenter.default.publisher(for: .captionsPlaybackTimeDidChange)) { notification in
             guard let time = notification.userInfo?[CaptionsPlaybackTimeNotification.currentTimeKey] as? Double else {
                 return
@@ -201,7 +211,7 @@ struct CaptionsEditTextSheetView: View {
         userData.transcription = transcription
         guard let segments = transcription.segments else { return }
         userData.currentCaptions = CaptionStyleGenerator.generateCaptions(from: segments)
-        SwiftDataManager.shared.upsertCaptions()
+        // Undo + persist happen when the sheet Done button registers the before/after snapshot.
     }
 
     private func updateActiveSegment(for time: Double) {

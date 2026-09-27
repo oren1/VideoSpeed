@@ -171,8 +171,9 @@ extension EditViewController: UICollectionViewDelegate {
                             switch transcriptionResult {
                                 case .success(let transcription):
                                 AnalyticsManager.captionsSuccessfulTranscriptionEvent()
-                                    UserDataManager.main.transcription = transcription
-                                    SwiftDataManager.shared.upsertCaptions()
+                                    StateManager.shared.performCaptionsChange {
+                                        UserDataManager.main.transcription = transcription
+                                    }
                                     print(transcription.segments!)
                                 case .failure(let error):
                                 AnalyticsManager.captionsFailedTranscriptionEvent(error: error.localizedDescription)

@@ -67,6 +67,10 @@ extension EditViewController {
                 // `labelViewsModels` didSet already posts OverlayLabelViewsUpdated;
                 // TextSectionVC / SpidPlayer refresh from that notification.
 
+            case .captions:
+                showBriefChangeAlert(type: "captions", value: "")
+                // Restoring transcription/style/pose triggers SpidPlayer rebuild via publishers.
+
             default:
                 print("undoManagerDidChangeFielddefault")
             }

@@ -21,6 +21,8 @@ class CaptionsTextContainer: UIView {
 //    private var initialFrame: CGRect = .zero
     var viewModel: ViewModel = ViewModel()
     var subscriptions: Set<AnyCancellable> = []
+    /// Captured at gesture `.began` so pan/pinch/rotate register one undo entry on `.ended`.
+    private var captionsGestureBefore: CaptionsUndoSnapshot?
     
     // MARK: - Init
     override init(frame: CGRect) {
@@ -211,6 +213,9 @@ class CaptionsTextContainer: UIView {
     }
 
     @objc private func handlePinch(_ gesture: UIPinchGestureRecognizer) {
+        if gesture.state == .began {
+            captionsGestureBefore = CaptionsUndoSnapshot.capture()
+        }
         if gesture.state == .began || gesture.state == .changed {
             viewModel.fullScale *= gesture.scale
             print("viewModel.fullScale \(viewModel.fullScale)")
@@ -221,6 +226,9 @@ class CaptionsTextContainer: UIView {
     }
     
     @objc private func handleRotation(_ gesture: UIRotationGestureRecognizer) {
+        if gesture.state == .began {
+            captionsGestureBefore = CaptionsUndoSnapshot.capture()
+        }
         if gesture.state == .began || gesture.state == .changed {
             viewModel.fullRotation += gesture.rotation
             applyTransform(scale: viewModel.fullScale, rotation: viewModel.fullRotation)
@@ -230,6 +238,9 @@ class CaptionsTextContainer: UIView {
     }
     
     @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
+        if gesture.state == .began {
+            captionsGestureBefore = CaptionsUndoSnapshot.capture()
+        }
         let translation = gesture.translation(in: superview)
         viewModel.center = CGPoint(x: center.x + translation.x, y: center.y + translation.y)
         gesture.setTranslation(.zero, in: superview)
@@ -240,7 +251,12 @@ class CaptionsTextContainer: UIView {
         switch state {
         case .ended, .cancelled, .failed:
             syncOverlayPoseToUserData()
-            SwiftDataManager.shared.upsertCaptions()
+            if let before = captionsGestureBefore {
+                StateManager.shared.registerCaptionsChange(before: before)
+                captionsGestureBefore = nil
+            } else {
+                SwiftDataManager.shared.upsertCaptions()
+            }
         default:
             break
         }
@@ -275,12 +291,13 @@ class CaptionsTextContainer: UIView {
     }
 
     @objc private func closeTapped() {
-        let userData = UserDataManager.main
-        userData.transcription = nil
-        userData.currentCaptions = nil
-        userData.captions = []
-        userData.captionsOverlayPose = .default
-        SwiftDataManager.shared.upsertCaptions()
+        StateManager.shared.performCaptionsChange {
+            let userData = UserDataManager.main
+            userData.transcription = nil
+            userData.currentCaptions = nil
+            userData.captions = []
+            userData.captionsOverlayPose = .default
+        }
         removeFromSuperview()
     }
     
