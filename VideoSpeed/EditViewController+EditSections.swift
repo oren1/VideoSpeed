@@ -146,10 +146,12 @@ extension EditViewController {
         fpsSectionVC = FPSSectionVC()
         fpsSectionVC.fpsDidChange = {[weak self] (fps: Int32) in
             guard let self = self else {return}
+            let oldFPS = self.fps
+            guard oldFPS != fps else { return }
+            StateManager.shared.updateFPS(from: oldFPS, to: fps)
             self.fps = fps
             self.fpsLabel.text = "\(fps):fps"
             showProButtonIfNeeded()
-            SwiftDataManager.shared.updateProjectFPS(fps)
             Task {
                 await self.reloadComposition()
             }

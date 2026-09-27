@@ -71,6 +71,14 @@ extension EditViewController {
                 showBriefChangeAlert(type: "captions", value: "")
                 // Restoring transcription/style/pose triggers SpidPlayer rebuild via publishers.
 
+            case .fps(let fps):
+                self.fps = fps
+                self.fpsLabel.text = "\(fps):fps"
+                fpsSectionVC.syncUI(to: fps)
+                showProButtonIfNeeded()
+                showBriefChangeAlert(type: "fps", value: "\(fps)")
+                await reloadComposition()
+
             default:
                 print("undoManagerDidChangeFielddefault")
             }

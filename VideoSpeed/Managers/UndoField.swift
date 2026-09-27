@@ -140,6 +140,7 @@ enum UndoField {
     case split(SplitUndoSnapshot)
     case labels(LabelsUndoSnapshot)
     case captions(CaptionsUndoSnapshot)
+    case fps(Int32)
     case other
 
     /// Case identity used to keep at most one change per field.
@@ -158,6 +159,7 @@ enum UndoField {
         case .split: return "split"
         case .labels: return "labels"
         case .captions: return "captions"
+        case .fps: return "fps"
         case .other: return "other"
         }
     }

@@ -99,6 +99,13 @@ final class StateManager {
         SwiftDataManager.shared.upsertCaptions()
     }
 
+    /// Updates project FPS and registers undo/redo.
+    func updateFPS(from oldFPS: Int32, to fps: Int32) {
+        guard oldFPS != fps else { return }
+        registerUndo(previous: .fps(oldFPS), current: .fps(fps))
+        SwiftDataManager.shared.updateProjectFPS(fps)
+    }
+
     /// Registers undo that restores `previous`. While undoing/redoing, re-registers
     /// with `previous`/`current` swapped so the opposite stack entry is created.
     private func registerUndo(previous: UndoField, current: UndoField) {
@@ -216,6 +223,8 @@ final class StateManager {
                 UserDataManager.main.captions = []
             }
             SwiftDataManager.shared.upsertCaptions()
+        case .fps(let fps):
+            SwiftDataManager.shared.updateProjectFPS(fps)
         }
     }
 }
