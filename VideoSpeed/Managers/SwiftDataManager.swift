@@ -88,6 +88,15 @@ final class SwiftDataManager {
         return project
     }
 
+    /// Persists the editor FPS selection onto the current project.
+    func updateProjectFPS(_ fps: Int32) {
+        guard let project = UserDataManager.main.currentProject else { return }
+        let value = Int(fps)
+        guard project.fps != value else { return }
+        project.fps = value
+        save()
+    }
+
     /// Upserts `UserDataManager.labelViewsModels` into the current project's labels.
     @discardableResult
     func upsertLabelViewModels() -> [SDLabelViewModel]? {
@@ -265,6 +274,7 @@ final class SwiftDataManager {
         let duplicate = VideoProject(
             thumbnailImage: project.thumbnailImage,
             createdAt: Date(),
+            fps: project.fps,
             spidAssets: copiedAssets
         )
         if let captions = project.captions {

@@ -113,6 +113,7 @@ struct ProjectsView: View {
         editVC.asset = await assets[0].getAsset()
         editVC.speed = await assets[0].speed
         editVC.soundOn = await assets[0].soundOn
+        editVC.fps = Int32(project.fps)
 
         Task { @MainActor in
             navigationController?.pushViewController(editVC, animated: true)

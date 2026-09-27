@@ -25,6 +25,7 @@ class FPSSectionVC: SectionViewController {
 
     var fps: Int32 = 30 {
         didSet {
+            guard fps != oldValue else { return }
             fpsDidChange?(fps)
         }
     }
@@ -39,14 +40,23 @@ class FPSSectionVC: SectionViewController {
         pickerView.delegate = self
         pickerView.dataSource = self
         pickerView.setValue(UIColor.white, forKey: "textColor")
-        pickerView.selectRow(29, inComponent: 0, animated: false)
-        
-//        sub = PublishersManager.main.resetSelectionsPublisher.sink(receiveValue: { [weak self]  notification in
-//            guard let self = self else {return}
-//            pickerView.selectRow(29, inComponent: 0, animated: true)
-//            fps = 30
-//        })
-        
+        syncPickerSelection()
+    }
+
+    /// Updates the picker (and stored fps) without notifying `fpsDidChange` — used when restoring from a project.
+    func syncUI(to value: Int32) {
+        let callback = fpsDidChange
+        fpsDidChange = nil
+        fps = value
+        fpsDidChange = callback
+        if isViewLoaded {
+            syncPickerSelection()
+        }
+    }
+
+    private func syncPickerSelection() {
+        let row = fpsOptions.firstIndex(of: Int(fps)) ?? fpsOptions.firstIndex(of: 30) ?? 0
+        pickerView.selectRow(row, inComponent: 0, animated: false)
     }
 
     

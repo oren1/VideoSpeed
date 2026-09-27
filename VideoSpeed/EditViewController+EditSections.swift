@@ -149,6 +149,7 @@ extension EditViewController {
             self.fps = fps
             self.fpsLabel.text = "\(fps):fps"
             showProButtonIfNeeded()
+            SwiftDataManager.shared.updateProjectFPS(fps)
             Task {
                 await self.reloadComposition()
             }
@@ -156,6 +157,7 @@ extension EditViewController {
         fpsSectionVC.userNeedsToPurchase = {[weak self] in
             self?.showPurchaseViewController()
         }
+        fpsSectionVC.syncUI(to: fps)
     }
     
     func createSoundSection()  {
@@ -612,6 +614,7 @@ extension EditViewController {
     }
     
     func addFPSSection() {
+        fpsSectionVC.syncUI(to: fps)
         addSection(sectionVC: fpsSectionVC)
         currentShownSection = fpsSectionVC
     }

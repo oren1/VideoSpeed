@@ -11,6 +11,8 @@ import UIKit
 final class VideoProject {
     var thumbnailImage: Data = Data()
     var createdAt: Date = Date()
+    /// Composition frame rate used in the editor / export (default 30).
+    var fps: Int = 30
     @Relationship(deleteRule: .cascade, inverse: \SpidAssetModel.project)
     var spidAssets: [SpidAssetModel] = []
     @Relationship(deleteRule: .cascade, inverse: \SDLabelViewModel.project)
@@ -21,12 +23,14 @@ final class VideoProject {
     init(
         thumbnailImage: Data = Data(),
         createdAt: Date = Date(),
+        fps: Int = 30,
         spidAssets: [SpidAssetModel] = [],
         labelViewModels: [SDLabelViewModel] = [],
         captions: SDCaptions? = nil
     ) {
         self.thumbnailImage = thumbnailImage
         self.createdAt = createdAt
+        self.fps = fps
         self.spidAssets = spidAssets
         self.labelViewModels = labelViewModels
         self.captions = captions
