@@ -530,11 +530,15 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             let beforeTimelineStart = backgroundAudioTrack.timelineTimeRange.start.seconds
 
             backgroundAudioTrack.clampToCompositionDuration(videoDuration)
-            UserDataManager.main.backgroundAudioTrack = backgroundAudioTrack
 
             let didClamp = abs(beforeTimelineDuration - backgroundAudioTrack.timelineTimeRange.duration.seconds) > 0.001
                 || abs(beforeTimelineStart - backgroundAudioTrack.timelineTimeRange.start.seconds) > 0.001
                 || abs(beforeSourceDuration - backgroundAudioTrack.sourceTimeRange.duration.seconds) > 0.001
+
+            if didClamp {
+                UserDataManager.main.backgroundAudioTrack = backgroundAudioTrack
+                SwiftDataManager.shared.upsertBackgroundAudio()
+            }
 
             let backgroundAsset = AVURLAsset(url: backgroundAudioTrack.fileURL)
             if let sourceTrack = try? await backgroundAsset.loadTracks(withMediaType: .audio).first {

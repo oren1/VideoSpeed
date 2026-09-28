@@ -107,6 +107,7 @@ struct ProjectsView: View {
         UserDataManager.main.spidAssets = assets
         UserDataManager.main.currentSpidAsset = assets.first
         SwiftDataManager.shared.applyCaptionsFromProject(from: project)
+        SwiftDataManager.shared.applyBackgroundAudioFromProject(from: project)
         
         let editVC = UIStoryboard(name: "Main", bundle: nil)
             .instantiateViewController(withIdentifier: "EditViewController") as! EditViewController

@@ -19,6 +19,8 @@ final class VideoProject {
     var labelViewModels: [SDLabelViewModel] = []
     @Relationship(deleteRule: .cascade, inverse: \SDCaptions.project)
     var captions: SDCaptions?
+    @Relationship(deleteRule: .cascade, inverse: \SDBackgroundAudio.project)
+    var backgroundAudio: SDBackgroundAudio?
 
     init(
         thumbnailImage: Data = Data(),
@@ -26,7 +28,8 @@ final class VideoProject {
         fps: Int = 30,
         spidAssets: [SpidAssetModel] = [],
         labelViewModels: [SDLabelViewModel] = [],
-        captions: SDCaptions? = nil
+        captions: SDCaptions? = nil,
+        backgroundAudio: SDBackgroundAudio? = nil
     ) {
         self.thumbnailImage = thumbnailImage
         self.createdAt = createdAt
@@ -34,6 +37,7 @@ final class VideoProject {
         self.spidAssets = spidAssets
         self.labelViewModels = labelViewModels
         self.captions = captions
+        self.backgroundAudio = backgroundAudio
     }
 
     var thumbnailCGImage: CGImage? {

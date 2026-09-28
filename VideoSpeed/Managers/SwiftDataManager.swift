@@ -24,7 +24,8 @@ final class SwiftDataManager {
                 for: VideoProject.self,
                 SpidAssetModel.self,
                 SDLabelViewModel.self,
-                SDCaptions.self
+                SDCaptions.self,
+                SDBackgroundAudio.self
             )
             container.mainContext.undoManager = UndoManager()
         } catch {
@@ -199,6 +200,87 @@ final class SwiftDataManager {
         }
     }
 
+    /// Upserts background audio from `UserDataManager.backgroundAudioTrack` onto the current project.
+    /// Clears `project.backgroundAudio` when there is no in-memory track.
+    @discardableResult
+    func upsertBackgroundAudio() -> SDBackgroundAudio? {
+        guard let project = UserDataManager.main.currentProject else { return nil }
+
+        guard let track = UserDataManager.main.backgroundAudioTrack else {
+            if let existing = project.backgroundAudio {
+                modelContext.delete(existing)
+                project.backgroundAudio = nil
+                save()
+            }
+            return nil
+        }
+
+        let audioData: Data
+        if track.source == .bundled {
+            audioData = Data()
+        } else if let existing = project.backgroundAudio,
+                  existing.sourceId == track.sourceId,
+                  !existing.audioData.isEmpty {
+            audioData = existing.audioData
+        } else {
+            guard let data = try? Data(contentsOf: track.fileURL), !data.isEmpty else {
+                print("upsertBackgroundAudio: failed to read audio at \(track.fileURL)")
+                return nil
+            }
+            audioData = data
+        }
+
+        if let existing = project.backgroundAudio {
+            existing.update(from: track, audioData: audioData)
+            existing.project = project
+            save()
+            return existing
+        } else {
+            let model = SDBackgroundAudio.make(from: track, audioData: audioData, project: project)
+            modelContext.insert(model)
+            project.backgroundAudio = model
+            save()
+            return model
+        }
+    }
+
+    /// Restores `UserDataManager.backgroundAudioTrack` from `project.backgroundAudio`.
+    func applyBackgroundAudioFromProject(from project: VideoProject? = nil) {
+        let project = project ?? UserDataManager.main.currentProject
+        guard let stored = project?.backgroundAudio else {
+            UserDataManager.main.backgroundAudioTrack = nil
+            return
+        }
+
+        do {
+            let fileURL = try resolveBackgroundAudioURL(from: stored)
+            UserDataManager.main.backgroundAudioTrack = stored.makeTrack(fileURL: fileURL)
+        } catch {
+            print("applyBackgroundAudioFromProject failed: \(error)")
+            UserDataManager.main.backgroundAudioTrack = nil
+        }
+    }
+
+    private func resolveBackgroundAudioURL(from model: SDBackgroundAudio) throws -> URL {
+        if model.source == .bundled {
+            if let bundled = BundledAudioCatalog.tracks.first(where: { $0.id == model.sourceId }),
+               let url = bundled.fileURL {
+                return url
+            }
+            throw NSError(
+                domain: "SwiftDataManager",
+                code: 1,
+                userInfo: [NSLocalizedDescriptionKey: "Bundled audio missing: \(model.sourceId)"]
+            )
+        }
+
+        return try ProjectMediaStore.materialize(
+            model.audioData,
+            assetID: model.id,
+            fileExtension: model.fileExtension.isEmpty ? "m4a" : model.fileExtension
+        )
+    }
+
 //    /// Mutates `project.spidAssets` in place: removes missing models, appends new ones, reorders to match `models`.
 //    private func syncSpidAssetModels(_ models: [SpidAssetModel], into project: VideoProject) {
 //        let targetIDs = Set(models.map(\.id))
@@ -258,6 +340,7 @@ final class SwiftDataManager {
         UserDataManager.main.spidAssets = updated
         UserDataManager.main.currentSpidAsset = matchedCurrent ?? updated.first
         applyCaptionsFromProject(from: project)
+        applyBackgroundAudioFromProject(from: project)
     }
 
     func deleteVideoProject(_ project: VideoProject) {
@@ -295,6 +378,11 @@ final class SwiftDataManager {
             } catch {
                 print("duplicateVideoProject captions copy failed: \(error)")
             }
+        }
+        if let audio = project.backgroundAudio {
+            let copied = SDBackgroundAudio.copy(from: audio, project: duplicate)
+            modelContext.insert(copied)
+            duplicate.backgroundAudio = copied
         }
         modelContext.insert(duplicate)
         save()

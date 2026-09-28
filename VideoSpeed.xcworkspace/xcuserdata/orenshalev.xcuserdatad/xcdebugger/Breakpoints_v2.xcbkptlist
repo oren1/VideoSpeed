@@ -128,7 +128,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "160"
             endingLineNumber = "160"
-            landmarkName = "apply(_:)"
+            landmarkName = "makeSplitSnapshot(sourceAsset:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -176,7 +176,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "327"
             endingLineNumber = "327"
-            landmarkName = "makePersistedSnapshot(from:)"
+            landmarkName = "applyProjectToInMemoryState(from:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

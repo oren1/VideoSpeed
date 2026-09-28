@@ -200,6 +200,7 @@ extension EditViewController {
             guard var track = UserDataManager.main.backgroundAudioTrack else { return }
             track.updateTimelineTimeRange(range)
             UserDataManager.main.backgroundAudioTrack = track
+            SwiftDataManager.shared.upsertBackgroundAudio()
             Task {
                 await self.reloadComposition(refreshSectionThumbnails: false)
                 await MainActor.run {
@@ -225,6 +226,7 @@ extension EditViewController {
             guard var current = UserDataManager.main.backgroundAudioTrack else { return }
             current.updateSourceTimeRange(range)
             UserDataManager.main.backgroundAudioTrack = current
+            SwiftDataManager.shared.upsertBackgroundAudio()
             Task {
                 await self.reloadComposition(refreshSectionThumbnails: false)
                 await MainActor.run {
@@ -241,6 +243,7 @@ extension EditViewController {
             guard var current = UserDataManager.main.backgroundAudioTrack else { return }
             current.updateVolume(volume)
             UserDataManager.main.backgroundAudioTrack = current
+            SwiftDataManager.shared.upsertBackgroundAudio()
             Task {
                 await self.reloadComposition(refreshSectionThumbnails: false)
             }
@@ -426,6 +429,7 @@ extension EditViewController {
                 source: source,
                 compositionDuration: compositionDuration
             )
+            SwiftDataManager.shared.upsertBackgroundAudio()
             await self.reloadComposition()
             await MainActor.run {
                 self.audioSectionVC.configure(
