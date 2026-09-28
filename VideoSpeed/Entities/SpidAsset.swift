@@ -120,6 +120,9 @@ actor SpidAsset {
     
     func updateSound(soundOn: Bool)  {
         self.soundOn = soundOn
+        Task {
+           let _ = await SwiftDataManager.shared.upsertVideoProject()
+        }
     }
     
     func updateThumbnailImages(images: [CGImage]?) {

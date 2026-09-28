@@ -446,12 +446,15 @@ extension EditViewController {
             self?.showProButtonIfNeeded()
         }
         moreSectionVC.soundStateChanged = {[weak self] (soundOn: Bool) in
-            self?.soundOn = soundOn
+            guard let self else { return }
+            self.soundOn = soundOn
             let imageName = soundOn ? "volume.2.fill" : "volume.slash"
-            self?.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
-            self?.showProButtonIfNeeded()
+            self.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
+            self.showProButtonIfNeeded()
             Task {
-                await self?.reloadComposition()
+                await UserDataManager.main.currentSpidAsset?.updateSound(soundOn: soundOn)
+                UserDataManager.main.soundOff = await UserDataManager.main.soundOff()
+                await self.reloadComposition()
             }
         }
         moreSectionVC.userNeedsToPurchase = {[weak self] in

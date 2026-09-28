@@ -1009,7 +1009,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         soundButton = UIButton(type: .system)
         soundButton.tintColor = .white
-        soundButton.setImage(UIImage(systemName: "volume.2.fill"), for: .normal)
+        let soundImageName = soundOn ? "volume.2.fill" : "volume.slash"
+        soundButton.setImage(UIImage(systemName: soundImageName), for: .normal)
         soundButton.addTarget(self, action: #selector(soundButtonTapped), for: .touchUpInside)
         
 //        let speedItem = UIBarButtonItem(customView: speedLabel)
@@ -1106,6 +1107,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             soundSectionVC.updateSoundSelection(soundOn: soundOn)
             showProButtonIfNeeded()
             Task {
+                await UserDataManager.main.currentSpidAsset?.updateSound(soundOn: soundOn)
+                UserDataManager.main.soundOff = await UserDataManager.main.soundOff()
                 await self.reloadComposition()
                 let startTime = self.getStartTimeForCurrentSpidAsset()
                 await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
@@ -1120,6 +1123,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         soundSectionVC.updateSoundSelection(soundOn: soundOn)
         
         Task {
+            await UserDataManager.main.currentSpidAsset?.updateSound(soundOn: soundOn)
+            UserDataManager.main.soundOff = await UserDataManager.main.soundOff()
             await self.reloadComposition()
             let startTime = self.getStartTimeForCurrentSpidAsset()
             await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
