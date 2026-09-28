@@ -170,7 +170,7 @@ extension EditViewController {
             let imageName = soundOn ? "volume.2.fill" : "volume.slash"
             self.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
             Task {
-               await UserDataManager.main.currentSpidAsset.updateSound(soundOn: soundOn)
+               await StateManager.shared.updateSound(soundOn)
                UserDataManager.main.soundOff = await UserDataManager.main.soundOff()
                await self.reloadComposition()
                let startTime = self.getStartTimeForCurrentSpidAsset()
@@ -452,7 +452,7 @@ extension EditViewController {
             self.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
             self.showProButtonIfNeeded()
             Task {
-                await UserDataManager.main.currentSpidAsset?.updateSound(soundOn: soundOn)
+                await StateManager.shared.updateSound(soundOn)
                 UserDataManager.main.soundOff = await UserDataManager.main.soundOff()
                 await self.reloadComposition()
             }

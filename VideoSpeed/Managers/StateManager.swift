@@ -99,6 +99,19 @@ final class StateManager {
         SwiftDataManager.shared.upsertCaptions()
     }
 
+    /// Updates sound on/off on the runtime asset and registers undo/redo.
+    func updateSound(_ soundOn: Bool, for asset: SpidAsset? = nil) async {
+        guard let spidAsset = asset ?? UserDataManager.main.currentSpidAsset else { return }
+        let oldSoundOn = await spidAsset.soundOn
+        guard oldSoundOn != soundOn else { return }
+
+        registerUndo(
+            previous: .soundOn(oldSoundOn, spidAsset),
+            current: .soundOn(soundOn, spidAsset)
+        )
+        await spidAsset.updateSound(soundOn: soundOn)
+    }
+
     /// Updates project FPS and registers undo/redo.
     func updateFPS(from oldFPS: Int32, to fps: Int32) {
         guard oldFPS != fps else { return }

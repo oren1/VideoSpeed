@@ -1107,7 +1107,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             soundSectionVC.updateSoundSelection(soundOn: soundOn)
             showProButtonIfNeeded()
             Task {
-                await UserDataManager.main.currentSpidAsset?.updateSound(soundOn: soundOn)
+                await StateManager.shared.updateSound(soundOn)
                 UserDataManager.main.soundOff = await UserDataManager.main.soundOff()
                 await self.reloadComposition()
                 let startTime = self.getStartTimeForCurrentSpidAsset()
@@ -1123,7 +1123,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         soundSectionVC.updateSoundSelection(soundOn: soundOn)
         
         Task {
-            await UserDataManager.main.currentSpidAsset?.updateSound(soundOn: soundOn)
+            await StateManager.shared.updateSound(soundOn)
             UserDataManager.main.soundOff = await UserDataManager.main.soundOff()
             await self.reloadComposition()
             let startTime = self.getStartTimeForCurrentSpidAsset()

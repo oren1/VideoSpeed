@@ -79,6 +79,19 @@ extension EditViewController {
                 showBriefChangeAlert(type: "fps", value: "\(fps)")
                 await reloadComposition()
 
+            case .soundOn(let soundOn, let spidAsset):
+                await flickerAsset(assetID: spidAsset.id)
+                showBriefChangeAlert(type: "sound", value: soundOn ? "on" : "off")
+                if UserDataManager.main.currentSpidAsset == spidAsset {
+                    self.soundOn = soundOn
+                    let imageName = soundOn ? "volume.2.fill" : "volume.slash"
+                    soundButton.setImage(UIImage(systemName: imageName), for: .normal)
+                    soundSectionVC.updateSoundSelection(soundOn: soundOn)
+                }
+                UserDataManager.main.soundOff = await UserDataManager.main.soundOff()
+                showProButtonIfNeeded()
+                await reloadComposition()
+
             default:
                 print("undoManagerDidChangeFielddefault")
             }
