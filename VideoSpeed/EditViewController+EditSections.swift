@@ -197,10 +197,11 @@ extension EditViewController {
         }
         audioSectionVC.timelineRangeDidChange = { [weak self] range in
             guard let self else { return }
-            guard var track = UserDataManager.main.backgroundAudioTrack else { return }
-            track.updateTimelineTimeRange(range)
-            UserDataManager.main.backgroundAudioTrack = track
-            SwiftDataManager.shared.upsertBackgroundAudio()
+            StateManager.shared.performAudioChange {
+                guard var track = UserDataManager.main.backgroundAudioTrack else { return }
+                track.updateTimelineTimeRange(range)
+                UserDataManager.main.backgroundAudioTrack = track
+            }
             Task {
                 await self.reloadComposition(refreshSectionThumbnails: false)
                 await MainActor.run {
@@ -223,10 +224,11 @@ extension EditViewController {
         sourceVC.configure(track: track)
         sourceVC.onSourceRangeChanged = { [weak self] range in
             guard let self else { return }
-            guard var current = UserDataManager.main.backgroundAudioTrack else { return }
-            current.updateSourceTimeRange(range)
-            UserDataManager.main.backgroundAudioTrack = current
-            SwiftDataManager.shared.upsertBackgroundAudio()
+            StateManager.shared.performAudioChange {
+                guard var current = UserDataManager.main.backgroundAudioTrack else { return }
+                current.updateSourceTimeRange(range)
+                UserDataManager.main.backgroundAudioTrack = current
+            }
             Task {
                 await self.reloadComposition(refreshSectionThumbnails: false)
                 await MainActor.run {
@@ -240,10 +242,11 @@ extension EditViewController {
         }
         sourceVC.onVolumeChanged = { [weak self] volume in
             guard let self else { return }
-            guard var current = UserDataManager.main.backgroundAudioTrack else { return }
-            current.updateVolume(volume)
-            UserDataManager.main.backgroundAudioTrack = current
-            SwiftDataManager.shared.upsertBackgroundAudio()
+            StateManager.shared.performAudioChange {
+                guard var current = UserDataManager.main.backgroundAudioTrack else { return }
+                current.updateVolume(volume)
+                UserDataManager.main.backgroundAudioTrack = current
+            }
             Task {
                 await self.reloadComposition(refreshSectionThumbnails: false)
             }
@@ -422,6 +425,7 @@ extension EditViewController {
     ) {
         Task {
             let compositionDuration = self.composition?.duration ?? .zero
+            let before = AudioUndoSnapshot.capture()
             _ = await UserDataManager.main.setBackgroundAudioTrack(
                 fileURL: fileURL,
                 displayName: displayName,
@@ -429,7 +433,7 @@ extension EditViewController {
                 source: source,
                 compositionDuration: compositionDuration
             )
-            SwiftDataManager.shared.upsertBackgroundAudio()
+            StateManager.shared.registerAudioChange(before: before)
             await self.reloadComposition()
             await MainActor.run {
                 self.audioSectionVC.configure(

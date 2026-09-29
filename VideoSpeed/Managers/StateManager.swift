@@ -99,6 +99,21 @@ final class StateManager {
         SwiftDataManager.shared.upsertCaptions()
     }
 
+    /// Runs a background-audio mutation and registers undo/redo from before/after snapshots.
+    func performAudioChange(_ change: () -> Void) {
+        let before = AudioUndoSnapshot.capture()
+        change()
+        registerAudioChange(before: before)
+    }
+
+    /// Registers undo from a previously captured `before` snapshot to the current audio state.
+    func registerAudioChange(before: AudioUndoSnapshot) {
+        let after = AudioUndoSnapshot.capture()
+        guard before != after else { return }
+        registerUndo(previous: .audio(before), current: .audio(after))
+        SwiftDataManager.shared.upsertBackgroundAudio()
+    }
+
     /// Updates sound on/off on the runtime asset and registers undo/redo.
     func updateSound(_ soundOn: Bool, for asset: SpidAsset? = nil) async {
         guard let spidAsset = asset ?? UserDataManager.main.currentSpidAsset else { return }
@@ -236,6 +251,9 @@ final class StateManager {
                 UserDataManager.main.captions = []
             }
             SwiftDataManager.shared.upsertCaptions()
+        case .audio(let snapshot):
+            UserDataManager.main.backgroundAudioTrack = snapshot.track
+            SwiftDataManager.shared.upsertBackgroundAudio()
         case .fps(let fps):
             SwiftDataManager.shared.updateProjectFPS(fps)
         }

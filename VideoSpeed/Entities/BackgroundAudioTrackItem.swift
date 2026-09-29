@@ -62,3 +62,16 @@ struct BackgroundAudioTrackItem {
         sourceTimeRange = CMTimeRange(start: sourceTimeRange.start, duration: duration)
     }
 }
+
+extension BackgroundAudioTrackItem: Equatable {
+    static func == (lhs: BackgroundAudioTrackItem, rhs: BackgroundAudioTrackItem) -> Bool {
+        lhs.sourceId == rhs.sourceId
+            && lhs.source == rhs.source
+            && lhs.displayName == rhs.displayName
+            && lhs.fileURL == rhs.fileURL
+            && CMTimeRangeEqual(lhs.fullSourceRange, rhs.fullSourceRange)
+            && CMTimeRangeEqual(lhs.sourceTimeRange, rhs.sourceTimeRange)
+            && CMTimeRangeEqual(lhs.timelineTimeRange, rhs.timelineTimeRange)
+            && abs(lhs.volume - rhs.volume) < 0.0001
+    }
+}

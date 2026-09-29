@@ -116,6 +116,15 @@ struct CaptionsUndoSnapshot: Equatable {
     }
 }
 
+/// Background audio track for undo/redo (`nil` means audio is cleared).
+struct AudioUndoSnapshot: Equatable {
+    let track: BackgroundAudioTrackItem?
+
+    static func capture() -> AudioUndoSnapshot {
+        AudioUndoSnapshot(track: UserDataManager.main.backgroundAudioTrack)
+    }
+}
+
 private extension UIColor {
     func captionsRGBAComponents() -> (r: Double, g: Double, b: Double, a: Double) {
         var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
@@ -140,6 +149,7 @@ enum UndoField {
     case split(SplitUndoSnapshot)
     case labels(LabelsUndoSnapshot)
     case captions(CaptionsUndoSnapshot)
+    case audio(AudioUndoSnapshot)
     case fps(Int32)
     case other
 
@@ -159,6 +169,7 @@ enum UndoField {
         case .split: return "split"
         case .labels: return "labels"
         case .captions: return "captions"
+        case .audio: return "audio"
         case .fps: return "fps"
         case .other: return "other"
         }

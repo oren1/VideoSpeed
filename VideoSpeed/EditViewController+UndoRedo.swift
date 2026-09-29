@@ -92,6 +92,15 @@ extension EditViewController {
                 showProButtonIfNeeded()
                 await reloadComposition()
 
+            case .audio:
+                showBriefChangeAlert(type: "audio", value: "")
+                await reloadComposition()
+                audioSectionVC.configure(
+                    track: UserDataManager.main.backgroundAudioTrack,
+                    compositionDuration: composition?.duration ?? .zero,
+                    timelineAsset: spidPlayerController?.player?.currentItem?.asset
+                )
+
             default:
                 print("undoManagerDidChangeFielddefault")
             }
