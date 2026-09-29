@@ -641,6 +641,17 @@ extension EditViewController {
             compositionDuration: composition?.duration ?? .zero,
             timelineAsset: spidPlayerController?.player?.currentItem?.asset
         )
+        guard UserDataManager.main.backgroundAudioTrack != nil,
+              let composition,
+              let videoComposition else { return }
+        Task {
+            let compositionCopy = composition.copy() as! AVComposition
+            let videoCompositionCopy = videoComposition.copy() as! AVVideoComposition
+            await audioSectionVC.recreateThumbnailsFor(
+                asset: compositionCopy,
+                videoComposition: videoCompositionCopy
+            )
+        }
     }
     
     func addFiletypeSection() {

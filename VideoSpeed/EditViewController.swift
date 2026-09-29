@@ -314,6 +314,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             
             Task {
                 await textSectionVC.recreateThumbnailsFor(asset: compositionCopy, videoComposition: videoCompositionCopy)
+                if UserDataManager.main.backgroundAudioTrack != nil {
+                    await audioSectionVC.recreateThumbnailsFor(asset: compositionCopy, videoComposition: videoCompositionCopy)
+                }
 //                await rotateVideoForCropFeature()
             }
             
