@@ -167,15 +167,22 @@ final class AudioSectionVC: SectionViewController {
     }
 
     func recreateThumbnailsFor(asset: AVAsset, videoComposition: AVVideoComposition? = nil) async {
-        await trimmerView.recreateThunmbnailsFor(
-            asset: asset,
-            videoComposition: videoComposition,
-            trimmerHeight: trimmerHeight
-        )
-        if let track = currentTrack {
-            let compositionRange = CMTimeRange(start: .zero, duration: compositionDuration)
-            trimmerView.clipTimeRange = compositionRange
-            trimmerView.applySelectionRange(track.timelineTimeRange, clipBounds: compositionRange)
+        let compositionRange = CMTimeRange(start: .zero, duration: compositionDuration)
+        let selection = currentTrack?.timelineTimeRange
+
+        // Apply asset + selection first so handles aren't stuck at full-width during generation.
+        trimmerView.videoComposition = videoComposition
+        trimmerView.asset = asset
+        trimmerView.clipTimeRange = compositionRange
+        if let selection {
+            trimmerView.applySelectionRange(selection, clipBounds: compositionRange)
+        }
+
+        let _ = await trimmerView.preGenerateImagesWith(trimmerHeight: trimmerHeight)
+        trimmerView.regenerateThumbnails()
+
+        if let selection {
+            trimmerView.applySelectionRange(selection, clipBounds: compositionRange)
         }
     }
 }

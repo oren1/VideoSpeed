@@ -636,22 +636,13 @@ extension EditViewController {
     func addAudioSection() {
         addSection(sectionVC: audioSectionVC)
         currentShownSection = audioSectionVC
+        // Lay out before configure so the trimmer has a non-zero frame for thumbnails.
+        audioSectionVC.view.layoutIfNeeded()
         audioSectionVC.configure(
             track: UserDataManager.main.backgroundAudioTrack,
             compositionDuration: composition?.duration ?? .zero,
             timelineAsset: spidPlayerController?.player?.currentItem?.asset
         )
-        guard UserDataManager.main.backgroundAudioTrack != nil,
-              let composition,
-              let videoComposition else { return }
-        Task {
-            let compositionCopy = composition.copy() as! AVComposition
-            let videoCompositionCopy = videoComposition.copy() as! AVVideoComposition
-            await audioSectionVC.recreateThumbnailsFor(
-                asset: compositionCopy,
-                videoComposition: videoCompositionCopy
-            )
-        }
     }
     
     func addFiletypeSection() {
