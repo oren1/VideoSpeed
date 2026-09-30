@@ -44,15 +44,15 @@ enum ExportQuality: String, CaseIterable {
 }
 
 class UserDataManager: ObservableObject {
-    
-    
-    
+    var undoManager = UndoManager()
+
     static let main: UserDataManager = UserDataManager()
     var products: [SKProduct]!
     var subscriptionProducts: [Product]!
    
     var currentSpidAsset: SpidAsset!
     var spidAssets: [SpidAsset] = []
+    var currentProject: VideoProject?
     var splitCount: Int = 0
     func usingMergeFeature() -> Bool { spidAssets.count > 1 }
     var usingSlider: Bool = false {
@@ -157,6 +157,8 @@ class UserDataManager: ObservableObject {
     @Published
     var currentCaptions: [Caption]?
     var captionsStyle = CaptionsStyle()
+    /// Restored / live overlay pose for captions (center optional until first layout).
+    var captionsOverlayPose = CaptionsOverlayPose.default
 
     var exportQuality: ExportQuality = .hd
 
@@ -252,6 +254,24 @@ class UserDataManager: ObservableObject {
         })
         if proFont != nil {return true}
         return false
+    }
+    
+    func assetIndex(for assetID: UUID) async -> Int? {
+        for (index, asset) in spidAssets.enumerated() {
+            if await asset.id == assetID {
+                return index
+            }
+        }
+        return nil
+    }
+
+    func spidAsset(for assetID: UUID) async -> SpidAsset? {
+        for asset in spidAssets {
+            if await asset.id == assetID {
+                return asset
+            }
+        }
+        return nil
     }
     
     func isUsingSliderPrecision() async -> Bool {

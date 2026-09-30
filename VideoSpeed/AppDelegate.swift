@@ -21,6 +21,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+
+        _ = SwiftDataManager.shared
     
         FirebaseApp.configure()
         
@@ -98,7 +100,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
         PushNotificationManager.main.registerForRemoteNotificationIfAuthorized()
         
     }
-   
+    
     
     // MARK: - MessagingDelegate
         func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
@@ -146,4 +148,5 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
         print("userInfo: \(userInfo)")
     }
+    
 }

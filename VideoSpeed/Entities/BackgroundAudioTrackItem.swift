@@ -14,10 +14,16 @@ struct BackgroundAudioTrackItem {
     let fullSourceRange: CMTimeRange
     var sourceTimeRange: CMTimeRange
     var timelineTimeRange: CMTimeRange
+    /// Gain for background audio in the composition (`0` = mute, `1` = full).
+    var volume: Float = 1.0
 
     mutating func updateSourceTimeRange(_ newRange: CMTimeRange) {
         sourceTimeRange = newRange
         timelineTimeRange = CMTimeRange(start: timelineTimeRange.start, duration: newRange.duration)
+    }
+
+    mutating func updateVolume(_ volume: Float) {
+        self.volume = min(max(volume, 0), 1)
     }
 
     mutating func updateTimelineStart(_ newStart: CMTime) {
@@ -54,5 +60,18 @@ struct BackgroundAudioTrackItem {
 
         timelineTimeRange = CMTimeRange(start: timelineStart, duration: duration)
         sourceTimeRange = CMTimeRange(start: sourceTimeRange.start, duration: duration)
+    }
+}
+
+extension BackgroundAudioTrackItem: Equatable {
+    static func == (lhs: BackgroundAudioTrackItem, rhs: BackgroundAudioTrackItem) -> Bool {
+        lhs.sourceId == rhs.sourceId
+            && lhs.source == rhs.source
+            && lhs.displayName == rhs.displayName
+            && lhs.fileURL == rhs.fileURL
+            && CMTimeRangeEqual(lhs.fullSourceRange, rhs.fullSourceRange)
+            && CMTimeRangeEqual(lhs.sourceTimeRange, rhs.sourceTimeRange)
+            && CMTimeRangeEqual(lhs.timelineTimeRange, rhs.timelineTimeRange)
+            && abs(lhs.volume - rhs.volume) < 0.0001
     }
 }

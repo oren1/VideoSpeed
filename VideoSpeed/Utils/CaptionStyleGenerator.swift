@@ -23,6 +23,8 @@ class CaptionStyleGenerator {
     private static let previewCaptionHighlightColor = UIColor.systemGreen
 
     private static var captionsStyleCancellables = Set<AnyCancellable>()
+    private static var isApplyingStyleFromStore = false
+    private static var upsertCaptionsWorkItem: DispatchWorkItem?
 
     private static func makeCaptionsStyleChangePublisher(style: CaptionsStyle) -> AnyPublisher<Void, Never> {
         Publishers.MergeMany(
@@ -44,6 +46,13 @@ class CaptionStyleGenerator {
             .sink { handler() }
     }
 
+    /// Applies style mutations without regenerating captions or scheduling a SwiftData upsert.
+    static func applyStyleFromStore(_ updates: () -> Void) {
+        isApplyingStyleFromStore = true
+        updates()
+        isApplyingStyleFromStore = false
+    }
+
     static var captionsStyle: CaptionsStyle = {
         let style = CaptionsStyle()
         makeCaptionsStyleChangePublisher(style: style)
@@ -57,10 +66,23 @@ class CaptionStyleGenerator {
 
     /// Called on the main queue after a `@Published` property on `captionsStyle` has changed.
     private static func captionsStyleDidChange() {
+        guard !isApplyingStyleFromStore else { return }
          guard let transcription = UserDataManager.main.transcription,
                let segments = transcription.segments else { return }
         
         UserDataManager.main.currentCaptions = generateCaptions(from: segments)
+        scheduleUpsertCaptions()
+    }
+
+    private static func scheduleUpsertCaptions() {
+        upsertCaptionsWorkItem?.cancel()
+        let work = DispatchWorkItem {
+            Task { @MainActor in
+                SwiftDataManager.shared.upsertCaptions()
+            }
+        }
+        upsertCaptionsWorkItem = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35, execute: work)
     }
 
     static func getCurrentCaption(captions: [Caption], time: Double) -> Caption {

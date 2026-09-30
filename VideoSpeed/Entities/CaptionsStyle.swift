@@ -9,7 +9,7 @@ import Combine
 import Foundation
 import UIKit
 
-enum CaptionsType {
+enum CaptionsType: String {
     case oneWord, wordByWord, wordHighlighted, fullLine
 }
 

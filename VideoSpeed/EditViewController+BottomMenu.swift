@@ -122,6 +122,12 @@ extension EditViewController: UICollectionViewDelegate {
         if previousMenuItem?.id == .split, menuItem.id != .split {
             Task {
                 await reloadComposition()
+                let startTime = getStartTimeForCurrentSpidAsset()
+                await spidPlayerController?.player?.seek(
+                    to: startTime,
+                    toleranceBefore: .zero,
+                    toleranceAfter: .zero
+                )
             }
         }
     }
@@ -148,14 +154,6 @@ extension EditViewController: UICollectionViewDelegate {
                         let audioURL = FileManager.default.temporaryDirectory
                                    .appendingPathComponent(UUID().uuidString)
                                    .appendingPathExtension("m4a")
-                        // #region agent log
-                        DebugSessionLog.write(
-                            hypothesisId: "F",
-                            location: "EditViewController+BottomMenu:generateStart",
-                            message: "Generate captions tapped",
-                            data: ["hasPlayerItem": self.spidPlayerController.player.currentItem != nil]
-                        )
-                        // #endregion
                         do {
                             let resultURL = try await SpeechRecognizer.exportAudio(from: asset, to: audioURL)
                             AnalyticsManager.captionsAudioExportedSuccessfullyEvent()
@@ -169,52 +167,20 @@ extension EditViewController: UICollectionViewDelegate {
                                 )
                             }
                             AnalyticsManager.captionsOpenAIApiKeyLoadedSuccessfullyEvent()
-                            // #region agent log
-                            DebugSessionLog.write(
-                                hypothesisId: "B",
-                                location: "EditViewController+BottomMenu:preOpenAI",
-                                message: "calling OpenAI",
-                                data: ["apiKeyPresent": !apiKey.isEmpty, "languageCode": languageItem.code ?? "nil"]
-                            )
-                            // #endregion
                             let transcriptionResult = await OpenAIManager.transcribeAudioAsync(fileURL: resultURL, apiKey: apiKey, languageCode: languageItem.code)
                             switch transcriptionResult {
                                 case .success(let transcription):
                                 AnalyticsManager.captionsSuccessfulTranscriptionEvent()
-                                    let segCount = transcription.segments?.count ?? 0
-                                    let wordCount = transcription.words?.count ?? 0
-                                    // #region agent log
-                                    DebugSessionLog.write(
-                                        hypothesisId: "C",
-                                        location: "EditViewController+BottomMenu:transcriptionSuccess",
-                                        message: "transcription success",
-                                        data: ["segmentCount": segCount, "wordCount": wordCount, "textLength": transcription.text.count]
-                                    )
-                                    // #endregion
-                                    UserDataManager.main.transcription = transcription
+                                    StateManager.shared.performCaptionsChange {
+                                        UserDataManager.main.transcription = transcription
+                                    }
                                     print(transcription.segments!)
                                 case .failure(let error):
                                 AnalyticsManager.captionsFailedTranscriptionEvent(error: error.localizedDescription)
-                                    // #region agent log
-                                    DebugSessionLog.write(
-                                        hypothesisId: "B",
-                                        location: "EditViewController+BottomMenu:transcriptionFailure",
-                                        message: "OpenAI/transcription failed",
-                                        data: ["error": error.localizedDescription]
-                                    )
-                                    // #endregion
                                     throw error
                             }
                         } catch {
                             AnalyticsManager.captionsFailedTranscriptionEvent(error: error.localizedDescription)
-                            // #region agent log
-                            DebugSessionLog.write(
-                                hypothesisId: "A",
-                                location: "EditViewController+BottomMenu:generateCatch",
-                                message: "generate captions catch",
-                                data: ["error": error.localizedDescription]
-                            )
-                            // #endregion
                             throw error
                         }
 //            }

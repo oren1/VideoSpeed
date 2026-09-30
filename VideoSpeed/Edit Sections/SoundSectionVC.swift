@@ -20,7 +20,7 @@ class SoundSectionVC: SectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(videoSelectionChanged), name: Notification.Name.VideoSelectionChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(currentSpidAssetDidChange), name: Notification.Name.CurrentSpidAssetDidChange, object: nil)
         
         setBorderAndRadius(button: onButton)
         setBorderAndRadius(button: offButton)
@@ -28,7 +28,7 @@ class SoundSectionVC: SectionViewController {
         setSelectedButton(button: onButton)
 
         Task { @MainActor in
-            await videoSelectionChangedAsync()
+            await currentSpidAssetDidChangeAsync()
         }
     }
 
@@ -53,7 +53,7 @@ class SoundSectionVC: SectionViewController {
         soundStateChanged?(soundOn)
     }
 
-    private func videoSelectionChangedAsync() async {
+    private func currentSpidAssetDidChangeAsync() async {
         guard let spidAsset = UserDataManager.main.currentSpidAsset else { return }
         let isImage = await spidAsset.isImageClip
         view.isUserInteractionEnabled = !isImage
@@ -63,9 +63,9 @@ class SoundSectionVC: SectionViewController {
         updateSoundSelection(soundOn: soundOn)
     }
     
-    @objc private func videoSelectionChanged() {
+    @objc private func currentSpidAssetDidChange() {
         Task { @MainActor in
-            await videoSelectionChangedAsync()
+            await currentSpidAssetDidChangeAsync()
         }
     }
 }

@@ -13,6 +13,7 @@ import Photos
 import FirebaseRemoteConfig
 import SwiftUI
 import Combine
+import SwiftData
 
 enum PermissionLocation: String {
     case mainScreen = "mainScreen"
@@ -34,6 +35,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     
     var composition: AVMutableComposition!
     var videoComposition: AVMutableVideoComposition!
+    var audioMix: AVMutableAudioMix?
     var speed: Float = 1
     var fps: Int32 = 30
     var fileType: AVFileType = .mov
@@ -59,8 +61,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     var selectedMenuItem: MenuItem!
     var videosStartTimes: [CMTime] = [.zero]
     var subscribers: [AnyCancellable] = []
+    private var spidAssetModelSaveObserver: NSObjectProtocol?
+    private var loadSpidAssetsTask: Task<Void, Never>?
 
-    
     
     @IBOutlet weak var videosContainerView: UIView!
     @IBOutlet weak var videosCollectionView: UICollectionView!
@@ -76,7 +79,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                                  MenuItem(id: .text , title: "TEXT", imageName: "textformat.alt"),
                                  MenuItem(id: .captions , title: "CAPTIONS", imageName: "captions.bubble"),
                                  MenuItem(id: .fps , title: "FPS", imageName: "square.stack.3d.down.right.fill"),
-                                 MenuItem(id: .sound , title: "SOUND", imageName: "speaker.wave.2"),
+                                 MenuItem(id: .sound , title: "VOLUME", imageName: "speaker.wave.2"),
                                  MenuItem(id: .audio , title: "AUDIO", imageName: "music.note"),
                                  MenuItem(id: .more , title: "MORE", imageName: "ellipsis")
     ]
@@ -140,21 +143,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        segmentedControl.setTitle("SPEED", forSegmentAt: 0)
-//        segmentedControl.setTitle("TRIM", forSegmentAt: 1)
-//        segmentedControl.setTitle("CROP", forSegmentAt: 2)
-//        segmentedControl.setTitle("FPS", forSegmentAt: 3)
-//        segmentedControl.setTitle("SOUND", forSegmentAt: 4)
-//        segmentedControl.insertSegment(withTitle: "MORE", at: 5, animated: false)
-//        
-//        
-//        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.black, .font: UIFont.boldSystemFont(ofSize: 14)], for: .selected)
-//        segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white,
-//                                                 .font: UIFont.boldSystemFont(ofSize: 14)], for: .normal)
-        
-       
-        
+    
         videosMenuDelegate = VideosMenuDelegate()
         videosMenuDelegate.didSelectVideo = { [weak self] spidAsset in
             guard let self = self else { return }
@@ -199,10 +188,9 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                     self.refreshCurrentClipMenuState()
                 }
             }
-            NotificationCenter.default.post(name: Notification.Name.VideoSelectionChanged, object: nil)
+            notifyCurrentSpidAssetDidChange()
 
         }
-        
         videosMenuDelegate.itemDidDrop = { [weak self] index in
             guard let self = self else{ return }
         
@@ -217,11 +205,12 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 }
             }
         }
-        
         videosMenuDelegate.itemDidDelete = { [weak self] focusIndex, selectionChanged in
             guard let self else { return }
             self.updateTrashVisibility()
             Task {
+                print("itemDidDelete focusIndex: \(focusIndex)")
+                await SwiftDataManager.shared.upsertVideoProject()
                 await self.reloadComposition()
                 let startTime = self.videosStartTimes[focusIndex]
                 await self.spidPlayerController?.player?.seek(
@@ -236,7 +225,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 }
                 if selectionChanged {
                     await self.createCropViewController()
-                    NotificationCenter.default.post(name: Notification.Name.VideoSelectionChanged, object: nil)
+                    self.notifyCurrentSpidAssetDidChange()
                 }
                 await MainActor.run {
                     self.videosCollectionView.reloadData()
@@ -269,6 +258,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         createEditSections()
         addTimingSection()
+//        startObservingSpidAssetModels()
         
         
 //        isCropFeatureFree = RemoteConfig.remoteConfig().configValue(forKey: "crop_feature_free").numberValue.boolValue
@@ -277,20 +267,26 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 
         NotificationCenter.default.addObserver(self, selector: #selector(labelViewsUpdated), name: Notification.Name.OverlayLabelViewsUpdated, object: nil)
 
-        
+        startObservingUndoManagerChanges()
         isUsingCropFeatureSubscriber = UserDataManager.main.$isUsingCropFeature.sink(receiveValue: { [weak self] isUsingCropFeature in
             self?.showProButtonIfNeeded()
         })
         
         Task {
+//            await loadSpidAssetsFromSwiftDataIfNeeded()
+            print("currentSpidAsset 2")
+            guard UserDataManager.main.currentSpidAsset != nil else {
+                return showNoTracksError()
+            }
             await createCropViewController()
             refreshCurrentClipMenuState()
             let asset = await UserDataManager.main.currentSpidAsset.getAsset()
-            guard let (composition, videoComposition) = await createCompositionWith(asset1: asset, speed1: speed, fps: fps, soundOn1: soundOn) else {
+            guard let (composition, videoComposition, audioMix) = await createCompositionWith(asset1: asset, speed1: speed, fps: fps, soundOn1: soundOn) else {
                 return showNoTracksError()
             }
             self.composition = composition
             self.videoComposition = videoComposition
+            self.audioMix = audioMix
             
             let compositionCopy = self.composition.copy() as! AVComposition
             let videoCompositionCopy = self.videoComposition.copy() as! AVVideoComposition
@@ -298,6 +294,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             let playerItem = AVPlayerItem(asset: compositionCopy)
             playerItem.audioTimePitchAlgorithm = .spectral
             playerItem.videoComposition = videoCompositionCopy
+            playerItem.audioMix = audioMix
             
             
             let player = AVPlayer(playerItem: playerItem)
@@ -313,9 +310,13 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             }
             addSpidPlayerTop()
             loopVideo()
+            notifyCurrentSpidAssetDidChange()
             
             Task {
                 await textSectionVC.recreateThumbnailsFor(asset: compositionCopy, videoComposition: videoCompositionCopy)
+                if UserDataManager.main.backgroundAudioTrack != nil {
+                    await audioSectionVC.recreateThumbnailsFor(asset: compositionCopy, videoComposition: videoCompositionCopy)
+                }
 //                await rotateVideoForCropFeature()
             }
             
@@ -329,20 +330,28 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false;
+    
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        print("viewDidDisappear")
         super.viewWillDisappear(animated)
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true;
         spidPlayerController?.player?.pause()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
+        print("viewDidDisappear")
         super.viewDidDisappear(animated)
         let stillInNavStack = navigationController?.viewControllers.contains(self) ?? false
         if !stillInNavStack {
+            // Selector-based NC observers retain `self` until removed — must clear before deinit.
+            NotificationCenter.default.removeObserver(self)
+            spidPlayerController?.tearDownForSessionEnd()
             clearEditSessionState()
+            spidPlayerController = nil
         }
+
     }
 
     private func clearEditSessionState() {
@@ -351,15 +360,39 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         UserDataManager.main.usingSlider = false
         UserDataManager.main.splitCount = 0
         UserDataManager.main.spidAssets = []
+        UserDataManager.main.currentProject = nil
         UserDataManager.main.currentCaptions = nil
         UserDataManager.main.transcription = nil
+        UserDataManager.main.captionsOverlayPose = .default
         UserDataManager.main.clearBackgroundAudioTrack()
+//        SwiftDataManager.shared.deleteAllSpidAssetModels()
+        /*stopObservingSpidAssetModels*/()
     }
     
     deinit {
         print("deinit")
         NotificationCenter.default.removeObserver(self)
+        if let spidAssetModelSaveObserver {
+            NotificationCenter.default.removeObserver(spidAssetModelSaveObserver)
+        }
         isUsingCropFeatureSubscriber = nil
+    }
+
+    // MARK: - SwiftData (SpidAssetModel)
+    private func handleSpidAssetModelsDidSave() {
+        Task { @MainActor in
+            guard let currentAsset = UserDataManager.main.currentSpidAsset else { return }
+            let assetID = await currentAsset.id
+            guard let model = SwiftDataManager.shared.spidAssetModel(id: assetID) else { return }
+
+            // Apply model → UI when the persisted speed diverges (e.g. future undo/redo).
+            if speed != model.speed {
+                speed = model.speed
+                speedLabel?.text = "\(model.speed)x"
+                speedSectionVC?.speed = model.speed
+                await reloadComposition()
+            }
+        }
     }
     
     func createProButton() -> UIButton {
@@ -375,7 +408,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         return proButton
     }
     
-    func createCompositionWith(asset1: AVAsset, speed1: Float, fps: Int32, soundOn1: Bool) async -> (composition: AVMutableComposition, videoComposition: AVMutableVideoComposition)? {
+    func createCompositionWith(asset1: AVAsset, speed1: Float, fps: Int32, soundOn1: Bool) async -> (composition: AVMutableComposition, videoComposition: AVMutableVideoComposition, audioMix: AVMutableAudioMix?)? {
             
         guard let spidAsset = UserDataManager.main.currentSpidAsset else {return nil}
         
@@ -491,6 +524,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             startTime = mainComposition.duration.converted(toScale: newScale)
         }
 
+        var backgroundAudioMix: AVMutableAudioMix?
+
         if var backgroundAudioTrack = UserDataManager.main.backgroundAudioTrack {
             let videoDuration = mainComposition.duration
             let beforeTimelineDuration = backgroundAudioTrack.timelineTimeRange.duration.seconds
@@ -498,27 +533,15 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             let beforeTimelineStart = backgroundAudioTrack.timelineTimeRange.start.seconds
 
             backgroundAudioTrack.clampToCompositionDuration(videoDuration)
-            UserDataManager.main.backgroundAudioTrack = backgroundAudioTrack
 
             let didClamp = abs(beforeTimelineDuration - backgroundAudioTrack.timelineTimeRange.duration.seconds) > 0.001
                 || abs(beforeTimelineStart - backgroundAudioTrack.timelineTimeRange.start.seconds) > 0.001
                 || abs(beforeSourceDuration - backgroundAudioTrack.sourceTimeRange.duration.seconds) > 0.001
-            // #region agent log
-            DebugSessionLog.write(
-                hypothesisId: "H7",
-                location: "EditViewController.createCompositionWith:backgroundAudioClamp",
-                message: "clamped background audio to video duration before insert",
-                data: [
-                    "videoDuration": videoDuration.seconds,
-                    "beforeTimelineDuration": beforeTimelineDuration,
-                    "beforeSourceDuration": beforeSourceDuration,
-                    "afterTimelineStart": backgroundAudioTrack.timelineTimeRange.start.seconds,
-                    "afterTimelineDuration": backgroundAudioTrack.timelineTimeRange.duration.seconds,
-                    "afterSourceDuration": backgroundAudioTrack.sourceTimeRange.duration.seconds,
-                    "didClamp": didClamp
-                ]
-            )
-            // #endregion
+
+            if didClamp {
+                UserDataManager.main.backgroundAudioTrack = backgroundAudioTrack
+                SwiftDataManager.shared.upsertBackgroundAudio()
+            }
 
             let backgroundAsset = AVURLAsset(url: backgroundAudioTrack.fileURL)
             if let sourceTrack = try? await backgroundAsset.loadTracks(withMediaType: .audio).first {
@@ -533,26 +556,16 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                     of: sourceTrack,
                     at: timelineStart
                 )) != nil
-                // #region agent log
-                DebugSessionLog.write(
-                    hypothesisId: "H8",
-                    location: "EditViewController.createCompositionWith:backgroundAudioInsert",
-                    message: "inserted background audio track",
-                    data: [
-                        "videoDuration": videoDuration.seconds,
-                        "compositionDurationAfterInsert": mainComposition.duration.seconds,
-                        "timelineStart": timelineStart.seconds,
-                        "insertDuration": insertRange.duration.seconds,
-                        "insertSucceeded": insertSucceeded,
-                        "compositionExtendedBeyondVideo": mainComposition.duration.seconds > videoDuration.seconds + 0.001
-                    ]
-                )
-                // #endregion
+
+                let mixParameters = AVMutableAudioMixInputParameters(track: compositionAudioTrack)
+                mixParameters.setVolume(backgroundAudioTrack.volume, at: .zero)
+                let mix = AVMutableAudioMix()
+                mix.inputParameters = [mixParameters]
+                backgroundAudioMix = mix
+
             }
         }
-       
-      
-        
+
         let videoTrack = mainComposition.tracks.first!
         let videoInfo = VideoHelper.orientation(from: videoTrack.preferredTransform)
         let videoSize: CGSize
@@ -575,7 +588,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         //                videoComposition.renderSize = CGSize(width: videoSize.width, height: videoSize.height)
         //                videoComposition.renderSize = CGSize(width: naturalSize.width, height: naturalSize.height)
         
-        return (mainComposition,videoComposition)
+        return (mainComposition, videoComposition, backgroundAudioMix)
         
     }
     
@@ -594,9 +607,10 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             // The original labelView size before any transform applied
             let originalSize = labelView.bounds.size
             
+            let labelViewScaleX = viewModel.width / originalSize.width
+            let labelViewScaleY = viewModel.height / originalSize.height
             // The labelView size after applying the user scale transform
-            
-            let labelViewScaledSize = CGSize(width: originalSize.width * viewModel.fullScale, height: originalSize.height * viewModel.fullScale)
+            let labelViewScaledSize = CGSize(width: originalSize.width * labelViewScaleX, height: originalSize.height * labelViewScaleY)
             
             // The size needed for rendering the labelView in the video actual size
             let size = CGSize(width: labelViewScaledSize.width * scaleX, height: labelViewScaledSize.height * scaleY)
@@ -939,20 +953,13 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     @MainActor
     func reloadComposition(refreshSectionThumbnails: Bool = true) async {
         let reloadStart = Date().timeIntervalSince1970
-        // #region agent log
-        DebugSessionLog.write(
-            hypothesisId: "H6",
-            location: "EditViewController.reloadComposition:entry",
-            message: "reloadComposition started",
-            data: ["refreshSectionThumbnails": refreshSectionThumbnails]
-        )
-        // #endregion
         let asset = await UserDataManager.main.currentSpidAsset.getAsset()
-        guard let (composition, videoComposition) = await createCompositionWith(asset1: asset, speed1: speed, fps: fps, soundOn1: soundOn) else {
+        guard let (composition, videoComposition, audioMix) = await createCompositionWith(asset1: asset, speed1: speed, fps: fps, soundOn1: soundOn) else {
             return showNoTracksError()
         }
         self.composition = composition
         self.videoComposition = videoComposition
+        self.audioMix = audioMix
         let compositionCopy = self.composition.copy() as! AVComposition
         let videoCompositionCopy = self.videoComposition.copy() as! AVVideoComposition
         
@@ -960,6 +967,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         let playerItem = AVPlayerItem(asset: compositionCopy)
         playerItem.audioTimePitchAlgorithm = .spectral
         playerItem.videoComposition = videoCompositionCopy
+        playerItem.audioMix = audioMix
         spidPlayerController.player?.replaceCurrentItem(with: playerItem)
 
         if refreshSectionThumbnails {
@@ -976,21 +984,14 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                 )
             }
         }
-        // #region agent log
-        DebugSessionLog.write(
-            hypothesisId: "H6",
-            location: "EditViewController.reloadComposition:exit",
-            message: "reloadComposition finished",
-            data: [
-                "refreshSectionThumbnails": refreshSectionThumbnails,
-                "elapsedMs": Int((Date().timeIntervalSince1970 - reloadStart) * 1000)
-            ]
-        )
-        // #endregion
     }
     
     
     
+    func notifyCurrentSpidAssetDidChange() {
+        NotificationCenter.default.post(name: .CurrentSpidAssetDidChange, object: nil)
+    }
+
     func setNavigationItems() {
         exportBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "square.and.arrow.up"),
@@ -1015,7 +1016,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         
         soundButton = UIButton(type: .system)
         soundButton.tintColor = .white
-        soundButton.setImage(UIImage(systemName: "volume.2.fill"), for: .normal)
+        let soundImageName = soundOn ? "volume.2.fill" : "volume.slash"
+        soundButton.setImage(UIImage(systemName: soundImageName), for: .normal)
         soundButton.addTarget(self, action: #selector(soundButtonTapped), for: .touchUpInside)
         
 //        let speedItem = UIBarButtonItem(customView: speedLabel)
@@ -1112,6 +1114,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             soundSectionVC.updateSoundSelection(soundOn: soundOn)
             showProButtonIfNeeded()
             Task {
+                await StateManager.shared.updateSound(soundOn)
+                UserDataManager.main.soundOff = await UserDataManager.main.soundOff()
                 await self.reloadComposition()
                 let startTime = self.getStartTimeForCurrentSpidAsset()
                 await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
@@ -1126,6 +1130,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         soundSectionVC.updateSoundSelection(soundOn: soundOn)
         
         Task {
+            await StateManager.shared.updateSound(soundOn)
+            UserDataManager.main.soundOff = await UserDataManager.main.soundOff()
             await self.reloadComposition()
             let startTime = self.getStartTimeForCurrentSpidAsset()
             await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
@@ -1194,6 +1200,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             .appendingPathExtension(fileExtension)
         
         exportSession.videoComposition = exportVideoComposition
+        exportSession.audioMix = audioMix
         exportSession.outputFileType = outputFileType
         exportSession.outputURL = exportURL
         

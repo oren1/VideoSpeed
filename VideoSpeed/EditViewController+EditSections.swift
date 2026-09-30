@@ -39,7 +39,7 @@ extension EditViewController {
             self?.speedLabel.text = "\(speed)x"
             guard let self = self else { return }
             Task {
-                await UserDataManager.main.currentSpidAsset.updateSpeed(speed: speed)
+                await StateManager.shared.updateSpeed(speed)
                 /* Updating whether at least one 'SpidAsset' is using the slider.
                  i.e it's speed value is different from 0.25, 0.5, 1, 1.5 or 2 */
                 UserDataManager.main.usingSlider = await UserDataManager.main.isUsingSliderPrecision()
@@ -78,8 +78,8 @@ extension EditViewController {
                     start: .zero,
                     duration: CMTime(seconds: duration, preferredTimescale: timescale)
                 )
-                await UserDataManager.main.currentSpidAsset.updateTimeRange(timeRange: newRange)
-                await UserDataManager.main.currentSpidAsset.clearTrimmerHandleConstants()
+                await StateManager.shared.updateTimeRange(newRange)
+//                await UserDataManager.main.currentSpidAsset.clearTrimmerHandleConstants()
                 await self.reloadComposition()
                 let startTime = self.getStartTimeForCurrentSpidAsset()
                 await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: .zero, toleranceAfter: .zero)
@@ -146,6 +146,9 @@ extension EditViewController {
         fpsSectionVC = FPSSectionVC()
         fpsSectionVC.fpsDidChange = {[weak self] (fps: Int32) in
             guard let self = self else {return}
+            let oldFPS = self.fps
+            guard oldFPS != fps else { return }
+            StateManager.shared.updateFPS(from: oldFPS, to: fps)
             self.fps = fps
             self.fpsLabel.text = "\(fps):fps"
             showProButtonIfNeeded()
@@ -156,6 +159,7 @@ extension EditViewController {
         fpsSectionVC.userNeedsToPurchase = {[weak self] in
             self?.showPurchaseViewController()
         }
+        fpsSectionVC.syncUI(to: fps)
     }
     
     func createSoundSection()  {
@@ -166,7 +170,7 @@ extension EditViewController {
             let imageName = soundOn ? "volume.2.fill" : "volume.slash"
             self.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
             Task {
-               await UserDataManager.main.currentSpidAsset.updateSound(soundOn: soundOn)
+               await StateManager.shared.updateSound(soundOn)
                UserDataManager.main.soundOff = await UserDataManager.main.soundOff()
                await self.reloadComposition()
                let startTime = self.getStartTimeForCurrentSpidAsset()
@@ -193,34 +197,11 @@ extension EditViewController {
         }
         audioSectionVC.timelineRangeDidChange = { [weak self] range in
             guard let self else { return }
-            guard var track = UserDataManager.main.backgroundAudioTrack else { return }
-            // #region agent log
-            DebugSessionLog.write(
-                hypothesisId: "H4",
-                location: "EditSections.createAudioSection:timelineRangeDidChange:beforeUpdate",
-                message: "received timeline range change from UI",
-                data: [
-                    "incomingStart": range.start.seconds,
-                    "incomingDuration": range.duration.seconds,
-                    "oldTimelineStart": track.timelineTimeRange.start.seconds,
-                    "oldTimelineDuration": track.timelineTimeRange.duration.seconds
-                ]
-            )
-            // #endregion
-            track.updateTimelineTimeRange(range)
-            UserDataManager.main.backgroundAudioTrack = track
-            // #region agent log
-            DebugSessionLog.write(
-                hypothesisId: "H4",
-                location: "EditSections.createAudioSection:timelineRangeDidChange:afterUpdate",
-                message: "updated track and starting reloadComposition",
-                data: [
-                    "newTimelineStart": track.timelineTimeRange.start.seconds,
-                    "newTimelineDuration": track.timelineTimeRange.duration.seconds,
-                    "newSourceDuration": track.sourceTimeRange.duration.seconds
-                ]
-            )
-            // #endregion
+            StateManager.shared.performAudioChange {
+                guard var track = UserDataManager.main.backgroundAudioTrack else { return }
+                track.updateTimelineTimeRange(range)
+                UserDataManager.main.backgroundAudioTrack = track
+            }
             Task {
                 await self.reloadComposition(refreshSectionThumbnails: false)
                 await MainActor.run {
@@ -243,9 +224,11 @@ extension EditViewController {
         sourceVC.configure(track: track)
         sourceVC.onSourceRangeChanged = { [weak self] range in
             guard let self else { return }
-            guard var current = UserDataManager.main.backgroundAudioTrack else { return }
-            current.updateSourceTimeRange(range)
-            UserDataManager.main.backgroundAudioTrack = current
+            StateManager.shared.performAudioChange {
+                guard var current = UserDataManager.main.backgroundAudioTrack else { return }
+                current.updateSourceTimeRange(range)
+                UserDataManager.main.backgroundAudioTrack = current
+            }
             Task {
                 await self.reloadComposition(refreshSectionThumbnails: false)
                 await MainActor.run {
@@ -255,6 +238,17 @@ extension EditViewController {
                         timelineAsset: self.spidPlayerController?.player?.currentItem?.asset
                     )
                 }
+            }
+        }
+        sourceVC.onVolumeChanged = { [weak self] volume in
+            guard let self else { return }
+            StateManager.shared.performAudioChange {
+                guard var current = UserDataManager.main.backgroundAudioTrack else { return }
+                current.updateVolume(volume)
+                UserDataManager.main.backgroundAudioTrack = current
+            }
+            Task {
+                await self.reloadComposition(refreshSectionThumbnails: false)
             }
         }
         sourceVC.onDone = { [weak self] in
@@ -354,14 +348,6 @@ extension EditViewController {
         } onCancel: { [weak self] in
             self?.musicLibraryPickerPresenter = nil
         } onError: { [weak self] error in
-            // #region agent log
-            DebugSessionLog.write(
-                hypothesisId: "E",
-                location: "EditViewController.presentImportAudioFromMusic.onError",
-                message: "import error alert",
-                data: ["error": error.localizedDescription]
-            )
-            // #endregion
             self?.musicLibraryPickerPresenter = nil
             let alert = UIAlertController(
                 title: "Could Not Import Song",
@@ -375,30 +361,9 @@ extension EditViewController {
 
     private func importAndApplyBackgroundAudio(from libraryAssetURL: URL, displayName: String) {
         showLoading()
-        // #region agent log
-        DebugSessionLog.write(
-            hypothesisId: "C",
-            location: "EditViewController.importAndApplyBackgroundAudio",
-            message: "export started with loading",
-            data: ["scheme": libraryAssetURL.scheme ?? "nil", "title": displayName],
-            runId: "post-fix"
-        )
-        // #endregion
         Task {
             do {
                 let audioURL = try await MusicLibraryAudioExporter.export(from: libraryAssetURL)
-                // #region agent log
-                DebugSessionLog.write(
-                    hypothesisId: "C",
-                    location: "EditViewController.importAndApplyBackgroundAudio",
-                    message: "export succeeded",
-                    data: [
-                        "destExists": FileManager.default.fileExists(atPath: audioURL.path),
-                        "scheme": libraryAssetURL.scheme ?? "nil"
-                    ],
-                    runId: "post-fix"
-                )
-                // #endregion
                 await MainActor.run { self.hideLoading() }
                 self.applyBackgroundAudio(
                     from: audioURL,
@@ -407,15 +372,6 @@ extension EditViewController {
                     source: .musicLibrary
                 )
             } catch {
-                // #region agent log
-                DebugSessionLog.write(
-                    hypothesisId: "C",
-                    location: "EditViewController.importAndApplyBackgroundAudio",
-                    message: "export failed",
-                    data: ["error": error.localizedDescription],
-                    runId: "post-fix"
-                )
-                // #endregion
                 await MainActor.run {
                     self.hideLoading()
                     let alert = UIAlertController(
@@ -469,6 +425,7 @@ extension EditViewController {
     ) {
         Task {
             let compositionDuration = self.composition?.duration ?? .zero
+            let before = AudioUndoSnapshot.capture()
             _ = await UserDataManager.main.setBackgroundAudioTrack(
                 fileURL: fileURL,
                 displayName: displayName,
@@ -476,6 +433,7 @@ extension EditViewController {
                 source: source,
                 compositionDuration: compositionDuration
             )
+            StateManager.shared.registerAudioChange(before: before)
             await self.reloadComposition()
             await MainActor.run {
                 self.audioSectionVC.configure(
@@ -496,12 +454,15 @@ extension EditViewController {
             self?.showProButtonIfNeeded()
         }
         moreSectionVC.soundStateChanged = {[weak self] (soundOn: Bool) in
-            self?.soundOn = soundOn
+            guard let self else { return }
+            self.soundOn = soundOn
             let imageName = soundOn ? "volume.2.fill" : "volume.slash"
-            self?.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
-            self?.showProButtonIfNeeded()
+            self.soundButton.setImage(UIImage(systemName: imageName), for: .normal)
+            self.showProButtonIfNeeded()
             Task {
-                await self?.reloadComposition()
+                await StateManager.shared.updateSound(soundOn)
+                UserDataManager.main.soundOff = await UserDataManager.main.soundOff()
+                await self.reloadComposition()
             }
         }
         moreSectionVC.userNeedsToPurchase = {[weak self] in
@@ -517,7 +478,7 @@ extension EditViewController {
         trimmerSectionVC.timeRangeDidChange = { [weak self] timeRange in
             guard let self = self else { return }
             Task {
-                await UserDataManager.main.currentSpidAsset.updateTimeRange(timeRange: timeRange)
+                await StateManager.shared.updateTimeRange(timeRange)
                 await self.reloadComposition()
                 await self.textSectionVC.createTrimmerView()
                 let startTime = self.getStartTimeForCurrentSpidAsset()
@@ -537,17 +498,18 @@ extension EditViewController {
         splitSectionVC.splitConfirmed = { [weak self] splitTime in
             guard let self else { return }
             Task {
-                let didSplit = await UserDataManager.main.splitCurrentAsset(at: splitTime)
+                let didSplit = await StateManager.shared.split(at: splitTime)
                 guard didSplit else {
                     await self.splitSectionVC.reloadTimelineFromOutside()
                     return
                 }
+
                 await self.reloadComposition()
                 await MainActor.run {
                     self.videosCollectionView.reloadData()
                     self.updateTrashVisibility()
                 }
-                NotificationCenter.default.post(name: Notification.Name.VideoSelectionChanged, object: nil)
+                self.notifyCurrentSpidAssetDidChange()
                 let startTime = self.getStartTimeForCurrentSpidAsset()
                 await self.spidPlayerController?.player?.seek(
                     to: startTime,
@@ -567,7 +529,7 @@ extension EditViewController {
         filterSectionVC.filterDidChange = { [weak self] filter in
             guard let self else { return }
             Task {
-                await UserDataManager.main.currentSpidAsset.updateVideoFilter(filter)
+                await StateManager.shared.updateVideoFilter(filter)
                 await self.reloadComposition()
                 let startTime = self.getStartTimeForCurrentSpidAsset()
                 await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
@@ -665,6 +627,7 @@ extension EditViewController {
     }
     
     func addFPSSection() {
+        fpsSectionVC.syncUI(to: fps)
         addSection(sectionVC: fpsSectionVC)
         currentShownSection = fpsSectionVC
     }
@@ -677,6 +640,8 @@ extension EditViewController {
     func addAudioSection() {
         addSection(sectionVC: audioSectionVC)
         currentShownSection = audioSectionVC
+        // Lay out before configure so the trimmer has a non-zero frame for thumbnails.
+        audioSectionVC.view.layoutIfNeeded()
         audioSectionVC.configure(
             track: UserDataManager.main.backgroundAudioTrack,
             compositionDuration: composition?.duration ?? .zero,

@@ -20,7 +20,7 @@ enum MediaKind {
 }
 
 actor SpidAsset {
-    var id: UUID
+    let id: UUID
     private var asset: AVAsset
     private var rotatedAsset: AVAsset?
     private(set) var assetHasBeenRotated: Bool = false
@@ -63,7 +63,13 @@ actor SpidAsset {
         videoSize: CGSize,
         thumnbnailImage: CGImage,
         mediaKind: MediaKind = .video,
-        clipSourceRange: CMTimeRange? = nil
+        clipSourceRange: CMTimeRange? = nil,
+        id: UUID = UUID(),
+        speed: Float = 1,
+        soundOn: Bool = true,
+        sliderValue: Float = 19.5,
+        videoFilter: VideoFilter = .none,
+        videoRect: CGRect = .zero
     ) {
         self.asset = asset
         self.timeRange = timeRange
@@ -71,7 +77,12 @@ actor SpidAsset {
         self.videoSize = videoSize
         self.thumbnailImage = thumnbnailImage
         self.mediaKind = mediaKind
-        self.id = UUID()
+        self.id = id
+        self.speed = speed
+        self.soundOn = soundOn
+        self.sliderValue = sliderValue
+        self.videoFilter = videoFilter
+        self.videoRect = videoRect
     }
     
     func getOriginalAsset() -> AVAsset {
@@ -87,6 +98,9 @@ actor SpidAsset {
     
     func updateTimeRange(timeRange: CMTimeRange) {
         self.timeRange = timeRange
+        Task{
+           let _ = await SwiftDataManager.shared.upsertVideoProject()
+        }
     }
 
     func updateClipSourceRange(_ range: CMTimeRange) {
@@ -95,6 +109,9 @@ actor SpidAsset {
     
     func updateSpeed(speed: Float) {
         self.speed = speed
+        Task{
+           let _ = await SwiftDataManager.shared.upsertVideoProject()
+        }
     }
     
     func videoDuration() -> Double {
@@ -103,6 +120,9 @@ actor SpidAsset {
     
     func updateSound(soundOn: Bool)  {
         self.soundOn = soundOn
+        Task {
+           let _ = await SwiftDataManager.shared.upsertVideoProject()
+        }
     }
     
     func updateThumbnailImages(images: [CGImage]?) {
@@ -133,12 +153,50 @@ actor SpidAsset {
         videoFilter = filter
     }
 
-    func clearTrimmerHandleConstants() {
-        rightHandleConstraintConstant = nil
-        leftHandleConstraintConstant = nil
-        thumbnailImages = nil
+    func updateMediaKind(_ kind: MediaKind) {
+        mediaKind = kind
     }
 
+    func updateVideoSize(_ size: CGSize) {
+        videoSize = size
+    }
+
+    func clearHandleConstraintConstants() {
+        rightHandleConstraintConstant = nil
+        leftHandleConstraintConstant = nil
+    }
+
+    func clearTrimmerHandleConstants() {
+        clearHandleConstraintConstants()
+        thumbnailImages = nil
+    }
+    
+    /// Inverse of `convertSliderValue`: maps a speed back to the UISlider value.
+    static func convertSpeedToSliderValue(speed: Float) -> Float {
+        if speed == 0.25 {
+            return 5
+        }
+        if speed < 1 {
+            let tenths = Int(round(speed * 10))
+            switch tenths {
+            case 1: return 1
+            case 2: return 3
+            case 3: return 5
+            case 4: return 7
+            case 5: return 9
+            case 6: return 11
+            case 7: return 13
+            case 8: return 15
+            case 9: return 17
+            default: return 19
+            }
+        }
+        if speed == 1 {
+            return 19
+        }
+        return speed + 19
+    }
+    
     func duplicate(with timeRange: CMTimeRange, thumbnailImage: CGImage, clipSourceRange: CMTimeRange? = nil) async -> SpidAsset {
         let newAsset = SpidAsset(
             asset: getOriginalAsset(),
@@ -146,13 +204,13 @@ actor SpidAsset {
             videoSize: videoSize,
             thumnbnailImage: thumbnailImage,
             mediaKind: mediaKind,
-            clipSourceRange: clipSourceRange ?? timeRange
+            clipSourceRange: clipSourceRange ?? timeRange,
+            speed: speed,
+            soundOn: soundOn,
+            sliderValue: sliderValue,
+            videoFilter: videoFilter,
+            videoRect: videoRect
         )
-        await newAsset.updateSpeed(speed: speed)
-        await newAsset.updateSound(soundOn: soundOn)
-        await newAsset.updateVideoRect(videoRect)
-        await newAsset.updateSliderValue(value: sliderValue)
-        await newAsset.updateVideoFilter(videoFilter)
         if assetHasBeenRotated, let rotatedAsset {
             await newAsset.updateRotatedAsset(rotatedAsset: rotatedAsset)
         }
@@ -180,6 +238,12 @@ actor SpidAsset {
 //        return instruction
 //    }
     
+}
+
+extension SpidAsset: Equatable {
+    nonisolated static func == (lhs: SpidAsset, rhs: SpidAsset) -> Bool {
+        lhs.id == rhs.id
+    }
 }
 
 //extension SpidAsset: NSItemProviderWriting {

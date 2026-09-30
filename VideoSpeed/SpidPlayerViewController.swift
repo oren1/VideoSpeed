@@ -10,7 +10,6 @@ import AVFoundation
 import Combine
 import SwiftUI
 
-
 enum VideoState: Int {
     case isPlayed = 0, isPaused
 }
@@ -23,6 +22,9 @@ class SpidPlayerViewController: UIViewController {
     @IBOutlet weak var timeContainerView: UIView!
     @IBOutlet weak var playButton: UIButton!
     @IBOutlet weak var slider: UISlider!
+    
+    @IBOutlet weak var undoButton: UIButton!
+    @IBOutlet weak var redoButton: UIButton!
     
     var videoContainerView: UIView!
     var player: AVPlayer!
@@ -60,10 +62,11 @@ class SpidPlayerViewController: UIViewController {
     private var sourceVideoSizeForWatermarkPreview: CGSize = .zero
     var onWatermarkPreviewCloseTapped: (() -> Void)?
 
-    /// UserDefaults key for persisted API transcription (testing / dev convenience).
-    private let transcriptionUserDefaultsKey = "transcriptionResponse"
     /// Ensures we rebuild captions once after layout so container width matches `videoContainerView`.
     private var didApplyCaptionsFromUserDefaultsAfterLayout = false
+    private var didApplyProjectLabels = false
+    /// Captured at gesture `.began` so pan/pinch/rotate register one undo entry on `.ended`.
+    private var labelsGestureBefore: LabelsUndoSnapshot?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,52 +85,31 @@ class SpidPlayerViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] transcription in
                 guard let self else { return }
-                let segCount = transcription?.segments?.count ?? -1
-                // #region agent log
-                DebugSessionLog.write(
-                    hypothesisId: "E",
-                    location: "SpidPlayerViewController:transcriptionSink",
-                    message: "transcription publisher fired",
-                    data: [
-                        "hasTranscription": transcription != nil,
-                        "segmentCount": segCount,
-                        "videoContainerWidth": videoContainerView.frame.width,
-                        "videoContainerHeight": videoContainerView.frame.height
-                    ]
-                )
-                // #endregion
                 guard let transcription,
                       let segments = transcription.segments,
                       !segments.isEmpty else {
-                    // #region agent log
-                    DebugSessionLog.write(
-                        hypothesisId: "D",
-                        location: "SpidPlayerViewController:transcriptionSink:cleared",
-                        message: "transcription missing or empty segments — removing container",
-                        data: [
-                            "hasTranscription": transcription != nil,
-                            "segmentCount": transcription?.segments?.count ?? -1
-                        ]
-                    )
-                    // #endregion
                     self.captionsTextContainer?.removeFromSuperview()
                     self.captionsTextContainer = nil
                     UserDataManager.main.currentCaptions = nil
                     return
                 }
+                // Only the on-screen player should react — leaked SpidPlayers stay subscribed otherwise.
+                guard self.view.window != nil else { return }
                 self.rebuildCaptionsTextContainer(shouldSeekToFirstSegment: true)
             }
             .store(in: &subscriptions)
 
         CaptionStyleGenerator.subscribeCaptionsStyleChanges { [weak self] in
-            self?.rebuildCaptionsTextContainer(shouldSeekToFirstSegment: false)
+            guard let self, self.view.window != nil else { return }
+            self.rebuildCaptionsTextContainer(shouldSeekToFirstSegment: false)
         }
         .store(in: &subscriptions)
         
         slider.setThumbImage(UIImage(), for: .normal)
                slider.setThumbImage(UIImage(), for: .highlighted)
         
-        cancellable = player?.publisher(for: \.timeControlStatus).sink(receiveValue: { timeControlStatus in
+        cancellable = player?.publisher(for: \.timeControlStatus).sink(receiveValue: { [weak self] timeControlStatus in
+            guard let self else { return }
             switch timeControlStatus {
             case .paused:
                 self.stopPlaybackTimeChecker()
@@ -178,27 +160,40 @@ class SpidPlayerViewController: UIViewController {
         let container = CaptionsTextContainer(frame: CGRect(origin: .zero, size: CGSize(width: containerWidth, height: labelHeight)))
         captionsTextContainer = container
         videoContainerView.addSubview(container)
-        container.viewModel.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height * 0.75)
+
+        let pose = UserDataManager.main.captionsOverlayPose
+        if let center = pose.center {
+            container.viewModel.center = center
+        } else {
+            container.viewModel.center = CGPoint(
+                x: videoContainerView.frame.width / 2,
+                y: videoContainerView.frame.height * 0.75
+            )
+        }
+        container.viewModel.fullScale = CGFloat(pose.fullScale)
+        container.viewModel.fullRotation = CGFloat(pose.fullRotation)
+        container.applyRestoredTransformIfNeeded()
+        let previousCenter = UserDataManager.main.captionsOverlayPose.center
+        UserDataManager.main.captionsOverlayPose = CaptionsOverlayPose(
+            centerX: Double(container.viewModel.center.x),
+            centerY: Double(container.viewModel.center.y),
+            fullScale: Double(container.viewModel.fullScale),
+            fullRotation: Double(container.viewModel.fullRotation)
+        )
+        // Generate upserts before the container exists; persist once the default pose is applied.
+        if previousCenter == nil {
+            SwiftDataManager.shared.upsertCaptions()
+        }
 
         UserDataManager.main.currentCaptions = CaptionStyleGenerator.generateCaptions(from: segments)
-        // #region agent log
-        DebugSessionLog.write(
-            hypothesisId: "E",
-            location: "SpidPlayerViewController:rebuildCaptionsTextContainer",
-            message: "captions container rebuilt",
-            data: [
-                "segmentCount": segments.count,
-                "containerWidth": containerWidth,
-                "labelHeight": labelHeight,
-                "captionsCount": UserDataManager.main.currentCaptions?.count ?? 0
-            ]
-        )
-        // #endregion
 
         guard shouldSeekToFirstSegment else { return }
 
         Task { [weak self] in
             guard let self else { return }
+            guard self.view.window != nil else {
+                return
+            }
             let scale: CMTimeScale = 600
             let startTime = firstSegment.start
             let cmTime = CMTime(value: CMTimeValue(startTime), timescale: 1).converted(toScale: scale)
@@ -211,33 +206,11 @@ class SpidPlayerViewController: UIViewController {
         }
     }
 
-    /// Loads persisted transcription from UserDefaults (`transcriptionResponse`) when valid (words → segments).
-    @discardableResult
-    private func applyTranscriptionFromUserDefaultsIfAvailable() -> Bool {
-        guard let data = UserDefaults.standard.data(forKey: transcriptionUserDefaultsKey) else {
-            return false
-        }
-        do {
-            let response = try JSONDecoder().decode(TranscriptionResponse.self, from: data)
-            guard let transcription = Transcription(transcriptionResponse: response),
-                  let segments = transcription.segments,
-                  !segments.isEmpty else {
-                return false
-            }
-            UserDataManager.main.transcription = transcription
-            return true
-        } catch {
-            print("Error decoding transcription response: \(error)")
-            return false
-        }
-    }
-
-    /// After layout: if UserDefaults holds `transcriptionResponse`, reload and rebuild captions container with correct width (testing; avoids zero-width rebuild from `viewDidAppear`).
-    private func applyCaptionsFromUserDefaultsAfterLayoutIfPossible() {
+    /// After layout: rebuild captions from restored project transcription once the container has a real width.
+    private func applyCaptionsFromProjectAfterLayoutIfPossible() {
         guard !didApplyCaptionsFromUserDefaultsAfterLayout else { return }
         guard videoContainerView.frame.width > 2 else { return }
-        guard UserDefaults.standard.data(forKey: transcriptionUserDefaultsKey) != nil else { return }
-        guard applyTranscriptionFromUserDefaultsIfAvailable() else { return }
+        guard UserDataManager.main.transcription?.segments?.isEmpty == false else { return }
         rebuildCaptionsTextContainer(shouldSeekToFirstSegment: false)
         didApplyCaptionsFromUserDefaultsAfterLayout = true
     }
@@ -250,13 +223,7 @@ class SpidPlayerViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if UserDefaults.standard.data(forKey: transcriptionUserDefaultsKey) == nil {
-            print("No transcription response data found in UserDefaults")
-            return
-        }
-        if !applyTranscriptionFromUserDefaultsIfAvailable() {
-            print("transcriptionResponse data present but transcription could not be loaded (missing words or decode error)")
-        }
+        applyCaptionsFromProjectAfterLayoutIfPossible()
     }
     
     deinit {
@@ -270,6 +237,16 @@ class SpidPlayerViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         stopPlaybackTimeChecker()
+        stopCaptionsTimer()
+    }
+
+    /// Called when the hosting Edit session is permanently leaving the navigation stack.
+    func tearDownForSessionEnd() {
+        player?.pause()
+        player?.replaceCurrentItem(with: nil)
+        cancellable?.cancel()
+        cancellable = nil
+        subscriptions.removeAll()
     }
     
     override func viewDidLayoutSubviews() {
@@ -298,7 +275,8 @@ class SpidPlayerViewController: UIViewController {
             startPlaybackTimeChecker()
 
             await MainActor.run { [weak self] in
-                self?.applyCaptionsFromUserDefaultsAfterLayoutIfPossible()
+                self?.applyCaptionsFromProjectAfterLayoutIfPossible()
+                self?.applyProjectLabelsIfNeeded()
             }
 //            let fontSize = CaptionStyleGenerator.basicFontSize
 //            let labelHeight: CGFloat = text.height(withConstrainedWidth: videoContainerView.frame.width, font: UIFont.systemFont(ofSize: fontSize))
@@ -307,13 +285,40 @@ class SpidPlayerViewController: UIViewController {
 //            videoContainerView.addSubview(captionsTextContainer)
 //            captionsTextContainer.center = CGPoint(x: videoContainerView.frame.width / 2, y: videoContainerView.frame.height * 0.75)
 
-
 //            captionsTextContainer.label.attributedText = CaptionStyleGenerator.generateOneWordCaptionStyle()
 
         }
         
     }
     
+    /// Loads persisted project labels once after the video container has a real size.
+    private func applyProjectLabelsIfNeeded() {
+        guard !didApplyProjectLabels else { return }
+        guard videoContainerView.bounds.width > 0, videoContainerView.bounds.height > 0 else { return }
+        guard let project = UserDataManager.main.currentProject else { return }
+
+        didApplyProjectLabels = true
+
+        let sdLabels = project.labelViewModels.sorted { $0.sortIndex < $1.sortIndex }
+        guard !sdLabels.isEmpty else { return }
+
+        let containerCenter = CGPoint(
+            x: videoContainerView.bounds.midX,
+            y: videoContainerView.bounds.midY
+        )
+
+        let labels = sdLabels.map { sdLabel -> LabelViewModel in
+            let label = sdLabel.makeLabelViewModel()
+            if label.center == .zero {
+                label.center = containerCenter
+            }
+            return label
+        }
+
+        UserDataManager.main.labelViewsModels = labels
+        addLabelViews(labelViewsModels: UserDataManager.main.labelViewsModels)
+    }
+
     private func setupWatermarkPreviewView() {
         watermarkPreviewContainer.backgroundColor = .clear
         watermarkPreviewContainer.isUserInteractionEnabled = true
@@ -439,14 +444,17 @@ class SpidPlayerViewController: UIViewController {
                 UserDataManager.main.setSelectedLabeViewModel(labelView.viewModel)
             }
             
-            let scale = viewModel.fullScale
+            // scale is calculated by dividing the last saved 'width' with the currently created labelView
+            // which is created with text size. same for scale y.
+            let scaleX = viewModel.width / labelView.frame.width
+            let scaley = viewModel.height / labelView.frame.height
             let rotation = viewModel.fullRotation
             
 
             self.videoContainerView.addSubview(labelView)
             
-            labelView.transform = labelView.transform.scaledBy(x: scale, y: scale)
-            labelView.cancelButton.transform = labelView.cancelButton.transform.scaledBy(x: 1/scale, y: 1/scale)
+            labelView.transform = labelView.transform.scaledBy(x: scaleX, y: scaley)
+            labelView.cancelButton.transform = labelView.cancelButton.transform.scaledBy(x: 1/scaleX, y: 1/scaley)
 
             labelView.transform = labelView.transform.rotated(by: rotation)
         }
@@ -477,26 +485,33 @@ class SpidPlayerViewController: UIViewController {
     @objc func didRotate(_ gesture: UIRotationGestureRecognizer) {
 
         guard let selectedLabelViewModel = UserDataManager.main.selectedLabelViewModel else {return}
-//        selectedLabelView.transform = selectedLabelView.transform.rotated(
-//          by: gesture.rotation
-//        )
-//        fullRotation += gesture.rotation
+        if gesture.state == .began {
+            labelsGestureBefore = LabelsUndoSnapshot.capture()
+        }
         selectedLabelViewModel.rotation = gesture.rotation
         selectedLabelViewModel.fullRotation += gesture.rotation
-//        selectedLabelView.viewModel.updateRotation(rotation: gesture.rotation)
         gesture.rotation = 0
-    
+        
+        finishLabelsGestureIfNeeded(gesture.state)
     }
     
     @objc func didPinch(_ gesture: UIPinchGestureRecognizer) {
 
         guard let selectedLabelViewModel = UserDataManager.main.selectedLabelViewModel else {return}
+        if gesture.state == .began {
+            labelsGestureBefore = LabelsUndoSnapshot.capture()
+        }
 
         selectedLabelViewModel.scale = gesture.scale
         selectedLabelViewModel.width *= gesture.scale
         selectedLabelViewModel.height *= gesture.scale
         
+        print("selectedLabelViewModel.scale \(selectedLabelViewModel.scale)")
+        print("selectedLabelViewModel.width \(selectedLabelViewModel.width)")
+        print("selectedLabelViewModel.height \(selectedLabelViewModel.height)")
+        
         gesture.scale = 1
+        finishLabelsGestureIfNeeded(gesture.state)
     }
     
     
@@ -505,12 +520,29 @@ class SpidPlayerViewController: UIViewController {
          let translation = gesture.translation(in: self.videoContainerView)
         
         guard let selectedLabelViewModel = UserDataManager.main.selectedLabelViewModel else { return }
+        if gesture.state == .began {
+            labelsGestureBefore = LabelsUndoSnapshot.capture()
+        }
           let center = CGPoint(
             x: selectedLabelViewModel.center.x + translation.x,
             y: selectedLabelViewModel.center.y + translation.y
           )
           selectedLabelViewModel.center = center
           gesture.setTranslation(.zero, in: view)
+        finishLabelsGestureIfNeeded(gesture.state)
+    }
+
+    private func finishLabelsGestureIfNeeded(_ state: UIGestureRecognizer.State) {
+        switch state {
+        case .ended, .cancelled, .failed:
+            if let before = labelsGestureBefore {
+                StateManager.shared.registerLabelsChange(before: before)
+                labelsGestureBefore = nil
+            }
+            SwiftDataManager.shared.upsertLabelViewModels()
+        default:
+            break
+        }
     }
     
     func videoContainerRect() -> CGRect{
@@ -709,6 +741,33 @@ class SpidPlayerViewController: UIViewController {
     
     @objc private func watermarkPreviewCloseTapped() {
         onWatermarkPreviewCloseTapped?()
+    }
+    
+    @IBAction func undoButtonTapped(_ sender: Any) {
+        UserDataManager.main.undoManager.undo()
+        print("UserDataManager.main.undoManager.redoCount \(UserDataManager.main.undoManager.redoCount)")
+        Task {
+//            let diff = await SwiftDataManager.shared.performUndoOrRedo(undo: true)
+//            NotificationCenter.default.post(
+//                name: .ProjectHistoryDiffDidChange,
+//                object: nil,
+//                userInfo: [ProjectHistoryDiffNotification.diffKey: diff]
+//            )
+        }
+    }
+    
+    @IBAction func redoButtonTapped(_ sender: Any) {
+        print("redoButtonTapped")
+        UserDataManager.main.undoManager.redo()
+
+        Task {
+//            let diff = await SwiftDataManager.shared.performUndoOrRedo(undo: false)
+//            NotificationCenter.default.post(
+//                name: .ProjectHistoryDiffDidChange,
+//                object: nil,
+//                userInfo: [ProjectHistoryDiffNotification.diffKey: diff]
+//            )
+        }
     }
     
 }
