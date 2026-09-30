@@ -46,6 +46,11 @@ enum ExportQuality: String, CaseIterable {
 class UserDataManager: ObservableObject {
     var undoManager = UndoManager()
 
+    /// Clears undo/redo history so stacks don't leak across projects/sessions.
+    func resetUndoManager() {
+        undoManager.removeAllActions()
+    }
+
     static let main: UserDataManager = UserDataManager()
     var products: [SKProduct]!
     var subscriptionProducts: [Product]!

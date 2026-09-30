@@ -371,6 +371,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         UserDataManager.main.transcription = nil
         UserDataManager.main.captionsOverlayPose = .default
         UserDataManager.main.clearBackgroundAudioTrack()
+        UserDataManager.main.resetUndoManager()
 //        SwiftDataManager.shared.deleteAllSpidAssetModels()
         /*stopObservingSpidAssetModels*/()
     }
