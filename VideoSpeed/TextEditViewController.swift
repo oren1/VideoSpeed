@@ -71,6 +71,8 @@ class TextEditViewController: UIViewController {
     
     var selectedEditSection: UIViewController?
     var verticalLabelsView: VerticalLabelsView!
+    /// Snapshot taken before live edits so Done can register undo/redo.
+    private var labelsUndoBefore: LabelsUndoSnapshot?
     
     override func viewDidLoad() {
 
@@ -105,6 +107,7 @@ class TextEditViewController: UIViewController {
         
         view.layoutIfNeeded()
         
+        labelsUndoBefore = LabelsUndoSnapshot.capture()
         textView.becomeFirstResponder()
     }
 
@@ -121,10 +124,16 @@ class TextEditViewController: UIViewController {
         if !textView.text!.isEmpty {
             if editStatus == .new {
                 AnalyticsManager.textAddedEvent()
-                UserDataManager.main.labelViewsModels.append(labelViewModel)
+                StateManager.shared.performLabelsChange {
+                    UserDataManager.main.labelViewsModels.append(labelViewModel)
+                }
             }
             else if editStatus == .editing {
+                if let before = labelsUndoBefore {
+                    StateManager.shared.registerLabelsChange(before: before)
+                }
                 NotificationCenter.default.post(name: Notification.Name.OverlayLabelViewsUpdated, object: nil)
+                SwiftDataManager.shared.upsertLabelViewModels()
             }
         }
         

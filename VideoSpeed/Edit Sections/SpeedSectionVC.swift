@@ -42,7 +42,7 @@ class SpeedSectionVC: SectionViewController {
 //            guard let self = self else {return}
 //            oneButtonTapped(oneButton)
 //        })
-        NotificationCenter.default.addObserver(self, selector: #selector(videoSelectionChanged), name: Notification.Name.VideoSelectionChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(currentSpidAssetDidChange), name: Notification.Name.CurrentSpidAssetDidChange, object: nil)
         
         setBorderAndRadius(button: point25Button)
         setBorderAndRadius(button: point5Button)
@@ -50,7 +50,7 @@ class SpeedSectionVC: SectionViewController {
         setBorderAndRadius(button: onePoint5Button)
         setBorderAndRadius(button: twoButton)
 
-        setSelectedButton(button: oneButton)
+        currentSpidAssetDidChange()
     }
 
 //    @objc func usingSliderChanged() {}
@@ -175,9 +175,11 @@ class SpeedSectionVC: SectionViewController {
             return newValue
         }
     }
+
+    
     
    
-    @objc private func videoSelectionChanged() {
+    @objc func currentSpidAssetDidChange() {
         Task { @MainActor in
             if let speed = await UserDataManager.main.currentSpidAsset?.speed {
                 /* if the speed is one of the speeds that are allowed in the free version

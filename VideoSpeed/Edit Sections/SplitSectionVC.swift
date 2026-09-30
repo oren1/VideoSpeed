@@ -29,8 +29,8 @@ class SplitSectionVC: SectionViewController {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(videoSelectionChanged),
-            name: Notification.Name.VideoSelectionChanged,
+            selector: #selector(currentSpidAssetDidChange),
+            name: Notification.Name.CurrentSpidAssetDidChange,
             object: nil
         )
 
@@ -39,7 +39,7 @@ class SplitSectionVC: SectionViewController {
         }
     }
 
-    @objc private func videoSelectionChanged() {
+    @objc private func currentSpidAssetDidChange() {
         Task {
             await reloadTimeline()
         }

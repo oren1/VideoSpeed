@@ -11,11 +11,12 @@ import AVFoundation
 let LabelViewExtraWidth = 24.0
 let LabelViewExtraHeight = 24.0
 
-enum BackgroundStyle {
+enum BackgroundStyle: String {
     case full, fragmented
 }
 
 class LabelViewModel: ObservableObject {
+    let id: UUID
     var width: CGFloat
     var height: CGFloat
     var numberOfLines = 0
@@ -75,8 +76,9 @@ class LabelViewModel: ObservableObject {
     var strokeWidth: CGFloat = 0
     
     
-    init(width: CGFloat = 0.0, height: CGFloat = 0.0, labelFrame: CGRect, text: String, textColor: UIColor, backgroundColor: UIColor, numberOfLines: Int = 0, masksToBounds: Bool = true, textAlignment: NSTextAlignment, center: CGPoint = .zero, borderWidth: Double = 1.0, borderColor: CGColor = UIColor.orange.cgColor, rotation: CGFloat = 0.0, timeRange: CMTimeRange? = nil, selected: Bool = false) {
+    init(id: UUID = UUID(), width: CGFloat = 0.0, height: CGFloat = 0.0, labelFrame: CGRect, text: String, textColor: UIColor, backgroundColor: UIColor, numberOfLines: Int = 0, masksToBounds: Bool = true, textAlignment: NSTextAlignment, center: CGPoint = .zero, borderWidth: Double = 1.0, borderColor: CGColor = UIColor.orange.cgColor, rotation: CGFloat = 0.0, timeRange: CMTimeRange? = nil, selected: Bool = false) {
        
+        self.id = id
         self.width = labelFrame.size.width + LabelViewExtraWidth
         self.height = labelFrame.size.height + LabelViewExtraHeight
 //        self.width = labelFrame.size.width
@@ -140,5 +142,10 @@ class LabelViewModel: ObservableObject {
         let verticalLabelsViewWidth = textSize.width + (textSize.width * 0.1)
         
         return CGSize(width: verticalLabelsViewWidth, height: verticalLabelsViewHeight)
+    }
+
+    /// Deep copy for undo/redo snapshots (same id, independent property values).
+    func copyForUndo() -> LabelViewModel {
+        SDLabelViewModel.make(from: self, sortIndex: 0).makeLabelViewModel()
     }
 }

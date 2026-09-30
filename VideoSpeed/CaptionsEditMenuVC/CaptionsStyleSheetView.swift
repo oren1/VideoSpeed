@@ -17,6 +17,7 @@ struct CaptionsStyleSheetView: View {
     }
 
     @State private var selectedTab: TopMenuTab = .templates
+    @State private var captionsUndoBefore: CaptionsUndoSnapshot?
     @Namespace private var selectionUnderlineNamespace
 
     var body: some View {
@@ -31,6 +32,15 @@ struct CaptionsStyleSheetView: View {
         .background {
             Color(uiColor: .systemBackground)
                 .ignoresSafeArea()
+        }
+        .onAppear {
+            captionsUndoBefore = CaptionsUndoSnapshot.capture()
+        }
+        .onDisappear {
+            if let before = captionsUndoBefore {
+                StateManager.shared.registerCaptionsChange(before: before)
+                captionsUndoBefore = nil
+            }
         }
     }
 

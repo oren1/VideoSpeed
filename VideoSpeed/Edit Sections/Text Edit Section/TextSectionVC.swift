@@ -24,6 +24,8 @@ class TextSectionVC: SectionViewController {
     private var sectionInsets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
     private var cancellable: AnyCancellable?
     fileprivate let trimmerHeight = 52.0
+    /// Captured when the label trimmer starts moving so stop can register undo.
+    private var labelsTrimmerBefore: LabelsUndoSnapshot?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -280,10 +282,18 @@ extension Trimmer: TrimmerViewDelegate {
             viewModel.timeRange = timeRange
             viewModel.rightHandleConstraintConstant = trimmerView.rightConstraint?.constant
             viewModel.leftHandleConstraintConstant = trimmerView.leftConstraint?.constant
+            if let before = labelsTrimmerBefore {
+                StateManager.shared.registerLabelsChange(before: before)
+                labelsTrimmerBefore = nil
+            }
+            SwiftDataManager.shared.upsertLabelViewModels()
         }
     }
 
     func didChangePositionBar(_ playerTime: CMTime) {
+        if labelsTrimmerBefore == nil {
+            labelsTrimmerBefore = LabelsUndoSnapshot.capture()
+        }
         Task {
             await MainActor.run {
                 delegate?.spidPlayerController?.player?.pause()

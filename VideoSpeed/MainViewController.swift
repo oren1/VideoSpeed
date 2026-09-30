@@ -71,6 +71,9 @@ class MainViewController: UIViewController {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont(name: "Arial Hebrew Bold", size: 17)!]
 
         navigationItem.title = "SPID"
+        navigationItem.hidesBackButton = false
+        // Keep the camera button without replacing the system back button to Projects.
+        navigationItem.leftItemsSupplementBackButton = true
         
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -380,14 +383,18 @@ class MainViewController: UIViewController {
                 }
                 UserDataManager.main.spidAssets.append(spidAsset)
             }
-
+            
+            
             Task {@MainActor [weak self] in
-                
-                guard let self = self else { return }
+                guard let self else { return }
                 guard !UserDataManager.main.spidAssets.isEmpty else {
                     self.hideLoading()
                     return
                 }
+                
+                await SwiftDataManager.shared.createVideoProject(from: UserDataManager.main.spidAssets)
+
+                
                 if SpidProducts.store.userPurchasedProVersion() == nil &&
                     UserDataManager.main.dateToShowPurchaseScreen < Date().timeIntervalSince1970 &&
                     !UserDataManager.main.isGiftActive() {

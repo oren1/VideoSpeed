@@ -36,7 +36,7 @@ class TrimmerSectionVC: SectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(videoSelectionChanged), name: Notification.Name.VideoSelectionChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(currentSpidAssetDidChange), name: Notification.Name.CurrentSpidAssetDidChange, object: nil)
         
         trimmerView.delegate = self
         trimmerView.handleColor = UIColor.white
@@ -58,7 +58,7 @@ class TrimmerSectionVC: SectionViewController {
         }
     }
 
-    @objc private func videoSelectionChanged() {
+    @objc func currentSpidAssetDidChange() {
         Task {
             await reloadTrimmer()
             await updateInteractionForCurrentClip()
@@ -110,26 +110,26 @@ class TrimmerSectionVC: SectionViewController {
         trimmerView.asset = clipAsset
         trimmerView.assetPreview.contentOffset = .zero
 
-        let applyHandles: () -> Void = { [weak self] in
-            guard let self else { return }
-            Task { @MainActor in
-                await self.applyHandlePositions(
-                    for: spidAsset,
-                    selectionRange: selectionRange,
-                    clipSourceRange: clipSourceRange
-                )
-            }
-        }
-
         if let thumbnailImages = await spidAsset.thumbnailImages {
             trimmerView.replaceTo(thumbnailImages: thumbnailImages)
-            applyHandles()
+            await applyHandlePositions(
+                for: spidAsset,
+                selectionRange: selectionRange,
+                clipSourceRange: clipSourceRange
+            )
         } else {
-            trimmerView.generateClipThumbnails(for: clipSourceRange, trimmerHeight: trimmerHeight) { images in
+            trimmerView.generateClipThumbnails(for: clipSourceRange, trimmerHeight: trimmerHeight) { [weak self] images in
                 Task {
                     await UserDataManager.main.currentSpidAsset?.updateThumbnailImages(images: images)
                 }
-                applyHandles()
+                guard let self else { return }
+                Task { @MainActor in
+                    await self.applyHandlePositions(
+                        for: spidAsset,
+                        selectionRange: selectionRange,
+                        clipSourceRange: clipSourceRange
+                    )
+                }
             }
         }
     }
