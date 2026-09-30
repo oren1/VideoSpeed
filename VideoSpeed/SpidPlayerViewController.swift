@@ -107,6 +107,9 @@ class SpidPlayerViewController: UIViewController {
         
         slider.setThumbImage(UIImage(), for: .normal)
                slider.setThumbImage(UIImage(), for: .highlighted)
+
+        startObservingUndoRedoAvailability()
+        updateUndoRedoButtonsAppearance()
         
         cancellable = player?.publisher(for: \.timeControlStatus).sink(receiveValue: { [weak self] timeControlStatus in
             guard let self else { return }
@@ -741,6 +744,7 @@ class SpidPlayerViewController: UIViewController {
     
     @IBAction func undoButtonTapped(_ sender: Any) {
         UserDataManager.main.undoManager.undo()
+        updateUndoRedoButtonsAppearance()
         print("UserDataManager.main.undoManager.redoCount \(UserDataManager.main.undoManager.redoCount)")
         Task {
 //            let diff = await SwiftDataManager.shared.performUndoOrRedo(undo: true)
@@ -755,6 +759,7 @@ class SpidPlayerViewController: UIViewController {
     @IBAction func redoButtonTapped(_ sender: Any) {
         print("redoButtonTapped")
         UserDataManager.main.undoManager.redo()
+        updateUndoRedoButtonsAppearance()
 
         Task {
 //            let diff = await SwiftDataManager.shared.performUndoOrRedo(undo: false)
@@ -763,6 +768,41 @@ class SpidPlayerViewController: UIViewController {
 //                object: nil,
 //                userInfo: [ProjectHistoryDiffNotification.diffKey: diff]
 //            )
+        }
+    }
+
+    private func startObservingUndoRedoAvailability() {
+        let undoManager = UserDataManager.main.undoManager
+        let undoManagerNotifications: [Notification.Name] = [
+            // A new edit entered the undo stack
+            .NSUndoManagerDidCloseUndoGroup,
+            // An undo has been made
+            .NSUndoManagerDidUndoChange,
+            // A redo has been made
+            .NSUndoManagerDidRedoChange
+        ]
+        for name in undoManagerNotifications {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(updateUndoRedoButtonsAppearance),
+                name: name,
+                object: undoManager
+            )
+        }
+    }
+
+    @objc private func updateUndoRedoButtonsAppearance() {
+        let undoManager = UserDataManager.main.undoManager
+        let availableColor = UIColor.white
+        let unavailableColor = UIColor.gray
+
+        if var undoConfig = undoButton.configuration {
+            undoConfig.baseForegroundColor = undoManager.canUndo ? availableColor : unavailableColor
+            undoButton.configuration = undoConfig
+        }
+        if var redoConfig = redoButton.configuration {
+            redoConfig.baseForegroundColor = undoManager.canRedo ? availableColor : unavailableColor
+            redoButton.configuration = redoConfig
         }
     }
     
