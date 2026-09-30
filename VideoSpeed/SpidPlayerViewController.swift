@@ -426,6 +426,9 @@ class SpidPlayerViewController: UIViewController {
     }
     
     func addLabelViews(labelViewsModels: [LabelViewModel]) {
+        // Sync visibility before views are created so out-of-range labels never flash on screen.
+        updateLabelViews()
+
         // Remove all LabelView's from the screen
         for view in videoContainerView.subviews {
             if view is LabelView {
@@ -611,7 +614,7 @@ class SpidPlayerViewController: UIViewController {
         
         Task {
             await updateTimeLabels()
-            await updateLabelViews()
+            updateLabelViews()
             let currentTime = player.currentTime()
             
             await updateSliderFor(time: currentTime)
@@ -694,23 +697,16 @@ class SpidPlayerViewController: UIViewController {
         return Float(1/videoDuration * currentTime)
     }
     
-    func updateLabelViews() async {
-        let videoCurrentTime =  playerLayer.player!.currentTime()
+    func updateLabelViews() {
+        guard let player else { return }
+        let videoCurrentTime = player.currentTime()
 
         for labelViewModel in UserDataManager.main.labelViewsModels {
-            
             if let timeRange = labelViewModel.timeRange {
-                if timeRange.containsTime(videoCurrentTime) {
-                    labelViewModel.isHidden = false
-                    continue
-                }
-                labelViewModel.isHidden = true
-
-            }
-            else {
+                labelViewModel.isHidden = !timeRange.containsTime(videoCurrentTime)
+            } else {
                 labelViewModel.isHidden = false
             }
-            
         }
     }
     
@@ -734,7 +730,7 @@ class SpidPlayerViewController: UIViewController {
             player.pause()
             await player.seek(to: currentTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
             await updateTimeLabels()
-            await updateLabelViews()
+            updateLabelViews()
         }
     }
     

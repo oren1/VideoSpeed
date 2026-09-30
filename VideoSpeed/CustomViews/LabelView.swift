@@ -71,6 +71,8 @@ class LabelView: UIView {
     
                 }.store(in: &subscribers)
             
+            // Apply immediately so restored out-of-range labels don't flash before the sink runs.
+            isHidden = viewModel.isHidden
             viewModel.$isHidden
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] isHidden in
