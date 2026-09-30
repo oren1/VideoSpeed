@@ -329,8 +329,14 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false;
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        removeMainViewControllerFromNavigationStack()
+    }
     
+    private func removeMainViewControllerFromNavigationStack() {
+        guard let navigationController,
+              navigationController.viewControllers.contains(where: { $0 is MainViewController }) else { return }
+        navigationController.viewControllers.removeAll { $0 is MainViewController }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
