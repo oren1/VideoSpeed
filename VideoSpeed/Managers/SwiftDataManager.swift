@@ -552,99 +552,99 @@ final class SwiftDataManager {
     }
 
     /// Undoes or redoes the last SwiftData save, persists it, maps History, then syncs project to in-memory state.
-    @discardableResult
-    func performUndoOrRedo(undo: Bool) async -> ProjectHistoryDiff {
-        print("[performUndoOrRedo] start undo=\(undo)")
+//    @discardableResult
+//    func performUndoOrRedo(undo: Bool) async -> ProjectHistoryDiff {
+//        print("[performUndoOrRedo] start undo=\(undo)")
+//
+//        let before = try? latestHistoryToken()
+//        print("[performUndoOrRedo] latestHistoryToken before=\(String(describing: before))")
+//
+//        if undo {
+//            print("[performUndoOrRedo] calling undoManager.undo()")
+//            modelContext.undoManager?.undo()
+//        } else {
+//            print("[performUndoOrRedo] calling undoManager.redo()")
+//            modelContext.undoManager?.redo()
+//        }
+//
+//        print("[performUndoOrRedo] saving without registering undo")
+//        saveWithoutRegisteringUndo()
+//
+//        let transactions = (try? fetchHistory(after: before)) ?? []
+//        print("[performUndoOrRedo] fetched \(transactions.count) history transaction(s) after token")
+//
+//        guard !transactions.isEmpty else {
+//            print("[performUndoOrRedo] no transactions after token — falling back to last transaction")
+//            let transactions = try! fetchHistory(after: nil)
+//            print("[performUndoOrRedo] fallback fetched \(transactions.count) transaction(s)")
+//            let diff = projectHistoryDiff(from: transactions)
+//            print("[performUndoOrRedo] diff (fallback): \(diff)")
+//            print("[performUndoOrRedo] applying project to in-memory state")
+//            await applyProjectToInMemoryState()
+//            print("[performUndoOrRedo] done (fallback path)")
+//            return diff
+//        }
+//
+//        let diff = projectHistoryDiff(from: transactions)
+//        print("[performUndoOrRedo] diff: \(diff)")
+//        print("[performUndoOrRedo] applying project to in-memory state")
+//        await applyProjectToInMemoryState()
+//        print("[performUndoOrRedo] done")
+//        return diff
+//    }
 
-        let before = try? latestHistoryToken()
-        print("[performUndoOrRedo] latestHistoryToken before=\(String(describing: before))")
-
-        if undo {
-            print("[performUndoOrRedo] calling undoManager.undo()")
-            modelContext.undoManager?.undo()
-        } else {
-            print("[performUndoOrRedo] calling undoManager.redo()")
-            modelContext.undoManager?.redo()
-        }
-
-        print("[performUndoOrRedo] saving without registering undo")
-        saveWithoutRegisteringUndo()
-
-        let transactions = (try? fetchHistory(after: before)) ?? []
-        print("[performUndoOrRedo] fetched \(transactions.count) history transaction(s) after token")
-
-        guard !transactions.isEmpty else {
-            print("[performUndoOrRedo] no transactions after token — falling back to last transaction")
-            let transactions = try! fetchHistory(after: nil)
-            print("[performUndoOrRedo] fallback fetched \(transactions.count) transaction(s)")
-            let diff = projectHistoryDiff(from: transactions)
-            print("[performUndoOrRedo] diff (fallback): \(diff)")
-            print("[performUndoOrRedo] applying project to in-memory state")
-            await applyProjectToInMemoryState()
-            print("[performUndoOrRedo] done (fallback path)")
-            return diff
-        }
-
-        let diff = projectHistoryDiff(from: transactions)
-        print("[performUndoOrRedo] diff: \(diff)")
-        print("[performUndoOrRedo] applying project to in-memory state")
-        await applyProjectToInMemoryState()
-        print("[performUndoOrRedo] done")
-        return diff
-    }
-
-    func latestHistoryToken() throws -> DefaultHistoryToken? {
-        let descriptor = HistoryDescriptor<DefaultHistoryTransaction>()
-        return try modelContext.fetchHistory(descriptor).last?.token
-    }
-
-    func fetchHistory(after token: DefaultHistoryToken?) throws -> [DefaultHistoryTransaction] {
-        var descriptor = HistoryDescriptor<DefaultHistoryTransaction>()
-        if let token {
-            descriptor.predicate = #Predicate { $0.token > token }
-            return try modelContext.fetchHistory(descriptor)
-        }
-        let all = try modelContext.fetchHistory(descriptor)
-        if let last = all.last {
-            return [last]
-        }
-        return []
-    }
-
-    func projectHistoryDiff(from transactions: [DefaultHistoryTransaction]) -> ProjectHistoryDiff {
-        var diff = ProjectHistoryDiff()
-        for transaction in transactions {
-            for change in transaction.changes {
-                applyHistoryChange(change, to: &diff)
-            }
-        }
-        print("diff \(diff)")
-
-        return diff
-    }
-
-    private func applyHistoryChange(_ change: HistoryChange, to diff: inout ProjectHistoryDiff) {
-        switch change {
-        case .update(let update as DefaultHistoryUpdate<VideoProject>):
-            diff.projectUpdated.formUnion(videoProjectFields(from: update.updatedAttributes))
-        case .insert(_ as DefaultHistoryInsert<VideoProject>),
-             .delete(_ as DefaultHistoryDelete<VideoProject>):
-            diff.projectUpdated.insert(.other)
-        case .insert(_ as DefaultHistoryInsert<SpidAssetModel>):
-            if let model: SpidAssetModel = modelContext.registeredModel(for: change.changedPersistentIdentifier) {
-                diff.insertedAssetIDs.insert(model.id)
-            }
-        case .update(let update as DefaultHistoryUpdate<SpidAssetModel>):
-            if let model: SpidAssetModel = modelContext.registeredModel(for: change.changedPersistentIdentifier) {
-                let changes = spidAssetFieldChanges(from: update.updatedAttributes, model: model)
-                diff.upsertAssetChanges(assetID: model.id, changes)
-            }
-        case .delete(_ as DefaultHistoryDelete<SpidAssetModel>):
-            diff.deletedAssetPersistentIDs.insert(change.changedPersistentIdentifier)
-        default:
-            break
-        }
-    }
+//    func latestHistoryToken() throws -> DefaultHistoryToken? {
+//        let descriptor = HistoryDescriptor<DefaultHistoryTransaction>()
+//        return try modelContext.fetchHistory(descriptor).last?.token
+//    }
+//
+//    func fetchHistory(after token: DefaultHistoryToken?) throws -> [DefaultHistoryTransaction] {
+//        var descriptor = HistoryDescriptor<DefaultHistoryTransaction>()
+//        if let token {
+//            descriptor.predicate = #Predicate { $0.token > token }
+//            return try modelContext.fetchHistory(descriptor)
+//        }
+//        let all = try modelContext.fetchHistory(descriptor)
+//        if let last = all.last {
+//            return [last]
+//        }
+//        return []
+//    }
+//
+//    func projectHistoryDiff(from transactions: [DefaultHistoryTransaction]) -> ProjectHistoryDiff {
+//        var diff = ProjectHistoryDiff()
+//        for transaction in transactions {
+//            for change in transaction.changes {
+//                applyHistoryChange(change, to: &diff)
+//            }
+//        }
+//        print("diff \(diff)")
+//
+//        return diff
+//    }
+//
+//    private func applyHistoryChange(_ change: HistoryChange, to diff: inout ProjectHistoryDiff) {
+//        switch change {
+//        case .update(let update as DefaultHistoryUpdate<VideoProject>):
+//            diff.projectUpdated.formUnion(videoProjectFields(from: update.updatedAttributes))
+//        case .insert(_ as DefaultHistoryInsert<VideoProject>),
+//             .delete(_ as DefaultHistoryDelete<VideoProject>):
+//            diff.projectUpdated.insert(.other)
+//        case .insert(_ as DefaultHistoryInsert<SpidAssetModel>):
+//            if let model: SpidAssetModel = modelContext.registeredModel(for: change.changedPersistentIdentifier) {
+//                diff.insertedAssetIDs.insert(model.id)
+//            }
+//        case .update(let update as DefaultHistoryUpdate<SpidAssetModel>):
+//            if let model: SpidAssetModel = modelContext.registeredModel(for: change.changedPersistentIdentifier) {
+//                let changes = spidAssetFieldChanges(from: update.updatedAttributes, model: model)
+//                diff.upsertAssetChanges(assetID: model.id, changes)
+//            }
+//        case .delete(_ as DefaultHistoryDelete<SpidAssetModel>):
+//            diff.deletedAssetPersistentIDs.insert(change.changedPersistentIdentifier)
+//        default:
+//            break
+//        }
+//    }
 
     private func videoProjectFields(from attributes: [any PartialKeyPath<VideoProject> & Sendable]) -> Set<VideoProjectField> {
         var fields: Set<VideoProjectField> = []

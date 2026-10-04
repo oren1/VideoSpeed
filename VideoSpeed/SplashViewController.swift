@@ -16,9 +16,9 @@ import Alamofire
 import SwiftUI
 import SwiftData
 
-class SplashViewController: UIViewController, GADFullScreenContentDelegate {
+class SplashViewController: UIViewController, FullScreenContentDelegate {
     
-    var appOpenAd: GADAppOpenAd?
+    var appOpenAd: AppOpenAd?
     var adDidDismis = false
     var requestsDidFinish = false
     var error: Error?
@@ -113,7 +113,7 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
             return
         }
         
-        guard AppOpenAd.manager.amountOfAppOpens >= AppOpenAd.manager.minimumAppOpensRequiredToShowAd else {
+        guard SpidAppOpenAd.manager.amountOfAppOpens >= SpidAppOpenAd.manager.minimumAppOpensRequiredToShowAd else {
             print("AppOpenAd: amount of ads less than minimum")
             completion()
             return
@@ -126,9 +126,9 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
            
         Task {
             do {
-                self.appOpenAd = try await GADAppOpenAd.load(withAdUnitID: unitId, request: GADRequest())
+                self.appOpenAd = try await AppOpenAd.load(with: unitId, request: Request())
                 self.appOpenAd?.fullScreenContentDelegate = self
-                AppOpenAd.manager.amountOfAppOpens = 0
+                SpidAppOpenAd.manager.amountOfAppOpens = 0
                 completion()
 
              } catch {
@@ -185,15 +185,15 @@ class SplashViewController: UIViewController, GADFullScreenContentDelegate {
     }
 }
 
-fileprivate typealias FullScreenContentDelegate = SplashViewController
+fileprivate typealias SpidFullScreenContentDelegate = SplashViewController
 extension SplashViewController {
-    func ad(_ ad: GADFullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+    func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
        pushMainViewController()
     }
-    func adDidPresentFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+    func adDidPresentFullScreenContent(_ ad: FullScreenPresentingAd) {
         
     }
-    func adDidDismissFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+    func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
         pushMainViewController()
     }
 }

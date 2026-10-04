@@ -745,7 +745,6 @@ class SpidPlayerViewController: UIViewController {
     @IBAction func undoButtonTapped(_ sender: Any) {
         UserDataManager.main.undoManager.undo()
         updateUndoRedoButtonsAppearance()
-        print("UserDataManager.main.undoManager.redoCount \(UserDataManager.main.undoManager.redoCount)")
         Task {
 //            let diff = await SwiftDataManager.shared.performUndoOrRedo(undo: true)
 //            NotificationCenter.default.post(

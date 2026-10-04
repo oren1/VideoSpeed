@@ -143,6 +143,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.title = "SPID"
     
         videosMenuDelegate = VideosMenuDelegate()
         videosMenuDelegate.didSelectVideo = { [weak self] spidAsset in

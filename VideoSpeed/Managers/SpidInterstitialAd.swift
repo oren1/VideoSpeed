@@ -9,10 +9,10 @@ import Foundation
 import GoogleMobileAds
 import FirebaseRemoteConfig
 
-class InterstitialAd: NSObject {
+class SpidInterstitialAd: NSObject {
     
-    static let manager = InterstitialAd()
-    private var interstitial: GADInterstitialAd?
+    static let manager = SpidInterstitialAd()
+    private var interstitial: InterstitialAd?
     var finishedAdLogic: VoidClosure?
     weak var rootController: UIViewController?
     
@@ -26,8 +26,8 @@ class InterstitialAd: NSObject {
                 unitId = "ca-app-pub-3940256099942544/4411468910"
             #endif
 
-            let request = GADRequest()
-            GADInterstitialAd.load(withAdUnitID: unitId,
+        let request = Request()
+        InterstitialAd.load(with: unitId,
                                    request: request) { [weak self] (ad, error) in
                 if let error = error {
                     print("Failed to load interstitial ad with error: \(error.localizedDescription)")
@@ -57,21 +57,21 @@ class InterstitialAd: NSObject {
                 return
             }
             
-            return interstitial.present(fromRootViewController: controller)
+        return interstitial.present(from: controller)
             
         }
         
     }
 
-    fileprivate typealias FullScreenContendDelegate = InterstitialAd
-    extension FullScreenContendDelegate: GADFullScreenContentDelegate {
+    fileprivate typealias FullScreenContendDelegate = SpidInterstitialAd
+extension FullScreenContendDelegate: FullScreenContentDelegate {
         /// Tells the delegate that the ad failed to present full screen content.
-        func ad(_ ad: GADFullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+        func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
             finishedAdLogic?()
           print("Ad did fail to present full screen content. Error: \(error)")
         }
         /// Tells the delegate that the ad dismissed full screen content.
-        func adDidDismissFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+    func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
           print("Ad did dismiss full screen content.")
             loadInterstitialAd()
             finishedAdLogic?()

@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
         FirebaseApp.configure()
         
         // Initialize the Google Mobile Ads SDK.
-        GADMobileAds.sharedInstance().start(completionHandler: nil)
+        MobileAds.shared.start(completionHandler: nil)
         
         Installations.installations().authTokenForcingRefresh(true, completion: { (result, error) in
           if let error = error {
@@ -41,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
         
         
         RemoteConfig.remoteConfig().setDefaults(fromPlist: "remote_config_defaults")
-        InterstitialAd.manager.loadInterstitialAd()
+        SpidInterstitialAd.manager.loadInterstitialAd()
 
         Purchases.logLevel = .debug
         Purchases.configure(withAPIKey: "appl_TMmatMjmVJesESBWZFPzLFOZpfk", appUserID: nil)

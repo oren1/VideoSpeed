@@ -16,7 +16,7 @@ let loadinViewTag = 12
 extension UIViewController {
     
     func getPurchaseViewController() -> PurchaseViewController {
-        let rawValue = RemoteConfig.remoteConfig().configValue(forKey: "subscription_model").stringValue!
+        let rawValue = RemoteConfig.remoteConfig().configValue(forKey: "subscription_model").stringValue
         let subscriptionModel = SubscriptionModel(rawValue: rawValue)
         
         let purchaseViewController: PurchaseViewController
