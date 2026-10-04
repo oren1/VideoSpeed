@@ -1007,8 +1007,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             action: nil
         )
         exportBarButtonItem.menu = makeExportMenu()
-        
-        
+
         speedLabel = createRightItemLabel()
         speedLabel.text = "\(speed)x"
         
@@ -1027,18 +1026,55 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         soundButton.setImage(UIImage(systemName: soundImageName), for: .normal)
         soundButton.addTarget(self, action: #selector(soundButtonTapped), for: .touchUpInside)
         
-//        let speedItem = UIBarButtonItem(customView: speedLabel)
-        let fpsItem = UIBarButtonItem(customView: fpsLabel)
-        let fileTypeItem = UIBarButtonItem(customView: fileTypeLabel)
-//        let soundItem = UIBarButtonItem(customView: soundButton)
-        
-        
-        navigationItem.rightBarButtonItems = [exportBarButtonItem,
-//                                              soundItem,
-                                              fileTypeItem,
-                                              fpsItem,
-//                                              speedItem
-        ]
+        navigationItem.rightBarButtonItems = [exportBarButtonItem, addMediaBarButtonItem]
+    }
+
+    private var addMediaBarButtonItem: UIBarButtonItem {
+        UIBarButtonItem(
+            image: UIImage(systemName: "plus"),
+            style: .plain,
+            target: self,
+            action: #selector(addMediaButtonTapped)
+        )
+    }
+
+    @objc private func addMediaButtonTapped() {
+        spidPlayerController?.player?.pause()
+        let mainVC = UIStoryboard(name: "Main", bundle: nil)
+            .instantiateViewController(withIdentifier: "MainViewController") as! MainViewController
+        mainVC.selectionMode = .addClipsToProject
+        mainVC.onClipsAdded = { [weak self] in
+            Task { @MainActor [weak self] in
+                await self?.handleClipsAddedDuringEdit()
+            }
+        }
+        let nav = UINavigationController(rootViewController: mainVC)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true)
+    }
+
+    @MainActor
+    private func handleClipsAddedDuringEdit() async {
+        let focusIndex = max(UserDataManager.main.spidAssets.count - 1, 0)
+        await reloadComposition()
+        videosCollectionView.reloadData()
+        updateTrashVisibility()
+        showProButtonIfNeeded()
+
+        guard videosStartTimes.indices.contains(focusIndex) else { return }
+        let startTime = videosStartTimes[focusIndex]
+        await spidPlayerController?.player?.seek(
+            to: startTime,
+            toleranceBefore: .zero,
+            toleranceAfter: .zero
+        )
+        if spidPlayerController?.videoState == .isPaused {
+            await spidPlayerController?.updateSliderFor(time: startTime)
+        }
+        if UserDataManager.main.spidAssets.indices.contains(focusIndex) {
+            UserDataManager.main.currentSpidAsset = UserDataManager.main.spidAssets[focusIndex]
+            notifyCurrentSpidAssetDidChange()
+        }
     }
 
     private func makeExportMenu() -> UIMenu {

@@ -39,16 +39,16 @@
 		6B0D01012FA5000100AAA101 /* VideoProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01002FA5000100AAA101 /* VideoProject.swift */; };
 		6B0D01032FA5000200AAA102 /* SwiftDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01022FA5000200AAA102 /* SwiftDataManager.swift */; };
 		6B0D01072FA5000400AAA104 /* SpidAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01062FA5000400AAA104 /* SpidAssetModel.swift */; };
+		6B0D01092FA5000500AAA105 /* SpidAsset+SwiftData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01082FA5000500AAA105 /* SpidAsset+SwiftData.swift */; };
 		6B0D010B2FA5000600AAA106 /* SDLabelViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D010A2FA5000600AAA106 /* SDLabelViewModel.swift */; };
 		6B0D010D2FA5000700AAA107 /* SDCaptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D010C2FA5000700AAA107 /* SDCaptions.swift */; };
-		6B0D01312FAC000100AAB001 /* SDBackgroundAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01302FAC000100AAB001 /* SDBackgroundAudio.swift */; };
-		6B0D01092FA5000500AAA105 /* SpidAsset+SwiftData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01082FA5000500AAA105 /* SpidAsset+SwiftData.swift */; };
 		6B0D01112FA6000100AAA201 /* ProjectsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01102FA6000100AAA201 /* ProjectsView.swift */; };
 		6B0D01152FA8000100AAA401 /* ProjectMediaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01142FA8000100AAA401 /* ProjectMediaStore.swift */; };
 		6B0D011A2FAA000100AAA601 /* StateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01192FAA000100AAA601 /* StateManager.swift */; };
 		6B0D01212FAB010100AAA801 /* ProjectHistoryDiff.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01202FAB010100AAA801 /* ProjectHistoryDiff.swift */; };
 		6B0D01232FAB010200AAA802 /* EditViewController+UndoRedo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01222FAB010200AAA802 /* EditViewController+UndoRedo.swift */; };
 		6B0D01232FAB020100AAA802 /* BriefChangeAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01222FAB020100AAA802 /* BriefChangeAlertView.swift */; };
+		6B0D01312FAC000100AAB001 /* SDBackgroundAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D01302FAC000100AAB001 /* SDBackgroundAudio.swift */; };
 		6B1CF4722D6B27B1005BB89E /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1CF4712D6B27A6005BB89E /* Notification+Extension.swift */; };
 		6B23C1DD2BF629DC001C4F24 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23C1DC2BF629DC001C4F24 /* NetworkManager.swift */; };
 		6B23C1E02BF62F11001C4F24 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23C1DF2BF62F11001C4F24 /* User.swift */; };
@@ -262,20 +262,19 @@
 		6B0D00232FA4001900AAA001 /* AudioWaveformSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformSampler.swift; sourceTree = "<group>"; };
 		6B0D00252FA4001A000AAA001 /* AudioSourceTrimmerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSourceTrimmerView.swift; sourceTree = "<group>"; };
 		6B0D00272FA4001B000AAA001 /* AudioSourceTrimmerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSourceTrimmerVC.swift; sourceTree = "<group>"; };
-
 		6B0D01002FA5000100AAA101 /* VideoProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoProject.swift; sourceTree = "<group>"; };
 		6B0D01022FA5000200AAA102 /* SwiftDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataManager.swift; sourceTree = "<group>"; };
 		6B0D01062FA5000400AAA104 /* SpidAssetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpidAssetModel.swift; sourceTree = "<group>"; };
+		6B0D01082FA5000500AAA105 /* SpidAsset+SwiftData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpidAsset+SwiftData.swift"; sourceTree = "<group>"; };
 		6B0D010A2FA5000600AAA106 /* SDLabelViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDLabelViewModel.swift; sourceTree = "<group>"; };
 		6B0D010C2FA5000700AAA107 /* SDCaptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDCaptions.swift; sourceTree = "<group>"; };
-		6B0D01302FAC000100AAB001 /* SDBackgroundAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDBackgroundAudio.swift; sourceTree = "<group>"; };
-		6B0D01082FA5000500AAA105 /* SpidAsset+SwiftData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpidAsset+SwiftData.swift"; sourceTree = "<group>"; };
 		6B0D01102FA6000100AAA201 /* ProjectsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectsView.swift; sourceTree = "<group>"; };
 		6B0D01142FA8000100AAA401 /* ProjectMediaStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectMediaStore.swift; sourceTree = "<group>"; };
 		6B0D01192FAA000100AAA601 /* StateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateManager.swift; sourceTree = "<group>"; };
 		6B0D01202FAB010100AAA801 /* ProjectHistoryDiff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectHistoryDiff.swift; sourceTree = "<group>"; };
 		6B0D01222FAB010200AAA802 /* EditViewController+UndoRedo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditViewController+UndoRedo.swift"; sourceTree = "<group>"; };
 		6B0D01222FAB020100AAA802 /* BriefChangeAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefChangeAlertView.swift; sourceTree = "<group>"; };
+		6B0D01302FAC000100AAB001 /* SDBackgroundAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDBackgroundAudio.swift; sourceTree = "<group>"; };
 		6B1CF4712D6B27A6005BB89E /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
 		6B23C1DC2BF629DC001C4F24 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		6B23C1DF2BF62F11001C4F24 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -929,13 +928,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -972,13 +967,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-VideoSpeed/Pods-VideoSpeed-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1318,6 +1309,7 @@
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow microphone access to record video sound and background audio";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "We need to send a photo";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This will allow you to select videos for editing";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We use Speech Recognition to generate captions and subtitles for your videos";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -1325,7 +1317,7 @@
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				IPHONEOS_DEPLOYMENT_TARGET = "$(RECOMMENDED_IPHONEOS_DEPLOYMENT_TARGET)";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1368,6 +1360,7 @@
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow microphone access to record video sound and background audio";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "We need to send a photo";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This will allow you to select videos for editing";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We use Speech Recognition to generate captions and subtitles for your videos";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -1375,7 +1368,7 @@
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				IPHONEOS_DEPLOYMENT_TARGET = "$(RECOMMENDED_IPHONEOS_DEPLOYMENT_TARGET)";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

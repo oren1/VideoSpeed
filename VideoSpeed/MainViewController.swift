@@ -19,6 +19,13 @@ enum Pricing: String {
     case higher = "higher"
 }
 
+enum MediaSelectionMode {
+    /// Picking clips to start a new project (default).
+    case createProject
+    /// Picking additional clips to append to the current edit session.
+    case addClipsToProject
+}
+
 
 class MainViewController: UIViewController {
     
@@ -29,6 +36,11 @@ class MainViewController: UIViewController {
     private let itemsPerRow: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 5 : 3
     
     private var giftBarButtonItem: UIBarButtonItem!
+    
+    /// Distinguishes new-project picking from adding clips while editing.
+    var selectionMode: MediaSelectionMode = .createProject
+    /// Called on the main thread after clips were appended and persisted in `.addClipsToProject` mode.
+    var onClipsAdded: (() -> Void)?
     
     @IBOutlet weak var giftButton: UIBarButtonItem!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -70,10 +82,7 @@ class MainViewController: UIViewController {
         #endif
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont(name: "Arial Hebrew Bold", size: 17)!]
 
-        navigationItem.title = "SPID"
-        navigationItem.hidesBackButton = false
-        // Keep the camera button without replacing the system back button to Projects.
-        navigationItem.leftItemsSupplementBackButton = true
+        configureForSelectionMode()
         
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -102,6 +111,35 @@ class MainViewController: UIViewController {
         
         createGiftBarButtonItem()
         
+    }
+
+    private func configureForSelectionMode() {
+        switch selectionMode {
+        case .createProject:
+            navigationItem.title = "SPID"
+            navigationItem.hidesBackButton = false
+            // Keep the camera button without replacing the system back button to Projects.
+            navigationItem.leftItemsSupplementBackButton = true
+        case .addClipsToProject:
+            navigationItem.title = "Add Media"
+            navigationItem.hidesBackButton = true
+            let closeItem = UIBarButtonItem(
+                barButtonSystemItem: .close,
+                target: self,
+                action: #selector(closeButtonTapped)
+            )
+            let cameraItem = UIBarButtonItem(
+                image: UIImage(systemName: "camera.fill"),
+                style: .plain,
+                target: self,
+                action: #selector(cameraButtonTapped(_:))
+            )
+            navigationItem.leftBarButtonItems = [closeItem, cameraItem]
+        }
+    }
+
+    @objc private func closeButtonTapped() {
+        dismiss(animated: true)
     }
     
     func needsToShowGiftButton() -> Bool {
@@ -359,71 +397,86 @@ class MainViewController: UIViewController {
     }
     
     @IBAction func nextButtonTapped(_ sender: Any) {
+        let phAssets = selectedIndexes.compactMap { videos?[$0.row] }
+        guard !phAssets.isEmpty else { return }
 
-        var phAssets: [PHAsset] = []
-
-        for indexPath in selectedIndexes {
-            let phAsset = videos![indexPath.row]
-            phAssets.append(phAsset)
-        }
-        
-        // Create the loading view and add it to the view
         showLoading()
         var progress: Double = 0.0
-        // Create a closure that updates the progress every time an AVAsset finishes loading
         let updateProgress = {
             progress += 1 / Double(phAssets.count)
             print("progress \(progress)")
         }
 
-        Task {
-            for phAsset in phAssets {
-                guard let spidAsset = await makeSpidAsset(from: phAsset, updateProgress: updateProgress) else {
-                    continue
-                }
-                UserDataManager.main.spidAssets.append(spidAsset)
-            }
-            
-            
-            Task {@MainActor [weak self] in
-                guard let self else { return }
-                guard !UserDataManager.main.spidAssets.isEmpty else {
-                    self.hideLoading()
-                    return
-                }
-                
-                await SwiftDataManager.shared.createVideoProject(from: UserDataManager.main.spidAssets)
-
-                
-                if SpidProducts.store.userPurchasedProVersion() == nil &&
-                    UserDataManager.main.dateToShowPurchaseScreen < Date().timeIntervalSince1970 &&
-                    !UserDataManager.main.isGiftActive() {
-                    
-                    let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
-                    purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
-                    purchaseViewController.onDismiss = { [weak self] in
-                        Task {
-                           await self?.enterEditScreen()
-                        }
-                    }
-                    if UIDevice.current.userInterfaceIdiom == .phone {
-                        purchaseViewController.modalPresentationStyle = .automatic
-                    }
-                    else if UIDevice.current.userInterfaceIdiom == .pad {
-                        purchaseViewController.modalPresentationStyle = .formSheet
-                    }
-                    
-                    self.present(purchaseViewController, animated: true)
-                    
-                    UserDataManager.main.dateToShowPurchaseScreen = Date().timeIntervalSince1970 + twoWeeksInSeconds
-                }
-                else {
-                    await self.enterEditScreen()
-                }
-               
-                
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            let newSpidAssets = await self.makeSpidAssets(from: phAssets, updateProgress: updateProgress)
+            guard !newSpidAssets.isEmpty else {
+                self.hideLoading()
+                return
             }
 
+            switch self.selectionMode {
+            case .createProject:
+                await self.finishCreatingProject(with: newSpidAssets)
+            case .addClipsToProject:
+                await self.finishAddingClipsToProject(with: newSpidAssets)
+            }
+        }
+    }
+
+    private func makeSpidAssets(
+        from phAssets: [PHAsset],
+        updateProgress: @escaping () -> Void
+    ) async -> [SpidAsset] {
+        var results: [SpidAsset] = []
+        results.reserveCapacity(phAssets.count)
+        for phAsset in phAssets {
+            guard let spidAsset = await makeSpidAsset(from: phAsset, updateProgress: updateProgress) else {
+                continue
+            }
+            results.append(spidAsset)
+        }
+        return results
+    }
+
+    @MainActor
+    private func finishCreatingProject(with newSpidAssets: [SpidAsset]) async {
+        // Start from a clean list so leftover session assets never merge into a new project.
+        UserDataManager.main.spidAssets = newSpidAssets
+        await SwiftDataManager.shared.createVideoProject(from: UserDataManager.main.spidAssets)
+
+        if SpidProducts.store.userPurchasedProVersion() == nil &&
+            UserDataManager.main.dateToShowPurchaseScreen < Date().timeIntervalSince1970 &&
+            !UserDataManager.main.isGiftActive() {
+
+            let purchaseViewController = UIStoryboard(name: "Main", bundle: nil)
+                .instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
+            purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
+            purchaseViewController.onDismiss = { [weak self] in
+                Task {
+                    await self?.enterEditScreen()
+                }
+            }
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                purchaseViewController.modalPresentationStyle = .automatic
+            } else if UIDevice.current.userInterfaceIdiom == .pad {
+                purchaseViewController.modalPresentationStyle = .formSheet
+            }
+
+            present(purchaseViewController, animated: true)
+            UserDataManager.main.dateToShowPurchaseScreen = Date().timeIntervalSince1970 + twoWeeksInSeconds
+        } else {
+            await enterEditScreen()
+        }
+    }
+
+    @MainActor
+    private func finishAddingClipsToProject(with newSpidAssets: [SpidAsset]) async {
+        UserDataManager.main.spidAssets.append(contentsOf: newSpidAssets)
+        await SwiftDataManager.shared.upsertVideoProject()
+        hideLoading()
+        dismiss(animated: true) { [weak self] in
+            self?.onClipsAdded?()
         }
     }
 
@@ -502,36 +555,45 @@ extension MainViewController: UIImagePickerControllerDelegate {
         UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(url.path)
         else { return }
       
-        let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
-
         let asset = AVURLAsset(url: url)
-        Task {
+        Task { @MainActor [weak self] in
+            guard let self else { return }
             guard let videoTrack = try? await asset.loadTracks(withMediaType: .video).first,
                   let timeRange = try? await videoTrack.load(.timeRange),
                   let naturalSize = try? await videoTrack.load(.naturalSize),
                   let preferredTransform = try? await videoTrack.load(.preferredTransform),
-                  let thumbnailImage = await asset.generateThumbnailImage() else {return}
-                  
+                  let thumbnailImage = await asset.generateThumbnailImage() else { return }
 
             let videoInfo = VideoHelper.orientation(from: preferredTransform)
             let videoSize: CGSize
             if videoInfo.isPortrait {
-                videoSize = CGSize(
-                    width: naturalSize.height,
-                    height: naturalSize.width)
+                videoSize = CGSize(width: naturalSize.height, height: naturalSize.width)
             } else {
                 videoSize = naturalSize
             }
-            
-            UserDataManager.main.currentSpidAsset = SpidAsset(asset: asset,timeRange: timeRange, videoSize: videoSize, thumnbnailImage: thumbnailImage)
-            UserDataManager.main.spidAssets.append(UserDataManager.main.currentSpidAsset)
 
-            vc.asset = asset
-            
-             await MainActor.run { [weak self] in
-                self?.navigationController?.pushViewController(vc, animated: true)
+            let spidAsset = SpidAsset(
+                asset: asset,
+                timeRange: timeRange,
+                videoSize: videoSize,
+                thumnbnailImage: thumbnailImage
+            )
+
+            switch self.selectionMode {
+            case .addClipsToProject:
+                UserDataManager.main.spidAssets.append(spidAsset)
+                await SwiftDataManager.shared.upsertVideoProject()
+                self.dismiss(animated: true) {
+                    self.onClipsAdded?()
+                }
+            case .createProject:
+                let vc = UIStoryboard(name: "Main", bundle: Bundle.main)
+                    .instantiateViewController(withIdentifier: "EditViewController") as! EditViewController
+                UserDataManager.main.currentSpidAsset = spidAsset
+                UserDataManager.main.spidAssets.append(spidAsset)
+                vc.asset = asset
+                self.navigationController?.pushViewController(vc, animated: true)
             }
-
         }
                     
     }
