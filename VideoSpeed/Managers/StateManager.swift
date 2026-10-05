@@ -71,6 +71,20 @@ final class StateManager {
         return true
     }
 
+    /// Appends clips while editing and registers undo/redo snapshots.
+    func addMedia(_ newAssets: [SpidAsset]) async {
+        guard !newAssets.isEmpty else { return }
+
+        let before = makeAddMediaSnapshot()
+        UserDataManager.main.spidAssets.append(contentsOf: newAssets)
+        if let last = newAssets.last {
+            UserDataManager.main.currentSpidAsset = last
+        }
+        let after = makeAddMediaSnapshot()
+        registerUndo(previous: .addMedia(before), current: .addMedia(after))
+        await SwiftDataManager.shared.upsertVideoProject()
+    }
+
     /// Runs a labels mutation and registers undo/redo from deep-copied before/after snapshots.
     func performLabelsChange(_ change: () -> Void) {
         let before = LabelsUndoSnapshot.capture()
@@ -177,6 +191,13 @@ final class StateManager {
         )
     }
 
+    private func makeAddMediaSnapshot() -> AddMediaUndoSnapshot {
+        AddMediaUndoSnapshot(
+            assets: UserDataManager.main.spidAssets,
+            currentAsset: UserDataManager.main.currentSpidAsset
+        )
+    }
+
     private func apply(_ field: UndoField) async {
         switch field {
         case .none, .other:
@@ -220,6 +241,10 @@ final class StateManager {
                 await snapshot.sourceAsset.updateRightHandleConstraintConstant(constant: right)
             }
 
+            await SwiftDataManager.shared.upsertVideoProject()
+        case .addMedia(let snapshot):
+            UserDataManager.main.spidAssets = snapshot.assets
+            UserDataManager.main.currentSpidAsset = snapshot.currentAsset ?? snapshot.assets.first
             await SwiftDataManager.shared.upsertVideoProject()
         case .labels(let snapshot):
             let restored = snapshot.labels.map { $0.copyForUndo() }

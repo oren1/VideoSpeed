@@ -472,8 +472,7 @@ class MainViewController: UIViewController {
 
     @MainActor
     private func finishAddingClipsToProject(with newSpidAssets: [SpidAsset]) async {
-        UserDataManager.main.spidAssets.append(contentsOf: newSpidAssets)
-        await SwiftDataManager.shared.upsertVideoProject()
+        await StateManager.shared.addMedia(newSpidAssets)
         hideLoading()
         dismiss(animated: true) { [weak self] in
             self?.onClipsAdded?()
@@ -581,8 +580,7 @@ extension MainViewController: UIImagePickerControllerDelegate {
 
             switch self.selectionMode {
             case .addClipsToProject:
-                UserDataManager.main.spidAssets.append(spidAsset)
-                await SwiftDataManager.shared.upsertVideoProject()
+                await StateManager.shared.addMedia([spidAsset])
                 self.dismiss(animated: true) {
                     self.onClipsAdded?()
                 }

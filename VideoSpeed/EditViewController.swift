@@ -143,7 +143,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "SPID"
     
         videosMenuDelegate = VideosMenuDelegate()
         videosMenuDelegate.didSelectVideo = { [weak self] spidAsset in
@@ -1026,7 +1025,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         let soundImageName = soundOn ? "volume.2.fill" : "volume.slash"
         soundButton.setImage(UIImage(systemName: soundImageName), for: .normal)
         soundButton.addTarget(self, action: #selector(soundButtonTapped), for: .touchUpInside)
-        
+
         navigationItem.rightBarButtonItems = [exportBarButtonItem, addMediaBarButtonItem]
     }
 
@@ -1056,13 +1055,16 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
 
     @MainActor
     private func handleClipsAddedDuringEdit() async {
-        let focusIndex = max(UserDataManager.main.spidAssets.count - 1, 0)
         await reloadComposition()
         videosCollectionView.reloadData()
         updateTrashVisibility()
         showProButtonIfNeeded()
+        notifyCurrentSpidAssetDidChange()
 
-        guard videosStartTimes.indices.contains(focusIndex) else { return }
+        guard let current = UserDataManager.main.currentSpidAsset,
+              let focusIndex = UserDataManager.main.spidAssets.firstIndex(where: { $0 === current }),
+              videosStartTimes.indices.contains(focusIndex) else { return }
+
         let startTime = videosStartTimes[focusIndex]
         await spidPlayerController?.player?.seek(
             to: startTime,
@@ -1071,10 +1073,6 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         )
         if spidPlayerController?.videoState == .isPaused {
             await spidPlayerController?.updateSliderFor(time: startTime)
-        }
-        if UserDataManager.main.spidAssets.indices.contains(focusIndex) {
-            UserDataManager.main.currentSpidAsset = UserDataManager.main.spidAssets[focusIndex]
-            notifyCurrentSpidAssetDidChange()
         }
     }
 

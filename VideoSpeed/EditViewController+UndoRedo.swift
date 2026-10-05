@@ -62,6 +62,16 @@ extension EditViewController {
                 notifyCurrentSpidAssetDidChange()
                 await splitSectionVC.reloadTimelineFromOutside()
 
+            case .addMedia:
+                showBriefChangeAlert(type: "media", value: "")
+
+                videosCollectionView.reloadData()
+                updateTrashVisibility()
+                showProButtonIfNeeded()
+                await reloadComposition()
+                notifyCurrentSpidAssetDidChange()
+                await splitSectionVC.reloadTimelineFromOutside()
+
             case .labels:
                 showBriefChangeAlert(type: "text", value: "")
                 // `labelViewsModels` didSet already posts OverlayLabelViewsUpdated;

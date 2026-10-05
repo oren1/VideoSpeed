@@ -23,6 +23,12 @@ struct SplitUndoSnapshot {
     let splitCount: Int
 }
 
+/// Captures the timeline asset list so adding media can be undone/redone.
+struct AddMediaUndoSnapshot {
+    let assets: [SpidAsset]
+    let currentAsset: SpidAsset?
+}
+
 /// Deep-copied overlay labels (+ selection) for undo/redo.
 struct LabelsUndoSnapshot {
     let labels: [LabelViewModel]
@@ -147,6 +153,7 @@ enum UndoField {
     case mediaKind(String, SpidAsset)
     case spidAssets([SpidAsset])
     case split(SplitUndoSnapshot)
+    case addMedia(AddMediaUndoSnapshot)
     case labels(LabelsUndoSnapshot)
     case captions(CaptionsUndoSnapshot)
     case audio(AudioUndoSnapshot)
@@ -167,6 +174,7 @@ enum UndoField {
         case .mediaKind: return "mediaKind"
         case .spidAssets: return "spidAssets"
         case .split: return "split"
+        case .addMedia: return "addMedia"
         case .labels: return "labels"
         case .captions: return "captions"
         case .audio: return "audio"
