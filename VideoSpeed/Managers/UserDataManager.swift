@@ -289,6 +289,18 @@ class UserDataManager: ObservableObject {
         
         return false
     }
+
+    var usingProFilter: Bool = false
+
+    func refreshUsingProFilter() async {
+        for spidAsset in spidAssets {
+            if VideoFilter.proFilters.contains(await spidAsset.videoFilter) {
+                usingProFilter = true
+                return
+            }
+        }
+        usingProFilter = false
+    }
     
     
     @Published

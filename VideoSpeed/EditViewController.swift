@@ -278,6 +278,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
             guard UserDataManager.main.currentSpidAsset != nil else {
                 return showNoTracksError()
             }
+            await UserDataManager.main.refreshUsingProFilter()
+            showProButtonIfNeeded()
             await createCropViewController()
             refreshCurrentClipMenuState()
             let asset = await UserDataManager.main.currentSpidAsset.getAsset()
@@ -364,6 +366,7 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
         UserDataManager.main.labelViewsModels.removeAll()
         UserDataManager.main.selectedLabelViewModel = nil
         UserDataManager.main.usingSlider = false
+        UserDataManager.main.usingProFilter = false
         UserDataManager.main.splitCount = 0
         UserDataManager.main.spidAssets = []
         UserDataManager.main.currentProject = nil
@@ -1688,7 +1691,8 @@ class EditViewController: UIViewController, TrimmerViewSpidDelegate {
                                                    mergeVideos: UserDataManager.main.usingMergeFeature(),
                                                    captions: UserDataManager.main.usingCaptions(),
                                                    using4KExport: UserDataManager.main.using4KExport(),
-                                               extractFromVideo: UserDataManager.main.usingExtractFromVideo())
+                                               extractFromVideo: UserDataManager.main.usingExtractFromVideo(),
+                                               usingProFilter: UserDataManager.main.usingProFilter)
                                                 
             
             usingProFeaturesAlertView.layer.opacity = 0
@@ -2042,7 +2046,9 @@ extension NotificationObservers {
                 UserDataManager.main.usingProFont() ||
                 UserDataManager.main.usingMergeFeature() ||
                 UserDataManager.main.usingCaptions() ||
-                UserDataManager.main.usingExtractFromVideo() {
+                UserDataManager.main.usingExtractFromVideo() ||
+                UserDataManager.main.usingProFilter
+            {
                 
                 return true
             }

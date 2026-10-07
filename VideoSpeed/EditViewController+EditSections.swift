@@ -530,6 +530,8 @@ extension EditViewController {
             guard let self else { return }
             Task {
                 await StateManager.shared.updateVideoFilter(filter)
+                await UserDataManager.main.refreshUsingProFilter()
+                self.showProButtonIfNeeded()
                 await self.reloadComposition()
                 let startTime = self.getStartTimeForCurrentSpidAsset()
                 await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
@@ -543,6 +545,8 @@ extension EditViewController {
                 for spidAsset in UserDataManager.main.spidAssets {
                     await spidAsset.updateVideoFilter(filter)
                 }
+                await UserDataManager.main.refreshUsingProFilter()
+                self.showProButtonIfNeeded()
                 await self.reloadComposition()
                 let startTime = self.getStartTimeForCurrentSpidAsset()
                 await self.spidPlayerController?.player?.seek(to: startTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)

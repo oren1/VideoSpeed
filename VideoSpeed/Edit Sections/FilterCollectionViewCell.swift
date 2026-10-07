@@ -104,6 +104,14 @@ final class FilterCollectionViewCell: UICollectionViewCell {
     }
 
     func setProPillHidden(_ hidden: Bool) {
+        if SpidProducts.store.userPurchasedProVersion() != nil
+            || UserDataManager.main.isGiftActive() {
+            
+            // always hide the pro label if the user is subscribed
+            proPillLabel.isHidden = true
+            return
+            
+        }
         proPillLabel.isHidden = hidden
     }
 }
