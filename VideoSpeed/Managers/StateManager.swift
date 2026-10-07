@@ -85,6 +85,29 @@ final class StateManager {
         await SwiftDataManager.shared.upsertVideoProject()
     }
 
+    /// Applies a filter to every clip and registers one undo/redo snapshot.
+    func applyFilterToAll(_ filter: VideoFilter) async {
+        let assets = UserDataManager.main.spidAssets
+        guard !assets.isEmpty else { return }
+
+        var didChange = false
+        for asset in assets {
+            if await asset.videoFilter != filter {
+                didChange = true
+                break
+            }
+        }
+        guard didChange else { return }
+
+        let before = await makeApplyFilterToAllSnapshot()
+        for asset in assets {
+            await asset.updateVideoFilter(filter)
+        }
+        let after = await makeApplyFilterToAllSnapshot()
+        registerUndo(previous: .applyFilterToAll(before), current: .applyFilterToAll(after))
+        await SwiftDataManager.shared.upsertVideoProject()
+    }
+
     /// Runs a labels mutation and registers undo/redo from deep-copied before/after snapshots.
     func performLabelsChange(_ change: () -> Void) {
         let before = LabelsUndoSnapshot.capture()
@@ -198,6 +221,16 @@ final class StateManager {
         )
     }
 
+    private func makeApplyFilterToAllSnapshot() async -> ApplyFilterToAllUndoSnapshot {
+        let assets = UserDataManager.main.spidAssets
+        var filters: [VideoFilter] = []
+        filters.reserveCapacity(assets.count)
+        for asset in assets {
+            filters.append(await asset.videoFilter)
+        }
+        return ApplyFilterToAllUndoSnapshot(assets: assets, filters: filters)
+    }
+
     private func apply(_ field: UndoField) async {
         switch field {
         case .none, .other:
@@ -245,6 +278,11 @@ final class StateManager {
         case .addMedia(let snapshot):
             UserDataManager.main.spidAssets = snapshot.assets
             UserDataManager.main.currentSpidAsset = snapshot.currentAsset ?? snapshot.assets.first
+            await SwiftDataManager.shared.upsertVideoProject()
+        case .applyFilterToAll(let snapshot):
+            for (asset, filter) in zip(snapshot.assets, snapshot.filters) {
+                await asset.updateVideoFilter(filter)
+            }
             await SwiftDataManager.shared.upsertVideoProject()
         case .labels(let snapshot):
             let restored = snapshot.labels.map { $0.copyForUndo() }

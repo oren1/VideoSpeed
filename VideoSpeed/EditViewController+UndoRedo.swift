@@ -53,6 +53,13 @@ extension EditViewController {
                     await filterSectionVC.reloadFromCurrentAsset()
                 }
                 await UserDataManager.main.refreshUsingProFilter()
+                showProButtonIfNeeded()
+                await reloadComposition()
+            case .applyFilterToAll:
+                showBriefChangeAlert(type: "filter", value: "all")
+                await filterSectionVC.reloadFromCurrentAsset()
+                await UserDataManager.main.refreshUsingProFilter()
+                showProButtonIfNeeded()
                 await reloadComposition()
             case .split(let snapshot):
                 showBriefChangeAlert(type: "split", value: "")

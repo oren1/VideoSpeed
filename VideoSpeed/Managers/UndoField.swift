@@ -29,6 +29,12 @@ struct AddMediaUndoSnapshot {
     let currentAsset: SpidAsset?
 }
 
+/// Captures each clip's filter so apply-to-all can be undone/redone.
+struct ApplyFilterToAllUndoSnapshot {
+    let assets: [SpidAsset]
+    let filters: [VideoFilter]
+}
+
 /// Deep-copied overlay labels (+ selection) for undo/redo.
 struct LabelsUndoSnapshot {
     let labels: [LabelViewModel]
@@ -154,6 +160,7 @@ enum UndoField {
     case spidAssets([SpidAsset])
     case split(SplitUndoSnapshot)
     case addMedia(AddMediaUndoSnapshot)
+    case applyFilterToAll(ApplyFilterToAllUndoSnapshot)
     case labels(LabelsUndoSnapshot)
     case captions(CaptionsUndoSnapshot)
     case audio(AudioUndoSnapshot)
@@ -175,6 +182,7 @@ enum UndoField {
         case .spidAssets: return "spidAssets"
         case .split: return "split"
         case .addMedia: return "addMedia"
+        case .applyFilterToAll: return "applyFilterToAll"
         case .labels: return "labels"
         case .captions: return "captions"
         case .audio: return "audio"

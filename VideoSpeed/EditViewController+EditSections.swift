@@ -542,9 +542,7 @@ extension EditViewController {
         filterSectionVC.applyToAllTapped = { [weak self] filter in
             guard let self else { return }
             Task {
-                for spidAsset in UserDataManager.main.spidAssets {
-                    await spidAsset.updateVideoFilter(filter)
-                }
+                await StateManager.shared.applyFilterToAll(filter)
                 await UserDataManager.main.refreshUsingProFilter()
                 self.showProButtonIfNeeded()
                 await self.reloadComposition()
