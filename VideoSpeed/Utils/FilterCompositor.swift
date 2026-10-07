@@ -260,6 +260,7 @@ enum VideoFilter: String, CaseIterable, Identifiable {
         .naturalFresh,
         .naturalClean,
         .naturalLush,
+        .arcticBlue,
     ]
 
     static var displayOrder: [VideoFilter] {
@@ -269,6 +270,55 @@ enum VideoFilter: String, CaseIterable, Identifiable {
         ordered.append(contentsOf: allCases.filter { $0 != .none && !grouped.contains($0) })
         return ordered
     }
+    
+    static let proFilters: [VideoFilter] = [
+        .naturalBalanced,
+        .naturalFresh,
+        .brighter,
+        .hueShift90,
+        .hueShift120,
+        .hueShift180,
+        .naturalClean,
+        .naturalLush,
+        .shadowLift,
+        .highContrast,
+        .naturalRosy,
+        .sepia,
+        .gammaBoost,
+        .goldenHour,
+        .hyperSaturated,
+        .invert,
+        .mono,
+        .monochromeRed,
+        .noir,
+        .tonal,
+        .bumpDistortion,
+        .chrome,
+        .coolest,
+        .edgeWork,
+        .exposureBoost,
+        .fade,
+        .monochromeBlue,
+        .vibrant,
+        .warmer,
+        .warmest,
+        .agedFilm,
+        .bright,
+        .cooler,
+        .crystallizeHeavy,
+        .dark,
+        .dotScreen,
+        .falseColor,
+        .gammaLight,
+        .instant,
+        .noiseReduction,
+        .posterizeHeavy,
+        .posterizeLight,
+        .sepiaHeavy,
+        .sepiaLight,
+        .vintageWarm,
+        .warm
+    ]
 }
 
 class FilterCompositor: NSObject, AVVideoCompositing {
