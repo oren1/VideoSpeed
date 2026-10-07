@@ -216,6 +216,7 @@ extension FilterSectionVC: UICollectionViewDataSource {
             image: previewImages[filter],
             isSelected: filter == selectedFilter
         )
+        cell.setProPillHidden(!VideoFilter.proFilters.contains(filter))
 
         if previewImages[filter] == nil {
             requestPreview(for: filter, priority: .userInitiated)

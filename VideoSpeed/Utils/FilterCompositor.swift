@@ -317,7 +317,8 @@ enum VideoFilter: String, CaseIterable, Identifiable {
         .sepiaHeavy,
         .sepiaLight,
         .vintageWarm,
-        .warm
+        .warm,
+        .arcticBlue
     ]
 }
 

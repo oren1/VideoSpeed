@@ -30,10 +30,25 @@ final class FilterCollectionViewCell: UICollectionViewCell {
         return label
     }()
 
+    private let proPillLabel: UILabel = {
+        let label = UILabel()
+        label.text = "PRO"
+        label.font = .systemFont(ofSize: 8, weight: .bold)
+        label.textColor = .white
+        label.backgroundColor = .systemBlue
+        label.textAlignment = .center
+        label.clipsToBounds = true
+        label.layer.cornerRadius = 7
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(imageView)
         contentView.addSubview(titleLabel)
+        contentView.addSubview(proPillLabel)
 
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -45,6 +60,11 @@ final class FilterCollectionViewCell: UICollectionViewCell {
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             titleLabel.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor),
+
+            proPillLabel.topAnchor.constraint(equalTo: imageView.topAnchor, constant: 4),
+            proPillLabel.trailingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: -4),
+            proPillLabel.heightAnchor.constraint(equalToConstant: 14),
+            proPillLabel.widthAnchor.constraint(greaterThanOrEqualToConstant: 28),
         ])
     }
 
@@ -57,6 +77,7 @@ final class FilterCollectionViewCell: UICollectionViewCell {
         representedFilter = nil
         imageView.image = nil
         titleLabel.text = nil
+        proPillLabel.isHidden = true
     }
 
     override func layoutSubviews() {
@@ -80,5 +101,9 @@ final class FilterCollectionViewCell: UICollectionViewCell {
             contentView.layer.cornerRadius = 0
             titleLabel.textColor = UIColor(white: 0.85, alpha: 1)
         }
+    }
+
+    func setProPillHidden(_ hidden: Bool) {
+        proPillLabel.isHidden = hidden
     }
 }
