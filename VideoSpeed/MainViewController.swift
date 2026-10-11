@@ -87,8 +87,6 @@ class MainViewController: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         
-        addProButton()
-        
         PHPhotoLibrary.shared().register(self)
 
         getPermissionIfNecessary { granted in
@@ -151,45 +149,6 @@ class MainViewController: UIViewController {
         return false
     }
     
-    func createProButton() -> UIButton {
-        let proButton = UIButton(type: .system)
-        if #available(iOS 26.0, *) {
-            var config = UIButton.Configuration.prominentGlass()
-            config.title = "Get Pro"
-            config.baseBackgroundColor = .systemBlue
-            config.baseForegroundColor = .white
-            proButton.configuration = config
-        } else {
-            var config = UIButton.Configuration.filled()
-            config.title = "Get Pro"
-            config.baseBackgroundColor = .systemBlue
-            config.baseForegroundColor = .white
-            config.contentInsets = NSDirectionalEdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12)
-            proButton.configuration = config
-        }
-        proButton.addTarget(self, action: #selector(showPurchaseViewController), for: .touchUpInside)
-        return proButton
-    }
-    
-    
-    @objc func showPurchaseViewController() {
-       
-        let purchaseViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
-       
-        let productItentifier = SpidProducts.store.bussinessProductIdentifier()
-        purchaseViewController.productIdentifier = productItentifier
-        
-        
-        if UIDevice.current.userInterfaceIdiom == .phone {
-            purchaseViewController.modalPresentationStyle = .automatic
-        }
-        else if UIDevice.current.userInterfaceIdiom == .pad {
-            purchaseViewController.modalPresentationStyle = .formSheet
-        }
-        
-        self.present(purchaseViewController, animated: true)
-    }
-    
     func showBenefitView() {
         let benefitViewController = UIHostingController(rootView: BenefitView())
       
@@ -203,16 +162,6 @@ class MainViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-       
-        // Add or Remove "Get Pro" button
-        if SpidProducts.store.userPurchasedProVersion() == nil &&
-            UserDataManager.main.userBenefitStatus != .entitled {
-            addProButton()
-        }
-        else {
-            removeProButton()
-        }
-        
         selectedIndexes = []
         collectionView.reloadData()
     }
@@ -359,17 +308,6 @@ class MainViewController: UIViewController {
     }
     
     // MARK: - UI
-    func removeProButton() {
-        self.navigationItem.rightBarButtonItems = nil
-    }
-    func addProButton() {
-        let proButton = createProButton()
-        let proBarButtonItem = UIBarButtonItem(customView: proButton)
-        if #available(iOS 26.0, *) {
-            proBarButtonItem.hidesSharedBackground = true
-        }
-        navigationItem.rightBarButtonItems = [proBarButtonItem]
-    }
     func createGiftBarButtonItem() {
         giftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gift.fill"), style: .plain, target: self, action: #selector(giftButtonTapped))
     }

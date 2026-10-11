@@ -9,6 +9,7 @@ import UIKit
 
 struct ProjectsView: View {
     @Query(sort: \VideoProject.createdAt, order: .reverse) private var projects: [VideoProject]
+    @State private var showsGetProButton = false
 
     private let columns = [
         GridItem(.flexible(), spacing: 12),
@@ -17,6 +18,7 @@ struct ProjectsView: View {
 
     private let floatingButtonBottomPadding: CGFloat = 28
     private let floatingButtonSize: CGFloat = 60
+    private let accentButtonColor = Color(uiColor: .systemBlue)
 
     var body: some View {
         ZStack {
@@ -54,6 +56,37 @@ struct ProjectsView: View {
         .navigationBarBackButtonHidden(true)
         .toolbarBackground(Color.black, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbar {
+            if showsGetProButton {
+                if #available(iOS 26.0, *) {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        getProToolbarButton
+                    }
+                    .sharedBackgroundVisibility(.hidden)
+                } else {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        getProToolbarButton
+                    }
+                }
+            }
+        }
+        .onAppear {
+            refreshGetProButtonVisibility()
+        }
+    }
+
+    private var getProToolbarButton: some View {
+        Button(action: showPurchaseViewController) {
+            Text("Get Pro")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(accentButtonColor)
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Get Pro")
     }
 
     private var newProjectButton: some View {
@@ -63,7 +96,7 @@ struct ProjectsView: View {
                 .foregroundStyle(.white)
                 .padding(.horizontal, 24)
                 .frame(height: floatingButtonSize)
-                .background(Color.blue)
+                .background(accentButtonColor)
                 .clipShape(Capsule())
                 .shadow(color: .black.opacity(0.35), radius: 10, y: 4)
         }
@@ -88,6 +121,33 @@ struct ProjectsView: View {
     }
 
     // MARK: - Navigation
+
+    private func refreshGetProButtonVisibility() {
+        showsGetProButton =
+            SpidProducts.store.userPurchasedProVersion() == nil &&
+            UserDataManager.main.userBenefitStatus != .entitled
+    }
+
+    private func showPurchaseViewController() {
+        guard let presenter = UIApplication.shared.topViewController() else { return }
+
+        let purchaseViewController = UIStoryboard(name: "Main", bundle: nil)
+            .instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
+        purchaseViewController.productIdentifier = SpidProducts.store.bussinessProductIdentifier()
+        purchaseViewController.onDismiss = {
+            Task { @MainActor in
+                refreshGetProButtonVisibility()
+            }
+        }
+
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            purchaseViewController.modalPresentationStyle = .automatic
+        } else if UIDevice.current.userInterfaceIdiom == .pad {
+            purchaseViewController.modalPresentationStyle = .formSheet
+        }
+
+        presenter.present(purchaseViewController, animated: true)
+    }
 
     private func createNewProject() {
         let mainViewController = UIStoryboard(name: "Main", bundle: nil)

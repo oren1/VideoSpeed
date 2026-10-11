@@ -282,7 +282,7 @@ enum VideoFilter: String, CaseIterable, Identifiable {
         .naturalLush,
         .shadowLift,
         .highContrast,
-        .naturalRosy,
+//        .naturalRosy,
         .sepia,
         .gammaBoost,
         .goldenHour,
