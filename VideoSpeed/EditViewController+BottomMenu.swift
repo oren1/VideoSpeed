@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 import SwiftUI
 import Speech
-import WhisperKit
 import CoreML
 
 fileprivate let minimumItemWidth = 64.0

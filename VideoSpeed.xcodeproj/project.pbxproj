@@ -63,8 +63,6 @@
 		6B4F7E702E4F14BB00564302 /* CaptionsSettingsSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4F7E6F2E4F14BB00564302 /* CaptionsSettingsSelectionView.swift */; };
 		6B4F7E742E51C75200564302 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4F7E732E51C75200564302 /* SpeechRecognizer.swift */; };
 		6B4F7E762E5497A100564302 /* test.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6B4F7E752E5497A100564302 /* test.m4a */; };
-		6B4F7E792E56DD2500564302 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6B4F7E782E56DD2500564302 /* WhisperKit */; };
-		6B4F7EA22E642BE200564302 /* Secrets.template.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 6B4F7EA12E642BE200564302 /* Secrets.template.xcconfig */; };
 		6B4F7EA42E643CAC00564302 /* OpenAIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4F7EA32E643CA500564302 /* OpenAIManager.swift */; };
 		6B51C1FA2A7233A50013ABAD /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B51C1F92A7233A50013ABAD /* LoadingView.swift */; };
 		6B51C1FC2A7233B80013ABAD /* LoadingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B51C1FB2A7233B80013ABAD /* LoadingView.xib */; };
@@ -97,7 +95,6 @@
 		6B68012B2D1FD9FA002B5454 /* EditViewController+EditSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B68012A2D1FD9F0002B5454 /* EditViewController+EditSections.swift */; };
 		6B6801322D2D6BE0002B5454 /* SpidPlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B6801312D2D6BE0002B5454 /* SpidPlayerViewController.xib */; };
 		6B6801332D2D6BE0002B5454 /* SpidPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6801302D2D6BE0002B5454 /* SpidPlayerViewController.swift */; };
-		6B6C941C2EC087D100ED232D /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 6B6C941B2EC087D100ED232D /* Secrets.xcconfig */; };
 		6B6C941E2EC2282300ED232D /* CaptionStyleGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6C941D2EC2282300ED232D /* CaptionStyleGenerator.swift */; };
 		6B6DC48D2F167F1200D78EA7 /* CaptionsStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC48C2F167F1200D78EA7 /* CaptionsStyle.swift */; };
 		6B6DC4922F2F179200D78EA7 /* PushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6DC4912F2F179200D78EA7 /* PushNotificationManager.swift */; };
@@ -193,14 +190,6 @@
 		6BE9A3062A61811400FF8CB0 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A3052A61811400FF8CB0 /* PhotoCell.swift */; };
 		6BE9A30A2A618B2500FF8CB0 /* UIImageView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A3092A618B2500FF8CB0 /* UIImageView+Extension.swift */; };
 		6BE9A30C2A62809D00FF8CB0 /* PHAsset+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9A30B2A62809D00FF8CB0 /* PHAsset+Extension.swift */; };
-		6BE9AD782E6D43F100DC6364 /* whisper.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BE9AD772E6D43F100DC6364 /* whisper.xcframework */; };
-		6BE9AD792E6D43F100DC6364 /* whisper.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6BE9AD772E6D43F100DC6364 /* whisper.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		6BE9AD7C2E6D445000DC6364 /* LibWhisper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD7B2E6D445000DC6364 /* LibWhisper.swift */; };
-		6BE9AD7E2E6D448D00DC6364 /* WhisperState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD7D2E6D448D00DC6364 /* WhisperState.swift */; };
-		6BE9AD802E6D44C300DC6364 /* Recorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD7F2E6D44C300DC6364 /* Recorder.swift */; };
-		6BE9AD822E6D44E300DC6364 /* RiffWaveUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD812E6D44E300DC6364 /* RiffWaveUtils.swift */; };
-		6BE9AD842E6D451B00DC6364 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE9AD832E6D451B00DC6364 /* Model.swift */; };
-		6BE9AD892E6D461100DC6364 /* jfk.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6BE9AD882E6D461100DC6364 /* jfk.wav */; };
 		6BE9AD8B2E71415000DC6364 /* TamarEisenman.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BE9AD8A2E71415000DC6364 /* TamarEisenman.mp3 */; };
 		6BE9AD8D2E717E6B00DC6364 /* audio.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BE9AD8C2E717E6B00DC6364 /* audio.mp3 */; };
 		6BE9AD902E72FF8600DC6364 /* CurlDSL in Frameworks */ = {isa = PBXBuildFile; productRef = 6BE9AD8F2E72FF8600DC6364 /* CurlDSL */; };
@@ -217,20 +206,6 @@
 		6BF0A00C2E000002 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF0A00B2E000002 /* FilterCollectionViewCell.swift */; };
 		D292176C54B84883ECC263F5 /* Pods_VideoSpeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75A20CDA63C3E3402AA1C3A7 /* Pods_VideoSpeed.framework */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		6BE9AD7A2E6D43F100DC6364 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				6BE9AD792E6D43F100DC6364 /* whisper.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		6B04F5832CB916FA000C8C59 /* CropSectioVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropSectioVC.swift; sourceTree = "<group>"; };
@@ -422,12 +397,6 @@
 		6BE9A3092A618B2500FF8CB0 /* UIImageView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+Extension.swift"; sourceTree = "<group>"; };
 		6BE9A30B2A62809D00FF8CB0 /* PHAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
 		6BE9AD772E6D43F100DC6364 /* whisper.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = whisper.xcframework; path = "../whisper.cpp/build-apple/whisper.xcframework"; sourceTree = "<group>"; };
-		6BE9AD7B2E6D445000DC6364 /* LibWhisper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibWhisper.swift; sourceTree = "<group>"; };
-		6BE9AD7D2E6D448D00DC6364 /* WhisperState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperState.swift; sourceTree = "<group>"; };
-		6BE9AD7F2E6D44C300DC6364 /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
-		6BE9AD812E6D44E300DC6364 /* RiffWaveUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiffWaveUtils.swift; sourceTree = "<group>"; };
-		6BE9AD832E6D451B00DC6364 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
-		6BE9AD882E6D461100DC6364 /* jfk.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = jfk.wav; sourceTree = "<group>"; };
 		6BE9AD8A2E71415000DC6364 /* TamarEisenman.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = TamarEisenman.mp3; sourceTree = "<group>"; };
 		6BE9AD8C2E717E6B00DC6364 /* audio.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = audio.mp3; sourceTree = "<group>"; };
 		6BE9AD912E7984D700DC6364 /* Segment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Segment.swift; sourceTree = "<group>"; };
@@ -451,9 +420,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6BE9AD782E6D43F100DC6364 /* whisper.xcframework in Frameworks */,
 				6BE9AD902E72FF8600DC6364 /* CurlDSL in Frameworks */,
-				6B4F7E792E56DD2500564302 /* WhisperKit in Frameworks */,
 				6B6700A02A6C1D9A006F2980 /* StoreKit.framework in Frameworks */,
 				D292176C54B84883ECC263F5 /* Pods_VideoSpeed.framework in Frameworks */,
 			);
@@ -789,22 +756,8 @@
 				6B0944A02DC21953009FBFB2 /* Text Edit Sections */,
 				6B6DC4902F1683F300D78EA7 /* CaptionsEditMenuVC */,
 				6B6801172D153D44002B5454 /* Trimmer */,
-				6BE9AD852E6D456100DC6364 /* Whisper */,
 			);
 			path = VideoSpeed;
-			sourceTree = "<group>";
-		};
-		6BE9AD852E6D456100DC6364 /* Whisper */ = {
-			isa = PBXGroup;
-			children = (
-				6BE9AD7B2E6D445000DC6364 /* LibWhisper.swift */,
-				6BE9AD7D2E6D448D00DC6364 /* WhisperState.swift */,
-				6BE9AD7F2E6D44C300DC6364 /* Recorder.swift */,
-				6BE9AD812E6D44E300DC6364 /* RiffWaveUtils.swift */,
-				6BE9AD832E6D451B00DC6364 /* Model.swift */,
-				6BE9AD882E6D461100DC6364 /* jfk.wav */,
-			);
-			path = Whisper;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -820,7 +773,6 @@
 				6BE9A2E62A5FC80C00FF8CB0 /* Resources */,
 				D52300C6D83080611C6D156A /* [CP] Embed Pods Frameworks */,
 				190F2533A7BEA5C4ECB9FBAB /* [CP] Copy Pods Resources */,
-				6BE9AD7A2E6D43F100DC6364 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -839,7 +791,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1400;
-				LastUpgradeCheck = 1400;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					6BE9A2E72A5FC80C00FF8CB0 = {
 						CreatedOnToolsVersion = 14.0;
@@ -857,7 +809,6 @@
 			);
 			mainGroup = 6BE9A2DF2A5FC80C00FF8CB0;
 			packageReferences = (
-				6B4F7E772E56DD2500564302 /* XCRemoteSwiftPackageReference "whisperkit" */,
 				6BE9AD8E2E72FF8600DC6364 /* XCRemoteSwiftPackageReference "CurlDSL" */,
 			);
 			productRefGroup = 6BE9A2E92A5FC80C00FF8CB0 /* Products */;
@@ -890,14 +841,12 @@
 				6BAFED802DD0638300AF13E1 /* FontEditSectionVC.xib in Resources */,
 				6B96102E2D4C9A5B00DEE296 /* PlusCell.xib in Resources */,
 				6BB4EE882A8F48D1006CF87C /* UsingProFeaturesAlertView.xib in Resources */,
-				6BE9AD892E6D461100DC6364 /* jfk.wav in Resources */,
 				6B9610222D49ECA200DEE296 /* TextSectionVC.xib in Resources */,
 				6B0944B02DC49366009FBFB2 /* ClearColorCVCell.xib in Resources */,
 				6B0944A32DC219D7009FBFB2 /* ColorEditSectionVC.xib in Resources */,
 				6BB4EE842A8F3881006CF87C /* BlackTransparentOverlay.xib in Resources */,
 				6B9610262D49F1C000DEE296 /* TextCell.xib in Resources */,
 				6BBA9E682FF774C1000C2509 /* Speed Up Video & Slow Mo: Spid.storekit in Resources */,
-				6B6C941C2EC087D100ED232D /* Secrets.xcconfig in Resources */,
 				6BE9AD8B2E71415000DC6364 /* TamarEisenman.mp3 in Resources */,
 				6B4F7E762E5497A100564302 /* test.m4a in Resources */,
 				6B7D10852BA70AE4002DD73F /* remote_config_defaults.plist in Resources */,
@@ -913,7 +862,6 @@
 				6BB4EE7E2A8E1109006CF87C /* CrownView.xib in Resources */,
 				6B51C1FC2A7233B80013ABAD /* LoadingView.xib in Resources */,
 				6B71AAC52A9098A000C06619 /* SoundSectionVC.xib in Resources */,
-				6B4F7EA22E642BE200564302 /* Secrets.template.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1000,7 +948,6 @@
 				6B6700A42A6CDCB8006F2980 /* UserDataManager.swift in Sources */,
 				6BCEB60D2BF0C1A400010381 /* BenefitView.swift in Sources */,
 				6B0D01112FA6000100AAA201 /* ProjectsView.swift in Sources */,
-				6BE9AD842E6D451B00DC6364 /* Model.swift in Sources */,
 				6BB4EE8A2A8F48E2006CF87C /* UsingProFeaturesAlertView.swift in Sources */,
 				6B04F5892CBBAAC2000C8C59 /* CropViewController.swift in Sources */,
 				6B71AAEB2AAA321300C06619 /* UIViewController+Extension.swift in Sources */,
@@ -1024,7 +971,6 @@
 				6BCEB6112BF0C5CB00010381 /* ActivityViewController.swift in Sources */,
 				6B6700992A6BAE36006F2980 /* VideoHelper.swift in Sources */,
 				6B6DC4C12F4C900100D78EA7 /* FilterCompositor.swift in Sources */,
-				6BE9AD802E6D44C300DC6364 /* Recorder.swift in Sources */,
 				6B6700A82A6CFBF8006F2980 /* SKProduct+Utils.swift in Sources */,
 				6BC7B52C2D5C9AA100FF1CE9 /* UIView+Extension.swift in Sources */,
 				6BE9A3062A61811400FF8CB0 /* PhotoCell.swift in Sources */,
@@ -1073,9 +1019,7 @@
 				6BE9A2EC2A5FC80C00FF8CB0 /* AppDelegate.swift in Sources */,
 				6B6700AA2A6E5FE7006F2980 /* AppStoreReviewManager.swift in Sources */,
 				6BCDCF542A67FADD00D8B656 /* SectionViewController.swift in Sources */,
-				6BE9AD7C2E6D445000DC6364 /* LibWhisper.swift in Sources */,
 				6B0944AA2DC36794009FBFB2 /* SpidColor.swift in Sources */,
-				6BE9AD7E2E6D448D00DC6364 /* WhisperState.swift in Sources */,
 				6B6E266C2E03E0AD004F736B /* CGSize+Extension.swift in Sources */,
 				6B6DC49B2F34CCA900D78EA7 /* GiftPopupView.swift in Sources */,
 				6B6700942A6A6C13006F2980 /* PhotosHeader.swift in Sources */,
@@ -1144,7 +1088,6 @@
 				6B9610182D44CD8D00DEE296 /* SpidLabel.swift in Sources */,
 				6B55F3042DFD57C200259275 /* AVMutableComposition+Extension.swift in Sources */,
 				6B4835223048055B007E4230 /* UndoField.swift in Sources */,
-				6BE9AD822E6D44E300DC6364 /* RiffWaveUtils.swift in Sources */,
 				6BAFED7F2DD0638300AF13E1 /* FontEditSectionVC.swift in Sources */,
 				6B6DC4A52F4BD70000D78EA7 /* CaptionsStyleSheetView.swift in Sources */,
 				6B6DC4B22F4C700000D78EA7 /* CaptionsEditTextSheetView.swift in Sources */,
@@ -1184,6 +1127,7 @@
 			baseConfigurationReference = 6B6C941B2EC087D100ED232D /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -1214,6 +1158,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = K969727JC6;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1235,6 +1180,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -1245,6 +1191,7 @@
 			baseConfigurationReference = 6B6C941B2EC087D100ED232D /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -1275,6 +1222,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = K969727JC6;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1289,6 +1237,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
@@ -1306,7 +1255,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = K969727JC6;
 				ENABLE_DEBUG_DYLIB = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1357,7 +1305,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = K969727JC6;
 				ENABLE_DEBUG_DYLIB = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1419,14 +1366,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		6B4F7E772E56DD2500564302 /* XCRemoteSwiftPackageReference "whisperkit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/argmaxinc/whisperkit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.13.1;
-			};
-		};
 		6BE9AD8E2E72FF8600DC6364 /* XCRemoteSwiftPackageReference "CurlDSL" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/zonble/CurlDSL.git";
@@ -1438,11 +1377,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		6B4F7E782E56DD2500564302 /* WhisperKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 6B4F7E772E56DD2500564302 /* XCRemoteSwiftPackageReference "whisperkit" */;
-			productName = WhisperKit;
-		};
 		6BE9AD8F2E72FF8600DC6364 /* CurlDSL */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 6BE9AD8E2E72FF8600DC6364 /* XCRemoteSwiftPackageReference "CurlDSL" */;
