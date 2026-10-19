@@ -35,7 +35,15 @@ struct ProjectsView: View {
                             }
                             .onTapGesture {
                                 Task {
-                                    await openProject(project)
+                                    if SpidProducts.store.userPurchasedProVersion() == nil &&
+                                        UserDataManager.main.dateToShowPurchaseScreen < Date().timeIntervalSince1970 &&
+                                        !UserDataManager.main.isGiftActive() {
+                                        
+                                            glimpsPurchaseViewController(project: project)
+                                        }
+                                        else {
+                                            await openProject(project)
+                                        }
                                 }
                             }
                         }
@@ -149,6 +157,28 @@ struct ProjectsView: View {
         presenter.present(purchaseViewController, animated: true)
     }
 
+    private func glimpsPurchaseViewController(project: VideoProject) {
+        
+        guard let presenter = UIApplication.shared.topViewController() else { return }
+
+        let purchaseViewController = UIStoryboard(name: "Main", bundle: nil)
+            .instantiateViewController(withIdentifier: "YearlySubscriptionPurchaseVC") as! YearlySubscriptionPurchaseVC
+        purchaseViewController.productIdentifier = SpidProducts.freeTrialYearlySubscription
+        purchaseViewController.onDismiss = {
+            Task {
+                await self.openProject(project)
+            }
+        }
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            purchaseViewController.modalPresentationStyle = .automatic
+        } else if UIDevice.current.userInterfaceIdiom == .pad {
+            purchaseViewController.modalPresentationStyle = .formSheet
+        }
+
+        presenter.present(purchaseViewController, animated: true)
+        UserDataManager.main.dateToShowPurchaseScreen = Date().timeIntervalSince1970 + twoWeeksInSeconds
+    }
+    
     private func createNewProject() {
         let mainViewController = UIStoryboard(name: "Main", bundle: nil)
             .instantiateViewController(withIdentifier: "MainViewController") as! MainViewController
@@ -157,7 +187,6 @@ struct ProjectsView: View {
 
     private func openProject(_ project: VideoProject) async {
         UserDataManager.main.currentProject = project
-        print("project.labelViewModels: \(project.labelViewModels)")
         let sortedModels = project.spidAssets.sorted { $0.sortIndex < $1.sortIndex }
         guard !sortedModels.isEmpty else { return }
 
