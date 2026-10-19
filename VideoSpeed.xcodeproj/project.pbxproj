@@ -1260,6 +1260,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VideoSpeed/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Spid;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Allow access to your music library to add background audio";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allow you to take a video for editing";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow microphone access to record video sound and background audio";
@@ -1310,6 +1311,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VideoSpeed/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Spid;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Allow access to your music library to add background audio";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Allow you to take a video for editing";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow microphone access to record video sound and background audio";
